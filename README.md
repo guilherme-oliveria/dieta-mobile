@@ -1,35 +1,33 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop (JVM).
+# Dieta+ — app (Android, iOS e desktop)
 
-* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+App do Dieta+ em Kotlin Multiplatform com Compose Multiplatform: a mesma interface roda no Android, no iPhone e no desktop (Windows, Mac e Linux). Um único app atende a nutricionista e o paciente.
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## Estrutura
 
-### Running the apps
+| Pasta | O que tem |
+| --- | --- |
+| `shared/src/commonMain` | Código comum a todas as plataformas: telas, tema, regras e acesso à API |
+| `shared/src/androidMain`, `iosMain`, `jvmMain` | O pouco que muda por plataforma |
+| `androidApp` | Ponto de entrada do Android |
+| `iosApp` | Projeto Xcode, ponto de entrada do iOS |
+| `desktopApp` | Ponto de entrada do desktop |
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+Dentro de `commonMain/kotlin/org/br/dietamais`:
 
-- Android app: `./gradlew :androidApp:assembleDebug`
-- Desktop app:
-  - Hot reload: `./gradlew :desktopApp:hotRun --auto`
-  - Standard run: `./gradlew :desktopApp:run`
-- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+- `ui/theme`: cores e tema do app, tiradas do canvas de design (verde `#2E7D4F`, fundo `#F5F6F1`, laranja `#C2551F` só para alertas).
+- `ui/<funcionalidade>`: as telas, uma pasta por funcionalidade (entram com o plano de ação).
+- `data`: cliente da API e banco local para uso sem internet (entram com o plano de ação).
 
-### Running tests
+## Rodando
 
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+- Android: `./gradlew :androidApp:assembleDebug`, ou pelo Android Studio.
+- Desktop: `./gradlew :desktopApp:run`. Com hot reload: `./gradlew :desktopApp:hotRun --auto`.
+- iOS: abra a pasta `iosApp` no Xcode (precisa de um Mac).
 
-- Android tests: `./gradlew :shared:testAndroidHostTest`
-- Desktop tests: `./gradlew :shared:jvmTest`
-- iOS tests: `./gradlew :shared:iosSimulatorArm64Test`
+## Testes
 
----
+- Android: `./gradlew :shared:testAndroidHostTest`
+- Desktop: `./gradlew :shared:jvmTest`
+- iOS: `./gradlew :shared:iosSimulatorArm64Test` (no Mac)
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+O GitHub Actions roda os testes e o build de Android e desktop no Linux, e os testes de iOS num Mac.
