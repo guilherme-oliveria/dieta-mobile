@@ -13,7 +13,7 @@ Definição de pronto de toda tarefa:
 
 ## Fase 1 — Fundação do app, contas e vínculo
 
-- [ ] **MOB-01 Dependências e estrutura.** Ktor, kotlinx.serialization, coroutines, kotlinx-datetime, Koin, Navigation Compose, SQLDelight, multiplatform-settings, Kermit no `libs.versions.toml`; pacotes de `mobile.md` criados; Koin iniciado no `App.kt`; `Config` com `URL_API` por plataforma.
+- [x] **MOB-01 Dependências e estrutura.** Ktor, kotlinx.serialization, coroutines, kotlinx-datetime, Koin, Navigation Compose, SQLDelight, multiplatform-settings, Kermit no `libs.versions.toml`; pacotes de `mobile.md` criados; Koin iniciado no `App.kt`; `Config` com `URL_API` por plataforma.
 - [ ] **MOB-02 Tipografia e componentes base.** Plus Jakarta Sans em `composeResources`; tipografia no `DietaTheme`; primeiros componentes de `ui/comum` conforme `docs/design/componentes.md` (botões, campos, cartão de refeição, estado vazio, erro, carregando, banner offline). Inclui a Fase 0 de `docs/design/plano-de-acao-ui.md`: `Color.kt` corrigido com todos os tokens de `componentes.md` (o atual diverge do canvas), `Dimens`, `Shapes` e ícones de `ui/comum/icones`. *Depende de:* MOB-01.
 - [ ] **MOB-03 Navegação e shell adaptativo.** Rotas `@Serializable`; shell por `WindowSizeClass` (bottom nav no compacto, rail + lista-detalhe no médio/expandido); grafos separados para nutri e paciente; janela do desktop (tamanho mínimo, título). *Depende de:* MOB-02.
 - [ ] **MOB-04 Banco local e fila.** SQLDelight com drivers Android/iOS/JVM; tabelas `sessao`, `cursor_sync`, `mutacao_pendente`, `conflito`; `FilaMutacoes` com teste (gravar + enfileirar na mesma transação). *Depende de:* MOB-01.

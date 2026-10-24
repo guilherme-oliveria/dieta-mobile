@@ -1,4 +1,4 @@
-package org.br.dietamais
+package org.br.dietamais.plataforma
 
 class JVMPlatform: Platform {
     override val name: String = "Java ${System.getProperty("java.version")}"

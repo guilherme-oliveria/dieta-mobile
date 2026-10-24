@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_nome">Dieta+</string>
+    <string name="plataforma_em_execucao">Rodando em %1$s</string>
+</resources>

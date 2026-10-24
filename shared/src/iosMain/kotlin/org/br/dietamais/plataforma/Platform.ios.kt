@@ -1,4 +1,4 @@
-package org.br.dietamais
+package org.br.dietamais.plataforma
 
 import platform.UIKit.UIDevice
 
