@@ -21,7 +21,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.br.dietamais"
+            packageName = "DietaMais"
             packageVersion = "1.0.0"
         }
     }
