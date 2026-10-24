@@ -20,6 +20,7 @@ Os `plano-de-acao.md` de cada repositório continuam sendo a lista de tarefas (o
 
 - Sessões na nuvem que já recebem uma branch (`claude/…`, `codex/…`) usam a dela, com PR para `develop`.
 - Uma tarefa = uma branch = um PR, como já dizem os `AGENTS.md`. PR de tarefa sempre para `develop`, nunca para `main`.
+- Todo PR de tarefa passa pelo **agente QA** do repositório antes do merge (seção "Revisão por QA" do `AGENTS.md`): o agente de código abre e corrige, o QA aprova e faz o merge na `develop`, e a próxima tarefa só começa depois do veredito.
 - Cada **marco** (seção 3) vira uma `release/`: `0.1.0` no M1, `0.2.0` no M2 e assim por diante; `1.0.0` é a publicação nas lojas.
 - Os workflows e as regras de proteção do Gitflow (pasta `gitflow/` dos arquivos do projeto) entram pela tarefa **G-01**, feita pelo Guilherme, porque `.github/` e as configurações do GitHub não podem ser alteradas pela sessão na nuvem.
 

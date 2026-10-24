@@ -82,6 +82,17 @@ androidApp/  iosApp/  desktopApp/   só pontos de entrada e config de plataforma
 4. PR com `.github/pull_request_template.md`; marque `[x]` em `docs/arquitetura/plano-de-acao.md` no mesmo PR.
 5. Se o endpoint do backend ainda não existe, use `MockEngine` com o JSON do contrato e diga no PR.
 
+## Revisão por QA (vale para Codex, Claude e qualquer agente)
+
+Quem escreve o código nunca aprova o próprio trabalho. O fluxo de todo PR de tarefa é:
+
+1. **Agente de código** (Codex ou outro) abre o PR para a `develop` com o ID da tarefa no título (`BE-NN …`, `MOB-NN …`). Ele **nunca** aprova, faz merge, fecha PR alheio ou resolve comentário do QA.
+2. **Agente QA** (Claude, um por repositório) revisa o PR contra a tarefa do `plano-de-acao.md`, a definição de pronto deste arquivo, as regras `RN-xxx` citadas, o contrato (`integracao.md` e os JSONs de `contrato/`) e, no mobile, `docs/design/`. Confere também o CI verde. E publica o veredito:
+   - **Aprovado:** review "Approve" ou, se o GitHub não deixar (mesma conta), comentário que começa com `QA: APROVADO`. Depois o QA faz o merge na `develop`. Merge na `main` é só do Guilherme.
+   - **Corrigir:** review "Request changes" ou comentário que começa com `QA: CORRIGIR`, com a lista do que falta.
+3. **Agente de código**, ao receber `QA: CORRIGIR`: corrige na **mesma branch**, faz push, responde cada apontamento dizendo o que mudou e comenta `QA: PRONTO PARA REVISAR`. Discordou de um apontamento? Responde explicando, sem ignorar.
+4. **Próxima tarefa só depois do veredito.** Antes de começar qualquer tarefa nova, o agente de código confere os PRs que abriu: com `QA: CORRIGIR` pendente, corrige primeiro; sem veredito ainda, para e avisa "aguardando QA" (pode adiantar só tarefas que não dependem daquele PR, saindo da branch dele).
+
 ## Definição de pronto
 
 Testes de `dominio` e ViewModel · tela nos 3 tamanhos e conferida com o canvas · funciona offline (ou desabilita o que exige rede) · CI verde (Android, desktop e iOS).
