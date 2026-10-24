@@ -31,3 +31,7 @@ Dentro de `commonMain/kotlin/org/br/dietamais`:
 - iOS: `./gradlew :shared:iosSimulatorArm64Test` (no Mac)
 
 O GitHub Actions roda os testes e o build de Android e desktop no Linux, e os testes de iOS num Mac.
+
+## Documentação e plano de ação
+
+Arquitetura, regras de negócio, contrato entre as aplicações e o plano de ação ficam em [`docs/arquitetura/`](docs/arquitetura/). Agentes de código (Claude Code, Codex) leem o [`AGENTS.md`](AGENTS.md). O design das telas fica em [`docs/design/`](docs/design/).
