@@ -104,6 +104,7 @@ Decididas sem consultar para não travar o trabalho. Cada uma está marcada como
 | `funcionalidades-mvp.md` | Funcionalidades do MVP com critérios de aceite |
 | `backend.md` / `mobile.md` / `web.md` | Arquitetura interna do repositório |
 | `plano-de-acao.md` | Tarefas ordenadas do repositório, com dependências e critério de pronto |
+| `diagramas.md` | Diagramas Mermaid (contexto, containers, sequências, implantação) |
 | `docs/design/` (só no mobile) | Telas, componentes e plano de UI (PO de design) |
 
 Referências externas:
