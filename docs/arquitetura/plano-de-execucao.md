@@ -74,7 +74,7 @@ As fases 1 a 3 do roadmap (`visao-geral.md`) já substituem o PDF da nutri; por 
 
 ## 4. Tarefas de design (canvas)
 
-Feitas no canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC, seguindo `componentes.md` e as correções de `validacao.md`. Cada uma termina atualizando o status em `dieta-mobile/docs/design/telas.md` para "desenhada". Branch `feature/DES-NN-…` no `dieta-mobile` só para essa atualização de docs.
+Feitas no canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC, seguindo `componentes.md` e as correções de `validacao.md`. Cada uma termina atualizando o status em `dieta-mobile/docs/design/telas.md` para "desenhada" e copiando os artboards novos ou alterados para `dieta-mobile/docs/design/artboards/` (agentes sem acesso ao claude.ai leem de lá). As tarefas DES ficam com o Claude, porque só ele edita o canvas. Branch `feature/DES-NN-…` no `dieta-mobile` para essa atualização de docs.
 
 | Tarefa | Telas (composable) | Precisa estar pronta para |
 | --- | --- | --- |

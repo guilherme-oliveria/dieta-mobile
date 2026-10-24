@@ -10,6 +10,7 @@ Canvas de referência (13 telas, celular 390×844 e tablet 1180×820): https://c
 | [componentes.md](componentes.md) | Tokens (cores, tipografia, espaçamento, raios) e componentes comuns, com o nome do composable |
 | [plataformas.md](plataformas.md) | Layout adaptativo (WindowSizeClass) e diferenças de Android, iOS e desktop |
 | [telas.md](telas.md) | Mapa tela → pacote Kotlin → artboard do canvas, com status (desenhada ou faltando) |
+| [artboards/](artboards/README.md) | Cópia do HTML de cada artboard do canvas, para quem não acessa o claude.ai |
 | [plano-de-acao-ui.md](plano-de-acao-ui.md) | Ordem de implementação das telas em fases, com critério de pronto de cada tarefa |
 
 Arquitetura, regras de negócio e contrato com a API ficam em `docs/arquitetura/` (mantidos pelo PO de arquitetura). Quando os dois divergirem, a regra de negócio vale e a tela se ajusta.

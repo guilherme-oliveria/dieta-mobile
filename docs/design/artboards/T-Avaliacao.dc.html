@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Nutri · Avaliação no tablet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 76px; flex-shrink: 0; background: #FFFFFF; border-bottom: 1px solid #E2E6DE; display: flex; align-items: center; gap: 16px; padding: 0 20px">
+    <a href="N-Paciente.dc.html" aria-label="Voltar para o paciente" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #E2E6DE; display: flex; align-items: center; justify-content: center; color: #17251D">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 style="margin: 0; font-size: 20px; font-weight: 800">Nova avaliação · Guilherme Oliveira</h1>
+      <span style="font-size: 13px; color: #5B6B61">Masculino · 1,93 m · última avaliação em 11/09</span>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 10px">
+      <button style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 14px; font-weight: 700">Comparar com 11/09</button>
+      <button style="height: 44px; padding: 0 18px; border-radius: 12px; border: 0; background: #2E7D4F; color: #FFFFFF; font-size: 14px; font-weight: 700">Salvar avaliação</button>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr) 300px; gap: 16px; padding: 18px 20px">
+    <section aria-label="Dados básicos" style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 800">Dados da consulta</h2>
+      <label style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 13px; font-weight: 600">Data</span>
+        <input type="date" value="2026-10-09" style="height: 46px; border-radius: 12px; border: 1px solid #D5DBD0; padding: 0 12px; font-size: 15px; color: #17251D">
+      </label>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <label style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 13px; font-weight: 600">Peso (kg)</span>
+          <input type="text" inputmode="decimal" value="102,5" style="height: 46px; border-radius: 12px; border: 1px solid #D5DBD0; padding: 0 12px; font-size: 16px; font-weight: 700; color: #17251D; min-width: 0">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 13px; font-weight: 600">Estatura (m)</span>
+          <input type="text" inputmode="decimal" value="1,93" style="height: 46px; border-radius: 12px; border: 1px solid #D5DBD0; padding: 0 12px; font-size: 16px; font-weight: 700; color: #17251D; min-width: 0">
+        </label>
+      </div>
+      <div style="background: #E6F2EA; border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 12px; font-weight: 700; color: #1F5C39; letter-spacing: 0.06em; text-transform: uppercase">Calculado</span>
+        <span style="font-size: 30px; font-weight: 800; color: #17251D">IMC 27,5</span>
+        <span style="font-size: 14px; color: #1F5C39; font-weight: 600">Sobrepeso</span>
+      </div>
+      <span style="font-size: 12px; line-height: 1.5; color: #5B6B61">No MVP só o IMC é calculado. Gordura e massas vêm da planilha até as fórmulas entrarem no app.</span>
+    </section>
+
+    <section aria-label="Medidas" style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800">Perímetros</h2>
+        <span style="font-size: 12px; color: #5B6B61">cm</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{perimetros}}" as="p" hint-placeholder-count="9">
+          <label style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; font-weight: 600; color: #3F4D44">{{p}}</span>
+            <input type="text" inputmode="decimal" placeholder="0,0" style="height: 42px; border-radius: 10px; border: 1px solid #D5DBD0; padding: 0 10px; font-size: 15px; color: #17251D; min-width: 0">
+          </label>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800">Dobras cutâneas</h2>
+        <span style="font-size: 12px; color: #5B6B61">mm</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{dobras}}" as="d" hint-placeholder-count="7">
+          <label style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; font-weight: 600; color: #3F4D44">{{d}}</span>
+            <input type="text" inputmode="decimal" placeholder="0" style="height: 42px; border-radius: 10px; border: 1px solid #D5DBD0; padding: 0 10px; font-size: 15px; color: #17251D; min-width: 0">
+          </label>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-label="Resultados e parecer" style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 800">Composição corporal</h2>
+      <sc-for list="{{resultados}}" as="r" hint-placeholder-count="3">
+        <label style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+          <span style="font-size: 14px; font-weight: 600">{{r.label}}</span>
+          <input type="text" inputmode="decimal" value="{{r.value}}" style="width: 110px; height: 42px; border-radius: 10px; border: 1px solid #D5DBD0; padding: 0 10px; font-size: 15px; font-weight: 700; color: #17251D; text-align: right">
+        </label>
+      </sc-for>
+      <label style="flex: 1; display: flex; flex-direction: column; gap: 6px; margin-top: 4px">
+        <span style="font-size: 14px; font-weight: 800">Parecer</span>
+        <textarea placeholder="Escreva o parecer da avaliação" style="flex: 1; border-radius: 12px; border: 1px solid #D5DBD0; padding: 10px 12px; font-size: 14px; line-height: 1.5; color: #17251D; resize: none"></textarea>
+      </label>
+      <label style="display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer">
+        <input type="checkbox" checked style="width: 20px; height: 20px; margin: 0; accent-color: #2E7D4F">
+        <span style="font-size: 14px; font-weight: 600">Mostrar resultado no app do paciente</span>
+      </label>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      perimetros: ['Pescoço', 'Tórax', 'Braço', 'Antebraço', 'Cintura', 'Abdômen', 'Quadril', 'Coxa', 'Panturrilha'],
+      dobras: ['Peitoral', 'Axilar média', 'Tríceps', 'Subescapular', 'Abdominal', 'Suprailíaca', 'Coxa'],
+      resultados: [
+        { label: '% de gordura', value: '26,5' },
+        { label: 'Massa gorda (kg)', value: '27,2' },
+        { label: 'Massa magra (kg)', value: '75,3' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

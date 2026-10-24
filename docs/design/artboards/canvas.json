@@ -1,0 +1,45 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-24T16:05:00Z"},
+  "title": "Dieta+ telas do app",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "Paciente · Hoje"},
+    "P-Refeicao.dc.html": {"x": 470, "y": 0, "w": 390, "h": 844, "title": "Paciente · Refeição"},
+    "P-Substituir.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "Paciente · Trocar alimento"},
+    "P-Compras.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "Paciente · Lista de compras"},
+    "P-Progresso.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "Paciente · Evolução"},
+    "P-Lembretes.dc.html": {"x": 2350, "y": 0, "w": 390, "h": 844, "title": "Paciente · Lembretes e agenda"},
+    "P-Anamnese.dc.html": {"x": 2820, "y": 0, "w": 390, "h": 844, "title": "Paciente · Anamnese"},
+    "Entrar.dc.html": {"x": 0, "y": 1244, "w": 390, "h": 844, "title": "Entrar e escolher perfil"},
+    "N-Pacientes.dc.html": {"x": 470, "y": 1244, "w": 390, "h": 844, "title": "Nutri · Pacientes (celular)"},
+    "N-Paciente.dc.html": {"x": 940, "y": 1244, "w": 390, "h": 844, "title": "Nutri · Ficha do paciente (celular)"},
+    "T-Painel.dc.html": {"x": 0, "y": 2488, "w": 1180, "h": 820, "title": "Nutri · Painel (tablet)"},
+    "T-Dieta.dc.html": {"x": 1260, "y": 2488, "w": 1180, "h": 820, "title": "Nutri · Montar dieta (tablet)"},
+    "T-Avaliacao.dc.html": {"x": 2520, "y": 2488, "w": 1180, "h": 820, "title": "Nutri · Avaliação (tablet)"}
+  },
+  "order": [
+    "Main.dc.html",
+    "P-Refeicao.dc.html",
+    "P-Substituir.dc.html",
+    "P-Compras.dc.html",
+    "P-Progresso.dc.html",
+    "P-Lembretes.dc.html",
+    "P-Anamnese.dc.html",
+    "Entrar.dc.html",
+    "N-Pacientes.dc.html",
+    "N-Paciente.dc.html",
+    "T-Painel.dc.html",
+    "T-Dieta.dc.html",
+    "T-Avaliacao.dc.html"
+  ],
+  "notes": {
+    "rowPaciente": {"x": 0, "y": -300, "text": "App do paciente · celular", "kind": "title1", "maxW": 3210},
+    "rowNutriCel": {"x": 0, "y": 944, "text": "Entrada e nutri no celular", "kind": "title1", "maxW": 1330},
+    "rowTablet": {"x": 0, "y": 2188, "text": "Nutri no tablet", "kind": "title1", "maxW": 3700},
+    "proximo": {"x": 3330, "y": 0, "w": 420, "fill": "orange", "size": "m", "text": "Próxima fase: site em Angular\n\nFora do MVP. Depois das telas do app, este canvas ganha a versão web da nutri (painel, montador de dieta, avaliação, assinatura) desenhada para Angular, reaproveitando as mesmas cores, fontes e componentes.\n\nTambém depois: área web opcional do paciente."},
+    "dadosExemplo": {"x": 1490, "y": 1244, "w": 420, "fill": "blue", "size": "m", "text": "Dados de exemplo\n\nNomes, kcal e medidas vêm dos PDFs da Nut. Luciana (dieta de 2509 kcal, 6 refeições, lista de substituição com 12 grupos). As kcal de cada refeição, exceto o almoço, são ilustrativas."}
+  },
+  "designSystems": []
+}
