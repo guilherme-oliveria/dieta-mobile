@@ -76,7 +76,7 @@ androidApp/  iosApp/  desktopApp/   só pontos de entrada e config de plataforma
 
 ## Fluxo de trabalho
 
-1. Branch a partir da `main`: `feature/MOB-NN-descricao-curta`. Se o ambiente já definiu uma branch, use a dele.
+1. Branch a partir da `develop` (Gitflow; ver `docs/arquitetura/plano-de-execucao.md`), com PR de volta para `develop`: `feature/MOB-NN-descricao-curta`. Se o ambiente já definiu uma branch, use a dele.
 2. Commits em português no imperativo (`Adiciona tela Hoje do paciente`).
 3. Rode `./gradlew :shared:jvmTest` (e `:shared:testAndroidHostTest` se mexeu em Android).
 4. PR com `.github/pull_request_template.md`; marque `[x]` em `docs/arquitetura/plano-de-acao.md` no mesmo PR.
