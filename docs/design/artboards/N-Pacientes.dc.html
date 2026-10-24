@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Nutri · Pacientes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
+  <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 56px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 13px; color: #5B6B61; font-weight: 500">Nut. Luciana · 16 ativos de 20</span>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Pacientes</h1>
+      </div>
+      <button style="height: 44px; padding: 0 14px; border-radius: 22px; border: 0; background: #2E7D4F; color: #FFFFFF; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Convidar</button>
+    </div>
+
+    <label style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; background: #FFFFFF; border: 1px solid #D5DBD0; border-radius: 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B6B61" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar paciente</span>
+      <input type="search" placeholder="Buscar paciente" style="flex: 1; border: 0; outline: none; font-size: 15px; background: transparent; color: #17251D">
+    </label>
+
+    <div style="display: flex; gap: 8px">
+      <button aria-pressed="true" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: #17251D; color: #FFFFFF; font-size: 13px; font-weight: 700">Todos 16</button>
+      <button style="height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #F0C7AE; background: #FBEDE3; color: #8A3810; font-size: 13px; font-weight: 700">Atenção 3</button>
+      <button style="height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 13px; font-weight: 600">Retorno na semana 5</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; overflow: hidden">
+      <sc-for list="{{patients}}" as="p" hint-placeholder-count="8">
+        <a href="N-Paciente.dc.html" style="display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 14px; border-bottom: 1px solid #EEF1EA; text-decoration: none; color: #17251D">
+          <span style="{{p.avatarStyle}}">{{p.initials}}</span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+            <span style="font-size: 15px; font-weight: 700">{{p.name}}</span>
+            <span style="{{p.subStyle}}">{{p.sub}}</span>
+          </span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+            <span style="font-size: 15px; font-weight: 800">{{p.adh}}</span>
+            <span style="font-size: 11px; color: #5B6B61">adesão</span>
+          </span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+
+  <nav aria-label="Navegação da nutri" style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; background: #FFFFFF; border-top: 1px solid #E2E6DE; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 6px 4px 10px; box-sizing: border-box">
+    <a href="N-Pacientes.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #2E7D4F; font-size: 11px; font-weight: 700">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path></svg>Pacientes</a>
+    <a href="T-Painel.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg>Agenda</a>
+    <a href="T-Dieta.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>Alimentos</a>
+    <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Conta</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tones = [['#E6F2EA', '#1F5C39'], ['#EAF1F8', '#1F4F7A'], ['#F3ECF8', '#5B3486'], ['#FBEDE3', '#8A3810']];
+    const list = [
+      { name: 'Guilherme Oliveira', sub: 'Retorno 06/11 · anamnese pendente', adh: '86%' },
+      { name: 'Ana Ribeiro', sub: 'Sem marcar refeições há 3 dias', adh: '41%', alert: true },
+      { name: 'Bruno Carvalho', sub: 'Enviou foto do prato · 10:12', adh: '92%' },
+      { name: 'Carla Menezes', sub: 'Nova dieta publicada ontem', adh: '—' },
+      { name: 'Diego Santos', sub: 'Respondeu a anamnese', adh: '78%' },
+      { name: 'Elisa Moura', sub: 'Sem marcar refeições há 4 dias', adh: '35%', alert: true },
+      { name: 'Felipe Araújo', sub: 'Retorno 31/10', adh: '81%' },
+      { name: 'Gabriela Lima', sub: 'Convite enviado · aguardando', adh: '—' }
+    ];
+    const patients = list.map((p, i) => {
+      const t = tones[i % tones.length];
+      return {
+        ...p,
+        initials: p.name.split(' ').map((w) => w[0]).slice(0, 2).join(''),
+        avatarStyle: 'width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; background: ' + t[0] + '; color: ' + t[1] + ';',
+        subStyle: 'font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ' + (p.alert ? 'color: #9A3F14; font-weight: 600;' : 'color: #5B6B61;')
+      };
+    });
+    return { patients };
+  }
+}
+</script>
+</body>
+</html>

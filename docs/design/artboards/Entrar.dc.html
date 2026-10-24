@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Entrar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; padding: 72px 24px 32px; display: flex; flex-direction: column; gap: 28px">
+  <div style="display: flex; flex-direction: column; gap: 14px">
+    <div aria-hidden="true" style="width: 56px; height: 56px; border-radius: 18px; background: #2E7D4F; display: flex; align-items: center; justify-content: center">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"></path><path d="M2 21c0-3 1.9-5.4 5.1-6"></path></svg>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.03em">Dieta<span style="color: #2E7D4F">+</span></h1>
+      <span style="font-size: 16px; line-height: 1.45; color: #5B6B61">Sua dieta no bolso, montada pela sua nutricionista.</span>
+    </div>
+  </div>
+
+  <form style="display: flex; flex-direction: column; gap: 14px; margin: 0">
+    <label style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 14px; font-weight: 600">E-mail</span>
+      <input type="email" autocomplete="email" placeholder="voce@email.com" style="height: 52px; border-radius: 14px; border: 1px solid #D5DBD0; background: #FFFFFF; padding: 0 14px; font-size: 16px; color: #17251D">
+    </label>
+    <label style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 14px; font-weight: 600">Senha</span>
+      <input type="password" autocomplete="current-password" style="height: 52px; border-radius: 14px; border: 1px solid #D5DBD0; background: #FFFFFF; padding: 0 14px; font-size: 16px; color: #17251D">
+    </label>
+    <a href="#" style="align-self: flex-end; font-size: 14px; font-weight: 600; text-decoration: none; padding: 6px 0">Esqueci a senha</a>
+    <a href="Main.dc.html" style="height: 52px; border-radius: 14px; background: #2E7D4F; color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Entrar</a>
+  </form>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="flex: 1; height: 1px; background: #DDE2D7"></span>
+    <span style="font-size: 13px; color: #5B6B61">primeira vez?</span>
+    <span style="flex: 1; height: 1px; background: #DDE2D7"></span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <button style="height: 56px; border-radius: 14px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 12px; padding: 0 16px; text-align: left">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      <span style="flex: 1">Tenho um código da minha nutri</span>
+    </button>
+    <a href="N-Pacientes.dc.html" style="height: 56px; border-radius: 14px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 12px; padding: 0 16px; text-decoration: none; box-sizing: border-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path></svg>
+      <span style="flex: 1">Sou nutricionista</span>
+    </a>
+  </div>
+
+  <span style="margin-top: auto; font-size: 12px; line-height: 1.5; color: #5B6B61; text-align: center">Seus dados de saúde só são vistos pela nutricionista com quem você tem vínculo. <a href="#" style="font-weight: 600">Privacidade</a></span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Paciente · Hoje</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
+  <div style="padding: 20px 20px 0; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 64px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 13px; color: #5B6B61; font-weight: 500">Sábado, 24 de outubro</span>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Olá, Guilherme</h1>
+      </div>
+      <button aria-label="Notificações" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #E2E6DE; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #17251D; position: relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        <span style="position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: 4px; background: #C2551F"></span>
+      </button>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 16px; display: flex; gap: 14px; align-items: center">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 14px; font-weight: 600">2 de 6 refeições</span>
+          <span style="font-size: 13px; color: #5B6B61">690 de 2509 kcal</span>
+        </div>
+        <div style="height: 8px; border-radius: 4px; background: #E6F2EA; overflow: hidden">
+          <div style="width: 33%; height: 8px; border-radius: 4px; background: {{accent}}"></div>
+        </div>
+        <span style="font-size: 12px; color: #5B6B61">Dieta de 13/10 · Nut. Luciana</span>
+      </div>
+      <div style="width: 1px; align-self: stretch; background: #E2E6DE"></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; width: 72px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.7s6 6.4 6 11.3a6 6 0 0 1-12 0c0-4.9 6-11.3 6-11.3z"></path></svg>
+        <span style="font-size: 15px; font-weight: 700">1,4 L</span>
+        <span style="font-size: 11px; color: #5B6B61">de 3,6 L</span>
+      </div>
+    </div>
+
+    <div style="background: {{accent}}; color: #FFFFFF; border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.9">Próxima refeição</span>
+        <span style="font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.18); padding: 4px 10px; border-radius: 999px">em 25 min</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span style="font-size: 22px; font-weight: 800">Almoço · 12:00</span>
+        <span style="font-size: 14px; font-weight: 600">737 kcal</span>
+      </div>
+      <span style="font-size: 14px; line-height: 1.45; opacity: 0.95">Arroz branco, feijão, frango grelhado, salada à vontade, 1 fruta</span>
+      <div style="display: flex; gap: 8px">
+        <button style="flex: 1; height: 44px; border-radius: 12px; border: 0; background: #FFFFFF; color: #1F5C39; font-size: 14px; font-weight: 700">Comi</button>
+        <button style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.5); background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 600">Troquei</button>
+        <button style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.5); background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 600">Pulei</button>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; height: 24px; margin-top: 4px">
+      <h2 style="margin: 0; font-size: 17px; font-weight: 700">Refeições de hoje</h2>
+      <a href="P-Refeicao.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none">Ver dieta</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; overflow: hidden">
+      <sc-for list="{{meals}}" as="m" hint-placeholder-count="6">
+        <div style="display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 16px; border-bottom: 1px solid #EEF1EA">
+          <span style="width: 44px; font-size: 13px; font-weight: 600; color: #5B6B61">{{m.time}}</span>
+          <span style="flex: 1; font-size: 15px; font-weight: 600">{{m.name}}</span>
+          <span style="font-size: 13px; color: #5B6B61">{{m.kcal}}</span>
+          <span style="{{m.chipStyle}}">{{m.status}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <nav aria-label="Navegação principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; background: #FFFFFF; border-top: 1px solid #E2E6DE; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 6px 4px 10px; box-sizing: border-box">
+    <a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: {{accent}}; font-size: 11px; font-weight: 700">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Hoje</a>
+    <a href="P-Refeicao.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2v20"></path><path d="M4 2v6a3 3 0 0 0 6 0V2"></path><path d="M17 22V2c-2 0-4 2-4 6v5h4"></path></svg>Dieta</a>
+    <a href="P-Compras.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"></circle><circle cx="18" cy="20" r="1.5"></circle><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6"></path></svg>Compras</a>
+    <a href="P-Progresso.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m7 15 4-4 3 3 6-6"></path></svg>Evolução</a>
+    <a href="P-Lembretes.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Perfil</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2E7D4F","options":["#2E7D4F","#2F6FA8","#7A4FB0","#B4532A"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const base = 'font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 999px; width: 58px; text-align: center; box-sizing: border-box;';
+    const chip = {
+      feita: base + 'background: #E6F2EA; color: #1F5C39;',
+      trocada: base + 'background: #FBEDE3; color: #9A3F14;',
+      proxima: base + 'background: #17251D; color: #FFFFFF;',
+      depois: base + 'background: #F0F2EC; color: #5B6B61;'
+    };
+    const meals = [
+      { time: '08:00', name: 'Café da manhã', kcal: '480 kcal', status: 'Feita', kind: 'feita' },
+      { time: '10:00', name: 'Lanche da manhã', kcal: '210 kcal', status: 'Trocada', kind: 'trocada' },
+      { time: '12:00', name: 'Almoço', kcal: '737 kcal', status: 'Agora', kind: 'proxima' },
+      { time: '15:00', name: 'Lanche da tarde', kcal: '320 kcal', status: '15:00', kind: 'depois' },
+      { time: '17:30', name: 'Pré-treino', kcal: '282 kcal', status: '17:30', kind: 'depois' },
+      { time: '20:00', name: 'Jantar', kcal: '480 kcal', status: '20:00', kind: 'depois' }
+    ].map((m) => ({ ...m, chipStyle: chip[m.kind] }));
+    return { accent: this.props.accent ?? '#2E7D4F', meals };
+  }
+}
+</script>
+</body>
+</html>

@@ -21,7 +21,7 @@ Os arquivos `visao-geral`, `regras-de-negocio`, `integracao` e `funcionalidades-
 
 ## Design e telas
 
-Telas e componentes seguem `docs/design/`: tokens e componentes em `docs/design/componentes.md`, mapa tela→pacote em `docs/design/telas.md`, ordem de implementação em `docs/design/plano-de-acao-ui.md`. Antes de criar uma tela, confira o canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC.
+Telas e componentes seguem `docs/design/`: tokens e componentes em `docs/design/componentes.md`, mapa tela→pacote em `docs/design/telas.md`, ordem de implementação em `docs/design/plano-de-acao-ui.md`. Antes de criar uma tela, confira o canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC; sem acesso ao claude.ai (Codex e outros), leia a cópia dos artboards em `docs/design/artboards/`.
 
 Cores do tema já estão em `ui/theme` (verde `#2E7D4F`, fundo `#F5F6F1`, laranja `#C2551F` só para alertas; fonte Plus Jakarta Sans).
 

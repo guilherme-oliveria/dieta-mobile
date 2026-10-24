@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Nutri · Montar dieta no tablet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="height: 76px; flex-shrink: 0; background: #FFFFFF; border-bottom: 1px solid #E2E6DE; display: flex; align-items: center; gap: 16px; padding: 0 20px">
+    <a href="N-Paciente.dc.html" aria-label="Voltar para o paciente" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #E2E6DE; display: flex; align-items: center; justify-content: center; color: #17251D">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 style="margin: 0; font-size: 20px; font-weight: 800">Dieta de Guilherme Oliveira</h1>
+      <span style="font-size: 13px; color: #5B6B61">Rascunho · baseada na dieta de 13/10</span>
+    </div>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 18px">
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px">
+        <span style="font-size: 15px; font-weight: 800">2509 <span style="font-weight: 500; color: #5B6B61">/ meta 2500 kcal</span></span>
+        <span aria-hidden="true" style="width: 180px; height: 6px; border-radius: 3px; background: #E6F2EA; display: block; overflow: hidden"><span style="display: block; width: 100%; height: 6px; background: #2E7D4F"></span></span>
+      </div>
+      <button style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 14px; font-weight: 700">Ver PDF</button>
+      <button style="height: 44px; padding: 0 18px; border-radius: 12px; border: 0; background: #2E7D4F; color: #FFFFFF; font-size: 14px; font-weight: 700">Publicar para o paciente</button>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; display: flex; gap: 16px; padding: 18px 20px">
+    <aside aria-label="Refeições" style="width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6B61">Refeições</h2>
+      <sc-for list="{{meals}}" as="m" hint-placeholder-count="6">
+        <button style="{{m.style}}">
+          <span style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+            <span style="font-size: 15px; font-weight: 700">{{m.name}}</span>
+            <span style="font-size: 13px; opacity: 0.8">{{m.time}}</span>
+          </span>
+          <span style="font-size: 14px; font-weight: 700">{{m.kcal}}</span>
+        </button>
+      </sc-for>
+      <button style="height: 48px; border-radius: 14px; border: 1px dashed #B9C2B4; background: transparent; color: #3F4D44; font-size: 14px; font-weight: 700">+ Adicionar refeição</button>
+    </aside>
+
+    <section aria-label="Almoço" style="flex: 1; min-width: 0; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span style="font-size: 13px; font-weight: 700; color: #2E7D4F">12:00</span>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800">Almoço</h2>
+        </div>
+        <span style="font-size: 14px; color: #5B6B61"><strong style="color: #17251D">737 kcal</strong> · 52 g carboidratos</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 132px 72px; gap: 12px; padding: 8px 0; border-bottom: 1px solid #E2E6DE; font-size: 12px; font-weight: 700; color: #5B6B61; text-transform: uppercase; letter-spacing: 0.06em">
+        <span>Alimento</span><span style="text-align: center">Porções</span><span style="text-align: right">kcal</span>
+      </div>
+      <sc-for list="{{items}}" as="it" hint-placeholder-count="6">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 132px 72px; gap: 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid #EEF1EA">
+          <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+            <span style="font-size: 15px; font-weight: 700">{{it.food}}</span>
+            <span style="font-size: 13px; color: #5B6B61">{{it.measure}} · {{it.group}}</span>
+          </span>
+          <span style="display: flex; align-items: center; justify-content: center; gap: 6px">
+            <button aria-label="Menos uma porção" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 18px; font-weight: 700">−</button>
+            <span style="width: 36px; text-align: center; font-size: 15px; font-weight: 800">{{it.qty}}</span>
+            <button aria-label="Mais uma porção" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 18px; font-weight: 700">+</button>
+          </span>
+          <span style="text-align: right; font-size: 15px; font-weight: 700">{{it.kcal}}</span>
+        </div>
+      </sc-for>
+      <label style="display: flex; flex-direction: column; gap: 6px; margin-top: auto">
+        <span style="font-size: 13px; font-weight: 700">Recado para o paciente</span>
+        <input type="text" value="Prefira a fruta de sobremesa com bagaço. Salada sem molho pronto." style="height: 44px; border-radius: 12px; border: 1px solid #D5DBD0; padding: 0 12px; font-size: 14px; color: #17251D">
+      </label>
+    </section>
+
+    <aside aria-label="Lista de substituição do paciente" style="width: 300px; flex-shrink: 0; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800">Lista do paciente</h2>
+        <span style="font-size: 12px; color: #5B6B61">Cópia da sua lista, ajustada para ele</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="8">
+          <button style="{{g.style}}">{{g.name}}</button>
+        </sc-for>
+      </div>
+      <span style="font-size: 13px; font-weight: 700; color: #3F4D44">Carne ou ovo · 1 porção = 200 kcal</span>
+      <div style="display: flex; flex-direction: column">
+        <sc-for list="{{foods}}" as="f" hint-placeholder-count="6">
+          <div style="display: flex; align-items: center; gap: 10px; min-height: 48px; border-top: 1px solid #EEF1EA">
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0">
+              <span style="{{f.nameStyle}}">{{f.name}}</span>
+              <span style="font-size: 12px; color: #5B6B61">{{f.measure}}</span>
+            </span>
+            <button aria-label="{{f.action}}" style="{{f.btnStyle}}">{{f.btn}}</button>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mealBase = 'display: flex; align-items: center; justify-content: space-between; min-height: 60px; padding: 0 14px; border-radius: 14px; text-align: left; ';
+    const meals = [
+      ['Café da manhã', '08:00', '480'], ['Lanche da manhã', '10:00', '210'], ['Almoço', '12:00', '737'],
+      ['Lanche da tarde', '15:00', '320'], ['Pré-treino', '17:30', '282'], ['Jantar', '20:00', '480']
+    ].map(([name, time, kcal]) => ({
+      name, time, kcal,
+      style: mealBase + (name === 'Almoço' ? 'border: 0; background: #17251D; color: #FFFFFF;' : 'border: 1px solid #E2E6DE; background: #FFFFFF; color: #17251D;')
+    }));
+    const items = [
+      { food: 'Arroz branco', measure: '2 col. servir', group: 'Arroz', qty: '2', kcal: '160' },
+      { food: 'Feijão carioca', measure: '1 concha média', group: 'Feijão', qty: '2', kcal: '90' },
+      { food: 'Filé de frango grelhado', measure: '140 g', group: 'Carne ou ovo', qty: '1¾', kcal: '350' },
+      { food: 'Legumes cozidos', measure: '3 col. sopa', group: 'Vegetal B', qty: '1', kcal: '22' },
+      { food: 'Azeite de oliva', measure: '1 col. sobremesa', group: 'Óleo', qty: '1', kcal: '45' },
+      { food: 'Laranja', measure: '1 unidade média', group: 'Fruta', qty: '1', kcal: '70' }
+    ];
+    const chipOn = 'height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: #2E7D4F; color: #FFFFFF; font-size: 13px; font-weight: 700;';
+    const chipOff = 'height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #17251D; font-size: 13px; font-weight: 600;';
+    const groups = ['Pão', 'Carne ou ovo', 'Arroz', 'Feijão', 'Fruta', 'Leite', 'Vegetal', 'Óleo'].map((name) => ({ name, style: name === 'Carne ou ovo' ? chipOn : chipOff }));
+    const add = 'height: 36px; padding: 0 12px; border-radius: 10px; border: 0; background: #E6F2EA; color: #1F5C39; font-size: 13px; font-weight: 700;';
+    const back = 'height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid #D5DBD0; background: #FFFFFF; color: #3F4D44; font-size: 13px; font-weight: 700;';
+    const foods = [
+      { name: 'Peito de frango grelhado', measure: '80 g' },
+      { name: 'Ovo cozido', measure: '2 unidades' },
+      { name: 'Patinho moído', measure: '3 col. sopa · 75 g' },
+      { name: 'Tilápia grelhada', measure: '1 filé · 120 g' },
+      { name: 'Atum em água', measure: '½ lata · 60 g' },
+      { name: 'Camarão', measure: 'Tirado para este paciente: alergia', removed: true }
+    ].map((f) => ({
+      ...f,
+      nameStyle: 'font-size: 14px; font-weight: 700; ' + (f.removed ? 'color: #7A877E; text-decoration: line-through;' : 'color: #17251D;'),
+      btn: f.removed ? 'Voltar' : 'Usar',
+      action: (f.removed ? 'Devolver à lista: ' : 'Usar no almoço: ') + f.name,
+      btnStyle: f.removed ? back : add
+    }));
+    return { meals, items, groups, foods };
+  }
+}
+</script>
+</body>
+</html>
