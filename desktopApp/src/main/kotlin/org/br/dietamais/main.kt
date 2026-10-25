@@ -4,8 +4,10 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.DpSize
 import org.br.dietamais.app.tituloAplicacao
+import org.br.dietamais.plataforma.FabricaDriver
 import org.br.dietamais.ui.theme.Dimens
 import java.awt.Dimension
 
@@ -19,6 +21,7 @@ fun main() = application {
             window.minimumSize = Dimension(Dimens.janelaMinimaLargura.value.toInt(), Dimens.janelaMinimaAltura.value.toInt())
             onDispose { }
         }
-        App()
+        val fabrica = remember { FabricaDriver() }
+        App(fabricaDriver = fabrica)
     }
 }

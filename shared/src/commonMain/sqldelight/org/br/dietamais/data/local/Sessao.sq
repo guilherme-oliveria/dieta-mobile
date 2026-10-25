@@ -1,0 +1,14 @@
+CREATE TABLE sessao (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL
+);
+
+atual:
+SELECT usuario_id, perfil FROM sessao WHERE id = 1;
+
+salvar:
+INSERT OR REPLACE INTO sessao (id, usuario_id, perfil) VALUES (1, ?, ?);
+
+limpar:
+DELETE FROM sessao;

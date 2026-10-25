@@ -1,0 +1,27 @@
+{
+  "type": "https://dietamais.com.br/erros/conflito-versao",
+  "title": "Erro de exemplo",
+  "status": 409,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "CONFLITO_VERSAO",
+  "regra": "RN-SYN-02",
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": {
+    "id": "019a0f32-5000-7000-8000-000000000003",
+    "vinculoId": "019a0f32-5000-7000-8000-000000000004",
+    "nome": "Paciente de Exemplo",
+    "email": "paciente@example.invalid",
+    "dataNascimento": null,
+    "sexo": "NAO_INFORMADO",
+    "telefone": null,
+    "estaturaReferencia": null,
+    "objetivo": null,
+    "observacoes": null,
+    "status": "CONVIDADO",
+    "versao": 2,
+    "criadoEm": "2026-10-24T12:00:00Z",
+    "atualizadoEm": "2026-10-24T12:00:00Z",
+    "adesao7d": null
+  }
+}
