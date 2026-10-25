@@ -6,9 +6,14 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -103,4 +108,14 @@ dependencies {
 
 compose.resources {
     packageOfResClass = "org.br.dietamais.recursos"
+}
+
+sqldelight {
+    databases {
+        create("BancoDieta") {
+            packageName.set("org.br.dietamais.data.local")
+            verifyMigrations.set(true)
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/schemas"))
+        }
+    }
 }

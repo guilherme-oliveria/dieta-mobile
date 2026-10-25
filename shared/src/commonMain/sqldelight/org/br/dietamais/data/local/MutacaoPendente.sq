@@ -1,0 +1,26 @@
+CREATE TABLE mutacao_pendente (
+    id_mutacao TEXT NOT NULL PRIMARY KEY,
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    entidade TEXT NOT NULL,
+    operacao TEXT NOT NULL CHECK (operacao IN ('CRIAR', 'ATUALIZAR', 'EXCLUIR')),
+    id TEXT NOT NULL,
+    versao_base INTEGER,
+    dados_json TEXT NOT NULL,
+    tentativas INTEGER NOT NULL DEFAULT 0 CHECK (tentativas >= 0),
+    status TEXT NOT NULL DEFAULT 'PENDENTE'
+);
+
+CREATE INDEX mutacao_pendente_escopo_status ON mutacao_pendente (usuario_id, perfil, status, id_mutacao);
+
+enfileirar:
+INSERT INTO mutacao_pendente (id_mutacao, usuario_id, perfil, entidade, operacao, id, versao_base, dados_json)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+pendentes:
+SELECT * FROM mutacao_pendente
+WHERE usuario_id = ? AND perfil = ? AND status = 'PENDENTE'
+ORDER BY id_mutacao;
+
+limpar:
+DELETE FROM mutacao_pendente;

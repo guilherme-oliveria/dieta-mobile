@@ -1,0 +1,15 @@
+CREATE TABLE conflito (
+    id_mutacao TEXT NOT NULL PRIMARY KEY,
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    atual_json TEXT NOT NULL
+);
+
+buscar:
+SELECT atual_json FROM conflito WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+salvar:
+INSERT OR REPLACE INTO conflito (id_mutacao, usuario_id, perfil, atual_json) VALUES (?, ?, ?, ?);
+
+limpar:
+DELETE FROM conflito;

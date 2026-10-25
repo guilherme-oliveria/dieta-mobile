@@ -33,7 +33,11 @@ Para outro ambiente ou um aparelho físico, o ponto de entrada passa a configura
 App(config = Config(URL_API = "https://api.exemplo.test"))
 ```
 
-Cada flavor ou distribuição fornece sua URL pelo ponto de entrada da plataforma. Não coloque credenciais na URL. Nenhum cliente HTTP, sessão, banco ou regra de negócio é inicializado nesta fundação; o schema e a aplicação do plugin SQLDelight entram em MOB-04.
+Cada flavor ou distribuição fornece sua URL pelo ponto de entrada da plataforma. Não coloque credenciais na URL. O módulo SQLDelight de MOB-04 é configurado pelos pontos de entrada Android/iOS/desktop e abre o banco quando solicitado; cliente HTTP e sessão autenticada entram nas próximas tarefas.
+
+## Banco local
+
+A base técnica contém sessão sem tokens, cursor de sync, fila de mutações e conflitos. `FilaMutacoes` confirma a escrita local e a pendência na mesma transação. Configuração, versionamento e testes estão em [banco-local.md](docs/arquitetura/banco-local.md).
 
 ## Rodando
 
