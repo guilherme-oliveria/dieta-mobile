@@ -1,11 +1,11 @@
 package org.br.dietamais.plataforma
 
 interface CofreSessao {
-    @Throws(ArmazenamentoSeguroIndisponivel::class)
+    @Throws(ArmazenamentoSeguroIndisponivel::class, kotlin.coroutines.cancellation.CancellationException::class)
     suspend fun ler(): String?
-    @Throws(ArmazenamentoSeguroIndisponivel::class)
+    @Throws(ArmazenamentoSeguroIndisponivel::class, kotlin.coroutines.cancellation.CancellationException::class)
     suspend fun gravar(conteudo: String)
-    @Throws(ArmazenamentoSeguroIndisponivel::class)
+    @Throws(ArmazenamentoSeguroIndisponivel::class, kotlin.coroutines.cancellation.CancellationException::class)
     suspend fun limpar()
 }
 
