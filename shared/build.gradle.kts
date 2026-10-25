@@ -132,4 +132,10 @@ val testarCofreIosComHost by tasks.registering(Exec::class) {
     workingDir(rootProject.projectDir)
     commandLine("/bin/bash", rootProject.file("iosApp/testar-cofre.sh").absolutePath)
 }
-tasks.named("iosSimulatorArm64Test") { finalizedBy(testarCofreIosComHost) }
+tasks.named<org.gradle.api.tasks.testing.AbstractTestTask>("iosSimulatorArm64Test") {
+    finalizedBy(testarCofreIosComHost)
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}

@@ -14,7 +14,9 @@ class ArmazenamentoSeguroIOSTest {
             val erro = assertFailsWith<ArmazenamentoSeguroIndisponivel> {
                 primeiro.gravar("TOKEN_FICTICIO_TESTE_IOS")
                 gravou = true
+                println("Diagnóstico Keychain sem host: gravação concluída sem erro de entitlement")
             }
+            println("Diagnóstico Keychain sem host: OSStatus=${erro.codigoSistema}")
             assertEquals(-34018, erro.codigoSistema, "OSStatus real retornado pelo executável sem host")
         } finally { if (gravou) primeiro.limpar() }
     }
