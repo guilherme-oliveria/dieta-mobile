@@ -4,9 +4,9 @@ Complementa `integracao.md`. Cópia oficial no backend; mobile e frontend devem 
 
 ## Entrega e limites
 
-Os 17 endpoints de BE-02 a BE-08 estão anotados no OpenAPI (`/v3/api-docs`). BE-02 implementa `POST /auth/cadastro-nutri` e BE-03 implementa login, refresh e logout; os outros 13 continuam stubs `501 NAO_IMPLEMENTADO`. O `manifesto.json` em `src/test/resources/contrato/` indexa cada método/caminho, status de sucesso e exemplos de requisição/resposta/erro, todos validados contra os records Java. Exemplos são dados fictícios, com endereços `example.invalid` e credenciais explicitamente sem validade. O mobile pode usá-los com `MockEngine` até integrar cada endpoint real.
+Os 17 endpoints de BE-02 a BE-08 estão anotados no OpenAPI (`/v3/api-docs`). BE-02 implementa `POST /auth/cadastro-nutri` e BE-03 implementa login/refresh/logout e BE-04 confirmação/recuperação/redefinição; os outros 10 continuam stubs `501 NAO_IMPLEMENTADO`. O `manifesto.json` em `src/test/resources/contrato/` indexa cada método/caminho, status de sucesso e exemplos de requisição/resposta/erro, todos validados contra os records Java. Exemplos são dados fictícios, com endereços `example.invalid` e credenciais explicitamente sem validade. O mobile pode usá-los com `MockEngine` até integrar cada endpoint real.
 
-Os JSONs são exemplos de formato; seus valores fictícios não são dados fixos do servidor. BE-01 fornece erros, rastreio, idempotência e persistência transversal. BE-02 aplica as regras do cadastro e cria conta/organização/assinatura numa transação. BE-03 substitui Basic por Bearer/JWT e libera somente cadastro/login/refresh/logout ao público. Envio de e-mail, vínculos e auditoria clínica ainda entram nas respectivas tarefas; o cadastro não faz login automático. Testes usam somente dados fictícios e chaves geradas em memória.
+Os JSONs são exemplos de formato; seus valores fictícios não são dados fixos do servidor. BE-01 fornece erros, rastreio, idempotência e persistência transversal. BE-02 aplica as regras do cadastro e cria conta/organização/assinatura numa transação. BE-03 substitui Basic por Bearer/JWT e libera cadastro/login/refresh/logout ao público; BE-04 acrescenta as três rotas públicas de e-mail/senha. Vínculos e auditoria clínica ainda entram nas respectivas tarefas; o cadastro não faz login automático. Testes usam somente dados fictícios e chaves geradas em memória.
 
 O OpenAPI segue protegido pela configuração atual. A Swagger UI só é habilitada em desenvolvimento com `SWAGGER_UI_ENABLED=true`. Desde BE-01, o filtro cria `X-Trace-Id` e preenche o rastreio dos erros/stubs; o `traceId: null` dos exemplos continua válido como campo opcional do contrato. Datas fixas dos exemplos são insumos de serialização; prazos reais usam `Clock` injetado. A dependência springdoc 3.2.0 é compatível com Boot 4.1 segundo a [matriz oficial](https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot).
 
@@ -37,6 +37,26 @@ Todos os caminhos recebem `/api/v1`. Os nomes de diretório dos exemplos corresp
 Os POSTs de cadastro da nutri, criação de paciente, geração/aceite de convite e encerramento de vínculo aceitam `Idempotency-Key` UUID. Reenvio com a mesma chave em 24 h representa a mesma operação. Não há corpo JSON artificial em operações sem corpo. `esqueci-senha` retorna o mesmo 202 para e-mail existente ou inexistente.
 
 ## Conta, perfil e sessão
+
+### Contexto e isolamento (BE-05)
+
+Toda requisição autenticada confere o usuário ativo, perfil e identidade do JWT no banco, antes de acessar o cache idempotente. `nid`/`pid` alheios ou identidade removida invalidam a autenticação (401 `NAO_AUTENTICADO`). Organização vem da identidade da nutri no banco; não há header ou campo de corpo que escolha dono. A informação da conta e dos perfis em `/eu` reflete o banco no momento da requisição, sem exigir novo token para refletir nome/fuso/confirmação.
+
+`GET /eu` retorna os mesmos campos/JSONs: no perfil NUTRICIONISTA, assinatura da própria organização e vínculos vazios; no perfil PACIENTE, assinatura nula e vínculos próprios (inclusive encerrados), sem vínculos de outro paciente. ADMIN vê apenas a própria conta, sem prontuários. Login/seleção de perfil reutiliza BE-03: `NUTRICIONISTA` é o valor no wire e "NUTRI" apenas abreviação do plano.
+
+Rotas de nutri exigem perfil NUTRICIONISTA (403 `PERFIL_INVALIDO`). Escritas verificam a assinatura antes de executar ou reproduzir a operação idempotente: `TESTE` vencido por Clock, `CANCELADA`, `EXPIRADA`, ausência de assinatura ou `EM_ATRASO` após carência geram 422 `ASSINATURA_INATIVA`, RN-ASS-04. A carência padrão de 7 dias é configurável e começa em `fimPeriodoEm` (vencimento); sem vencimento conhecido, EM_ATRASO não autoriza escrita. ATIVA segue seu status até o ciclo de vida da BE-27. Leitura e acesso do paciente não são punidos pela assinatura da nutri.
+
+Acesso clínico registra IDs do recurso/donos/ator, ação, perfil, organização, instante, IP da conexão e traceId. Não grava querystring, corpo, token, senha ou valor clínico na trilha. A trilha registra o acesso realizado, não afirma que uma transação posterior foi confirmada; fica preservada mesmo em rollback posterior. Recursos fora da visibilidade são 404 e não são lidos/alterados. A listagem de vínculos do próprio paciente também gera auditoria por vínculo. A retenção de RN-LGPD-01 é de 5 anos; esta etapa não apaga registros da trilha.
+
+### Confirmação e recuperação (BE-04)
+
+O cadastro enfileira o e-mail de confirmação na mesma transação da conta. O link contém token aleatório de 32 bytes, uso único e validade de 24 horas (RN-CON-05). O app envia o token no POST `confirmar-email`, que retorna 204; token inválido, vencido, anulado ou repetido retorna 401 `TOKEN_INVALIDO`, RN-CON-05. O GET do link não altera a conta automaticamente.
+
+`esqueci-senha` sempre retorna 202 sem corpo para um e-mail válido, existente, inativo ou desconhecido, inclusive em falha de enfileiramento; falhas internas desfazem a operação e geram somente log técnico seguro. Usuário ativo recebe link de uso único válido por uma hora (RN-CON-07). Nova solicitação anula os tokens de recuperação anteriores. `redefinir-senha` aplica RN-CON-02, consome o token e revoga todos os refresh tokens desse usuário na mesma transação; retorna 204 sem login automático. Token de outra finalidade também é inválido. Senha fraca é 400 `FORMATO_INVALIDO`, RN-CON-02, sem consumir o token. Access tokens já emitidos vencem em no máximo 15 minutos.
+
+Os três endpoints são públicos, com `@Valid`, sem tokens na resposta. Recuperação limita 10 pedidos/minuto por IP da conexão, com 429 `TAXA_EXCEDIDA` e `Retry-After`. Clientes continuam usando os JSONs aprovados; devem omitir Authorization nas rotas `/auth/**`. Os links e o remetente são configuráveis no servidor e nunca usam o Host do pedido.
+
+O envio é assíncrono por `notificacao_pendente`: payload cifrado enquanto pendente, removido após envio, expiração ou falha definitiva. O banco de tokens guarda somente hash. `NOTIFICACOES_CHAVE` deve conter 32 bytes aleatórios em Base64; falta da chave desfaz o cadastro e não cria link inseguro. O job SMTP é habilitado com `EMAIL_ENVIO_HABILITADO=true`; em dev usa Mailpit do perfil `extras`, e em testes o transporte é falso. Tentativas não registram token, senha, destinatário ou conteúdo da mensagem em logs. Pode haver entrega duplicada após crash entre SMTP e confirmação no banco; o link continua de uso único.
 
 ### Implementação de sessões (BE-03)
 

@@ -94,6 +94,11 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     }
 
     suspend fun restaurarSessao() { controle.tokens() }
+    suspend fun usuarioAtual(): UsuarioResposta? = controle.usuarioAtual()
+
+    suspend fun enviarSemResposta(caminho: String, corpo: JsonElement, chave: Uuid = novoIdLocal()) {
+        verificarErro(requisitar(HttpMethod.Post, caminho, corpo, chave))
+    }
 
     suspend fun sair() = controle.encerrar { tokens ->
         if (tokens?.refreshToken != null) {

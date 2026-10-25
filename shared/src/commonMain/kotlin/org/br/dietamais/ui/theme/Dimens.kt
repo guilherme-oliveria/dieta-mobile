@@ -17,6 +17,10 @@ object Dimens {
     val alvoToque = 48.dp
     val larguraMinimaAcao = 96.dp
     val larguraLeitura = 640.dp
+    val larguraFormulario = 440.dp
+    val espacoEntrada = 40.dp
+    val marcaEntrada = 56.dp
+    val alturaTermos = 360.dp
     val larguraListaPacientes = 360.dp
     val larguraTrilho = 96.dp
     val alturaBarraNavegacao = 80.dp
