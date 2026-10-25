@@ -1,0 +1,19 @@
+{
+  "accessToken": null,
+  "refreshToken": null,
+  "expiraEm": null,
+  "usuario": {
+    "id": "019a0f32-5000-7000-8000-000000000001",
+    "nome": "Nutricionista de Exemplo",
+    "email": "nutri@example.invalid",
+    "emailConfirmado": false,
+    "perfis": [
+      "NUTRICIONISTA",
+      "PACIENTE"
+    ],
+    "perfil": null,
+    "nutricionistaId": "019a0f32-5000-7000-8000-000000000002",
+    "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+    "fuso": "America/Sao_Paulo"
+  }
+}

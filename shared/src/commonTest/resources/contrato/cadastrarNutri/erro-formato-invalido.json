@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/formato-invalido",
+  "title": "Erro de exemplo",
+  "status": 400,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "FORMATO_INVALIDO",
+  "regra": "RN-CON-04",
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

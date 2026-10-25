@@ -1,0 +1,16 @@
+{
+  "cursor": "4",
+  "temMais": false,
+  "mudancas": {
+    "pacientes": [
+      {
+        "id": "019a0f32-5000-7000-8000-000000000003",
+        "versao": 2,
+        "excluido": true,
+        "dados": null
+      }
+    ],
+    "vinculos": [],
+    "nutris": []
+  }
+}

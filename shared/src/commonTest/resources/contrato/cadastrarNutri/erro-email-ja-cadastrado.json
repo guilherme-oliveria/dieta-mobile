@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/email-ja-cadastrado",
+  "title": "Erro de exemplo",
+  "status": 409,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "EMAIL_JA_CADASTRADO",
+  "regra": "RN-CON-01",
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

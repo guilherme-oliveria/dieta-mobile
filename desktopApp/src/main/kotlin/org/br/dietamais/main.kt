@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.DpSize
 import org.br.dietamais.app.tituloAplicacao
 import org.br.dietamais.plataforma.FabricaDriver
+import org.br.dietamais.plataforma.ArmazenamentoSeguro
 import org.br.dietamais.ui.theme.Dimens
 import java.awt.Dimension
 
@@ -22,6 +23,8 @@ fun main() = application {
             onDispose { }
         }
         val fabrica = remember { FabricaDriver() }
-        App(fabricaDriver = fabrica)
+        val cofre = remember { ArmazenamentoSeguro() }
+        val versao = remember { versaoAplicacao() }
+        App(fabricaDriver = fabrica, cofreSessao = cofre, versaoApp = versao)
     }
 }

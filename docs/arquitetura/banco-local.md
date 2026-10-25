@@ -21,7 +21,7 @@ IDs novos são gerados por `novoIdLocal()`, que usa `Uuid.generateV7()` do Kotli
 - iOS: `NativeSqliteDriver` com o schema gerado.
 - JVM: `JdbcSqliteDriver` em `~/.dietamais/dietamais.db`; diretório pode ser passado à fábrica. Inicialização/migração e `user_version` são atômicos, reabrir preserva dados e uma versão mais nova é recusada sem apagar o arquivo.
 
-`moduloBancoLocal` disponibiliza `BancoLocal`, `BancoDieta` e `FilaMutacoes` como instâncias únicas. Os três pontos de entrada fornecem a fábrica ao `App`; o banco só abre na primeira resolução e o driver fecha ao encerrar o módulo. Previews podem omitir a fábrica. MOB-05 conectará sessão/autenticação e limpeza no logout; tokens ficam exclusivamente em `ArmazenamentoSeguro`. As futuras tabelas clínicas também deverão participar dessa limpeza.
+`moduloBancoLocal` disponibiliza `BancoLocal`, `BancoDieta` e `FilaMutacoes` como instâncias únicas. Os três pontos de entrada fornecem a fábrica ao `App`; o banco só abre na primeira resolução e o driver fecha ao encerrar o módulo. Previews podem omitir a fábrica. MOB-05 conecta sessão/autenticação e limpeza no logout, conforme [cliente-api-sessao.md](cliente-api-sessao.md); tokens ficam exclusivamente em `ArmazenamentoSeguro`. As futuras tabelas clínicas também deverão participar dessa limpeza.
 
 ## Schema e migrações
 

@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/taxa-excedida",
+  "title": "Erro de exemplo",
+  "status": 429,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "TAXA_EXCEDIDA",
+  "regra": null,
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

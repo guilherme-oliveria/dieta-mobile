@@ -6,7 +6,23 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D10500000000000000000006 /* CofreSessaoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10500000000000000000001 /* CofreSessaoTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D1050000000000000000000C = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1247BC420D1941C2D8756ACF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F660E7AACD2D1890639EE7E1;
+			remoteInfo = iosApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		D10500000000000000000001 /* CofreSessaoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CofreSessaoTests.swift; sourceTree = "<group>"; };
+		D10500000000000000000002 /* TestesCofre.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestesCofre.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		81189AC602DE8BA35234F111 /* dieta-mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dieta-mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -37,6 +53,7 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D10500000000000000000004 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		DAA65A74BB7EA5F37B969646 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -47,11 +64,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D10500000000000000000007 /* iosAppTests */ = {
+			isa = PBXGroup;
+			children = (D10500000000000000000001 /* CofreSessaoTests.swift */,);
+			path = iosAppTests;
+			sourceTree = "<group>";
+		};
 		54D3031120F7AA6616CD3AF7 = {
 			isa = PBXGroup;
 			children = (
 				F0D943FC54EA791C0A4D0D62 /* Configuration */,
 				27B498AE5D3721CCE9EED09B /* iosApp */,
+				D10500000000000000000007 /* iosAppTests */,
 				E48032BCD052DB53427351B3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				81189AC602DE8BA35234F111 /* dieta-mobile.app */,
+				D10500000000000000000002 /* TestesCofre.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +92,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		D10500000000000000000008 /* TestesCofre */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D10500000000000000000009;
+			buildPhases = (D10500000000000000000003, D10500000000000000000004, D10500000000000000000005,);
+			buildRules = ();
+			dependencies = (D1050000000000000000000D,);
+			name = TestesCofre;
+			productName = TestesCofre;
+			productReference = D10500000000000000000002;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F660E7AACD2D1890639EE7E1 /* iosApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F117FB93F66BEBDBB9E777F /* Build configuration list for PBXNativeTarget "iosApp" */;
@@ -100,6 +136,7 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					D10500000000000000000008 = {CreatedOnToolsVersion = 16.2; TestTargetID = F660E7AACD2D1890639EE7E1; };
 					F660E7AACD2D1890639EE7E1 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -120,11 +157,13 @@
 			projectRoot = "";
 			targets = (
 				F660E7AACD2D1890639EE7E1 /* iosApp */,
+				D10500000000000000000008 /* TestesCofre */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D10500000000000000000005 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		B955B3E0C19C2BC9D4D32045 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -152,11 +191,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exec /bin/bash \"$SRCROOT/copiar-recursos-cofre.sh\"\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D10500000000000000000003 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (D10500000000000000000006 /* CofreSessaoTests.swift in Sources */,); runOnlyForDeploymentPostprocessing = 0; };
 		08ACB6B733491DDAF2AC6550 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -166,7 +206,44 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		D1050000000000000000000D = {isa = PBXTargetDependency; target = F660E7AACD2D1890639EE7E1; targetProxy = D1050000000000000000000C; };
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		D1050000000000000000000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks",);
+				PRODUCT_BUNDLE_IDENTIFIER = org.br.dietamais.dieta-mobile.testes;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dieta-mobile.app/dieta-mobile";
+			};
+			name = Debug;
+		};
+		D1050000000000000000000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				PRODUCT_BUNDLE_IDENTIFIER = org.br.dietamais.dieta-mobile.testes;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dieta-mobile.app/dieta-mobile";
+			};
+			name = Release;
+		};
 		001A8DBB2730171B03F4930E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = F0D943FC54EA791C0A4D0D62 /* Configuration */;
@@ -349,6 +426,12 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D10500000000000000000009 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (D1050000000000000000000A, D1050000000000000000000B,);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		1A96064357ACD916BBDD01A3 /* Build configuration list for PBXProject "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

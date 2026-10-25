@@ -66,6 +66,9 @@ kotlin {
             implementation(libs.compose.uiTest)
             implementation(compose.desktop.currentOs)
         }
+        getByName("androidDeviceTest").dependencies {
+            implementation(libs.androidx.testExt.junit)
+        }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -117,5 +120,29 @@ sqldelight {
             verifyMigrations.set(true)
             schemaOutputDirectory.set(file("src/commonMain/sqldelight/schemas"))
         }
+    }
+}
+
+// Keychain exige app host com entitlement. O comando do CI inclui as duas suítes.
+val prepararRecursosCofreIos by tasks.registering(Copy::class) {
+    from(kotlin.targets.getByName("iosSimulatorArm64").compilations.getByName("main")
+        .allKotlinSourceSets.map { it.resources })
+    into(layout.buildDirectory.dir("ios-keychain-resources/compose-resources"))
+}
+
+val testarCofreIosComHost by tasks.registering(Exec::class) {
+    group = "verification"
+    description = "Executa persistência real do Keychain em XCTest com app host no simulador."
+    dependsOn("linkDebugFrameworkIosSimulatorArm64")
+    dependsOn(prepararRecursosCofreIos)
+    onlyIf("XCTest do Keychain exige macOS") { System.getProperty("os.name").startsWith("Mac") }
+    workingDir(rootProject.projectDir)
+    commandLine("/bin/bash", rootProject.file("iosApp/testar-cofre.sh").absolutePath)
+}
+tasks.named<org.gradle.api.tasks.testing.AbstractTestTask>("iosSimulatorArm64Test") {
+    finalizedBy(testarCofreIosComHost)
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 }
