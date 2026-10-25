@@ -124,10 +124,17 @@ sqldelight {
 }
 
 // Keychain exige app host com entitlement. O comando do CI inclui as duas suítes.
+val prepararRecursosCofreIos by tasks.registering(Copy::class) {
+    from(kotlin.targets.getByName("iosSimulatorArm64").compilations.getByName("main")
+        .allKotlinSourceSets.map { it.resources })
+    into(layout.buildDirectory.dir("ios-keychain-resources/compose-resources"))
+}
+
 val testarCofreIosComHost by tasks.registering(Exec::class) {
     group = "verification"
     description = "Executa persistência real do Keychain em XCTest com app host no simulador."
     dependsOn("linkDebugFrameworkIosSimulatorArm64")
+    dependsOn(prepararRecursosCofreIos)
     onlyIf("XCTest do Keychain exige macOS") { System.getProperty("os.name").startsWith("Mac") }
     workingDir(rootProject.projectDir)
     commandLine("/bin/bash", rootProject.file("iosApp/testar-cofre.sh").absolutePath)
