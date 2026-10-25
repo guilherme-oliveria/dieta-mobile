@@ -8,6 +8,7 @@ Canvas de referência (13 telas, celular 390×844 e tablet 1180×820): https://c
 | --- | --- |
 | [validacao.md](validacao.md) | Resultado da validação do canvas para Android, iOS e desktop: o que está bom, o que corrigir e as telas que faltam |
 | [componentes.md](componentes.md) | Tokens (cores, tipografia, espaçamento, raios) e componentes comuns, com o nome do composable |
+| [base-visual.md](base-visual.md) | Base implementada em MOB-02: uso, previews, testes, evidências e limites de validação |
 | [plataformas.md](plataformas.md) | Layout adaptativo (WindowSizeClass) e diferenças de Android, iOS e desktop |
 | [telas.md](telas.md) | Mapa tela → pacote Kotlin → artboard do canvas, com status (desenhada ou faltando) |
 | [artboards/](artboards/README.md) | Cópia do HTML de cada artboard do canvas, para quem não acessa o claude.ai |

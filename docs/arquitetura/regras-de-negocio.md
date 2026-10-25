@@ -13,7 +13,7 @@
 | `NUTRICIONISTA` | Nutri que assina | Os próprios pacientes vinculados e tudo que criou |
 | `PACIENTE` | Pessoa atendida | Só os próprios dados, as dietas publicadas para ele e suas nutris |
 
-Um usuário tem um perfil. Uma nutri que também quer ser paciente usa outro e-mail (simplifica o MVP).
+Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (decisão de BE-05 no plano de execução). Cada sessão usa um perfil ativo, escolhido no login; `GET /eu` informa `perfis` disponíveis e `perfil` ativo. A abreviação "NUTRI" no plano é descritiva: o valor no JSON e no JWT é sempre `NUTRICIONISTA`. O perfil `ADMIN` continua restrito à equipe da plataforma.
 
 ## Contas e acesso (RN-CON)
 

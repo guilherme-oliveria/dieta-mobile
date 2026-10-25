@@ -1,4 +1,32 @@
 <resources>
     <string name="app_nome">Dieta+</string>
     <string name="plataforma_em_execucao">Rodando em %1$s</string>
+    <string name="carregando">Carregando</string>
+    <string name="tentar_novamente">Tentar novamente</string>
+    <string name="erro_padrao">Não foi possível carregar. Tente novamente.</string>
+    <string name="vazio_padrao">Nada por aqui ainda.</string>
+    <string name="offline_mensagem">Sem internet. Mostrando o que está salvo.</string>
+    <string name="proxima_refeicao">Próxima refeição</string>
+    <string name="refeicao_nome_horario">%1$s · %2$s</string>
+    <string name="comi">Comi</string>
+    <string name="troquei">Troquei</string>
+    <string name="pulei">Pulei</string>
+    <string name="status_feita">Feita</string>
+    <string name="status_trocada">Trocada</string>
+    <string name="status_agora">Agora</string>
+    <string name="status_depois">Depois</string>
+    <string name="status_alerta">Atenção</string>
+    <string name="status_info">Informação</string>
+    <string name="amostra_titulo">Componentes Dieta+</string>
+    <string name="amostra_refeicao">Almoço</string>
+    <string name="amostra_horario">12:00</string>
+    <string name="amostra_energia">737 kcal</string>
+    <string name="amostra_descricao">Arroz branco, feijão, frango grelhado, salada à vontade e fruta</string>
+    <string name="amostra_continuar">Continuar</string>
+    <string name="amostra_campo_nome">Nome</string>
+    <string name="amostra_campo_hora">Horário</string>
+    <string name="amostra_campo_quantidade">Quantidade</string>
+    <string name="amostra_quantidade">1,5</string>
+    <string name="amostra_erro_campo">Informe o nome</string>
+    <string name="amostra_criar">Criar primeiro item</string>
 </resources>
