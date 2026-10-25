@@ -15,9 +15,12 @@ final class CofreSessaoTests: XCTestCase {
             XCTAssertEqual(reaberto, "TOKEN_FICTICIO_TESTE_HOST_IOS")
             let isolado = try await outro.ler()
             XCTAssertNil(isolado)
+            try await outro.gravar(conteudo: "TOKEN_FICTICIO_OUTRO_SERVICO_IOS")
             try await primeiro.limpar()
             let removido = try await primeiro.ler()
             XCTAssertNil(removido)
+            let preservado = try await outro.ler()
+            XCTAssertEqual(preservado, "TOKEN_FICTICIO_OUTRO_SERVICO_IOS")
         } catch {
             try? await primeiro.limpar()
             try? await outro.limpar()

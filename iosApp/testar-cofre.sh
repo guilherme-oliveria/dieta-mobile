@@ -37,6 +37,9 @@ resultado_testes=$?
 set -e
 if [ "$resultado_testes" -ne 0 ]; then
     xcrun xcresulttool get test-results summary --path "$resultado_bundle" || true
+    xcrun xcresulttool get log --type console --path "$resultado_bundle" || true
+    xcrun simctl spawn "$simulador" log show --style compact --last 10m \
+        --predicate 'process == "dieta-mobile" AND (eventMessage CONTAINS "Exception" OR eventMessage CONTAINS "exception" OR eventMessage CONTAINS "kotlin")' || true
     # O host pode encerrar antes de o XCTest conectar; nesse caso o xcresult não tem stack trace.
     for pasta in "$HOME/Library/Logs/DiagnosticReports" "$HOME/Library/Developer/CoreSimulator/Devices/$simulador/data/Library/Logs/CrashReporter"; do
         if [ -d "$pasta" ]; then
