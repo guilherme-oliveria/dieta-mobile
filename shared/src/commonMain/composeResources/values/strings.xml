@@ -29,4 +29,19 @@
     <string name="amostra_quantidade">1,5</string>
     <string name="amostra_erro_campo">Informe o nome</string>
     <string name="amostra_criar">Criar primeiro item</string>
+    <string name="entrar">Entrar</string>
+    <string name="navegacao_principal">Navegação principal</string>
+    <string name="aba_hoje">Hoje</string>
+    <string name="aba_dieta">Dieta</string>
+    <string name="aba_compras">Compras</string>
+    <string name="aba_evolucao">Evolução</string>
+    <string name="aba_perfil">Perfil</string>
+    <string name="aba_inicio">Início</string>
+    <string name="aba_pacientes">Pacientes</string>
+    <string name="aba_agenda">Agenda</string>
+    <string name="aba_alimentos">Alimentos</string>
+    <string name="aba_conta">Conta</string>
+    <string name="sem_conteudo">Nenhum conteúdo disponível.</string>
+    <string name="selecione_paciente">Selecione um paciente para ver os detalhes.</string>
+    <string name="ficha_paciente">Ficha do paciente</string>
 </resources>
