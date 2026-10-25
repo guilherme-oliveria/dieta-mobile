@@ -11,6 +11,20 @@ import kotlin.test.*
 @RunWith(AndroidJUnit4::class)
 class ArmazenamentoSeguroAndroidTest {
     @Test
+    fun recuperaBackupAtomicoQuandoArquivoBaseNaoExiste() = runBlocking {
+        val contexto = InstrumentationRegistry.getInstrumentation().targetContext
+        val cofre = ArmazenamentoSeguro(contexto)
+        val arquivo = File(contexto.noBackupFilesDir, "sessao.cifrada")
+        try {
+            cofre.gravar("TOKEN_FICTICIO_TESTE_BACKUP")
+            assertTrue(arquivo.renameTo(File(arquivo.path + ".bak")))
+            assertFalse(arquivo.exists())
+            assertEquals("TOKEN_FICTICIO_TESTE_BACKUP", cofre.ler())
+            assertTrue(arquivo.exists())
+        } finally { cofre.limpar() }
+    }
+
+    @Test
     fun keystoreProtegeArquivoERecusaAdulteracao() = runBlocking {
         val contexto = InstrumentationRegistry.getInstrumentation().targetContext
         val cofre = ArmazenamentoSeguro(contexto)

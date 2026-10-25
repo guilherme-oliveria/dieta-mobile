@@ -122,3 +122,14 @@ sqldelight {
         }
     }
 }
+
+// Keychain exige app host com entitlement. O comando do CI inclui as duas suítes.
+val testarCofreIosComHost by tasks.registering(Exec::class) {
+    group = "verification"
+    description = "Executa persistência real do Keychain em XCTest com app host no simulador."
+    dependsOn("linkDebugFrameworkIosSimulatorArm64")
+    onlyIf("XCTest do Keychain exige macOS") { System.getProperty("os.name").startsWith("Mac") }
+    workingDir(rootProject.projectDir)
+    commandLine("/bin/bash", rootProject.file("iosApp/testar-cofre.sh").absolutePath)
+}
+tasks.named("iosSimulatorArm64Test") { finalizedBy(testarCofreIosComHost) }

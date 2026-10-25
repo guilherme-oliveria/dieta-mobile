@@ -59,12 +59,16 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
                 refreshTokens {
                     controle.renovar(response.call.request.attributes.getOrNull(GERACAO_SESSAO),
                         response.call.request.headers[HttpHeaders.Authorization]?.removePrefix("Bearer ") ?: oldTokens?.accessToken) { token ->
-                        val resposta = client.post(base + "auth/refresh") {
-                            markAsRefreshTokenRequest()
-                            contentType(ContentType.Application.Json)
-                            header("Idempotency-Key", novoIdLocal().toString())
-                            setBody(RefreshRequisicao(token))
-                        }
+                        val resposta = try {
+                            client.post(base + "auth/refresh") {
+                                markAsRefreshTokenRequest()
+                                contentType(ContentType.Application.Json)
+                                header("Idempotency-Key", novoIdLocal().toString())
+                                setBody(RefreshRequisicao(token))
+                            }
+                        } catch (cancelamento: CancellationException) { throw cancelamento }
+                        catch (falha: Exception) { throw FalhaComunicacao() }
+                        if (resposta.status.value == 429 || resposta.status.value >= 500) throw FalhaComunicacao()
                         decodificar(resposta, SessaoResposta.serializer())
                     }
                 }

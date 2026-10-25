@@ -24,6 +24,7 @@ fun main() = application {
         }
         val fabrica = remember { FabricaDriver() }
         val cofre = remember { ArmazenamentoSeguro() }
-        App(fabricaDriver = fabrica, cofreSessao = cofre)
+        val versao = remember { versaoAplicacao() }
+        App(fabricaDriver = fabrica, cofreSessao = cofre, versaoApp = versao)
     }
 }

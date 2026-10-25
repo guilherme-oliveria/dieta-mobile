@@ -2,6 +2,7 @@ package org.br.dietamais.data.remoto
 
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -58,7 +59,12 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
                 if (resposta.usuario.id != sessao.usuario.id || resposta.usuario.perfil != sessao.usuario.perfil) throw RespostaInvalida()
                 salvar(resposta)
                 resposta.tokens()
-            } catch (falha: Exception) {
+            } catch (cancelamento: CancellationException) { throw cancelamento }
+            catch (falha: ErroApi) {
+                if (falha.status == 429 || falha.status >= 500) throw FalhaComunicacao()
+                apagar()
+                null
+            } catch (falha: RespostaInvalida) {
                 apagar()
                 null
             }

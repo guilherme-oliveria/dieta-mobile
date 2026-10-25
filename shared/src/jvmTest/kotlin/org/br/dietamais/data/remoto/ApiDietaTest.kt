@@ -27,6 +27,52 @@ internal class CofreMemoria(var valor: String? = null) : CofreSessao {
 
 class ApiDietaTest {
     @Test
+    fun quedaDeRedeNoRefreshPreservaSessaoEFilaOffline() = runTest {
+        verificarFalhaTransitoria { throw java.io.IOException("Simulação de rede indisponível") }
+    }
+
+    @Test
+    fun timeoutNoRefreshPreservaSessaoEFilaOffline() = runTest {
+        verificarFalhaTransitoria { throw java.net.SocketTimeoutException("Simulação de timeout") }
+    }
+
+    @Test
+    fun servidor503NoRefreshPreservaSessaoEFilaOfflineMesmoSemProblemDetail() = runTest {
+        verificarFalhaTransitoria { respond("", HttpStatusCode.ServiceUnavailable) }
+    }
+
+    @Test
+    fun limite429NoRefreshPreservaSessaoEFilaOffline() = runTest {
+        verificarFalhaTransitoria {
+            json(recursoContrato("consultarConvite/erro-taxa-excedida.json"), HttpStatusCode.TooManyRequests)
+        }
+    }
+
+    private suspend fun verificarFalhaTransitoria(resposta: suspend MockRequestHandleScope.() -> HttpResponseData) {
+        comApi { banco, cofre ->
+            preencherDados(banco)
+            val credenciaisAntes = cofre.valor
+            val sessaoAntes = banco.sessaoQueries.atual().executeAsOne()
+            val filaAntes = banco.mutacaoPendenteQueries.pendentes(sessaoAntes.usuario_id, sessaoAntes.perfil).executeAsList()
+            var renovacoes = 0
+            novaApi(banco, cofre, MockEngine { req ->
+                if (req.url.encodedPath.endsWith("refresh")) { renovacoes++; resposta() } else naoAutenticado()
+            }).use { api ->
+                api.restaurarSessao()
+                val estadoAntes = api.sessao.value
+                assertFailsWith<FalhaComunicacao> { api.obter<EuResposta>("eu") }
+                assertEquals(1, renovacoes)
+                assertEquals(credenciaisAntes, cofre.valor)
+                assertSame(estadoAntes, api.sessao.value)
+                assertEquals(sessaoAntes, banco.sessaoQueries.atual().executeAsOne())
+                assertEquals(filaAntes, banco.mutacaoPendenteQueries.pendentes(sessaoAntes.usuario_id, sessaoAntes.perfil).executeAsList())
+                assertEquals("99", banco.cursorSyncQueries.buscar(sessaoAntes.usuario_id, sessaoAntes.perfil).executeAsOne())
+                assertEquals("{}", banco.conflitoQueries.buscar("019a0f32-5000-7000-8000-000000000200", sessaoAntes.usuario_id, sessaoAntes.perfil).executeAsOne())
+            }
+        }
+    }
+
+    @Test
     fun configDaPlataformaUsaPrefixoApiV1() = runTest {
         comApi { banco, cofre ->
             ApiDieta(Config("https://api.example.invalid"), "1.0", Plataforma.DESKTOP, cofre, banco, MockEngine { req ->

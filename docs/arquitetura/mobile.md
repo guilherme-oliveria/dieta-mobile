@@ -102,7 +102,7 @@ Não use: Firebase além do Messaging, Realm, bibliotecas de UI só-Android em `
 ## Autenticação e sessão
 
 - `ArmazenamentoSeguro` (expect/actual): Android Keystore + EncryptedSharedPreferences (ou DataStore cifrado), iOS Keychain, Desktop arquivo cifrado com chave no keystore do Java ou no keyring do sistema.
-- Plugin `Auth` do Ktor com `bearer { loadTokens; refreshTokens }`: um refresh por vez, em 401; se o refresh falhar, limpa a sessão e volta para o login (dados locais do usuário são apagados no logout).
+- Plugin `Auth` do Ktor com `bearer { loadTokens; refreshTokens }`: um refresh por vez, em 401. Rejeição definitiva do refresh ou resposta inválida/inconsistente encerra a sessão; rede/timeout, 5xx e 429 preservam cofre, sessão e fila offline, propagando falha de comunicação para tentar depois. Dados locais do usuário são apagados no logout.
 - Perfil vem de `GET /eu`; o shell mostra o grafo de navegação do perfil.
 
 A infraestrutura de MOB-05, armazenamento por plataforma, erros e testes estão em [cliente-api-sessao.md](cliente-api-sessao.md).

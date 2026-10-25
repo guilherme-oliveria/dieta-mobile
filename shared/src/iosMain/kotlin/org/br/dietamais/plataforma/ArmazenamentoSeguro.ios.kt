@@ -24,6 +24,9 @@ actual class ArmazenamentoSeguro(nomeServico: String = "org.br.dietamais.sessao.
     actual override suspend fun limpar() = operar { keychain.remove("sessao") }
 
     private suspend fun <T> operar(bloco: () -> T): T = withContext(Dispatchers.Default) {
-        try { bloco() } catch (falha: Exception) { throw ArmazenamentoSeguroIndisponivel() }
+        try { bloco() } catch (falha: Exception) {
+            val status = Regex("^Keychain error (-?[0-9]+):").find(falha.message.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
+            throw ArmazenamentoSeguroIndisponivel(status)
+        }
     }
 }

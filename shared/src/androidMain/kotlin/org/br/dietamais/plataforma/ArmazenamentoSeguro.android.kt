@@ -5,6 +5,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.AtomicFile
 import java.io.File
+import java.io.FileNotFoundException
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -18,14 +19,12 @@ actual class ArmazenamentoSeguro(contexto: Context) : CofreSessao {
     private val trava = Any()
 
     actual override suspend fun ler(): String? = operar {
-        if (!arquivo.baseFile.exists()) null else {
-            val dados = arquivo.readFully()
-            check(dados.size > 12)
-            val chave = keyStore().getKey(ALIAS, null) as? SecretKey ?: throw ArmazenamentoSeguroIndisponivel()
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.DECRYPT_MODE, chave, GCMParameterSpec(128, dados.copyOfRange(0, 12)))
-            cipher.doFinal(dados, 12, dados.size - 12).toString(Charsets.UTF_8)
-        }
+        val dados = try { arquivo.readFully() } catch (ausente: FileNotFoundException) { return@operar null }
+        check(dados.size > 12)
+        val chave = keyStore().getKey(ALIAS, null) as? SecretKey ?: throw ArmazenamentoSeguroIndisponivel()
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, chave, GCMParameterSpec(128, dados.copyOfRange(0, 12)))
+        cipher.doFinal(dados, 12, dados.size - 12).toString(Charsets.UTF_8)
     }
 
     actual override suspend fun gravar(conteudo: String) = operar {
