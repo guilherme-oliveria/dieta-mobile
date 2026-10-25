@@ -17,6 +17,14 @@ object Dimens {
     val alvoToque = 48.dp
     val larguraMinimaAcao = 96.dp
     val larguraLeitura = 640.dp
+    val larguraListaPacientes = 360.dp
+    val larguraTrilho = 96.dp
+    val alturaBarraNavegacao = 80.dp
+    val alturaItemTrilho = 64.dp
+    val janelaMinimaLargura = 1024.dp
+    val janelaMinimaAltura = 700.dp
+    val janelaInicialLargura = 1280.dp
+    val janelaInicialAltura = 800.dp
     val borda = 1.dp
     val progressoTraco = 2.dp
     val iconePequeno = 20.dp
@@ -42,4 +50,6 @@ object TamanhosPreview {
     const val medio = 820
     const val expandido = 1180
     const val altura = 1180
+    const val alturaCompacta = 844
+    const val alturaExpandida = 820
 }
