@@ -57,6 +57,10 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqldelight.driver.jvm)
         }
+        jvmTest.dependencies {
+            implementation(libs.compose.uiTest)
+            implementation(compose.desktop.currentOs)
+        }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
