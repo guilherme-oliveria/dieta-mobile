@@ -66,6 +66,9 @@ kotlin {
             implementation(libs.compose.uiTest)
             implementation(compose.desktop.currentOs)
         }
+        getByName("androidDeviceTest").dependencies {
+            implementation(libs.androidx.testExt.junit)
+        }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

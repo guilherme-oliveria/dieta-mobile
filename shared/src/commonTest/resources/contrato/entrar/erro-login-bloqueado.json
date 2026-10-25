@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/login-bloqueado",
+  "title": "Erro de exemplo",
+  "status": 429,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "LOGIN_BLOQUEADO",
+  "regra": "RN-CON-03",
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

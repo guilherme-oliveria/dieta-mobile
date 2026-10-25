@@ -4,17 +4,17 @@ Complementa `integracao.md`. Cópia oficial no backend; mobile e frontend devem 
 
 ## Entrega e limites
 
-Os 17 endpoints de BE-02 a BE-08 estão publicados como stubs `501 NAO_IMPLEMENTADO`, anotados no OpenAPI (`/v3/api-docs`). O `manifesto.json` em `src/test/resources/contrato/` indexa cada método/caminho, status de sucesso futuro e exemplos de requisição/resposta/erro, todos validados contra os records Java. Exemplos são dados fictícios, com endereços `example.invalid` e credenciais explicitamente sem validade. O mobile pode copiá-los e usar `MockEngine` assim que o PR de BE-C1 estiver aberto.
+Os 17 endpoints de BE-02 a BE-08 estão anotados no OpenAPI (`/v3/api-docs`). BE-02 implementa `POST /auth/cadastro-nutri` e BE-03 implementa login, refresh e logout; os outros 13 continuam stubs `501 NAO_IMPLEMENTADO`. O `manifesto.json` em `src/test/resources/contrato/` indexa cada método/caminho, status de sucesso e exemplos de requisição/resposta/erro, todos validados contra os records Java. Exemplos são dados fictícios, com endereços `example.invalid` e credenciais explicitamente sem validade. O mobile pode usá-los com `MockEngine` até integrar cada endpoint real.
 
-Os JSONs de sucesso representam o contrato **futuro**; os controllers ainda não retornam esses dados. Não há persistência, JWT, e-mail, validação de dono/plano, idempotência, auditoria ou regras de negócio executadas. A configuração Basic existente continua protegendo todas as rotas, inclusive as futuramente públicas. Nos testes HTTP há apenas um usuário simulado, sem credenciais reais. BE-01 a BE-08 substituem os stubs. Não há alteração de banco nem migração nesta tarefa.
+Os JSONs são exemplos de formato; seus valores fictícios não são dados fixos do servidor. BE-01 fornece erros, rastreio, idempotência e persistência transversal. BE-02 aplica as regras do cadastro e cria conta/organização/assinatura numa transação. BE-03 substitui Basic por Bearer/JWT e libera somente cadastro/login/refresh/logout ao público. Envio de e-mail, vínculos e auditoria clínica ainda entram nas respectivas tarefas; o cadastro não faz login automático. Testes usam somente dados fictícios e chaves geradas em memória.
 
-O OpenAPI segue protegido pela configuração atual. A Swagger UI só é habilitada em desenvolvimento com `SWAGGER_UI_ENABLED=true`. O stub não cria `X-Trace-Id` (BE-01); usa `traceId: null` e `regra: null`. Datas fixas dos exemplos são insumos de serialização; as implementações calcularão os prazos usando `Clock` injetado. A dependência springdoc 3.2.0 é compatível com Boot 4.1 segundo a [matriz oficial](https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot).
+O OpenAPI segue protegido pela configuração atual. A Swagger UI só é habilitada em desenvolvimento com `SWAGGER_UI_ENABLED=true`. Desde BE-01, o filtro cria `X-Trace-Id` e preenche o rastreio dos erros/stubs; o `traceId: null` dos exemplos continua válido como campo opcional do contrato. Datas fixas dos exemplos são insumos de serialização; prazos reais usam `Clock` injetado. A dependência springdoc 3.2.0 é compatível com Boot 4.1 segundo a [matriz oficial](https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot).
 
 ## Endpoints
 
 Todos os caminhos recebem `/api/v1`. Os nomes de diretório dos exemplos correspondem aos `operationId` do OpenAPI.
 
-| Operação | Requisição / resposta futura | Status futuro | Exemplos |
+| Operação | Requisição / resposta | Status de sucesso | Exemplos |
 | --- | --- | --- | --- |
 | `POST /auth/cadastro-nutri` | `CadastroNutriRequisicao` → `CadastroNutriResposta` | 201 | `cadastrarNutri/` |
 | `POST /auth/login` | `LoginRequisicao` → `SessaoResposta` | 200 | `entrar/` |
@@ -38,8 +38,18 @@ Os POSTs de cadastro da nutri, criação de paciente, geração/aceite de convit
 
 ## Conta, perfil e sessão
 
-- Cadastro exige nome, e-mail, senha, CRN, `aceitouTermos: true` e `versaoTermos`; `fuso` é opcional, padrão `America/Sao_Paulo`. Retorna `usuario` + `assinatura`, sem login automático.
-- `dispositivo` no login/aceite contém `id` UUID da instalação, `plataforma` (`ANDROID`, `IOS`, `DESKTOP`) e `nomeAparelho`. Não contém token FCM nesta fase.
+### Implementação de sessões (BE-03)
+
+Login, refresh e logout são públicos: a senha ou o próprio refresh autentica a operação. Access usa JWT RS256 por 15 minutos. Refresh contém 32 bytes aleatórios, guardados somente como SHA-256; a família tem prazo absoluto de 30 dias, sem prolongar na rotação. Reuso de token consumido revoga toda a família, inclusive o sucessor. Logout revoga a família do dispositivo informado pelo refresh, sem afetar outro dispositivo; é idempotente para token desconhecido. Revogar refresh não revoga access já emitido, que dura no máximo 15 minutos.
+
+RN-CON-03 usa janela móvel de 15 minutos: a quinta falha bloqueia o e-mail por 15 minutos, inclusive para e-mail inexistente; retorna `LOGIN_BLOQUEADO`, 429 e `Retry-After`. As outras falhas usam `CREDENCIAIS_INVALIDAS`, 401, sem distinguir usuário inexistente/inativo. Tentativas e bloqueios são persistentes; senha correta não remove um bloqueio ainda vigente. Login também limita 10 requisições/minuto por IP da conexão, com `TAXA_EXCEDIDA` e `Retry-After`; a proteção por e-mail vale entre instâncias. O limitador por IP desta etapa é local a cada processo e não confia em `X-Forwarded-For`.
+
+As respostas de sessão usam `Cache-Control: no-store`. O app envia refresh no JSON aprovado. O transporte web também aceita cookie `refreshToken` (`HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth`), sem corpo, mas somente com `Origin` igual à origem HTTPS configurada em `WEB_ORIGEM`; sem essa configuração o modo cookie é recusado. Login/refresh emitem o cookie e logout o expira. Nenhum token ou senha aparece na representação textual dos DTOs nem nos logs.
+
+JWT, fuso e expiração usam `Clock` injetado. As chaves RSA vêm de `JWT_CHAVE_PRIVADA` (PEM PKCS#8) e `JWT_CHAVE_PUBLICA` (PEM X.509), com no mínimo 2048 bits. Só em perfis `dev`/`test` a ausência de ambas gera um par efêmero; em outros perfis a aplicação recusa iniciar sem chaves. Reiniciar dev invalida os access tokens emitidos antes do reinício. A seleção de perfil respeita o formato publicado; `/eu`, validação de dono no banco a cada chamada e auditoria permanecem em BE-05.
+
+- Cadastro exige nome, e-mail, senha, CRN, `aceitouTermos: true` e `versaoTermos`; `fuso` é opcional, padrão `America/Sao_Paulo`. Retorna `usuario` + `assinatura`, sem login automático. BE-02 normaliza nome/CRN/versão removendo espaços nas bordas e e-mail também para minúsculas; a senha permanece exatamente como informada. Limites de armazenamento: nome 150, e-mail 255, CRN 20, versão do termo 40 e fuso 80 caracteres. Campos inválidos geram 400 com `campos`; senha comum usa `FORMATO_INVALIDO`, RN-CON-02. E-mail já cadastrado retorna 409 `EMAIL_JA_CADASTRADO`, RN-CON-01, inclusive sob concorrência. A versão declarada do termo e o instante do aceite são guardados pelo servidor. CRN e e-mail nascem não verificados; prazo e limite do teste vêm do plano ativo no banco, sem constantes no caso de uso.
+- `dispositivo` no login/aceite contém `id` UUID da instalação, `plataforma` (`ANDROID`, `IOS`, `DESKTOP`) e `nomeAparelho` (até 150 caracteres). Não contém token FCM nesta fase.
 - `usuario` contém `id`, `nome`, `email`, `emailConfirmado`, `perfis`, `perfil` ativo, `nutricionistaId`, `pacienteId` e `fuso`. O valor no JSON/JWT é `NUTRICIONISTA`; "NUTRI" é abreviação descritiva no plano. As identidades podem coexistir na conta, conforme BE-05.
 - Com um único perfil, login pode escolhê-lo. Com vários e `perfil` omitido, retorna `usuario.perfis`; `usuario.perfil`, tokens e `expiraEm` ficam nulos. A tela de escolha repete o login com o perfil escolhido e credenciais mantidas apenas em memória durante esse fluxo. Perfil alheio retorna `PERFIL_INVALIDO`. Refresh preserva o perfil ativo e sempre devolve tokens. `expiraEm` é instante UTC absoluto, não duração.
 - `GET /eu` agrupa `usuario`, `assinatura` (nula na sessão paciente) e `vinculos` (lista vazia quando não aplicável). A assinatura resume `organizacaoId`, `plano`, `status`, `limitePacientes`, `pacientesOcupados` e `fimPeriodoEm`; checkout fica na fase 6.

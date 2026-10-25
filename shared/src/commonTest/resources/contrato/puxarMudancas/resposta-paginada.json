@@ -1,0 +1,29 @@
+{
+  "cursor": "2",
+  "temMais": true,
+  "mudancas": {
+    "pacientes": [],
+    "vinculos": [
+      {
+        "id": "019a0f32-5000-7000-8000-000000000004",
+        "versao": 2,
+        "excluido": false,
+        "dados": {
+          "id": "019a0f32-5000-7000-8000-000000000004",
+          "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+          "nutricionista": {
+            "id": "019a0f32-5000-7000-8000-000000000002",
+            "nome": "Nutricionista de Exemplo",
+            "crn": "CRN-1 99999999"
+          },
+          "status": "ATIVO",
+          "consentimentoEm": "2026-10-24T12:00:00Z",
+          "encerradoEm": null,
+          "versao": 2,
+          "atualizadoEm": "2026-10-24T12:00:00Z"
+        }
+      }
+    ],
+    "nutris": []
+  }
+}

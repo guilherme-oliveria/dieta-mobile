@@ -1,0 +1,14 @@
+package org.br.dietamais.data.remoto.dto
+
+import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
+
+@Serializable
+data class MudancaSyncResposta<T>(val id: Uuid, val versao: Long, val excluido: Boolean, val dados: T? = null)
+
+@Serializable
+data class MudancasFase1Resposta(val pacientes: List<MudancaSyncResposta<PacienteResposta>>,
+    val vinculos: List<MudancaSyncResposta<VinculoResposta>>, val nutris: List<MudancaSyncResposta<NutricionistaResumoResposta>>)
+
+@Serializable
+data class SyncResposta(val cursor: String, val temMais: Boolean, val mudancas: MudancasFase1Resposta)

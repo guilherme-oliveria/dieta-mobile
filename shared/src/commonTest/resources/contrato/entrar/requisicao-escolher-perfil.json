@@ -1,0 +1,10 @@
+{
+  "email": "nutri@example.invalid",
+  "senha": "SENHA_FICTICIA_SEM_VALIDADE",
+  "dispositivo": {
+    "id": "019a0f32-5000-7000-8000-000000000006",
+    "plataforma": "ANDROID",
+    "nomeAparelho": "Dispositivo fictício"
+  },
+  "perfil": "PACIENTE"
+}

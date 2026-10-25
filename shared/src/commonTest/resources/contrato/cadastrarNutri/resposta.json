@@ -1,0 +1,23 @@
+{
+  "usuario": {
+    "id": "019a0f32-5000-7000-8000-000000000001",
+    "nome": "Nutricionista de Exemplo",
+    "email": "nutri@example.invalid",
+    "emailConfirmado": false,
+    "perfis": [
+      "NUTRICIONISTA"
+    ],
+    "perfil": "NUTRICIONISTA",
+    "nutricionistaId": "019a0f32-5000-7000-8000-000000000002",
+    "pacienteId": null,
+    "fuso": "America/Sao_Paulo"
+  },
+  "assinatura": {
+    "organizacaoId": "019a0f32-5000-7000-8000-000000000005",
+    "plano": "TESTE",
+    "status": "TESTE",
+    "limitePacientes": 5,
+    "pacientesOcupados": 1,
+    "fimPeriodoEm": "2026-11-23T12:00:00Z"
+  }
+}

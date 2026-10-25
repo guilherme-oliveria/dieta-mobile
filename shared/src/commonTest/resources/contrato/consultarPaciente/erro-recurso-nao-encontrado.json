@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/recurso-nao-encontrado",
+  "title": "Erro de exemplo",
+  "status": 404,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "RECURSO_NAO_ENCONTRADO",
+  "regra": null,
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}
