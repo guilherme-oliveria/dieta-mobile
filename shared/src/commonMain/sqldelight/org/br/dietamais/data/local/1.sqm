@@ -1,0 +1,8 @@
+CREATE TABLE paciente_cache (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    vinculo_id TEXT NOT NULL,
+    paciente_id TEXT NOT NULL,
+    conteudo_json TEXT NOT NULL,
+    PRIMARY KEY (usuario_id, perfil, vinculo_id)
+);

@@ -1,0 +1,21 @@
+# Pacientes da nutri — MOB-07
+
+Lista, busca literal sem diferenciar maiúsculas e filtros de vínculo leem o SQLDelight. A ficha apresenta os campos reais recebidos; Avaliações, Dieta e Anamnese permanecem vazias nesta etapa. O identificador do vínculo acompanha a navegação para distinguir prontuários do mesmo paciente. O estado de tela tem um ViewModelStore próprio da sessão, descartado ao sair.
+
+O refresh percorre todas as páginas de `GET /pacientes` e substitui o cache numa transação somente após concluir a leitura e conferir a sessão. Falha parcial conserva a última cópia. Resposta iniciada na sessão anterior não repovoa o cache; logout, troca de usuário e rejeição definitiva da sessão limpam esse cache clínico. A migração `1.sqm` adiciona a tabela sem alterar o snapshot inicial nem a fila existente.
+
+Criação e geração de convite exigem rede nesta fase. O cadastro usa UUIDv7 e Idempotency-Key mantidos durante a retentativa do mesmo formulário. Após falha de rede, “Atualizar” dentro do formulário permite reconectar sem perder esses identificadores. Alterar o formulário gera outra chave. O backend valida permissão, campos, assinatura, vínculo e limite. A escrita offline da nutri com fila/sync continua em MOB-29.
+
+O convite usa `POST /pacientes/{id}/convite`, sem corpo artificial. O link e o código só são enviados ao compartilhador após ação explícita; o texto inclui link, código e validade, sem nome nem dados clínicos. Android usa ACTION_SEND e iOS UIActivityViewController, com âncora para iPad. Desktop copia para a área de transferência e informa “Convite copiado”; não há seletor Java portátil. Um convite já recebido pode ser compartilhado mesmo se a conexão cair. Não há envio automático por mensageria.
+
+## Fontes e limites
+
+- Contrato BE-C1, DTOs e exemplos oficiais versionados de `contrato/`. As cópias de arquitetura foram sincronizadas do backend develop aprovado `2d9e231ccc4854c134e810c8703fd13ed41b8a05` (BE-07, incluindo BE-06). Os 49 JSONs e seu manifesto permanecem intactos.
+- BE-06 e BE-07 reais fornecem pacientes e convite. MockEngine existe somente nos testes e usa exemplos oficiais; produção sempre chama a API configurada. O link aceita HTTPS e o padrão oficial `dietamais://convites/{codigo}`. Sem configuração oficial do consentimento clínico no backend (`dieta.consentimento.versao`/`dieta.consentimento.texto`), `CONSENTIMENTO_OBRIGATORIO` apresenta indisponibilidade; o app não inventa nem aceita texto. Integração HTTP com Postgres e seletor nativo em dispositivo ainda requer ambiente apropriado; o merge BE-07 teve exceção autorizada para CI bloqueado por quota.
+- Artboards N-Pacientes/N-Paciente e `docs/design/componentes.md`. Mantidas as cinco entradas de navegação atuais; adesão, peso, retorno e filtros futuros não são fabricados. DES-02 ainda não publicou os desenhos finais das folhas de convite/limite e da ficha expandida; estas seguem os componentes existentes.
+- O aviso de limite mostra a resposta do servidor e o resumo de `/eu`, sem calcular vagas nem inventar URL de checkout. Contratação/assinatura completa permanece MOB-32.
+- Termos oficiais: decisão posterior à MOB-06 prevê `docs/legal/terms-of-use.md`, versão inicial 1.0.0 RASCUNHO, aguardando aprovação e publicação em `/legal/terms-of-use`. Cadastro da nutri continua desabilitado por configuração até ambos os gates. A integração jurídica fica em tarefa separada; não afeta pacientes de sessões existentes.
+
+## Validação
+
+Testes de repositório cobrem cache/logout/isolamento/paginação/falha parcial/resposta atrasada e payload/idempotência/convite oficiais. ViewModel cobre busca/status offline, formulário, retentativa, limite, cancelamento e compartilhamento explícito, inclusive após queda de rede. UI cobre interação e capturas 390×844, 820×1180, 1180×820 e fonte 200%; os dados nas capturas são fictícios. Teste de migração preserva sessão e fila da versão 1. iOS exige Mac/CI e validação manual do seletor nativo em dispositivo; leitores TalkBack/VoiceOver permanecem verificação manual.

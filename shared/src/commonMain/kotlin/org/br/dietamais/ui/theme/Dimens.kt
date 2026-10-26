@@ -20,6 +20,7 @@ object Dimens {
     val larguraFormulario = 440.dp
     val espacoEntrada = 40.dp
     val marcaEntrada = 56.dp
+    val avatarPaciente = 40.dp
     val alturaTermos = 360.dp
     val larguraListaPacientes = 360.dp
     val larguraTrilho = 96.dp

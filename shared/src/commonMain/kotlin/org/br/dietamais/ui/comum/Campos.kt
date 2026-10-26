@@ -33,12 +33,13 @@ fun CampoTexto(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     trailingIcon: (@Composable () -> Unit)? = null,
+    singleLine: Boolean = true,
 ) {
     val cores = MaterialTheme.colorScheme
     Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
         Text(rotulo, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
         OutlinedTextField(
-            value = valor, onValueChange = aoMudar, singleLine = true,
+            value = valor, onValueChange = aoMudar, singleLine = singleLine, maxLines = if (singleLine) 1 else 4,
             enabled = habilitado, isError = erro != null, keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation, keyboardActions = keyboardActions, trailingIcon = trailingIcon,
             shape = FormasDieta.campo, textStyle = MaterialTheme.typography.bodyLarge,
