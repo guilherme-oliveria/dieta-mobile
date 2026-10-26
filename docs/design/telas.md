@@ -8,12 +8,12 @@ Status: **desenhada** (seguir o artboard com as correções de [validacao.md](va
 
 | Tela | Composable | Artboard | Status | Fase |
 | --- | --- | --- | --- | --- |
-| Entrar | `EntrarScreen` | `Entrar.dc.html` | desenhada | 1 |
+| Entrar | `EntrarTela` | `Entrar.dc.html` | desenhada; implementada MOB-06 | 1 |
 | Cadastro do paciente por convite (código de 8 caracteres ou link, validade 7 dias) | `CadastroPacienteScreen` | — | faltando | 1 |
 | Consentimento LGPD e termos (no aceite do convite) | `ConsentimentoScreen` | — | faltando | 1 |
-| Cadastro da nutri (nome, CRN, e-mail, senha; começa no teste) | `CadastroNutriScreen` | — | faltando | 1 |
-| Recuperar senha | `RecuperarSenhaScreen` | — | faltando | 1 |
-| Escolher perfil (conta que é nutri e paciente) | `EscolherPerfilScreen` | — | faltando | 1 |
+| Cadastro da nutri (nome, CRN, e-mail, senha; começa no teste) | `CadastroNutriTela` | — | artboard faltando; implementada pelos componentes (MOB-06) | 1 |
+| Recuperar senha | `RecuperarSenhaTela` | — | artboard faltando; implementada pelos componentes (MOB-06) | 1 |
+| Escolher perfil (conta que é nutri e paciente) | `EscolherPerfilTela` | — | artboard faltando; implementada pelos componentes (MOB-06) | 1 |
 
 ## Paciente
 

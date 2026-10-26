@@ -25,6 +25,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
     val fluxo = estado.asStateFlow()
 
     suspend fun tokens(): BearerTokens? = mutex.withLock { carregar()?.tokens() }
+    suspend fun usuarioAtual() = mutex.withLock { carregar()?.usuario }
     suspend fun geracao(): Long = mutex.withLock { carregar(); geracao }
     suspend fun corresponde(esperada: Long?): Boolean = mutex.withLock { esperada == geracao }
 

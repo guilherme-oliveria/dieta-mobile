@@ -37,6 +37,8 @@ Login próprio, Spring Security + OAuth2 Resource Server (JWT).
 
 BE-03 implementa login, refresh e logout sem alterar os campos dos exemplos. O app envia refresh no JSON e omite o header Authorization nessas rotas públicas (um Bearer expirado é rejeitado pelo resource server). Access usa RS256; refresh tem prazo absoluto de família de 30 dias, com rotação, revogação da família por reuso e logout por dispositivo. Respostas usam `Cache-Control: no-store`. Detalhes de bloqueio RN-CON-03, cookie seguro com validação de Origin e limite por IP estão em `contrato-fase-1.md`. A proteção por e-mail é persistente; o limite por IP desta etapa é local ao processo. Rate limit de convites e geral entram nas tarefas correspondentes.
 
+BE-04 implementa confirmação de e-mail (token de uso único, 24 h) e recuperação/redefinição (uma hora). O cadastro enfileira a confirmação; os links abrem o app e o app envia o POST já contratado. `esqueci-senha` retorna sempre 202 sem corpo para e-mail válido, inclusive desconhecido/inativo ou em falha interna, sem enumerar contas. Redefinição consome o token, aplica RN-CON-02 e revoga todos os refresh do usuário, sem login automático. O payload da outbox é cifrado enquanto pendente e apagado após envio/expiração/falha definitiva. Envio SMTP depende de configuração do servidor; detalhes e limites estão em `contrato-fase-1.md`. JSONs/códigos da BE-C1 são preservados.
+
 ## Erros
 
 Formato **RFC 9457 Problem Details** (`application/problem+json`), já nativo no Spring:
@@ -65,7 +67,7 @@ BE-01 acrescenta `ERRO_INTERNO` (500), `METODO_NAO_PERMITIDO` (405), `TIPO_CONTE
 
 ### Contrato da fase 1
 
-Contrato completo da fase 1: [contrato-fase-1.md](contrato-fase-1.md). BE-C1 publica 17 stubs 501, records e exemplos de sucesso futuro/erro em `src/test/resources/contrato/manifesto.json`; regras e infraestrutura entram em BE-01 a BE-08. Perfis múltiplos seguem BE-05: `perfis` disponíveis e `perfil` ativo em `usuario`, usando `NUTRICIONISTA` no JSON/JWT.
+Contrato completo da fase 1: [contrato-fase-1.md](contrato-fase-1.md). BE-C1 publica 17 operações, records e exemplos de sucesso/erro em `src/test/resources/contrato/manifesto.json`; após BE-05, oito operações são reais e nove permanecem stubs 501. `GET /eu` lê a conta, assinatura da própria organização no perfil NUTRICIONISTA ou vínculos próprios no perfil PACIENTE. Toda chamada autenticada valida usuário ativo, perfil e `nid`/`pid` no banco antes da idempotência; identidade revogada ou divergente retorna 401 `NAO_AUTENTICADO`. Perfis múltiplos usam `perfis` disponíveis e `perfil` ativo em `usuario`, com `NUTRICIONISTA` no JSON/JWT; login com `perfil` opcional foi implementado em BE-03. Os campos e os 49 exemplos JSON foram preservados.
 
 BE-02 substitui apenas o stub de cadastro da nutri. Requisição e resposta mantêm os mesmos campos e JSONs de exemplo; os detalhes de normalização, limites de armazenamento e erros de validação estão em `contrato-fase-1.md`. A conta nasce com e-mail não confirmado, CRN não verificado e assinatura de teste cuja duração/limite vêm do banco. A confirmação e o envio de e-mail continuam em BE-04; não há sessão/token na resposta do cadastro.
 
