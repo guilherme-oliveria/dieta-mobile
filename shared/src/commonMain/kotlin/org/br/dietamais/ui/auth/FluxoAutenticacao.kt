@@ -17,18 +17,36 @@ import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.theme.Dimens
 import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
 import org.br.dietamais.ui.nutri.pacientes.PacientesRota
+import org.br.dietamais.ui.auth.convite.ConviteViewModel
+import org.br.dietamais.ui.auth.convite.ConviteTela
+import org.br.dietamais.plataforma.LinksConvite
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("DEPRECATION")
-fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel()) {
+fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convites: ConviteViewModel = koinViewModel()) {
     val estado by viewModel.estado.collectAsState()
+    val convite by convites.estado.collectAsState()
+    val link by LinksConvite.pendente.collectAsState()
     val usuario = estado.usuario
-    BackHandler(enabled = usuario == null && estado.tela != TelaAutenticacao.ENTRAR) { viewModel.voltar() }
+    LaunchedEffect(usuario?.id, usuario?.perfil) { convites.sessaoMudou(usuario) }
+    LaunchedEffect(convite.concluido) {
+        if (convite.concluido) { viewModel.recarregarSessaoDoConvite(); convites.consumirConclusao() }
+    }
+    LaunchedEffect(link?.id, convite.aceitando) {
+        link?.let { if (convites.abrir(it.link)) LinksConvite.consumir(it.id) }
+    }
+    BackHandler(enabled = convite.visivel) { if (!convite.aceitando) convites.fechar() }
+    BackHandler(enabled = !convite.visivel && usuario == null && estado.tela != TelaAutenticacao.ENTRAR) { viewModel.voltar() }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         when {
+            convite.visivel -> ConviteTela(convite, usuario, convites::mudarCodigo, convites::consultar,
+                convites::aceitarConsentimento, { convites.aguardarLogin(); if (usuario != null) viewModel.sair() else viewModel.voltar() },
+                convites::abrirCadastro, convites::mudarCampo, convites::aceitar, convites::fechar,
+                autenticando = estado.carregando || estado.restaurando, aoTermosUso = convites::aceitarTermosUso,
+                aoAtualizarTermos = convites::atualizarTermos)
             estado.restaurando -> EstadoCarregando()
             usuario != null -> Column(Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
@@ -41,6 +59,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel()) {
                             style = MaterialTheme.typography.bodySmall)
                     }
                     BotaoTexto(stringResource(Res.string.auth_sair), viewModel::sair, carregando = estado.carregando)
+                    BotaoTexto(stringResource(Res.string.auth_tenho_codigo), { convites.abrir() }, habilitado = !estado.carregando)
                 }
                 Box(Modifier.weight(1f)) {
                     key(usuario.id, usuario.perfil) {
@@ -51,7 +70,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel()) {
             }
             else -> when (estado.tela) {
                 TelaAutenticacao.ENTRAR -> EntrarTela(estado, viewModel::mudarEmail, viewModel::mudarSenha,
-                    viewModel::entrar, viewModel::abrirCadastro, viewModel::abrirRecuperacao)
+                    viewModel::entrar, viewModel::abrirCadastro, viewModel::abrirRecuperacao, convites::retomar)
                 TelaAutenticacao.CADASTRO -> CadastroNutriTela(estado, viewModel.termos, viewModel::mudarNome, viewModel::mudarCrn,
                     viewModel::mudarEmail, viewModel::mudarSenha, viewModel::aceitarTermos, viewModel::cadastrar, viewModel::voltar)
                 TelaAutenticacao.RECUPERAR_SENHA -> RecuperarSenhaTela(estado, viewModel::mudarEmail, viewModel::mudarToken,

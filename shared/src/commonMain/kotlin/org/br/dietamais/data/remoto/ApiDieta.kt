@@ -21,6 +21,7 @@ import kotlinx.serialization.serializer
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.data.sync.novoIdLocal
+import org.br.dietamais.dominio.convite.extrairCodigoConvite
 import org.br.dietamais.plataforma.CofreSessao
 import org.br.dietamais.plataforma.ArmazenamentoSeguroIndisponivel
 import org.br.dietamais.plataforma.Config
@@ -95,6 +96,21 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
 
     suspend fun restaurarSessao() { controle.tokens() }
     suspend fun usuarioAtual(): UsuarioResposta? = controle.usuarioAtual()
+    suspend fun consultarTermosUso(): TermosUsoResposta = obter("legal/terms-of-use", publica = true)
+
+    suspend fun aceitarConvite(codigo: String, requisicao: AceitarConviteRequisicao, chave: Uuid): AceiteConviteResposta {
+        require(extrairCodigoConvite(codigo) == codigo)
+        val geracao = controle.geracao()
+        val usuario = controle.usuarioAtual()
+        if (requisicao.cadastro != null && usuario != null) throw SessaoAlterada()
+        val resposta = decodificar(requisitar(HttpMethod.Post, "convites/$codigo/aceitar",
+            JsonContrato.encodeToJsonElement(requisicao), chave, publica = requisicao.cadastro != null), AceiteConviteResposta.serializer())
+        val recebido = resposta.sessao.usuario
+        if (recebido.perfil != Perfil.PACIENTE || recebido.pacienteId != resposta.vinculo.pacienteId ||
+            resposta.vinculo.status != StatusVinculo.ATIVO || (usuario != null && recebido.id != usuario.id)) throw RespostaInvalida()
+        controle.receber(resposta.sessao, geracao)
+        return resposta
+    }
 
     suspend fun enviarSemResposta(caminho: String, corpo: JsonElement, chave: Uuid = novoIdLocal()) {
         verificarErro(requisitar(HttpMethod.Post, caminho, corpo, chave))
@@ -111,10 +127,13 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     internal suspend fun requisitar(metodo: HttpMethod, caminho: String, corpo: JsonElement? = null, chave: Uuid? = null,
         parametros: Map<String, String> = emptyMap(), publica: Boolean = false): HttpResponse {
         require(caminho.matches(Regex("[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*"))) { "Caminho fora da API." }
+        val termosUso = caminho == "legal/terms-of-use"
+        if (termosUso) require(metodo == HttpMethod.Get && publica && corpo == null && parametros.isEmpty())
+        val endereco = if (termosUso) base.removeSuffix("api/v1/") + caminho else base + caminho
         val semBearer = publica || caminho.startsWith("auth/")
         val geracao = if (semBearer) null else controle.geracao()
         val resposta = try {
-            cliente.request(base + caminho) {
+            cliente.request(endereco) {
                 method = metodo
                 parametros.forEach { (nome, valor) -> parameter(nome, valor) }
                 if (semBearer) attributes.put(AuthCircuitBreaker, Unit)

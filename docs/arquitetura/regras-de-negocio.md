@@ -25,6 +25,7 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 - **RN-CON-06** Paciente só cria conta a partir de um convite (no MVP). Cadastro avulso de paciente é P2 (vitrine).
 - **RN-CON-07** Recuperação de senha por link de uso único, validade 1 h. Trocar a senha revoga todos os refresh tokens do usuário.
 - **RN-CON-08** CRN não é validado automaticamente no MVP; o admin pode marcar `crn_verificado`. `[SUPOSIÇÃO]`
+- **RN-CON-09** Cadastro de conta (nutri ou paciente convidado) exige aceite explícito da versão de termos de uso aprovada **e** publicada. A fonte interna é `docs/legal/terms-of-use.md`, inicialmente versão `1.0.0`, `RASCUNHO`, sem aprovação/publicação presumidas. Sem ambas, o cadastro fica indisponível (`TERMOS_INDISPONIVEIS`); aceite ausente/negado ou versão divergente retorna `TERMOS_NAO_ACEITOS`. O backend registra userId, versão e instante do Clock na mesma transação da conta. Consentimento clínico do vínculo é independente. Login, refresh, recuperação e operações de contas existentes continuam normais.
 
 ## Assinatura e plano (RN-ASS)
 

@@ -152,6 +152,18 @@ class AutenticacaoViewModelTest {
         assertEquals(1, porta.saidas)
     }
 
+    @Test fun sessaoRetornadaDoConviteTrocaShellEDescartaCredenciais() = runTest {
+        val paciente = usuario.copy(perfil = Perfil.PACIENTE, perfis = listOf(Perfil.NUTRICIONISTA, Perfil.PACIENTE), pacienteId = Uuid.random())
+        val porta = PortaTeste()
+        val vm = AutenticacaoViewModel(porta, null, StandardTestDispatcher(testScheduler))
+        runCurrent(); vm.mudarEmail(usuario.email); vm.mudarSenha("SENHA_FICTICIA")
+        porta.salvo = paciente; porta.respostaEu = EuResposta(paciente, vinculos = emptyList())
+        vm.recarregarSessaoDoConvite(); runCurrent()
+        assertEquals(paciente, vm.estado.value.usuario)
+        assertEquals("", vm.estado.value.senha)
+        assertEquals(0, porta.entradas.size)
+    }
+
     private inner class PortaTeste : PortaAutenticacao {
         override val sessao = MutableStateFlow<ContextoSessao?>(null)
         var resposta = SessaoResposta(usuario = usuario)

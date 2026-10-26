@@ -129,6 +129,13 @@ class AutenticacaoViewModel(
         executar { try { repositorio.sair() } finally { atual.value = EstadoAutenticacao(restaurando = false) } }
     }
 
+    fun recarregarSessaoDoConvite() = executar {
+        val usuario = repositorio.restaurar() ?: throw RespostaInvalida()
+        if (usuario.perfil != Perfil.PACIENTE) throw RespostaInvalida()
+        atual.value = EstadoAutenticacao(usuario = usuario, restaurando = false, carregando = true)
+        atualizarContexto()
+    }
+
     private suspend fun atualizarContexto() {
         try {
             val eu = repositorio.consultarEu()

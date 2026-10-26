@@ -9,6 +9,7 @@ import org.br.dietamais.app.moduloBancoLocal
 import org.br.dietamais.app.moduloApi
 import org.br.dietamais.app.moduloAutenticacao
 import org.br.dietamais.app.moduloPacientes
+import org.br.dietamais.app.moduloConvites
 import org.br.dietamais.plataforma.Compartilhamento
 import org.br.dietamais.plataforma.CompartilhamentoIndisponivel
 import org.br.dietamais.plataforma.IdentidadeDispositivo
@@ -32,6 +33,7 @@ fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDrive
         fabricaDriver?.let { modules(moduloBancoLocal(it)) }
         if (fabricaDriver != null && cofreSessao != null) modules(moduloApi(cofreSessao, versaoApp))
         if (fabricaDriver != null && cofreSessao != null && identidadeDispositivo != null) modules(moduloAutenticacao(identidadeDispositivo, termosCadastro))
+        if (fabricaDriver != null && cofreSessao != null && identidadeDispositivo != null) modules(moduloConvites(identidadeDispositivo))
         if (fabricaDriver != null && cofreSessao != null) modules(moduloPacientes(compartilhamento))
     }) {
         DietaTheme {

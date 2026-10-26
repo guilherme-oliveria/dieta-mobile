@@ -39,7 +39,6 @@
     <string name="auth_esqueci_senha">Esqueci a senha</string>
     <string name="auth_primeira_vez">Primeira vez?</string>
     <string name="auth_tenho_codigo">Tenho um código da minha nutri</string>
-    <string name="auth_convite_depois">A entrada por convite estará disponível em breve.</string>
     <string name="auth_sou_nutri">Sou nutricionista</string>
     <string name="auth_privacidade">Seus dados de saúde só são vistos pela nutricionista com quem você tem vínculo.</string>
     <string name="auth_cadastro_titulo">Crie sua conta</string>
@@ -165,4 +164,28 @@
     <string name="pacientes_convite_copiado">Link e código copiados para a área de transferência.</string>
     <string name="pacientes_criado">Paciente cadastrado.</string>
     <string name="pacientes_consentimento_indisponivel">O consentimento clínico ainda não está disponível. Tente gerar o convite mais tarde.</string>
+    <string name="convite_titulo">Seu convite</string>
+    <string name="convite_descricao">Confira a nutricionista e o consentimento antes de aceitar o acompanhamento.</string>
+    <string name="convite_codigo">Código ou link do convite</string>
+    <string name="convite_consultar">Consultar convite</string>
+    <string name="convite_consentimento_titulo">Consentimento para atendimento</string>
+    <string name="convite_aceitar_consentimento">Li e autorizo o atendimento descrito no consentimento clínico</string>
+    <string name="convite_conta_atual">Continuar como %1$s (%2$s)</string>
+    <string name="convite_aceitar">Aceitar convite</string>
+    <string name="convite_outra_conta">Usar outra conta</string>
+    <string name="convite_entrar">Já tenho uma conta</string>
+    <string name="convite_criar_conta">Criar minha conta</string>
+    <string name="convite_criar_aceitar">Criar conta e aceitar convite</string>
+    <string name="convite_cadastro_titulo">Crie sua conta de paciente</string>
+    <string name="convite_cadastro_bloqueado">O cadastro aguarda a aprovação e publicação dos termos de uso. Você pode entrar com uma conta existente.</string>
+    <string name="convite_login_ajuda">Entre na sua conta para aceitar. O convite será mantido e você voltará aqui antes de confirmar.</string>
+    <string name="convite_erro_codigo">Informe os oito caracteres do convite ou um link válido do Dieta+.</string>
+    <string name="convite_erro_invalido">Este convite não é válido. Peça um novo código à sua nutricionista.</string>
+    <string name="convite_erro_expirado">Este convite expirou. Peça um novo código à sua nutricionista.</string>
+    <string name="convite_erro_aceite">Leia e aceite o consentimento clínico para continuar.</string>
+    <string name="convite_erro_entrar">Entre na sua conta para continuar com este convite.</string>
+    <string name="convite_erro_vinculo">Você já possui um vínculo ativo com esta nutricionista.</string>
+    <string name="convite_termos_estado">Estado dos termos: %1$s · versão %2$s</string>
+    <string name="convite_atualizar_termos">Atualizar termos de uso</string>
+    <string name="convite_atualizar">Atualizar convite</string>
 </resources>

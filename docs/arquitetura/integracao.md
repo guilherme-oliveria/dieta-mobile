@@ -41,6 +41,8 @@ BE-04 implementa confirmação de e-mail (token de uso único, 24 h) e recupera�
 
 ## Erros
 
+BE-36 acrescenta `TERMOS_INDISPONIVEIS` e `TERMOS_NAO_ACEITOS` (422, RN-CON-09). A fonte interna dos termos de uso é consultada publicamente por `GET /legal/terms-of-use`: versão, estado, aprovação/publicação, `cadastroHabilitado`, datas e conteúdo Markdown. Cadastros de nutri e de paciente exigem aceite explícito da versão aprovada e publicada; consentimento clínico é separado. O documento inicial 1.0.0 está em RASCUNHO e mantém cadastro indisponível; login e fluxos existentes continuam normais. Detalhes/campos opcionais do cadastro paciente em [contrato-fase-1.md](contrato-fase-1.md).
+
 Formato **RFC 9457 Problem Details** (`application/problem+json`), já nativo no Spring:
 
 ```json
