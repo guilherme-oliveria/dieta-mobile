@@ -2,6 +2,8 @@ package org.br.dietamais.data.remoto.dto
 
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -42,7 +44,10 @@ data class TermoConsentimentoResposta(val versao: String, val texto: String)
 data class ConviteResposta(val nutricionista: NutricionistaResumoResposta, val termo: TermoConsentimentoResposta, val expiraEm: Instant)
 
 @Serializable
-data class CadastroPacienteRequisicao(val nome: String, val email: String, val senha: String, val fuso: String? = null) {
+@OptIn(ExperimentalSerializationApi::class)
+data class CadastroPacienteRequisicao(val nome: String, val email: String, val senha: String, val fuso: String? = null,
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val aceitouTermos: Boolean? = null,
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val versaoTermos: String? = null) {
     override fun toString() = "CadastroPacienteRequisicao[conteúdo protegido]"
 }
 

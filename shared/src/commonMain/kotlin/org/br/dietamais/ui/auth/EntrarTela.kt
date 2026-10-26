@@ -14,8 +14,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EntrarTela(estado: EstadoAutenticacao, aoMudarEmail: (String) -> Unit, aoMudarSenha: (String) -> Unit,
-    aoEntrar: () -> Unit, aoCadastrar: () -> Unit, aoRecuperar: () -> Unit) {
-    var mostrarAvisoConvite by remember { mutableStateOf(false) }
+    aoEntrar: () -> Unit, aoCadastrar: () -> Unit, aoRecuperar: () -> Unit, aoConvite: () -> Unit = {}) {
     LayoutAutenticacao(stringResource(Res.string.app_nome), stringResource(Res.string.auth_apresentacao), estado, marca = true) {
         CampoTexto(stringResource(Res.string.auth_email), estado.email, aoMudarEmail, erro = estado.erroCampo("email"), habilitado = !estado.carregando,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next))
@@ -24,8 +23,7 @@ fun EntrarTela(estado: EstadoAutenticacao, aoMudarEmail: (String) -> Unit, aoMud
         BotaoPrincipal(stringResource(Res.string.entrar), aoEntrar, Modifier.fillMaxWidth(), carregando = estado.carregando)
         HorizontalDivider()
         Text(stringResource(Res.string.auth_primeira_vez), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        BotaoContornado(stringResource(Res.string.auth_tenho_codigo), { mostrarAvisoConvite = true }, Modifier.fillMaxWidth(), habilitado = !estado.carregando)
-        if (mostrarAvisoConvite) Text(stringResource(Res.string.auth_convite_depois), style = MaterialTheme.typography.bodySmall)
+        BotaoContornado(stringResource(Res.string.auth_tenho_codigo), aoConvite, Modifier.fillMaxWidth(), habilitado = !estado.carregando)
         BotaoContornado(stringResource(Res.string.auth_sou_nutri), aoCadastrar, Modifier.fillMaxWidth(), habilitado = !estado.carregando)
         Text(stringResource(Res.string.auth_privacidade), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

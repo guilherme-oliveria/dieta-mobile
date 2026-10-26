@@ -20,7 +20,7 @@ Definição de pronto de toda tarefa:
 - [x] **MOB-05 Cliente da API e sessão.** `ApiDieta` (Ktor) com headers `X-App-Versao`, `X-Plataforma`, `Idempotency-Key`; leitura de ProblemDetail → `ErroApi(codigo, regra, campos)`; plugin `Auth` com refresh; `ArmazenamentoSeguro` expect/actual nas 3 plataformas; logout limpa dados locais; teste de contrato que desserializa os JSONs de `commonTest/resources/contrato/` (copiados do BE-Cn). *Depende de:* MOB-04, BE-03 (até lá, `MockEngine` com BE-C1).
 - [x] **MOB-06 Entrar e cadastro da nutri.** Telas de `ui/auth`: entrar, cadastro da nutri (com CRN e termos), esqueci a senha; aviso de e-mail não confirmado; bloqueio de login com mensagem do `codigo`; `RecuperarSenhaScreen` e `EscolherPerfilScreen` (conta que é nutri e paciente, pelos `perfis` do `/eu`). *Depende de:* MOB-03, MOB-05, BE-02 a BE-04.
 - [x] **MOB-07 Pacientes da nutri.** `ui/nutri/pacientes` (lista, busca, filtro por status) e `ui/nutri/paciente` (ficha, abas vazias); criar paciente; gerar e compartilhar convite (link + código pelo share nativo); tratar `LIMITE_PACIENTES_ATINGIDO` com aviso de plano. *Depende de:* MOB-06, BE-06, BE-07.
-- [ ] **MOB-08 Aceitar convite.** Deep link `convite/{codigo}` (Android App Links, iOS Universal Links, esquema `dietamais://`) e campo de código; tela com nutri + termo de consentimento; criar senha ou entrar; erros `CONVITE_EXPIRADO`/`CONVITE_INVALIDO`. *Depende de:* MOB-06, BE-07.
+- [x] **MOB-08 Aceitar convite.** Deep link `convite/{codigo}` (Android App Links, iOS Universal Links, esquema `dietamais://`) e campo de código; tela com nutri + termo de consentimento; criar senha ou entrar; erros `CONVITE_EXPIRADO`/`CONVITE_INVALIDO`. *Depende de:* MOB-06, BE-07.
 
 ## Fase 2 — Alimentos e dieta
 

@@ -36,6 +36,9 @@ class AutenticacaoTelasTest {
                     App(fabricaDriver = fabrica, cofreSessao = cofre, identidadeDispositivo = identidade)
                 }
             }
+            onNodeWithText("Tenho um código da minha nutri").performScrollTo().performClick()
+            onNodeWithText("Seu convite").assertIsDisplayed()
+            onNodeWithText("Voltar para entrar").performScrollTo().performClick()
             onNodeWithText("Sou nutricionista").performScrollTo().performClick()
             onNodeWithText("Crie sua conta").assertIsDisplayed()
             onNodeWithText("Voltar para entrar").performScrollTo().performClick()
