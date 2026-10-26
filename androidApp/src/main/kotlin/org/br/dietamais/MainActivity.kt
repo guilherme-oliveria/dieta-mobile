@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.br.dietamais.plataforma.FabricaDriver
 import org.br.dietamais.plataforma.ArmazenamentoSeguro
 import org.br.dietamais.plataforma.IdentidadeDispositivo
+import org.br.dietamais.plataforma.Compartilhador
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +21,9 @@ class MainActivity : ComponentActivity() {
             val fabrica = remember { FabricaDriver(applicationContext) }
             val cofre = remember { ArmazenamentoSeguro(applicationContext) }
             val identidade = remember { IdentidadeDispositivo(applicationContext) }
+            val compartilhador = remember { Compartilhador(this@MainActivity) }
             val versao = remember { packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0" }
-            App(fabricaDriver = fabrica, cofreSessao = cofre, versaoApp = versao, identidadeDispositivo = identidade)
+            App(fabricaDriver = fabrica, cofreSessao = cofre, versaoApp = versao, identidadeDispositivo = identidade, compartilhamento = compartilhador)
         }
     }
 }

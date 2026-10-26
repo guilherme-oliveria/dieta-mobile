@@ -25,6 +25,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.toRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -42,11 +43,14 @@ import org.jetbrains.compose.resources.stringResource
 
 private data class DestinoPrincipal(val chave: String, val rota: Any, val rotulo: StringResource, val icone: ImageVector)
 
+typealias ConteudoPacientes = @Composable (WindowSizeClass, String?, (String, String) -> Unit, () -> Unit) -> Unit
+
 @Composable
 fun NavegacaoApp(
     perfil: PerfilNavegacao?,
     classeJanela: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass,
     aoPrepararNavegacao: (NavHostController) -> Unit = {},
+    conteudoPacientes: ConteudoPacientes? = null,
 ) {
     // Trocar/limpar a sessão descarta também a pilha e os estados do perfil anterior.
     key(perfil) {
@@ -69,7 +73,7 @@ fun NavegacaoApp(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 composable<Entrada> { AbaVazia(Res.string.entrar, classeJanela) }
-                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela)
+                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes)
                 if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela)
             }
         }
@@ -102,18 +106,22 @@ private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass) {
     }
 }
 
-private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass) {
+private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?) {
     navigation<GrafoNutri>(startDestination = RotaNutri.Inicio) {
         composable<RotaNutri.Inicio> { AbaVazia(Res.string.aba_inicio, classe) }
         navigation<RotaNutri.Pacientes>(startDestination = RotaNutri.ListaPacientes) {
             composable<RotaNutri.ListaPacientes> {
-                LayoutListaDetalhe(classe, mostrarDetalhe = false,
+                if (conteudo != null) conteudo(classe, null,
+                    { id, vinculo -> controlador.navigate(RotaNutri.FichaPaciente(id, vinculo)) }, { controlador.popBackStack() })
+                else LayoutListaDetalhe(classe, mostrarDetalhe = false,
                     lista = { AbaVazia(Res.string.aba_pacientes, classe) },
                     detalhe = { EstadoVazio(mensagem = stringResource(Res.string.selecione_paciente)) },
                 )
             }
-            composable<RotaNutri.FichaPaciente> {
-                LayoutListaDetalhe(classe, mostrarDetalhe = true,
+            composable<RotaNutri.FichaPaciente> { entrada ->
+                if (conteudo != null) conteudo(classe, entrada.toRoute<RotaNutri.FichaPaciente>().vinculoId,
+                    { id, vinculo -> controlador.navigate(RotaNutri.FichaPaciente(id, vinculo)) }, { controlador.popBackStack() })
+                else LayoutListaDetalhe(classe, mostrarDetalhe = true,
                     lista = { AbaVazia(Res.string.aba_pacientes, classe) },
                     detalhe = { AbaVazia(Res.string.ficha_paciente, classe) },
                 )

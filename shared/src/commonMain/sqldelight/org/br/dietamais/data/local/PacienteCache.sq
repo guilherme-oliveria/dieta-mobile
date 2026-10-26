@@ -1,0 +1,23 @@
+CREATE TABLE paciente_cache (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    vinculo_id TEXT NOT NULL,
+    paciente_id TEXT NOT NULL,
+    conteudo_json TEXT NOT NULL,
+    PRIMARY KEY (usuario_id, perfil, vinculo_id)
+);
+
+daSessao:
+SELECT c.conteudo_json FROM paciente_cache AS c
+JOIN sessao AS s ON s.usuario_id = c.usuario_id AND s.perfil = c.perfil
+WHERE s.id = 1 AND s.perfil = 'NUTRICIONISTA';
+
+salvar:
+INSERT OR REPLACE INTO paciente_cache (usuario_id, perfil, vinculo_id, paciente_id, conteudo_json)
+VALUES (?, ?, ?, ?, ?);
+
+limparDaConta:
+DELETE FROM paciente_cache WHERE usuario_id = ? AND perfil = ?;
+
+limpar:
+DELETE FROM paciente_cache;

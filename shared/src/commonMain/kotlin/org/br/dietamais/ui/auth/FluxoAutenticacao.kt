@@ -6,6 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import org.br.dietamais.app.NavegacaoApp
 import org.br.dietamais.app.PerfilNavegacao
 import org.br.dietamais.data.remoto.dto.Perfil
@@ -13,6 +15,8 @@ import org.br.dietamais.data.remoto.dto.StatusAssinatura
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.theme.Dimens
+import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
+import org.br.dietamais.ui.nutri.pacientes.PacientesRota
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -39,11 +43,10 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel()) {
                     BotaoTexto(stringResource(Res.string.auth_sair), viewModel::sair, carregando = estado.carregando)
                 }
                 Box(Modifier.weight(1f)) {
-                    NavegacaoApp(when (usuario.perfil) {
-                        Perfil.NUTRICIONISTA -> PerfilNavegacao.NUTRICIONISTA
-                        Perfil.PACIENTE -> PerfilNavegacao.PACIENTE
-                        else -> null
-                    })
+                    key(usuario.id, usuario.perfil) {
+                        if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
+                        else NavegacaoApp(PerfilNavegacao.PACIENTE)
+                    }
                 }
             }
             else -> when (estado.tela) {
@@ -57,4 +60,14 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel()) {
             }
         }
     }
+}
+
+@Composable
+private fun NavegacaoNutri() {
+    val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
+    DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
+    val pacientes = koinViewModel<PacientesViewModel>(viewModelStoreOwner = dono)
+    NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, conteudoPacientes = { classe, vinculo, abrir, voltar ->
+        PacientesRota(pacientes, classe, vinculo, abrir, voltar)
+    })
 }

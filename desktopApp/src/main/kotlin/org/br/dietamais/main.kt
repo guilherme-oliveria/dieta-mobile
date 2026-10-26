@@ -10,6 +10,7 @@ import org.br.dietamais.app.tituloAplicacao
 import org.br.dietamais.plataforma.FabricaDriver
 import org.br.dietamais.plataforma.ArmazenamentoSeguro
 import org.br.dietamais.plataforma.IdentidadeDispositivo
+import org.br.dietamais.plataforma.Compartilhador
 import org.br.dietamais.ui.theme.Dimens
 import java.awt.Dimension
 
@@ -26,7 +27,8 @@ fun main() = application {
         val fabrica = remember { FabricaDriver() }
         val cofre = remember { ArmazenamentoSeguro() }
         val identidade = remember { IdentidadeDispositivo() }
+        val compartilhador = remember { Compartilhador() }
         val versao = remember { versaoAplicacao() }
-        App(fabricaDriver = fabrica, cofreSessao = cofre, versaoApp = versao, identidadeDispositivo = identidade)
+        App(fabricaDriver = fabrica, cofreSessao = cofre, versaoApp = versao, identidadeDispositivo = identidade, compartilhamento = compartilhador)
     }
 }

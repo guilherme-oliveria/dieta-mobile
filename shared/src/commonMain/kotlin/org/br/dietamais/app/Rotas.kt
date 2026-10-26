@@ -25,7 +25,7 @@ sealed interface RotaNutri {
     @Serializable data object Inicio : RotaNutri
     @Serializable data object Pacientes : RotaNutri
     @Serializable data object ListaPacientes : RotaNutri
-    @Serializable data class FichaPaciente(val pacienteId: String) : RotaNutri
+    @Serializable data class FichaPaciente(val pacienteId: String, val vinculoId: String? = null) : RotaNutri
     @Serializable data object Agenda : RotaNutri
     @Serializable data object Alimentos : RotaNutri
     @Serializable data object Conta : RotaNutri
