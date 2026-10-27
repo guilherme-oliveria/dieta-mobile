@@ -1,0 +1,73 @@
+{
+  "id": "019a0f32-5000-7000-8000-000000000009",
+  "dietaId": "019a0f32-5000-7000-8000-000000000005",
+  "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+  "vinculoId": "019a0f32-5000-7000-8000-000000000004",
+  "nutricionista": {
+    "id": "019a0f32-5000-7000-8000-000000000008",
+    "nome": "Nutri fictícia",
+    "crn": "CRN-1 00000"
+  },
+  "titulo": "Dieta fictícia sem validade clínica",
+  "orientacao": "Exemplo fictício sem orientação clínica válida",
+  "refeicoes": [
+    {
+      "id": "019a0f32-5000-7000-8000-000000000006",
+      "nome": "Refeição fictícia",
+      "horario": "08:00:00",
+      "ordem": 0,
+      "itens": [
+        {
+          "id": "019a0f32-5000-7000-8000-000000000007",
+          "alimentoId": "019a0f32-5000-7000-8000-000000000002",
+          "grupoId": "019a0f32-5000-7000-8000-000000000001",
+          "nomeAlimento": "Alimento fictício",
+          "porcoes": 1,
+          "medidaCaseira": "1 unidade fictícia",
+          "gramas": 50,
+          "observacao": null,
+          "totais": {
+            "kcal": 150,
+            "carboidratos": 25,
+            "proteinas": 5,
+            "gorduras": 3
+          }
+        }
+      ],
+      "totais": {
+        "kcal": 150,
+        "carboidratos": 25,
+        "proteinas": 5,
+        "gorduras": 3
+      }
+    }
+  ],
+  "listaSubstituicao": {
+    "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+    "versao": 1,
+    "alimentos": [
+      {
+        "id": "019a0f32-5000-7000-8000-000000000002",
+        "catalogoId": null,
+        "grupoId": "019a0f32-5000-7000-8000-000000000001",
+        "nome": "Alimento fictício",
+        "medidaCaseira": "1 unidade fictícia",
+        "gramasPorPorcao": 50,
+        "ativo": true,
+        "versao": 1,
+        "atualizadoEm": "2026-10-26T12:00:00Z"
+      }
+    ],
+    "adicionados": [
+      "019a0f32-5000-7000-8000-000000000002"
+    ],
+    "removidos": []
+  },
+  "totais": {
+    "kcal": 150,
+    "carboidratos": 25,
+    "proteinas": 5,
+    "gorduras": 3
+  },
+  "publicadoEm": "2026-10-26T12:00:00Z"
+}

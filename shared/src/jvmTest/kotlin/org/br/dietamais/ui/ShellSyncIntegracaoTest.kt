@@ -17,7 +17,7 @@ import org.br.dietamais.app.AmbienteDieta
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.local.BancoLocal
 import org.br.dietamais.data.remoto.*
-import org.br.dietamais.data.remoto.dto.Plataforma
+import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.plataforma.*
 import kotlin.test.*
 import java.io.File
@@ -31,9 +31,12 @@ class ShellSyncIntegracaoTest {
         val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY); BancoDieta.Schema.create(driver)
         val local = BancoLocal(driver); val config = Config("https://api.example.invalid")
         val api = ApiDieta(config, "1.0", Plataforma.DESKTOP, CofreMemoria(recursoContrato("entrar/resposta.json")), local.banco, MockEngine { req ->
-            val arquivo = if (req.url.encodedPath.endsWith("eu")) "consultarEu/resposta.json" else {
-                assertEquals("/api/v1/sync", req.url.encodedPath)
-                "puxarMudancas/resposta.json"
+            val arquivo = when (req.url.encodedPath) {
+                "/api/v1/eu" -> "consultarEu/resposta.json"
+                "/api/v1/grupos-alimentos" -> "fase-2/listarGruposAlimentos/resposta.json"
+                "/api/v1/alimentos" -> if (req.url.parameters["ativo"] == "true") "fase-2/listarAlimentos/resposta.json"
+                    else return@MockEngine respond(JsonContrato.encodeToString(PaginaAlimentosResposta(emptyList(), 0, 20, 0)), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
+                else -> { assertEquals("/api/v1/sync", req.url.encodedPath); "puxarMudancas/resposta.json" }
             }
             respond(recursoContrato(arquivo), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
         })
@@ -53,10 +56,18 @@ class ShellSyncIntegracaoTest {
             onNodeWithText("Pacientes").performClick()
             onNodeWithTag("lista-pacientes").performScrollToNode(hasText("Paciente de Exemplo", substring = true))
             val nome = onNodeWithText("Paciente de Exemplo", useUnmergedTree = true).performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
-            assertTrue(nome.bottom <= 764f, "O cabeçalho global não deve encobrir a lista acima da navegação inferior")
+            val navegacao = onNodeWithContentDescription("Navegação principal").fetchSemanticsNode().boundsInRoot
+            assertTrue(nome.bottom <= navegacao.top, "O cabeçalho global não deve encobrir a lista acima da navegação inferior")
             onNodeWithText("Atualizar dados").performScrollTo().assertIsDisplayed()
             val arquivo = File("build/reports/sincronizacao/shell-390-fonte-2.0.png")
             arquivo.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", arquivo)
+            onNodeWithText("Alimentos").performClick()
+            waitUntil(timeoutMillis = 5_000) { onAllNodes(hasText("Novo alimento") and isEnabled()).fetchSemanticsNodes().isNotEmpty() }
+            onNodeWithText("Novo alimento").performScrollTo().performClick()
+            val salvar = onNodeWithText("Salvar alimento").performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+            assertTrue(salvar.bottom <= navegacao.top)
+            val alimentos = File("build/reports/alimentos/shell-390-fonte-2.0.png")
+            alimentos.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", alimentos)
         } finally {
             try { runOnUiThread { visivel = false }; waitForIdle(); runBlocking { ambiente.encerrar() } }
             finally { Dispatchers.resetMain() }

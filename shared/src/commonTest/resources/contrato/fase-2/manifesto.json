@@ -1,0 +1,270 @@
+[
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/grupos-alimentos",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "listarGruposAlimentos/resposta.json",
+        "tipo": "com.br.dietamais.alimentos.api.GruposAlimentosResposta"
+      },
+      {
+        "arquivo": "listarGruposAlimentos/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/alimentos",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "listarAlimentos/resposta.json",
+        "tipo": "com.br.dietamais.alimentos.api.PaginaAlimentosResposta"
+      },
+      {
+        "arquivo": "listarAlimentos/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/alimentos",
+    "status": 201,
+    "exemplos": [
+      {
+        "arquivo": "criarAlimento/resposta.json",
+        "tipo": "com.br.dietamais.alimentos.api.AlimentoResposta"
+      },
+      {
+        "arquivo": "criarAlimento/requisicao.json",
+        "tipo": "com.br.dietamais.alimentos.api.CriarAlimentoRequisicao"
+      },
+      {
+        "arquivo": "criarAlimento/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "PATCH",
+    "caminho": "/api/v1/alimentos/{id}",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "atualizarAlimento/resposta.json",
+        "tipo": "com.br.dietamais.alimentos.api.AlimentoResposta"
+      },
+      {
+        "arquivo": "atualizarAlimento/requisicao.json",
+        "tipo": "com.br.dietamais.alimentos.api.AtualizarAlimentoRequisicao"
+      },
+      {
+        "arquivo": "atualizarAlimento/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/pacientes/{id}/lista-substituicao",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "consultarListaSubstituicao/resposta.json",
+        "tipo": "com.br.dietamais.alimentos.api.ListaSubstituicaoResposta"
+      },
+      {
+        "arquivo": "consultarListaSubstituicao/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "PUT",
+    "caminho": "/api/v1/pacientes/{id}/lista-substituicao",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "atualizarListaSubstituicao/resposta.json",
+        "tipo": "com.br.dietamais.alimentos.api.ListaSubstituicaoResposta"
+      },
+      {
+        "arquivo": "atualizarListaSubstituicao/requisicao.json",
+        "tipo": "com.br.dietamais.alimentos.api.AtualizarListaSubstituicaoRequisicao"
+      },
+      {
+        "arquivo": "atualizarListaSubstituicao/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/pacientes/{id}/dietas",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "listarDietasPaciente/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietasResposta"
+      },
+      {
+        "arquivo": "listarDietasPaciente/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/pacientes/{id}/dietas",
+    "status": 201,
+    "exemplos": [
+      {
+        "arquivo": "criarDieta/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietaResposta"
+      },
+      {
+        "arquivo": "criarDieta/requisicao.json",
+        "tipo": "com.br.dietamais.dietas.api.SalvarDietaRequisicao"
+      },
+      {
+        "arquivo": "criarDieta/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/dietas/{id}",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "consultarDieta/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietaResposta"
+      },
+      {
+        "arquivo": "consultarDieta/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "PUT",
+    "caminho": "/api/v1/dietas/{id}",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "atualizarDieta/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietaResposta"
+      },
+      {
+        "arquivo": "atualizarDieta/requisicao.json",
+        "tipo": "com.br.dietamais.dietas.api.SalvarDietaRequisicao"
+      },
+      {
+        "arquivo": "atualizarDieta/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/dietas/{id}/publicar",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "publicarDieta/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietaSnapshotResposta"
+      },
+      {
+        "arquivo": "publicarDieta/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/dietas/{id}/duplicar",
+    "status": 201,
+    "exemplos": [
+      {
+        "arquivo": "duplicarDieta/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietaResposta"
+      },
+      {
+        "arquivo": "duplicarDieta/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/eu/dietas",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "listarMinhasDietas/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietasPacienteResposta"
+      },
+      {
+        "arquivo": "listarMinhasDietas/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "PUT",
+    "caminho": "/api/v1/eu/dieta-em-uso",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "selecionarDietaEmUso/resposta.json",
+        "tipo": "com.br.dietamais.dietas.api.DietaEmUsoResposta"
+      },
+      {
+        "arquivo": "selecionarDietaEmUso/requisicao.json",
+        "tipo": "com.br.dietamais.dietas.api.SelecionarDietaEmUsoRequisicao"
+      },
+      {
+        "arquivo": "selecionarDietaEmUso/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/eu/nutri",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "consultarPerfilNutri/resposta.json",
+        "tipo": "com.br.dietamais.contas.api.PerfilNutriResposta"
+      },
+      {
+        "arquivo": "consultarPerfilNutri/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "PATCH",
+    "caminho": "/api/v1/eu/nutri",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "atualizarPerfilNutri/resposta.json",
+        "tipo": "com.br.dietamais.contas.api.PerfilNutriResposta"
+      },
+      {
+        "arquivo": "atualizarPerfilNutri/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.AtualizarPerfilNutriRequisicao"
+      },
+      {
+        "arquivo": "atualizarPerfilNutri/erro.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  }
+]

@@ -26,6 +26,8 @@ Definição de pronto de toda tarefa:
 
 - [x] **MOB-09 Sync de leitura.** `Sincronizador.puxar()` com cursor e `temMais`; aplica mudanças e exclusões no SQLite; `Conectividade` expect/actual; gatilhos (abrir, voltar do fundo, conexão voltou, 15 min); WorkManager no Android; indicador offline no shell. *Depende de:* MOB-04, MOB-05, BE-08.
 - [ ] **MOB-10 Alimentos da nutri.** `ui/nutri/alimentos`: lista por grupo, busca, criar, editar, desativar (online nesta fase). *Depende de:* MOB-09, BE-10, BE-14.
+  - [x] Recorte independente autorizado na onda5: DTOs/HTTP/cache/telas/testes contra BE-C2 aprovado `c35541d`; MockEngine somente em testes, 501 tratado como indisponibilidade. Ver `alimentos-da-nutri.md`.
+  - [ ] Integração final: BE-09/catálogo e BE-10/BE-14 implementadas, aprovadas/mergeadas; sincronizar contrato final e fontes reais de sync. Este gate não é liberado pelo recorte independente.
 - [ ] **MOB-11 Lista de substituição do paciente.** Aba na ficha: remover/adicionar alimentos para aquele paciente. *Depende de:* MOB-10.
 - [ ] **MOB-12 Montador de dieta.** `ui/nutri/dieta`: refeições (nome, horário, reordenar), itens (buscar alimento, porções), totais em tempo real com `CalculadoraTotais` em `dominio` (mesma fórmula do backend, teste com a dieta de 2509 kcal); salvar rascunho. Layout de duas colunas no expandido. *Depende de:* MOB-10, BE-11.
 - [ ] **MOB-13 Publicar e duplicar dieta.** Publicar (exige online, confirmação), duplicar, ver histórico de versões; tratar `DIETA_VAZIA`. *Depende de:* MOB-12, BE-12.

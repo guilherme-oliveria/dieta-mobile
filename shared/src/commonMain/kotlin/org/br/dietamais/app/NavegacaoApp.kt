@@ -51,6 +51,7 @@ fun NavegacaoApp(
     classeJanela: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass,
     aoPrepararNavegacao: (NavHostController) -> Unit = {},
     conteudoPacientes: ConteudoPacientes? = null,
+    conteudoAlimentos: (@Composable () -> Unit)? = null,
 ) {
     // Trocar/limpar a sessão descarta também a pilha e os estados do perfil anterior.
     key(perfil) {
@@ -73,7 +74,7 @@ fun NavegacaoApp(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 composable<Entrada> { AbaVazia(Res.string.entrar, classeJanela) }
-                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes)
+                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos)
                 if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela)
             }
         }
@@ -106,7 +107,7 @@ private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass) {
     }
 }
 
-private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?) {
+private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?, alimentos: (@Composable () -> Unit)?) {
     navigation<GrafoNutri>(startDestination = RotaNutri.Inicio) {
         composable<RotaNutri.Inicio> { AbaVazia(Res.string.aba_inicio, classe) }
         navigation<RotaNutri.Pacientes>(startDestination = RotaNutri.ListaPacientes) {
@@ -128,7 +129,7 @@ private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: Nav
             }
         }
         composable<RotaNutri.Agenda> { AbaVazia(Res.string.aba_agenda, classe) }
-        composable<RotaNutri.Alimentos> { AbaVazia(Res.string.aba_alimentos, classe) }
+        composable<RotaNutri.Alimentos> { if (alimentos != null) alimentos() else AbaVazia(Res.string.aba_alimentos, classe) }
         composable<RotaNutri.Conta> { AbaVazia(Res.string.aba_conta, classe) }
     }
 }

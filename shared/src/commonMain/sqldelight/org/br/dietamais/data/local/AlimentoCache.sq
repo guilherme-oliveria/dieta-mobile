@@ -1,0 +1,23 @@
+CREATE TABLE alimento_cache (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    colecao TEXT NOT NULL,
+    id TEXT NOT NULL,
+    conteudo_json TEXT NOT NULL,
+    PRIMARY KEY (usuario_id, perfil, colecao, id)
+);
+
+daSessao:
+SELECT c.conteudo_json FROM alimento_cache AS c
+JOIN sessao AS s ON s.usuario_id = c.usuario_id AND s.perfil = c.perfil
+WHERE s.id = 1 AND s.perfil = 'NUTRICIONISTA' AND c.colecao = ?;
+
+salvar:
+INSERT OR REPLACE INTO alimento_cache (usuario_id, perfil, colecao, id, conteudo_json)
+VALUES (?, ?, ?, ?, ?);
+
+limparDaConta:
+DELETE FROM alimento_cache WHERE usuario_id = ? AND perfil = ?;
+
+limpar:
+DELETE FROM alimento_cache;

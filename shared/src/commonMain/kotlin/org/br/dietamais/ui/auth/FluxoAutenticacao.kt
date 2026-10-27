@@ -20,6 +20,8 @@ import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.theme.Dimens
 import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
 import org.br.dietamais.ui.nutri.pacientes.PacientesRota
+import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
+import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
 import org.br.dietamais.ui.auth.convite.ConviteTela
 import org.br.dietamais.plataforma.LinksConvite
@@ -114,5 +116,5 @@ private fun NavegacaoNutri() {
     val pacientes = koinViewModel<PacientesViewModel>(viewModelStoreOwner = dono)
     NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, conteudoPacientes = { classe, vinculo, abrir, voltar ->
         PacientesRota(pacientes, classe, vinculo, abrir, voltar)
-    })
+    }, conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) })
 }
