@@ -9,6 +9,27 @@ import kotlin.test.assertTrue
 
 class SnapshotSchemaTest {
     @Test
+    fun migrarSchemaTresPreservaProjecoesCursorESessaoAoAdicionarAlimentos() {
+        val arquivo = java.nio.file.Files.createTempFile("dietamais-migracao-alimentos-", ".db").toFile()
+        try {
+            File("src/commonMain/sqldelight/schemas/3.db").copyTo(arquivo, overwrite = true)
+            JdbcSqliteDriver("jdbc:sqlite:${arquivo.absolutePath}").use { driver ->
+                driver.execute(null, "INSERT INTO sessao VALUES (1, 'conta-ficticia', 'NUTRICIONISTA')", 0)
+                driver.execute(null, "INSERT INTO cursor_sync VALUES ('conta-ficticia','NUTRICIONISTA','3')", 0)
+                driver.execute(null, "INSERT INTO registro_sync VALUES ('conta-ficticia','NUTRICIONISTA','vinculos','id-ficticio',1,0,'{}')", 0)
+                driver.execute(null, "INSERT INTO mutacao_pendente (id_mutacao,usuario_id,perfil,entidade,operacao,id,dados_json) VALUES ('mutacao-ficticia','conta-ficticia','NUTRICIONISTA','teste','CRIAR','id-ficticio','{}')", 0)
+                BancoDieta.Schema.migrate(driver, 3, BancoDieta.Schema.version).value
+                val banco = BancoDieta(driver)
+                assertEquals("conta-ficticia", banco.sessaoQueries.atual().executeAsOne().usuario_id)
+                assertEquals("3", banco.cursorSyncQueries.buscar("conta-ficticia", "NUTRICIONISTA").executeAsOne())
+                assertEquals(listOf("{}"), banco.registroSyncQueries.daSessao("vinculos").executeAsList())
+                assertEquals(1, banco.mutacaoPendenteQueries.pendentes("conta-ficticia", "NUTRICIONISTA").executeAsList().size)
+                assertTrue(banco.alimentoCacheQueries.daSessao("alimentos").executeAsList().isEmpty())
+            }
+        } finally { arquivo.delete() }
+    }
+
+    @Test
     fun snapshotVersionadoContemSomenteEstruturaSemDados() {
         val arquivos = File("src/commonMain/sqldelight/schemas").listFiles { arquivo -> arquivo.extension == "db" }.orEmpty()
         assertTrue(arquivos.isNotEmpty(), "Os snapshots devem existir para verificar migrações")

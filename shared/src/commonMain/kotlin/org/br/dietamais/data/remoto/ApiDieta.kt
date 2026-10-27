@@ -88,6 +88,9 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     suspend inline fun <reified T> enviar(caminho: String, corpo: JsonElement? = null, chave: Uuid = novoIdLocal(), publica: Boolean = false): T =
         decodificar(requisitar(HttpMethod.Post, caminho, corpo, chave, publica = publica), serializer())
 
+    suspend inline fun <reified T> alterar(caminho: String, corpo: JsonElement, versao: Long): T =
+        decodificar(requisitar(HttpMethod.Patch, caminho, corpo, versao = versao), serializer())
+
     suspend fun entrar(requisicao: LoginRequisicao): SessaoResposta {
         val geracao = controle.geracao()
         val resposta = decodificar(requisitar(HttpMethod.Post, "auth/login", JsonContrato.encodeToJsonElement(requisicao), novoIdLocal(), publica = true), SessaoResposta.serializer())
@@ -127,8 +130,9 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
 
     @PublishedApi
     internal suspend fun requisitar(metodo: HttpMethod, caminho: String, corpo: JsonElement? = null, chave: Uuid? = null,
-        parametros: Map<String, String> = emptyMap(), publica: Boolean = false): HttpResponse {
+        parametros: Map<String, String> = emptyMap(), publica: Boolean = false, versao: Long? = null): HttpResponse {
         require(caminho.matches(Regex("[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*"))) { "Caminho fora da API." }
+        require(versao == null || versao >= 0)
         val termosUso = caminho == "legal/terms-of-use"
         if (termosUso) require(metodo == HttpMethod.Get && publica && corpo == null && parametros.isEmpty())
         val endereco = if (termosUso) base.removeSuffix("api/v1/") + caminho else base + caminho
@@ -141,6 +145,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
                 if (semBearer) attributes.put(AuthCircuitBreaker, Unit)
                 if (geracao != null) attributes.put(GERACAO_SESSAO, geracao)
                 if (chave != null) header("Idempotency-Key", chave.toString())
+                if (versao != null) header(HttpHeaders.IfMatch, "\"$versao\"")
                 if (corpo != null) { contentType(ContentType.Application.Json); setBody(corpo) }
             }
         } catch (cancelamento: CancellationException) { throw cancelamento }

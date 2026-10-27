@@ -1,0 +1,8 @@
+CREATE TABLE alimento_cache (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    colecao TEXT NOT NULL,
+    id TEXT NOT NULL,
+    conteudo_json TEXT NOT NULL,
+    PRIMARY KEY (usuario_id, perfil, colecao, id)
+);

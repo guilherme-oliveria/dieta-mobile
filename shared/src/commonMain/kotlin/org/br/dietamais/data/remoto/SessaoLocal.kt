@@ -130,6 +130,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
     }
 
     private fun limparBanco() = banco.transaction {
+        banco.alimentoCacheQueries.limpar()
         banco.registroSyncQueries.limpar()
         banco.pacienteCacheQueries.limpar()
         banco.conflitoQueries.limpar()

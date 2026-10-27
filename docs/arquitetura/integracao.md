@@ -87,6 +87,8 @@ BE-02 substitui apenas o stub de cadastro da nutri. Requisição e resposta mant
 
 ## Mapa de endpoints do MVP
 
+Contrato da fase 2: [contrato-fase-2.md](contrato-fase-2.md), com 16 operações ainda em 501 para MockEngine e exemplos tipados em `contrato/fase-2/`. BE-C2 publica o formato; as regras/persistência entram em BE-09..14 e BE-33. As operações reais da fase 1 permanecem implementadas.
+
 Visão geral para planejar; detalhe e schema no OpenAPI.
 
 | Módulo | Endpoints principais | Quem |

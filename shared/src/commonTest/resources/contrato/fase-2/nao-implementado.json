@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/nao-implementado",
+  "title": "Endpoint ainda não implementado",
+  "status": 501,
+  "detail": "Contrato publicado; implementação prevista nas tarefas da fase 2.",
+  "codigo": "NAO_IMPLEMENTADO",
+  "regra": null,
+  "campos": [],
+  "traceId": null,
+  "atual": null
+}
