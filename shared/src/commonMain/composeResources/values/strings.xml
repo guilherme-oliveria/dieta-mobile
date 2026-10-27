@@ -188,4 +188,7 @@
     <string name="convite_termos_estado">Estado dos termos: %1$s · versão %2$s</string>
     <string name="convite_atualizar_termos">Atualizar termos de uso</string>
     <string name="convite_atualizar">Atualizar convite</string>
+    <string name="sync_em_andamento">Sincronizando dados…</string>
+    <string name="sync_atualizar">Atualizar dados</string>
+    <string name="sync_erro">Não foi possível sincronizar os dados. Tente atualizar novamente.</string>
 </resources>

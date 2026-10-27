@@ -122,6 +122,16 @@ class PacientesViewModelTest {
         assertNull(vm.estado.value.convite)
     }
 
+    @Test fun perdaDeConexaoDesabilitaCriacaoSemEsperarErroHttp() = runTest {
+        val online = MutableStateFlow(true)
+        val vm = PacientesViewModel(PortaTeste(listOf(paciente())), compartilhar, StandardTestDispatcher(testScheduler), conectividade = online)
+        runCurrent(); online.value = false; runCurrent()
+        vm.abrirCriacao(); assertNull(vm.estado.value.formulario)
+        assertTrue(vm.estado.value.semConexao)
+        online.value = true; runCurrent(); vm.abrirCriacao()
+        assertNotNull(vm.estado.value.formulario)
+    }
+
     private inner class PortaTeste(inicial: List<PacienteResposta> = emptyList()) : PortaPacientes {
         val dados = MutableStateFlow(inicial)
         var atualizacoes = 0; var convites = 0

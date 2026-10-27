@@ -69,7 +69,7 @@ BE-01 acrescenta `ERRO_INTERNO` (500), `METODO_NAO_PERMITIDO` (405), `TIPO_CONTE
 
 ### Contrato da fase 1
 
-Contrato completo da fase 1: [contrato-fase-1.md](contrato-fase-1.md). BE-C1 publica 17 operações, records e exemplos de sucesso/erro em `src/test/resources/contrato/manifesto.json`; após BE-07, dezesseis operações são reais e somente GET /sync permanece stub 501. `GET /eu` lê a conta, assinatura da própria organização no perfil NUTRICIONISTA ou vínculos próprios no perfil PACIENTE. GET/POST `/pacientes` e GET/PATCH `/pacientes/{id}` usam ficha própria da nutri, limite de organização e `If-Match` para edição; adesão permanece nula. Toda chamada autenticada valida usuário ativo, perfil e `nid`/`pid` no banco antes da idempotência; identidade revogada ou divergente retorna 401 `NAO_AUTENTICADO`. Perfis múltiplos usam `perfis` disponíveis e `perfil` ativo em `usuario`, com `NUTRICIONISTA` no JSON/JWT; login com `perfil` opcional foi implementado em BE-03. Os campos e os 49 exemplos JSON foram preservados.
+Contrato completo da fase 1: [contrato-fase-1.md](contrato-fase-1.md). BE-C1 publica 17 operações, records e exemplos de sucesso/erro em `src/test/resources/contrato/manifesto.json`; após BE-08, as dezessete operações são reais, incluindo GET /sync. `GET /eu` lê a conta, assinatura da própria organização no perfil NUTRICIONISTA ou vínculos próprios no perfil PACIENTE. GET/POST `/pacientes` e GET/PATCH `/pacientes/{id}` usam ficha própria da nutri, limite de organização e `If-Match` para edição; adesão permanece nula. Toda chamada autenticada valida usuário ativo, perfil e `nid`/`pid` no banco antes da idempotência; identidade revogada ou divergente retorna 401 `NAO_AUTENTICADO`. Perfis múltiplos usam `perfis` disponíveis e `perfil` ativo em `usuario`, com `NUTRICIONISTA` no JSON/JWT; login com `perfil` opcional foi implementado em BE-03. Os campos e os 49 exemplos JSON foram preservados.
 
 BE-02 substitui apenas o stub de cadastro da nutri. Requisição e resposta mantêm os mesmos campos e JSONs de exemplo; os detalhes de normalização, limites de armazenamento e erros de validação estão em `contrato-fase-1.md`. A conta nasce com e-mail não confirmado, CRN não verificado e assinatura de teste cuja duração/limite vêm do banco. A confirmação e o envio de e-mail continuam em BE-04; não há sessão/token na resposta do cadastro.
 
@@ -109,7 +109,7 @@ O app é offline-first: as telas leem **só do SQLite local**; um `Sincronizador
 
 ### Puxar mudanças — `GET /api/v1/sync?cursor=<cursor>&limite=500`
 
-- O backend mantém uma sequência global `seq_sync` (bigint). Cada escrita num registro sincronizável grava `seq = nextval(...)` na linha.
+- BE-08 implementa `pacientes`, `vinculos` e `nutris`. O diário de revisões por destinatário guarda somente metadados e é atualizado na mesma transação da alteração. A revisão só fica disponível junto com o commit.
 - Resposta:
 
 ```json
@@ -118,16 +118,18 @@ O app é offline-first: as telas leem **só do SQLite local**; um `Sincronizador
   "temMais": false,
   "mudancas": {
     "pacientes":   [{ "id": "…", "versao": 4, "excluido": false, "dados": { … } }],
-    "dietas":      [ … ],
-    "alimentos":   [ … ],
-    "avaliacoes":  [ … ],
-    "checkins":    [ … ]
+    "vinculos":    [],
+    "nutris":      []
   }
 }
 ```
 
 - `cursor` vazio = carga inicial completa (paginada por `temMais`). O app guarda o último `cursor` e repete até `temMais=false`.
-- O backend só devolve o que o usuário pode ver (filtro por dono/vínculo). Registro que deixou de ser visível (vínculo encerrado) vem como `excluido: true` para o app apagar localmente.
+- NUTRICIONISTA recebe fichas e vínculos próprios e seu resumo público; PACIENTE recebe seus vínculos ATIVO/ENCERRADO e resumos públicos das respectivas nutris, sem ficha clínica privada. ADMIN recebe 403. ENCERRADO conserva histórico autorizado e atualiza status (RN-VIN-05), sem tombstone.
+- Perda real de visibilidade, como exclusão lógica ou substituição do paciente provisório pelo global no aceite, gera `excluido: true`, `dados: null`. Restauração gera nova revisão com dados. As projeções são atuais, não histórico de payloads.
+- `versao` do envelope é revisão monotônica da projeção no diário; `dados.versao` é versão da entidade para `If-Match`. Não há igualdade entre elas. Uma nova ficha do mesmo paciente pode ter versão de entidade menor; a revisão do envelope continua maior. Nunca use revisão do diário como `If-Match`.
+- `limite` vale para a soma das três coleções, entre 1 e 1000, padrão 500. A página é escolhida pela ordem global crescente das revisões mais recentes por registro no snapshot, antes de separar as listas. Combine as listas pela revisão quando precisar da ordem global.
+- Cursor é decimal não negativo até bigint. Formato inválido, overflow, futuro ou limite inválido retorna 400 `FORMATO_INVALIDO`. Com `temMais`, aponta à última revisão entregue; sem mais, ao marco confirmado do snapshot, inclusive em página vazia ou com mudanças somente de outro usuário. Não use o maior `seq` de uma tabela como cursor. Guarde cursor por conta/perfil e reinicie a carga ao trocar identidade ou limpar o banco local. O servidor reaplica autorização em toda leitura.
 - Quando puxar: ao abrir o app, ao voltar do segundo plano, ao receber push `sync`, a cada 15 min em primeiro plano e após cada envio.
 
 ### Enviar mudanças — `POST /api/v1/sync`

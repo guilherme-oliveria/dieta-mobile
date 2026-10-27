@@ -52,4 +52,24 @@ class SnapshotSchemaTest {
             }
         } finally { arquivo.delete() }
     }
+
+    @Test
+    fun migrarSchemaDoisPreservaCacheEFilaEReiniciaCursorParaNovaProjecao() {
+        val arquivo = java.nio.file.Files.createTempFile("dietamais-migracao-sync-", ".db").toFile()
+        try {
+            File("src/commonMain/sqldelight/schemas/2.db").copyTo(arquivo, overwrite = true)
+            JdbcSqliteDriver("jdbc:sqlite:${arquivo.absolutePath}").use { driver ->
+                driver.execute(null, "INSERT INTO sessao VALUES (1, 'conta-ficticia', 'NUTRICIONISTA')", 0)
+                driver.execute(null, "INSERT INTO cursor_sync VALUES ('conta-ficticia','NUTRICIONISTA','3')", 0)
+                driver.execute(null, "INSERT INTO paciente_cache VALUES ('conta-ficticia','NUTRICIONISTA','vinculo-ficticio','paciente-ficticio','{}')", 0)
+                driver.execute(null, "INSERT INTO mutacao_pendente (id_mutacao,usuario_id,perfil,entidade,operacao,id,dados_json) VALUES ('mutacao-ficticia','conta-ficticia','NUTRICIONISTA','teste','CRIAR','id-ficticio','{}')", 0)
+                BancoDieta.Schema.migrate(driver, 2, BancoDieta.Schema.version).value
+                val banco = BancoDieta(driver)
+                assertEquals(listOf("{}"), banco.pacienteCacheQueries.daSessao().executeAsList())
+                assertEquals(1, banco.mutacaoPendenteQueries.pendentes("conta-ficticia", "NUTRICIONISTA").executeAsList().size)
+                assertEquals(null, banco.cursorSyncQueries.buscar("conta-ficticia", "NUTRICIONISTA").executeAsOneOrNull())
+                assertTrue(banco.registroSyncQueries.daSessao("vinculos").executeAsList().isEmpty())
+            }
+        } finally { arquivo.delete() }
+    }
 }

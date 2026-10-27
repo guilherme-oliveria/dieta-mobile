@@ -1,6 +1,8 @@
 package org.br.dietamais.ui.auth
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -9,6 +11,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import org.br.dietamais.app.NavegacaoApp
+import org.br.dietamais.app.AmbienteDieta
 import org.br.dietamais.app.PerfilNavegacao
 import org.br.dietamais.data.remoto.dto.Perfil
 import org.br.dietamais.data.remoto.dto.StatusAssinatura
@@ -20,13 +23,17 @@ import org.br.dietamais.ui.nutri.pacientes.PacientesRota
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
 import org.br.dietamais.ui.auth.convite.ConviteTela
 import org.br.dietamais.plataforma.LinksConvite
+import org.br.dietamais.data.sync.EstadoLeituraSync
+import org.br.dietamais.data.sync.ResultadoLeituraSync
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("DEPRECATION")
-fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convites: ConviteViewModel = koinViewModel()) {
+fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convites: ConviteViewModel = koinViewModel(), ambiente: AmbienteDieta? = null) {
     val estado by viewModel.estado.collectAsState()
     val convite by convites.estado.collectAsState()
     val link by LinksConvite.pendente.collectAsState()
@@ -50,6 +57,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
             estado.restaurando -> EstadoCarregando()
             usuario != null -> Column(Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                    .heightIn(max = Dimens.alturaCabecalhoAutenticado).verticalScroll(rememberScrollState())
                     .padding(horizontal = Dimens.margemCompacta)) {
                     estado.erro?.let { MensagemAutenticacaoTexto(it, alerta = true) }
                     if (!usuario.emailConfirmado) Text(stringResource(Res.string.auth_email_nao_confirmado),
@@ -60,6 +68,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                     }
                     BotaoTexto(stringResource(Res.string.auth_sair), viewModel::sair, carregando = estado.carregando)
                     BotaoTexto(stringResource(Res.string.auth_tenho_codigo), { convites.abrir() }, habilitado = !estado.carregando)
+                    if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
                 }
                 Box(Modifier.weight(1f)) {
                     key(usuario.id, usuario.perfil) {
@@ -77,6 +86,23 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                     viewModel::mudarSenha, viewModel::recuperarSenha, viewModel::redefinirSenha, viewModel::voltar)
                 TelaAutenticacao.ESCOLHER_PERFIL -> EscolherPerfilTela(estado, viewModel::escolherPerfil, viewModel::voltar)
             }
+        }
+    }
+}
+
+@Composable
+private fun IndicadorAmbiente(ambiente: AmbienteDieta) {
+    val conexao by ambiente.conectividade.estado.collectAsState()
+    val estado by ambiente.sincronizador.estado.collectAsState()
+    val escopo = rememberCoroutineScope()
+    var falhaLocal by remember { mutableStateOf(false) }
+    LaunchedEffect(estado.resultado) { if (estado.resultado == ResultadoLeituraSync.CONCLUIDO) falhaLocal = false }
+    IndicadorLeitura(if (falhaLocal) EstadoLeituraSync(ResultadoLeituraSync.FALHOU) else estado, conexao) {
+        falhaLocal = false
+        escopo.launch {
+            try { ambiente.sincronizarAgora(); falhaLocal = false }
+            catch (cancelamento: CancellationException) { throw cancelamento }
+            catch (_: Exception) { falhaLocal = true }
         }
     }
 }

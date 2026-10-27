@@ -4,6 +4,7 @@ CREATE TABLE paciente_cache (
     vinculo_id TEXT NOT NULL,
     paciente_id TEXT NOT NULL,
     conteudo_json TEXT NOT NULL,
+    bootstrap_pendente INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (usuario_id, perfil, vinculo_id)
 );
 
@@ -21,3 +22,12 @@ DELETE FROM paciente_cache WHERE usuario_id = ? AND perfil = ?;
 
 limpar:
 DELETE FROM paciente_cache;
+
+limparPaciente:
+DELETE FROM paciente_cache WHERE usuario_id = ? AND perfil = ? AND paciente_id = ?;
+
+prepararBootstrap:
+UPDATE paciente_cache SET bootstrap_pendente = 1 WHERE usuario_id = ? AND perfil = ?;
+
+concluirBootstrap:
+DELETE FROM paciente_cache WHERE usuario_id = ? AND perfil = ? AND bootstrap_pendente = 1;

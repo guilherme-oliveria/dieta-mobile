@@ -22,6 +22,7 @@ object Dimens {
     val marcaEntrada = 56.dp
     val avatarPaciente = 40.dp
     val alturaTermos = 360.dp
+    val alturaCabecalhoAutenticado = 200.dp
     val larguraListaPacientes = 360.dp
     val larguraTrilho = 96.dp
     val alturaBarraNavegacao = 80.dp

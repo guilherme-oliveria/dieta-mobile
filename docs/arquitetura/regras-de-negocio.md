@@ -125,6 +125,8 @@ Detalhes técnicos em `integracao.md`. Regras:
 
 - **RN-SYN-01** Todo registro sincronizável tem `id` UUID gerado pelo cliente (UUIDv7), `versao` (inteiro, incrementado pelo backend a cada escrita), `atualizado_em` e `excluido_em` (exclusão lógica).
 - **RN-SYN-02** Escrita offline leva a `versao` em que foi baseada. Se a versão no servidor for outra, o backend **não sobrescreve**: devolve `CONFLITO_VERSAO` com o registro atual, e o app pergunta à nutri qual manter.
+
+  Na leitura, `versao` do envelope é revisão monotônica da projeção no diário; a versão da entidade está em `dados.versao`, usada em `If-Match`. ENCERRADO conserva histórico autorizado por RN-VIN-05; tombstone representa perda real de visibilidade, não mero encerramento.
 - **RN-SYN-03** Registros só de inclusão (check-in, água, peso em casa, log) nunca conflitam.
 - **RN-SYN-04** Regras de negócio valem igual no sync: uma mutação offline que viole uma regra (ex.: limite de pacientes) é rejeitada naquele item com o código da regra, sem derrubar o lote.
 - **RN-SYN-05** O paciente não edita nada da nutri, então só sincroniza escrita dos próprios registros de rotina e respostas de anamnese.

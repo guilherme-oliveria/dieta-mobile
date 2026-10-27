@@ -7,12 +7,14 @@ import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.encodeToJsonElement
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
+import org.br.dietamais.data.sync.*
 import kotlin.uuid.Uuid
 
 interface PortaPacientes {
@@ -23,7 +25,8 @@ interface PortaPacientes {
     suspend fun assinatura(): AssinaturaResumoResposta?
 }
 
-class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDieta) : PortaPacientes {
+class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDieta,
+    private val sincronizador: Sincronizador = criarSincronizador(api, banco), private val aoAlterar: () -> Unit = {}) : PortaPacientes {
     private val operacoes = Mutex()
     override suspend fun assinatura(): AssinaturaResumoResposta? {
         val contexto = contexto()
@@ -41,18 +44,18 @@ class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDi
 
     override suspend fun atualizar() = operacoes.withLock {
         val contexto = contexto()
-        val recebidos = linkedMapOf<Uuid, PacienteResposta>()
-        var pagina = 0
-        do {
-            val resposta = api.obter<PaginaPacientesResposta>("pacientes", mapOf("pagina" to pagina.toString(), "tamanho" to "20", "ordem" to "nome,asc"))
-            if (resposta.pagina != pagina || resposta.tamanho != 20 || resposta.total < 0 || resposta.itens.size > 20) throw RespostaInvalida()
-            resposta.itens.forEach { recebidos[it.vinculoId] = it }
-            pagina++
-        } while (resposta.itens.size == 20 && pagina.toLong() * 20 < resposta.total)
-        banco.transaction {
-            conferir(contexto)
-            banco.pacienteCacheQueries.limparDaConta(contexto.usuarioId.toString(), contexto.perfil.name)
-            recebidos.values.forEach { salvar(contexto, it) }
+        val iniciado = sincronizador.puxar()
+        val resultado = if (iniciado == ResultadoLeituraSync.EM_ANDAMENTO)
+            sincronizador.estado.first { it.resultado != ResultadoLeituraSync.EM_ANDAMENTO }.resultado else iniciado
+        when (resultado) {
+            ResultadoLeituraSync.CONCLUIDO -> conferir(contexto)
+            ResultadoLeituraSync.SEM_REDE -> throw FalhaComunicacao()
+            ResultadoLeituraSync.SEM_SESSAO, ResultadoLeituraSync.SESSAO_ALTERADA, ResultadoLeituraSync.CANCELADO -> throw SessaoAlterada()
+            else -> {
+                val erro = sincronizador.estado.value
+                if (erro.codigoErro != null) throw ErroApi(erro.codigoErro, null, emptyList(), erro.statusHttp ?: 500, null, null)
+                throw RespostaInvalida()
+            }
         }
     }
 
@@ -61,6 +64,7 @@ class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDi
         val resposta = api.enviar<PacienteResposta>("pacientes", JsonContrato.encodeToJsonElement(requisicao), chave)
         if (resposta.id != requisicao.id) throw RespostaInvalida()
         banco.transaction { conferir(contexto); salvar(contexto, resposta) }
+        aoAlterar()
         resposta
     }
 

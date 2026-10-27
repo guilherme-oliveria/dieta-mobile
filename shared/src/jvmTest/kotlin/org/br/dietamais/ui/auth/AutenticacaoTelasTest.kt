@@ -39,6 +39,7 @@ class AutenticacaoTelasTest {
             onNodeWithText("Tenho um código da minha nutri").performScrollTo().performClick()
             onNodeWithText("Seu convite").assertIsDisplayed()
             onNodeWithText("Voltar para entrar").performScrollTo().performClick()
+            waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Sou nutricionista").fetchSemanticsNodes().isNotEmpty() }
             onNodeWithText("Sou nutricionista").performScrollTo().performClick()
             onNodeWithText("Crie sua conta").assertIsDisplayed()
             onNodeWithText("Voltar para entrar").performScrollTo().performClick()

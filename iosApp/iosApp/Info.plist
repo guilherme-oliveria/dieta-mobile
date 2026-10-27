@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array><string>org.br.dietamais.sync-leitura</string></array>
+    <key>UIBackgroundModes</key>
+    <array><string>fetch</string></array>
 
     <key>ConviteHost</key>
     <string>$(CONVITE_HOST)</string>
