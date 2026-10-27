@@ -1,0 +1,26 @@
+CREATE TABLE registro_sync (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    colecao TEXT NOT NULL,
+    id TEXT NOT NULL,
+    revisao INTEGER NOT NULL CHECK (revisao >= 0),
+    excluido INTEGER NOT NULL CHECK (excluido IN (0, 1)),
+    dados_json TEXT,
+    PRIMARY KEY (usuario_id, perfil, colecao, id),
+    CHECK ((excluido = 1 AND dados_json IS NULL) OR (excluido = 0 AND dados_json IS NOT NULL))
+);
+
+revisao:
+SELECT revisao FROM registro_sync WHERE usuario_id = ? AND perfil = ? AND colecao = ? AND id = ?;
+
+salvar:
+INSERT OR REPLACE INTO registro_sync (usuario_id, perfil, colecao, id, revisao, excluido, dados_json)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+daSessao:
+SELECT r.dados_json FROM registro_sync AS r
+JOIN sessao AS s ON s.usuario_id = r.usuario_id AND s.perfil = r.perfil
+WHERE s.id = 1 AND r.colecao = ? AND r.excluido = 0 AND r.dados_json IS NOT NULL;
+
+limpar:
+DELETE FROM registro_sync;

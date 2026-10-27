@@ -16,7 +16,7 @@ import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class PacientesViewModel(private val repositorio: PortaPacientes, private val compartilhamento: Compartilhamento,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate) : ViewModel() {
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null) : ViewModel() {
     private val atual = MutableStateFlow(EstadoPacientes())
     val estado = atual.asStateFlow()
     private var todos = emptyList<PacienteResposta>()
@@ -26,6 +26,10 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
     private val chavesConvite = mutableMapOf<Uuid, Uuid>()
 
     init {
+        conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) {
+            fluxo.collect { online -> atual.update { it.copy(semConexao = !online,
+                erro = if (online && it.erro == MensagemPacientes.SEM_CONEXAO) null else it.erro) } }
+        } }
         viewModelScope.launch(dispatcher) {
             repositorio.observar().catch { falha -> apresentar(falha) }.collect { todos = it; publicarLista() }
         }

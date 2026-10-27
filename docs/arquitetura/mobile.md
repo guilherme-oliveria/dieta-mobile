@@ -112,7 +112,7 @@ A infraestrutura de MOB-05, armazenamento por plataforma, erros e testes estão 
 Implementa exatamente o que está em `integracao.md`:
 
 - Tabela local `mutacao_pendente` (id da mutação, entidade, operação, id, versão base, JSON, tentativas, status). Gravar no banco + enfileirar é uma transação só.
-- `Sincronizador`: envia a fila em lotes de até 200, depois puxa `GET /sync?cursor=` até `temMais=false`. Gatilhos: abrir o app, voltar do segundo plano, conexão voltou, push `sync`, a cada 15 min em primeiro plano, e no desktop a cada 5 min.
+- `Sincronizador`: MOB-09 implementa leitura `GET /sync?cursor=` até `temMais=false`, com aplicação transacional por página, cursor opaco e isolamento por época da sessão. Gatilhos implementados: abrir, retornar ao primeiro plano, reconexão e 15 min; WorkManager Android e BGAppRefresh iOS de melhor esforço. O envio da fila entra em MOB-16 e push em sua tarefa posterior. Detalhes e limitações em [sync-leitura.md](sync-leitura.md).
 - Android em segundo plano: WorkManager com restrição de rede. iOS: `BGAppRefreshTask` (melhor esforço). Desktop: coroutine enquanto o app estiver aberto.
 - Conflito: guarda a versão do servidor em `conflito` e mostra a tela de resolução (MOB-30). Rejeitada: desfaz local e mostra a mensagem do `codigo`.
 - Indicador global: "offline" e "N alterações pendentes" no topo do shell.

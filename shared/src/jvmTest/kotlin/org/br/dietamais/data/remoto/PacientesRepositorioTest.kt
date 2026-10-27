@@ -21,7 +21,7 @@ class PacientesRepositorioTest {
     @Test fun refreshPublicaCacheLocalELogoutApagaDadosClinicos() = runTest {
         comRepositorio(MockEngine { req ->
             if (req.url.encodedPath.endsWith("logout")) respond("", HttpStatusCode.NoContent)
-            else json(recursoContrato("listarPacientes/resposta.json"))
+            else json(recursoContrato("puxarMudancas/resposta.json"))
         }) { repo, api, banco ->
             repo.atualizar()
             assertTrue(repo.observar().first().isNotEmpty())
@@ -29,11 +29,13 @@ class PacientesRepositorioTest {
             assertTrue(repo.observar().first().isEmpty())
             banco.sessaoQueries.salvar(usuarioId(), "NUTRICIONISTA")
             assertTrue(repo.observar().first().isEmpty())
+            assertTrue(banco.registroSyncQueries.daSessao("vinculos").executeAsList().isEmpty())
+            assertTrue(banco.registroSyncQueries.daSessao("nutris").executeAsList().isEmpty())
         }
     }
 
     @Test fun outraSessaoNuncaLeCacheAnterior() = runTest {
-        comRepositorio(MockEngine { json(recursoContrato("listarPacientes/resposta.json")) }) { repo, _, banco ->
+        comRepositorio(MockEngine { json(recursoContrato("puxarMudancas/resposta.json")) }) { repo, _, banco ->
             repo.atualizar()
             banco.sessaoQueries.salvar(Uuid.random().toString(), "NUTRICIONISTA")
             assertTrue(repo.observar().first().isEmpty())
@@ -42,36 +44,45 @@ class PacientesRepositorioTest {
         }
     }
 
-    @Test fun paginaPosteriorComFalhaNaoDestroiCacheAnterior() = runTest {
-        var falhar = false
+    @Test fun paginaPosteriorComFalhaMantemCacheEPaginasConfirmadasParaRetomada() = runTest {
+        var etapa = 0
         val base = paciente()
         val vinte = List(20) { base.copy(id = Uuid.random(), vinculoId = Uuid.random(), nome = "Paciente fictício $it") }
         comRepositorio(MockEngine { req ->
-            if (!falhar) json(recursoContrato("listarPacientes/resposta.json"))
-            else if (req.url.parameters["pagina"] == "0") json(JsonContrato.encodeToString(PaginaPacientesResposta(vinte, 0, 20, 21)))
-            else throw java.io.IOException("Rede simulada indisponível")
-        }) { repo, _, _ ->
+            when {
+                etapa == 0 -> json(recursoContrato("puxarMudancas/resposta.json"))
+                etapa == 2 -> json(JsonContrato.encodeToString(paginaSync(emptyList(), "24", false)))
+                req.url.parameters["cursor"] == "3" -> json(JsonContrato.encodeToString(paginaSync(vinte, "23", true, 4)))
+                else -> throw java.io.IOException("Rede simulada indisponível")
+            }
+        }) { repo, _, banco ->
             repo.atualizar()
             val antes = repo.observar().first()
-            falhar = true
+            etapa = 1
             assertFailsWith<FalhaComunicacao> { repo.atualizar() }
-            assertEquals(antes, repo.observar().first())
+            val confirmados = repo.observar().first()
+            assertTrue(confirmados.containsAll(antes))
+            assertEquals(21, confirmados.size)
+            assertEquals("23", banco.cursorSyncQueries.buscar(usuarioId(), "NUTRICIONISTA").executeAsOne())
+            etapa = 2; repo.atualizar()
+            assertEquals(confirmados, repo.observar().first())
         }
     }
 
-    @Test fun refreshLeTodasPaginasAntesDePublicar() = runTest {
+    @Test fun refreshPercorrePaginasDeSyncAteTemMaisFalso() = runTest {
         val base = paciente()
         val itens = List(21) { base.copy(id = Uuid.random(), vinculoId = Uuid.random(), nome = "Paciente fictício $it") }
-        val paginas = mutableListOf<String>()
+        val cursores = mutableListOf<String?>()
         comRepositorio(MockEngine { req ->
-            paginas += requireNotNull(req.url.parameters["pagina"])
-            val pagina = req.url.parameters["pagina"]!!.toInt()
-            assertEquals("20", req.url.parameters["tamanho"])
-            json(JsonContrato.encodeToString(PaginaPacientesResposta(if (pagina == 0) itens.take(20) else itens.takeLast(1), pagina, 20, 21)))
+            val cursor = req.url.parameters["cursor"]
+            cursores += cursor
+            assertEquals("/api/v1/sync", req.url.encodedPath)
+            assertEquals("500", req.url.parameters["limite"])
+            json(JsonContrato.encodeToString(paginaSync(if (cursor == null) itens.take(20) else itens.takeLast(1), if (cursor == null) "20" else "21", cursor == null, if (cursor == null) 1 else 21)))
         }) { repo, _, _ ->
             repo.atualizar()
             assertEquals(21, repo.observar().first().size)
-            assertEquals(listOf("0", "1"), paginas)
+            assertEquals(listOf(null, "20"), cursores)
         }
     }
 
@@ -79,7 +90,7 @@ class PacientesRepositorioTest {
         val iniciou = CompletableDeferred<Unit>(); val liberar = CompletableDeferred<Unit>()
         comRepositorio(MockEngine { req ->
             if (req.url.encodedPath.endsWith("logout")) respond("", HttpStatusCode.NoContent)
-            else { iniciou.complete(Unit); liberar.await(); json(recursoContrato("listarPacientes/resposta.json")) }
+            else { iniciou.complete(Unit); liberar.await(); json(recursoContrato("puxarMudancas/resposta.json")) }
         }) { repo, api, banco ->
             val pedido = async { runCatching { repo.atualizar() } }
             iniciou.await(); api.sair(); liberar.complete(Unit)
@@ -145,4 +156,6 @@ class PacientesRepositorioTest {
         } finally { driver.close() }
     }
     private fun usuarioId() = JsonContrato.decodeFromString<SessaoResposta>(recursoContrato("entrar/resposta.json")).usuario.id.toString()
+    private fun paginaSync(pacientes: List<PacienteResposta>, cursor: String, mais: Boolean, inicio: Long = 1) = SyncResposta(cursor, mais,
+        MudancasFase1Resposta(pacientes.mapIndexed { indice, paciente -> MudancaSyncResposta(paciente.id, indice.toLong() + inicio, false, paciente) }, emptyList(), emptyList()))
 }

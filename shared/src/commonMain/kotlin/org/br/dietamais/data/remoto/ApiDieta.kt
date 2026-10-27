@@ -34,6 +34,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     private val base = origem.toString()
     private val controle = SessaoLocal(cofre, banco)
     val sessao = controle.fluxo
+    val operacaoSessao = controle.fluxoOperacao
     private val cliente = HttpClient(engine) {
         followRedirects = false
         expectSuccess = false
@@ -95,6 +96,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     }
 
     suspend fun restaurarSessao() { controle.tokens() }
+    internal suspend fun aguardarOperacoesSessao() = controle.aguardarOperacoes()
     suspend fun usuarioAtual(): UsuarioResposta? = controle.usuarioAtual()
     suspend fun consultarTermosUso(): TermosUsoResposta = obter("legal/terms-of-use", publica = true)
 

@@ -15,6 +15,9 @@ import org.br.dietamais.plataforma.CofreSessao
 import kotlin.uuid.Uuid
 
 data class ContextoSessao(val usuarioId: Uuid, val perfil: Perfil)
+data class OperacaoSessao(val contexto: ContextoSessao, val id: Long) {
+    override fun toString() = "OperacaoSessao[identidade protegida]"
+}
 
 internal class SessaoLocal(private val cofre: CofreSessao, private val banco: BancoDieta) {
     private val mutex = Mutex()
@@ -23,11 +26,14 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
     private var geracao = 0L
     private val estado = MutableStateFlow<ContextoSessao?>(null)
     val fluxo = estado.asStateFlow()
+    private val operacao = MutableStateFlow<OperacaoSessao?>(null)
+    val fluxoOperacao = operacao.asStateFlow()
 
     suspend fun tokens(): BearerTokens? = mutex.withLock { carregar()?.tokens() }
     suspend fun usuarioAtual() = mutex.withLock { carregar()?.usuario }
     suspend fun geracao(): Long = mutex.withLock { carregar(); geracao }
     suspend fun corresponde(esperada: Long?): Boolean = mutex.withLock { esperada == geracao }
+    suspend fun aguardarOperacoes() = mutex.withLock { }
 
     suspend fun rejeitar(esperada: Long?) = mutex.withLock {
         if (esperada == geracao) withContext(NonCancellable) { apagar() }
@@ -41,6 +47,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
                 apagar()
             } else {
                 try { validar(resposta) } catch (falha: RespostaInvalida) { apagar(); throw falha }
+                operacao.value = null
                 if (anterior?.usuario?.id != resposta.usuario.id || anterior.usuario.perfil != resposta.usuario.perfil) limparBanco()
                 geracao++
                 salvar(resposta)
@@ -89,6 +96,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
             atual = resposta
             carregada = true
             estado.value = resposta?.contexto()
+            operacao.value = resposta?.let { OperacaoSessao(it.contexto(), geracao) }
         }
         return atual
     }
@@ -105,6 +113,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
             atual = resposta
             carregada = true
             estado.value = resposta.contexto()
+            operacao.value = OperacaoSessao(resposta.contexto(), geracao)
         } catch (falha: Exception) {
             apagar()
             throw falha
@@ -113,6 +122,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
 
     private suspend fun apagar() {
         geracao++
+        operacao.value = null
         atual = null
         carregada = true
         estado.value = null
@@ -120,6 +130,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
     }
 
     private fun limparBanco() = banco.transaction {
+        banco.registroSyncQueries.limpar()
         banco.pacienteCacheQueries.limpar()
         banco.conflitoQueries.limpar()
         banco.mutacaoPendenteQueries.limpar()

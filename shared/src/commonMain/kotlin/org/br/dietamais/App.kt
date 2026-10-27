@@ -10,6 +10,15 @@ import org.br.dietamais.app.moduloApi
 import org.br.dietamais.app.moduloAutenticacao
 import org.br.dietamais.app.moduloPacientes
 import org.br.dietamais.app.moduloConvites
+import org.br.dietamais.app.moduloAmbiente
+import org.br.dietamais.app.AmbienteDieta
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import org.koin.compose.viewmodel.koinViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import org.br.dietamais.plataforma.Compartilhamento
 import org.br.dietamais.plataforma.CompartilhamentoIndisponivel
 import org.br.dietamais.plataforma.IdentidadeDispositivo
@@ -19,25 +28,42 @@ import org.br.dietamais.plataforma.CofreSessao
 import org.br.dietamais.plataforma.Config
 import org.br.dietamais.plataforma.FabricaDriver
 import org.br.dietamais.ui.theme.DietaTheme
-import org.koin.compose.KoinApplication
-import org.koin.dsl.koinConfiguration
+import org.koin.compose.KoinIsolatedContext
+import org.koin.dsl.koinApplication
 
 @Composable
 @Preview
 fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDriver: FabricaDriver? = null,
     cofreSessao: CofreSessao? = null, versaoApp: String = "1.0.0",
     identidadeDispositivo: IdentidadeDispositivo? = null, termosCadastro: TermosCadastro? = null,
-    compartilhamento: Compartilhamento = Compartilhamento { throw CompartilhamentoIndisponivel() }) {
-    KoinApplication(configuration = koinConfiguration {
-        modules(moduloApp(config))
-        fabricaDriver?.let { modules(moduloBancoLocal(it)) }
-        if (fabricaDriver != null && cofreSessao != null) modules(moduloApi(cofreSessao, versaoApp))
-        if (fabricaDriver != null && cofreSessao != null && identidadeDispositivo != null) modules(moduloAutenticacao(identidadeDispositivo, termosCadastro))
-        if (fabricaDriver != null && cofreSessao != null && identidadeDispositivo != null) modules(moduloConvites(identidadeDispositivo))
-        if (fabricaDriver != null && cofreSessao != null) modules(moduloPacientes(compartilhamento))
-    }) {
+    compartilhamento: Compartilhamento = Compartilhamento { throw CompartilhamentoIndisponivel() }, ambiente: AmbienteDieta? = null) {
+    val dadosDisponiveis = ambiente != null || (fabricaDriver != null && cofreSessao != null)
+    val autenticacaoDisponivel = dadosDisponiveis && identidadeDispositivo != null
+    if (ambiente != null) {
+        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { ambiente.primeiroPlano(true) }
+        LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { ambiente.primeiroPlano(false) }
+        DisposableEffect(ambiente) { onDispose { ambiente.primeiroPlano(false) } }
+    }
+    val contexto = remember(ambiente, fabricaDriver, cofreSessao, identidadeDispositivo) { koinApplication {
+        modules(moduloApp(ambiente?.config ?: config))
+        if (ambiente != null) modules(moduloAmbiente(ambiente))
+        else {
+            fabricaDriver?.let { modules(moduloBancoLocal(it)) }
+            if (fabricaDriver != null && cofreSessao != null) modules(moduloApi(cofreSessao, versaoApp))
+        }
+        if (autenticacaoDisponivel) modules(moduloAutenticacao(identidadeDispositivo, termosCadastro))
+        if (autenticacaoDisponivel) modules(moduloConvites(identidadeDispositivo))
+        if (dadosDisponiveis) modules(moduloPacientes(compartilhamento, ambiente))
+    } }
+    DisposableEffect(contexto) { onDispose { contexto.close() } }
+    KoinIsolatedContext(contexto) {
         DietaTheme {
-            if (fabricaDriver != null && cofreSessao != null && identidadeDispositivo != null) FluxoAutenticacao()
+            if (autenticacaoDisponivel) {
+                val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
+                DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
+                FluxoAutenticacao(viewModel = koinViewModel(viewModelStoreOwner = dono),
+                    convites = koinViewModel(viewModelStoreOwner = dono), ambiente = ambiente)
+            }
             else NavegacaoApp(perfil)
         }
     }
