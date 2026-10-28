@@ -8,4 +8,4 @@ RED deve demonstrar: pull guarda grupos/alimentos mas não atualiza a tabela obs
 - [x] Mesmo registro com duas edições locais: pull novo mantém a última intenção, guarda base remota; rejeição parcial mantém a outra pendência e rejeição final restaura atualização remota sem novo pull.
 - [x] Tombstone com pendência, rollback de página inválida/cursor e isolamento; falha não consome base remota ou perde fila.
 - [x] Implementar reconciliação incremental sem migração, mantendo demais coleções e contratos inalterados. Auditar interação com refresh GET completo e resolução explícita de pendências.
-- [ ] Testes focados/suíte/build na base atual, documentação de limites, PR develop e QA independente. Cadeia/ordem UUID após manterMinha continua sem validação integral neste PR.
+- [x] Testes focados/suíte/build na base atual e documentação de limites: 411 JVM/231 Android host sem falhas, migração/APK/JAR verdes. Oito regressões, seis RED confirmadas. PR develop preparado para QA independente; o veredito continua pendente. Cadeia/ordem UUID após manterMinha continua sem validação integral neste PR.
