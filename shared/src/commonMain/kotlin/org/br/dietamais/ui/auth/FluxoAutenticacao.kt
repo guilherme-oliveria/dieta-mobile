@@ -27,7 +27,9 @@ import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
 import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
+import org.br.dietamais.ui.paciente.hoje.AcoesHoje
 import org.br.dietamais.ui.paciente.hoje.HojeTela
+import org.br.dietamais.ui.paciente.substituicao.TrocaTela
 import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
 import org.br.dietamais.ui.nutri.pacientes.AbaFicha
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
@@ -125,7 +127,10 @@ private fun NavegacaoPaciente() {
     val vm = koinViewModel<DietaPacienteViewModel>(viewModelStoreOwner = dono)
     val estado by vm.estado.collectAsState()
     NavegacaoApp(PerfilNavegacao.PACIENTE,
-        conteudoHoje = { HojeTela(estado) },
+        conteudoHoje = {
+            HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua))
+            TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
+        },
         conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) })
 }
 

@@ -290,4 +290,20 @@
     <string name="pac_erro_sem_conexao">Sem conexão. Para trocar a dieta em uso, conecte-se à internet.</string>
     <string name="pac_erro_conflito">A escolha mudou em outro aparelho. Tente de novo.</string>
     <string name="pac_erro_geral">Não foi possível concluir. Tente de novo.</string>
+    <string name="pac_dia_hoje">Hoje</string>
+    <string name="pac_dia_ontem">Ontem</string>
+    <string name="pac_dia_antes">%1$s</string>
+    <string name="pac_comi">Comi</string>
+    <string name="pac_troquei">Troquei</string>
+    <string name="pac_pulei">Pulei</string>
+    <string name="pac_status_pulada">Pulada</string>
+    <string name="pac_troca_titulo">Trocar alimento</string>
+    <string name="pac_troca_sem_opcao">Sem substituto na sua lista para este item.</string>
+    <string name="pac_troca_opcao">%1$s · %2$s (%3$s g)</string>
+    <string name="pac_troca_confirmar">Confirmar troca</string>
+    <string name="pac_troca_cancelar">Cancelar</string>
+    <string name="pac_troca_manter">Manter o original</string>
+    <string name="pac_agua_titulo">Água</string>
+    <string name="pac_agua_progresso">%1$s de %2$s ml</string>
+    <string name="pac_agua_mais">+ %1$s ml</string>
 </resources>

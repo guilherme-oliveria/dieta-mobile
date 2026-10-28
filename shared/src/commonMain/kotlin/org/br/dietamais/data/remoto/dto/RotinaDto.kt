@@ -19,3 +19,11 @@ data class CheckinResposta(val id: Uuid, val pacienteId: Uuid, val dietaId: Uuid
 data class AguaResposta(val id: Uuid, val pacienteId: Uuid, val ml: Int, val registradoEm: Instant)
 @Serializable
 data class PesoResposta(val id: Uuid, val pacienteId: Uuid, val pesoKg: Double, val registradoEm: Instant)
+
+@Serializable
+data class CheckinRequisicao(val id: Uuid? = null, val dietaId: Uuid, val refeicaoId: Uuid, val data: LocalDate, val status: StatusCheckin,
+    val trocas: List<TrocaCheckin> = emptyList(), val registradoEm: Instant)
+@Serializable
+data class AguaRequisicao(val id: Uuid? = null, val ml: Int, val registradoEm: Instant)
+@Serializable
+data class PesoRequisicao(val id: Uuid? = null, val pesoKg: Double, val registradoEm: Instant)

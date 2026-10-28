@@ -32,7 +32,7 @@ Definição de pronto de toda tarefa:
 - [x] **MOB-12 Montador de dieta.** `ui/nutri/dieta`: refeições (nome, horário, reordenar), itens (buscar alimento, porções), totais em tempo real com `CalculadoraTotais` em `dominio` (mesma fórmula do backend, teste com a dieta de 2509 kcal); salvar rascunho. Layout de duas colunas no expandido. *Depende de:* MOB-10, BE-11.
 - [x] **MOB-13 Publicar e duplicar dieta.** Publicar (exige online, confirmação), duplicar, ver histórico de versões; tratar `DIETA_VAZIA`. *Depende de:* MOB-12, BE-12.
 - [x] **MOB-14 Hoje e Dieta (paciente).** `ui/paciente/hoje` (refeições do dia, próxima em destaque) e `ui/paciente/dieta` (refeição detalhada), lendo o snapshot local; seletor de dieta em uso quando houver mais de uma nutri; `OrientacoesScreen` e o estado "sua nutri está montando sua dieta" quando não há dieta publicada. *Depende de:* MOB-09, BE-13.
-- [ ] **MOB-15 Trocar alimento.** `ui/paciente/substituicao`: substitutos do mesmo grupo da lista congelada, com quantidade equivalente (`calcularSubstituto` em `dominio`, com teste); escolher grava check-in TROCADO (local, enviado na fase 3). *Depende de:* MOB-14.
+- [x] **MOB-15 Trocar alimento.** `ui/paciente/substituicao`: substitutos do mesmo grupo da lista congelada, com quantidade equivalente (`calcularSubstituto` em `dominio`, com teste); escolher grava check-in TROCADO (local, enviado na fase 3). *Depende de:* MOB-14.
 
 ## Fase 2b — Conta da nutri
 
@@ -41,7 +41,7 @@ Definição de pronto de toda tarefa:
 ## Fase 3 — Rotina do paciente
 
 - [x] **MOB-16 Envio da fila.** `Sincronizador.enviar()` com lotes, `idMutacao`, tratamento de APLICADA/REJEITADA/CONFLITO; reenvio com backoff. *Depende de:* MOB-09, BE-15.
-- [ ] **MOB-17 Check-in e água.** Marcar refeição FEITO/TROCADO/PULADO (até 3 dias para trás), contador de água com meta 35 ml/kg (`AguaSheet`); tudo offline via fila. *Depende de:* MOB-14, MOB-16.
+- [x] **MOB-17 Check-in e água.** Marcar refeição FEITO/TROCADO/PULADO (até 3 dias para trás), contador de água com meta 35 ml/kg (`AguaSheet`); tudo offline via fila. *Depende de:* MOB-14, MOB-16.
 - [ ] **MOB-18 Lembretes locais.** `planejarLembretes` em `dominio` (com teste: horários, silêncio, limite de 64 no iOS); `NotificadorLocal` expect/actual (AlarmManager + boot no Android, UNUserNotificationCenter no iOS, bandeja no desktop); ações "Comi/Troquei/Pulei"; pedido de permissão. *Depende de:* MOB-17.
 - [ ] **MOB-19 Perfil e preferências.** `ui/paciente/perfil`: `PerfilScreen`, tipos de lembrete, horário de silêncio, `MinhasNutrisScreen` só leitura (vínculos e nutri ativa; troca com cópia de histórico é P2), sair; sincroniza `preferencias-notificacao`. *Depende de:* MOB-18, BE-18.
 - [ ] **MOB-20 Lista de compras.** `ui/paciente/compras`: `gerarListaCompras(dieta, dias)` em `dominio` (com teste), agrupada por grupo, marcar itens (local), compartilhar como texto. *Depende de:* MOB-14.
