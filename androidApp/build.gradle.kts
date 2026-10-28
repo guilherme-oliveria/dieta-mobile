@@ -15,6 +15,7 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.firebase.messaging)
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
@@ -34,6 +35,11 @@ android {
         require(conviteHost.matches(Regex("[a-zA-Z0-9.-]+"))) { "conviteHost deve conter apenas um domínio, sem esquema ou caminho" }
         manifestPlaceholders["conviteHost"] = conviteHost
         resValue("string", "convite_host", conviteHost)
+        // Firebase sem google-services.json: as credenciais do projeto vêm de propriedades do Gradle (secrets do CI), nunca do Git.
+        // Sem elas o push fica desligado e o app funciona normalmente.
+        mapOf("fcm_app_id" to "fcmAppId", "fcm_api_key" to "fcmApiKey", "fcm_project_id" to "fcmProjectId", "fcm_sender_id" to "fcmSenderId").forEach { (recurso, propriedade) ->
+            resValue("string", recurso, providers.gradleProperty(propriedade).orElse("").get())
+        }
     }
     packaging {
         resources {

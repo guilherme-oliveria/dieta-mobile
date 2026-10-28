@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import org.br.dietamais.plataforma.IdentidadeDispositivo
 import org.br.dietamais.plataforma.Compartilhador
+import org.br.dietamais.plataforma.ReceptorPush
 import org.br.dietamais.plataforma.receberLinkConvite
 
 class MainActivity : ComponentActivity() {
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         intent?.dataString?.let(::receberLinkConvite)
+        if (savedInstanceState == null) intent?.let(::receberToqueNotificacao)
 
         val notificador = NotificadorLocal(this) {
             CompletableDeferred<Boolean>().also { respostaPermissao = it; pedidoPermissao.launch(Manifest.permission.POST_NOTIFICATIONS) }.await()
@@ -41,7 +43,15 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         intent.dataString?.let(::receberLinkConvite)
+        receberToqueNotificacao(intent)
     }
+}
+
+/** O FCM entrega o `data` do push como extras da intent quando a pessoa toca na notificação com o app fora da tela. */
+private fun receberToqueNotificacao(intent: Intent) {
+    val extras = intent.extras ?: return
+    if (extras.getString("sync") == null) return // só pushes do servidor trazem `sync`
+    ReceptorPush.tocou(extras.getString("rota"))
 }
 
 @Preview

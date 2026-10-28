@@ -13,5 +13,6 @@ class DietaAplicacao : Application(), ProvedorAmbienteDieta {
     override fun onCreate() {
         super.onCreate()
         agendarLeituraPeriodica(this)
+        FirebasePush.iniciar(this)
     }
 }

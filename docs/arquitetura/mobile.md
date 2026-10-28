@@ -125,6 +125,13 @@ Implementa exatamente o que está em `integracao.md`:
   - Desktop: notificação do Compose Desktop (`TrayState.sendNotification`) enquanto o app está aberto ou na bandeja.
 - **Push (FCM):** Android pelo `firebase-messaging` no `androidApp`; iOS pelo Firebase via Swift Package Manager no `iosApp` (APNs), repassando o token ao `shared`. Ao receber: dispara sync e navega pela `rota`. Desktop não tem push.
 - `google-services.json` e `GoogleService-Info.plist` **não vão para o Git**; ficam em secrets do CI.
+- **Como o push está montado (MOB-27):**
+  - `shared/plataforma/ReceptorPush`: a plataforma só chama `novoToken(token)`, `chegou()` (push recebido, o ambiente responde com sync) e `tocou(rota)` (toque na notificação, pede navegação).
+  - `data/sync/RegistradorPush` (dentro do `AmbienteDieta`) registra o token em `POST /eu/dispositivos` quando há sessão, token e rede, e de novo se o token ou a conta mudar. Desktop nunca registra.
+  - `app/SolicitacoesNavegacao` + `dominio/avisos/DestinoAviso`: a `rota` do aviso vira uma tela do perfil (`/dieta`, `/questionarios/{id}` e `/agenda` no paciente; `/agenda` e `/pacientes/{fichaId}` na nutri). Rota desconhecida não faz nada.
+  - `ui/notificacoes`: central de avisos (botão "Avisos (n)" no cabeçalho, tela cheia com histórico lido do banco local). Marcar como lido exige rede e pede um sync em seguida.
+  - **Android:** `ServicoPushDieta` e `FirebasePush` no `androidApp`. Sem `google-services.json`: o Firebase é iniciado por código com as propriedades do Gradle `fcmAppId`, `fcmApiKey`, `fcmProjectId` e `fcmSenderId` (no CI, `ORG_GRADLE_PROJECT_fcmAppId` etc. vindos de secrets). Sem elas o push fica desligado e o app funciona normal. Android 13+ também precisa da permissão de notificações, que o app já pede ao ligar os lembretes.
+  - **iOS (pendente, MOB-27b):** falta o Firebase por Swift Package Manager e a chave APNs, que dependem de conta Apple e de um Mac. A ponte já existe: o `AppDelegate` chama `ReceptorPush.shared.novoToken(token:)` com o token do FCM e `ReceptorPush.shared.tocou(rota:)` ao tocar na notificação.
 
 ## Deep links
 

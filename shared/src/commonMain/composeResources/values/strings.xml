@@ -609,4 +609,14 @@
     <string name="agenda_dia_dom">dom</string>
     <string name="agenda_prox_titulo">Próxima consulta</string>
     <string name="agenda_prox_quando">%1$s às %2$s · %3$s</string>
+    <string name="avisos_botao">Avisos</string>
+    <string name="avisos_botao_n">Avisos (%1$d)</string>
+    <string name="avisos_titulo">Avisos</string>
+    <string name="avisos_vazio">Nenhum aviso por enquanto.</string>
+    <string name="avisos_marcar_todos">Marcar todos como lidos</string>
+    <string name="avisos_fechar">Fechar</string>
+    <string name="avisos_nao_lido">Não lido</string>
+    <string name="avisos_quando">%1$s às %2$s</string>
+    <string name="avisos_msg_sem_conexao">Sem conexão. Tente marcar como lido quando estiver online.</string>
+    <string name="avisos_msg_erro">Não foi possível marcar como lido. Tente novamente.</string>
 </resources>

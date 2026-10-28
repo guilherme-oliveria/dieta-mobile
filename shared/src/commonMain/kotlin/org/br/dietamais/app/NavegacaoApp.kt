@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
@@ -32,6 +33,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowSizeClass
+import org.br.dietamais.dominio.avisos.DestinoAviso
+import org.br.dietamais.dominio.avisos.destinoDaRota
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.EstadoVazio
 import org.br.dietamais.ui.comum.ItemNavegacao
@@ -59,6 +62,8 @@ fun NavegacaoApp(
     conteudoCompras: (@Composable () -> Unit)? = null,
     conteudoEvolucao: (@Composable () -> Unit)? = null,
     conteudoAgenda: (@Composable () -> Unit)? = null,
+    /** Da ficha (`/pacientes/{id}` do aviso) para o vínculo, que é o que a ficha aberta usa; nulo cai na lista. */
+    resolverVinculo: (String) -> String? = { null },
 ) {
     // Trocar/limpar a sessão descarta também a pilha e os estados do perfil anterior.
     key(perfil) {
@@ -101,6 +106,14 @@ fun NavegacaoApp(
             classeJanela = classeJanela, content = conteudo,
         )
         LaunchedEffect(controlador) { aoPrepararNavegacao(controlador) }
+        val pedido by SolicitacoesNavegacao.pendente.collectAsState()
+        LaunchedEffect(pedido?.id, perfil) {
+            val p = pedido
+            if (p != null && perfil != null) {
+                navegarParaAviso(controlador, destinoDaRota(perfil, p.rota), resolverVinculo)
+                SolicitacoesNavegacao.consumir(p.id)
+            }
+        }
     }
 }
 
@@ -138,6 +151,21 @@ private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: Nav
         composable<RotaNutri.Agenda> { if (agenda != null) agenda() else AbaVazia(Res.string.aba_agenda, classe) }
         composable<RotaNutri.Alimentos> { if (alimentos != null) alimentos() else AbaVazia(Res.string.aba_alimentos, classe) }
         composable<RotaNutri.Conta> { if (conta != null) conta() else AbaVazia(Res.string.aba_conta, classe) }
+    }
+}
+
+private fun navegarParaAviso(controlador: NavHostController, destino: DestinoAviso, resolverVinculo: (String) -> String?) {
+    val rota: Any = when (destino) {
+        DestinoAviso.Hoje -> RotaPaciente.Hoje
+        DestinoAviso.Dieta -> RotaPaciente.Dieta
+        DestinoAviso.Agenda -> RotaNutri.Agenda
+        is DestinoAviso.Paciente -> resolverVinculo(destino.fichaId)?.let { RotaNutri.FichaPaciente(destino.fichaId, it) } ?: RotaNutri.Pacientes
+        DestinoAviso.Nenhum -> return
+    }
+    controlador.navigate(rota) {
+        popUpTo(controlador.graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = destino !is DestinoAviso.Paciente
     }
 }
 

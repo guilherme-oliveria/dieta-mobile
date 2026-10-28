@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.br.dietamais.data.local.BancoLocal
 import org.br.dietamais.data.remoto.ApiDieta
+import org.br.dietamais.data.remoto.dto.Plataforma
 import org.br.dietamais.data.sync.*
 import org.br.dietamais.plataforma.*
 
@@ -23,6 +24,8 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
     private val enviador = EnviadorFila(FonteEnvioHttp(api), banco, contextoAtual)
     private val coordenador = CoordenadorLeitura(escopo, contexto, conectividade.estado, { sincronizarFila() })
     private var falhasEnvio = 0
+    private val registradorPush = RegistradorPush(DispositivosPushHttp(api, plataformaApi()), escopo, contexto, ReceptorPush.token,
+        conectividade.estado.map { it != EstadoConexao.INDISPONIVEL }, ativo = plataformaApi() != Plataforma.DESKTOP)
 
     /** Envia a fila e depois puxa as mudanças. Se o envio falhar, tenta de novo com backoff (30 s, 60 s, ... até 15 min). */
     private suspend fun sincronizarFila() {
@@ -36,6 +39,7 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
     }
 
     init {
+        escopo.launch { ReceptorPush.chegadas.collect { coordenador.solicitar() } }
         escopo.launch {
             try { api.restaurarSessao() }
             catch (cancelamento: CancellationException) { throw cancelamento }

@@ -55,6 +55,8 @@ import org.br.dietamais.ui.paciente.evolucao.EvolucaoPacienteRota
 import org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel
 import org.br.dietamais.ui.paciente.hoje.ProximaConsultaRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoRota
+import org.br.dietamais.ui.notificacoes.AvisosRota
+import org.br.dietamais.ui.notificacoes.AvisosViewModel
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
 import org.br.dietamais.ui.auth.convite.ConviteTela
@@ -102,6 +104,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                         Text(stringResource(Res.string.auth_assinatura_teste, it.limitePacientes, it.fimPeriodoEm.toString().substringBefore('T')),
                             style = MaterialTheme.typography.bodySmall)
                     }
+                    key(usuario.id, usuario.perfil) { AvisosDoUsuario() }
                     BotaoTexto(stringResource(Res.string.auth_sair), viewModel::sair, carregando = estado.carregando)
                     BotaoTexto(stringResource(Res.string.auth_tenho_codigo), { convites.abrir() }, habilitado = !estado.carregando)
                     if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
@@ -124,6 +127,14 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
             }
         }
     }
+}
+
+/** Central de avisos: um ViewModel por usuário/perfil, para nunca mostrar o histórico da conta anterior. */
+@Composable
+private fun AvisosDoUsuario() {
+    val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
+    DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
+    AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono))
 }
 
 @Composable
@@ -183,7 +194,8 @@ private fun NavegacaoNutri() {
     val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
     val pacientes = koinViewModel<PacientesViewModel>(viewModelStoreOwner = dono)
-    NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, conteudoPacientes = { classe, vinculo, abrir, voltar ->
+    NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, resolverVinculo = { ficha -> pacientes.estado.value.lista.firstOrNull { it.id.toString() == ficha }?.vinculoId?.toString() },
+    conteudoPacientes = { classe, vinculo, abrir, voltar ->
         PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
           if (aba == AbaFicha.EVOLUCAO) EvolucaoRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), paciente.id)
           else if (aba == AbaFicha.AVALIACOES) AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id)

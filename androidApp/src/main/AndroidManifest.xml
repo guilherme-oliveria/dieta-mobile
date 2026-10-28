@@ -40,6 +40,12 @@
                 <data android:scheme="https" android:host="${conviteHost}" android:pathPrefix="/convites/" />
             </intent-filter>
         </activity>
+        <service android:name=".ServicoPushDieta" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="avisos" />
         <receiver android:name="org.br.dietamais.plataforma.LembreteReceiver" android:exported="false" />
         <receiver android:name="org.br.dietamais.plataforma.ReinicioLembretesReceiver" android:exported="true">
             <intent-filter>

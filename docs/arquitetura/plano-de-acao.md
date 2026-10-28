@@ -56,7 +56,8 @@ Definição de pronto de toda tarefa:
 - [x] **MOB-24 Anamnese da nutri.** `ui/nutri/anamnese`: editar modelo (blocos, perguntas, tipos, condição), enviar ao paciente, ler respostas na ficha. *Depende de:* BE-21, BE-22.
 - [x] **MOB-25 Anamnese do paciente.** `ui/paciente/anamnese`: wizard por bloco, salvar parcial (offline), enviar (online); condição de exibição. *Depende de:* MOB-24, BE-22.
 - [x] **MOB-26 Agenda de consultas.** `ui/nutri/agenda` (dia/semana, criar, remarcar, cancelar) e próxima consulta no Hoje do paciente. *Depende de:* BE-23.
-- [ ] **MOB-27 Push e central de avisos.** FCM no `androidApp` e no `iosApp` (token → `POST /eu/dispositivos`); ao receber, sync + navegação pela `rota`; `ui/notificacoes` · `AvisosScreen` com histórico e marcar como lido. Arquivos do Firebase fora do Git (secrets do CI). *Depende de:* BE-24, BE-34.
+- [x] **MOB-27 Push e central de avisos (Android e comum).** Registro do token em `POST /eu/dispositivos` (`RegistradorPush`), sync ao receber o push, navegação pela `rota` (`DestinoAviso`) e `ui/notificacoes` com a central de avisos (histórico do sync, marcar como lido). FCM no `androidApp` sem `google-services.json` (propriedades `fcmAppId`, `fcmApiKey`, `fcmProjectId`, `fcmSenderId` do Gradle). O código de Android não pôde ser compilado na nuvem: confie no CI. *Depende de:* BE-24, BE-34.
+- [ ] **MOB-27b Push no iOS.** Firebase por Swift Package Manager no `iosApp`, capability Push Notifications, chave APNs no Firebase, `AppDelegate` repassando o token e o toque para `ReceptorPush` (ver mobile.md). Precisa de conta Apple e de um Mac. *Depende de:* MOB-27.
 - [ ] **MOB-28 Painel da nutri.** `ui/nutri/painel`: consultas do dia, pacientes sem check-in há 3 dias, questionários respondidos, uso do plano. *Depende de:* MOB-26, BE-16.
 
 ## Fase 5 — Offline da nutri

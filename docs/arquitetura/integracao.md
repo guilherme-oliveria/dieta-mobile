@@ -101,6 +101,7 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | rotina | `POST /eu/checkins`, `POST /eu/agua`, `POST /eu/pesos`, `GET /pacientes/{id}/adesao` | paciente / nutri |
 | avaliacoes | `GET/POST /pacientes/{id}/avaliacoes`, `PUT /avaliacoes/{id}`, `GET /eu/avaliacoes`, `GET /eu/evolucao` | nutri / paciente |
 | questionarios | `GET/POST /modelos-questionario`, `POST /pacientes/{id}/questionarios` (envia), `GET /eu/questionarios`, `PUT /eu/questionarios/{id}/respostas`, `POST /eu/questionarios/{id}/enviar` | nutri / paciente |
+| notificacoes | `GET /eu/avisos`, `POST /eu/avisos/{id}/lido`, `POST /eu/avisos/lidos` (central de avisos) | nutri / paciente |
 | agenda | `GET/POST /consultas`, `PATCH /consultas/{id}`, `GET /eu/consultas`, `POST /eu/calendario/token` (gera/revoga link .ics) | nutri / paciente |
 | relatorios | `GET /dietas/{id}/pdf`, `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
 | sync | `GET /sync`, `POST /sync` | app |
@@ -165,8 +166,8 @@ Resposta, um resultado por mutação, na mesma ordem:
 
 | Perfil | Puxa | Envia |
 | --- | --- | --- |
-| Paciente | Seus vínculos, nutris, dietas publicadas (com snapshot da lista de substituição e orientação), avaliações compartilhadas, questionários, consultas, preferências | Check-ins, água, peso, respostas de questionário, dieta em uso, preferências |
-| Nutri | Seus pacientes, fichas, lista de alimentos, listas por paciente, dietas (rascunhos e publicadas), avaliações, modelos e respostas de questionário, consultas, adesão (check-ins dos últimos 30 dias) | Tudo que ela edita, exceto publicar dieta, convidar paciente e ações de assinatura, que exigem estar online |
+| Paciente | Seus vínculos, nutris, dietas publicadas (com snapshot da lista de substituição e orientação), avaliações compartilhadas, questionários, consultas, avisos, preferências | Check-ins, água, peso, respostas de questionário, dieta em uso, preferências |
+| Nutri | Seus pacientes, fichas, lista de alimentos, listas por paciente, dietas (rascunhos e publicadas), avaliações, modelos e respostas de questionário, consultas, avisos, adesão (check-ins dos últimos 30 dias) | Tudo que ela edita, exceto publicar dieta, convidar paciente e ações de assinatura, que exigem estar online |
 
 Ações que **exigem online** (o app desabilita o botão sem conexão): login/cadastro, convidar paciente, aceitar convite, publicar dieta, enviar questionário, gerar PDF, tudo de assinatura.
 
@@ -174,7 +175,7 @@ Ações que **exigem online** (o app desabilita o botão sem conexão): login/ca
 
 - O app registra o token em `POST /api/v1/eu/dispositivos` `{token, plataforma: ANDROID|IOS|DESKTOP, nomeAparelho}`. Desktop não tem FCM: usa só o sync periódico.
 - Payload sempre genérico (RN-NOT-02): `{ "tipo": "NOVA_DIETA", "sync": true, "rota": "paciente/dieta" }`. O app ao receber faz um sync e navega pela `rota`.
-- Backend envia via outbox: grava em `notificacao_pendente` na mesma transação do evento; um job `@Scheduled` (a cada 30 s) envia e marca como enviada, com até 5 tentativas.
+- Backend envia via fila na tabela `aviso`: o aviso é gravado logo após o commit do evento (e por jobs de lembrete); um job `@Scheduled` (a cada 30 s) envia, respeita preferências e silêncio e tenta até 5 vezes. Detalhes em `contrato-fase-4.md` (BE-24).
 
 ## Agenda Google/Apple (.ics)
 
