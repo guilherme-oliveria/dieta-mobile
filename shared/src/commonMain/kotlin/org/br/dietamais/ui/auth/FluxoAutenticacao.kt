@@ -93,7 +93,9 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
     }
     BackHandler(enabled = convite.visivel) { if (!convite.aceitando) convites.fechar() }
     BackHandler(enabled = !convite.visivel && usuario == null && estado.tela != TelaAutenticacao.ENTRAR) { viewModel.voltar() }
+    val obsoleta by getKoin().get<org.br.dietamais.data.remoto.ApiDieta>().versaoObsoleta.collectAsState()
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        if (obsoleta) { TelaAtualizarApp(); return@Surface }
         when {
             convite.visivel -> ConviteTela(convite, usuario, convites::mudarCodigo, convites::consultar,
                 convites::aceitarConsentimento, { convites.aguardarLogin(); if (usuario != null) viewModel.sair() else viewModel.voltar() },
@@ -252,3 +254,11 @@ private fun NavegacaoNutri() {
 
 private fun acoesPrivacidade(v: PrivacidadeViewModel) = AcoesPrivacidade(v::abrirTermos, v::pedirExportacao, v::atualizarExportacao, v::abrirExportacao,
     v::pedirExclusao, v::mudarSenha, v::confirmarExclusao, v::cancelarExclusao, v::urlAberta)
+
+@Composable
+private fun TelaAtualizarApp() {
+    Column(Modifier.fillMaxSize().padding(Dimens.paddingCard), verticalArrangement = Arrangement.Center) {
+        Text(stringResource(Res.string.atualizar_titulo), style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(Res.string.atualizar_texto), style = MaterialTheme.typography.bodyLarge)
+    }
+}

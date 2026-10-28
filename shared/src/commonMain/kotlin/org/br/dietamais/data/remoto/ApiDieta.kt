@@ -35,6 +35,9 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     private val controle = SessaoLocal(cofre, banco)
     val sessao = controle.fluxo
     val operacaoSessao = controle.fluxoOperacao
+    private val obsoleta = kotlinx.coroutines.flow.MutableStateFlow(false)
+    /** `426 VERSAO_APP_OBSOLETA` (BE-31): o app mostra a tela de atualização e para de insistir. */
+    val versaoObsoleta: kotlinx.coroutines.flow.StateFlow<Boolean> = obsoleta
     private val cliente = HttpClient(engine) {
         followRedirects = false
         expectSuccess = false
@@ -162,6 +165,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         catch (falha: ArmazenamentoSeguroIndisponivel) { throw falha }
         catch (falha: RespostaInvalida) { throw falha }
         catch (falha: Exception) { throw FalhaComunicacao() }
+        if (resposta.status.value == 426) obsoleta.value = true
         if (resposta.status == HttpStatusCode.Unauthorized && !semBearer) controle.rejeitar(geracao)
         if (resposta.status.value in 200..299 && geracao != null && !controle.corresponde(geracao)) throw SessaoAlterada()
         return resposta
