@@ -9,6 +9,7 @@ import kotlinx.serialization.json.*
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.sync.ANTERIOR
 import org.br.dietamais.data.sync.OperacaoMutacao
+import org.br.dietamais.data.sync.novoIdLocal
 import org.br.dietamais.data.sync.projetar
 import org.br.dietamais.data.sync.restaurarAnterior
 import kotlin.uuid.Uuid
@@ -21,7 +22,7 @@ data class Pendencia(val idMutacao: Uuid, val entidade: String, val operacao: Op
 interface PortaPendencias {
     /** Mutações da sessão que ainda não foram aplicadas (aguardando, em conflito ou rejeitadas), da mais antiga para a mais nova. */
     fun observar(): Flow<List<Pendencia>>
-    /** Reenvia a minha versão sobre a do servidor (só em conflito). */
+    /** Cria uma nova tentativa da minha versão sobre a do servidor (só em conflito). */
     fun manterMinha(idMutacao: Uuid)
     /** Aceita a versão do servidor e descarta a minha edição. */
     fun usarServidor(idMutacao: Uuid)
@@ -50,8 +51,10 @@ class PendenciasRepositorio(private val banco: BancoDieta, private val aoMudar: 
             val m = banco.mutacaoPendenteQueries.buscar(idMutacao.toString(), sessao.usuario_id, sessao.perfil).executeAsOneOrNull()
             if (m == null || m.status != "CONFLITO") return@transactionWithResult false
             val atual = banco.conflitoQueries.buscar(idMutacao.toString(), sessao.usuario_id, sessao.perfil).executeAsOneOrNull()?.let(::objetoOuNulo)
-            val versaoAtual = atual?.get("versao")?.jsonPrimitive?.longOrNull ?: return@transactionWithResult false
-            banco.mutacaoPendenteQueries.reabrir(versaoAtual, idMutacao.toString(), sessao.usuario_id, sessao.perfil)
+            val versaoAtual = (atual?.get("versao") as? JsonPrimitive)?.longOrNull ?: return@transactionWithResult false
+            if (versaoAtual < 0 || versaoAtual == Long.MAX_VALUE) return@transactionWithResult false
+            // O servidor conserva o CONFLITO da identidade antiga; a escolha é uma nova mutação lógica.
+            banco.mutacaoPendenteQueries.reabrirComNovaIdentidade(novoIdLocal().toString(), versaoAtual, idMutacao.toString(), sessao.usuario_id, sessao.perfil)
             banco.conflitoQueries.remover(idMutacao.toString(), sessao.usuario_id, sessao.perfil)
             // a minha versão otimista passa a ser a seguinte à do servidor, que é a base de uma nova edição offline
             banco.registroSyncQueries.dadosDe(sessao.usuario_id, sessao.perfil, m.entidade, m.id).executeAsOneOrNull()?.let { linha ->
