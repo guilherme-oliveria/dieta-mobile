@@ -40,7 +40,7 @@ Definição de pronto de toda tarefa:
 
 ## Fase 3 — Rotina do paciente
 
-- [ ] **MOB-16 Envio da fila.** `Sincronizador.enviar()` com lotes, `idMutacao`, tratamento de APLICADA/REJEITADA/CONFLITO; reenvio com backoff. *Depende de:* MOB-09, BE-15.
+- [x] **MOB-16 Envio da fila.** `Sincronizador.enviar()` com lotes, `idMutacao`, tratamento de APLICADA/REJEITADA/CONFLITO; reenvio com backoff. *Depende de:* MOB-09, BE-15.
 - [ ] **MOB-17 Check-in e água.** Marcar refeição FEITO/TROCADO/PULADO (até 3 dias para trás), contador de água com meta 35 ml/kg (`AguaSheet`); tudo offline via fila. *Depende de:* MOB-14, MOB-16.
 - [ ] **MOB-18 Lembretes locais.** `planejarLembretes` em `dominio` (com teste: horários, silêncio, limite de 64 no iOS); `NotificadorLocal` expect/actual (AlarmManager + boot no Android, UNUserNotificationCenter no iOS, bandeja no desktop); ações "Comi/Troquei/Pulei"; pedido de permissão. *Depende de:* MOB-17.
 - [ ] **MOB-19 Perfil e preferências.** `ui/paciente/perfil`: `PerfilScreen`, tipos de lembrete, horário de silêncio, `MinhasNutrisScreen` só leitura (vínculos e nutri ativa; troca com cópia de histórico é P2), sair; sincroniza `preferencias-notificacao`. *Depende de:* MOB-18, BE-18.

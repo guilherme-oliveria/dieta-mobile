@@ -20,7 +20,20 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
     private val contextoAtual = { if (fechado.value) null else api.contextoLeituraSync() }
     val sincronizador = Sincronizador(FonteLeituraHttp(api), ArmazemLeituraSql(banco, contextoAtual), contextoAtual)
     private val contexto = api.operacaoSessao.map { contextoAtual() }.stateIn(escopo, SharingStarted.Eagerly, contextoAtual())
-    private val coordenador = CoordenadorLeitura(escopo, contexto, conectividade.estado, { sincronizador.puxar() })
+    private val enviador = EnviadorFila(FonteEnvioHttp(api), banco, contextoAtual)
+    private val coordenador = CoordenadorLeitura(escopo, contexto, conectividade.estado, { sincronizarFila() })
+    private var falhasEnvio = 0
+
+    /** Envia a fila e depois puxa as mudanças. Se o envio falhar, tenta de novo com backoff (30 s, 60 s, ... até 15 min). */
+    private suspend fun sincronizarFila() {
+        val envio = enviador.enviar()
+        if (envio == ResultadoEnvio.SEM_REDE || envio == ResultadoEnvio.FALHOU) {
+            falhasEnvio++
+            val espera = minOf(30L shl minOf(falhasEnvio - 1, 5), 900L)
+            escopo.launch { delay(espera * 1000); coordenador.solicitar() }
+        } else falhasEnvio = 0
+        sincronizador.puxar()
+    }
 
     init {
         escopo.launch {

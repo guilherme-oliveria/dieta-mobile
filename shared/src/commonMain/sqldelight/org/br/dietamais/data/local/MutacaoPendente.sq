@@ -24,3 +24,15 @@ ORDER BY id_mutacao;
 
 limpar:
 DELETE FROM mutacao_pendente;
+
+concluir:
+DELETE FROM mutacao_pendente WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+marcar:
+UPDATE mutacao_pendente SET status = ? WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+registrarTentativa:
+UPDATE mutacao_pendente SET tentativas = tentativas + 1 WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+doEscopo:
+SELECT * FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? ORDER BY id_mutacao;

@@ -24,3 +24,6 @@ WHERE s.id = 1 AND r.colecao = ? AND r.excluido = 0 AND r.dados_json IS NOT NULL
 
 limpar:
 DELETE FROM registro_sync;
+
+remover:
+DELETE FROM registro_sync WHERE usuario_id = ? AND perfil = ? AND colecao = ? AND id = ?;
