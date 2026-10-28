@@ -32,7 +32,7 @@ class PacientesTelasTest {
     @Test fun tabsFuturasFicamVaziasSemFabricarDadosClinicos() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         var estado by mutableStateOf(EstadoPacientes(selecionado = paciente))
         setContent { DietaTheme { PacienteFichaTela(estado, { estado = estado.copy(abaFicha = it) }, {}, {}) } }
-        onNodeWithText("Avaliações").performScrollTo().performClick()
+        onNodeWithText("Anamnese").performScrollTo().performClick()
         onNodeWithText("Nada por aqui ainda.").assertIsDisplayed()
         onNodeWithText("E-mail").assertDoesNotExist()
     }

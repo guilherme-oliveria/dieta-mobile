@@ -57,6 +57,7 @@ fun NavegacaoApp(
     conteudoDieta: (@Composable () -> Unit)? = null,
     conteudoPerfil: (@Composable () -> Unit)? = null,
     conteudoCompras: (@Composable () -> Unit)? = null,
+    conteudoEvolucao: (@Composable () -> Unit)? = null,
 ) {
     // Trocar/limpar a sessão descarta também a pilha e os estados do perfil anterior.
     key(perfil) {
@@ -80,7 +81,7 @@ fun NavegacaoApp(
             ) {
                 composable<Entrada> { AbaVazia(Res.string.entrar, classeJanela) }
                 if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos, conteudoConta)
-                if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela, conteudoHoje, conteudoDieta, conteudoPerfil, conteudoCompras)
+                if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela, conteudoHoje, conteudoDieta, conteudoPerfil, conteudoCompras, conteudoEvolucao)
             }
         }
         if (perfil == null) Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
@@ -102,12 +103,12 @@ fun NavegacaoApp(
     }
 }
 
-private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass, hoje: (@Composable () -> Unit)?, dieta: (@Composable () -> Unit)?, perfil: (@Composable () -> Unit)?, compras: (@Composable () -> Unit)?) {
+private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass, hoje: (@Composable () -> Unit)?, dieta: (@Composable () -> Unit)?, perfil: (@Composable () -> Unit)?, compras: (@Composable () -> Unit)?, evolucao: (@Composable () -> Unit)?) {
     navigation<GrafoPaciente>(startDestination = RotaPaciente.Hoje) {
         composable<RotaPaciente.Hoje> { if (hoje != null) hoje() else AbaVazia(Res.string.aba_hoje, classe) }
         composable<RotaPaciente.Dieta> { if (dieta != null) dieta() else AbaVazia(Res.string.aba_dieta, classe) }
         composable<RotaPaciente.Compras> { if (compras != null) compras() else AbaVazia(Res.string.aba_compras, classe) }
-        composable<RotaPaciente.Evolucao> { AbaVazia(Res.string.aba_evolucao, classe) }
+        composable<RotaPaciente.Evolucao> { if (evolucao != null) evolucao() else AbaVazia(Res.string.aba_evolucao, classe) }
         composable<RotaPaciente.Perfil> { if (perfil != null) perfil() else AbaVazia(Res.string.aba_perfil, classe) }
     }
 }

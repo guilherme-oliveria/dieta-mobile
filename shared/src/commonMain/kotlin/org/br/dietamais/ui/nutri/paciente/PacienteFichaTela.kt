@@ -43,7 +43,7 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                             AbaFicha.ANAMNESE -> Res.string.pacientes_anamnese
                         })) }) }
                 }
-                if (estado.abaFicha == AbaFicha.LISTA || estado.abaFicha == AbaFicha.DIETA) abaConteudo(estado.abaFicha, paciente)
+                if (estado.abaFicha == AbaFicha.LISTA || estado.abaFicha == AbaFicha.DIETA || estado.abaFicha == AbaFicha.AVALIACOES) abaConteudo(estado.abaFicha, paciente)
                 else if (estado.abaFicha != AbaFicha.RESUMO) EstadoVazio()
                 else CardDieta(Modifier.fillMaxWidth()) {
                     DadoFicha(stringResource(Res.string.auth_email), paciente.email)
