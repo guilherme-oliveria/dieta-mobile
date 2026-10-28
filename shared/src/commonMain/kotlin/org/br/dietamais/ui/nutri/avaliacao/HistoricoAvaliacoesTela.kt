@@ -18,7 +18,8 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 data class AcoesHistorico(val aoNova: () -> Unit = {}, val aoEditar: (Uuid) -> Unit = {}, val aoSelecionar: (Uuid) -> Unit = {}, val aoComparar: () -> Unit = {},
-    val aoVoltarComparacao: () -> Unit = {}, val aoAtualizar: () -> Unit = {})
+    val aoVoltarComparacao: () -> Unit = {}, val aoAtualizar: () -> Unit = {},
+    val pdf: @Composable (AvaliacaoResposta) -> Unit = {})
 
 /** Histórico em ordem cronológica inversa, com seleção de duas datas para comparar (MOB-22). Paciente: somente leitura. */
 @Composable
@@ -57,6 +58,7 @@ private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, edita
                 Text(stringResource(Res.string.avaliacao_peso_estatura, textoDecimal(item.pesoKg), textoDecimal(item.estaturaM)), style = MaterialTheme.typography.bodyMedium)
                 Text(stringResource(Res.string.avaliacao_imc_valor, textoDecimal(item.imc), stringResource(rotuloClassificacao(item.classificacaoImc))), style = MaterialTheme.typography.bodyMedium)
                 if (!item.compartilhada) ChipStatus(EstiloStatus.INFO, texto = stringResource(Res.string.avaliacao_privada))
+                acoes.pdf(item)
             }
             if (editavel) BotaoTexto(stringResource(Res.string.avaliacao_editar), { acoes.aoEditar(item.id) })
         }

@@ -29,6 +29,7 @@ import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.data.sync.AgendadorLembretes
 import org.koin.compose.getKoin
+import org.koin.compose.koinInject
 import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
@@ -187,7 +188,11 @@ private fun NavegacaoPaciente() {
             }
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },
-        conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) },
+        conteudoDieta = {
+            val pdf = koinInject<org.br.dietamais.data.repositorio.PortaPdf>()
+            DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, pdf = { e -> e.dieta?.let { d ->
+                BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(org.br.dietamais.data.repositorio.RecursoPdf.DIETA, d.dietaId) }) } })
+        },
         conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
         conteudoCompras = {
             val compras = koinViewModel<ComprasViewModel>(viewModelStoreOwner = dono)

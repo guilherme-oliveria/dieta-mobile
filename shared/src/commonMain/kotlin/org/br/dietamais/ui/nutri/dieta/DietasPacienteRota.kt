@@ -7,6 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.br.dietamais.data.remoto.dto.*
+import org.br.dietamais.data.repositorio.PortaPdf
+import org.br.dietamais.data.repositorio.RecursoPdf
+import org.koin.compose.koinInject
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.theme.Dimens
@@ -17,7 +20,9 @@ import org.jetbrains.compose.resources.stringResource
 fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResposta) {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(paciente.id) { viewModel.abrirPaciente(paciente.id) }
-    DietasListaTela(estado, viewModel::nova, viewModel::abrir, viewModel::duplicar, viewModel::recarregar)
+    val pdf = koinInject<PortaPdf>()
+    DietasListaTela(estado, viewModel::nova, viewModel::abrir, viewModel::duplicar, viewModel::recarregar,
+        pdf = { d -> BotaoPdf(stringResource(Res.string.pdf_dieta), !estado.semConexao, { pdf.link(RecursoPdf.DIETA, d.id) }) })
     // tela cheia em diálogo: a ficha já rola na vertical, então o montador não pode aninhar outra rolagem
     if (estado.rascunho != null) Dialog(onDismissRequest = viewModel::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         MontarDietaTela(estado, AcoesMontador(viewModel::fechar, viewModel::mudarTitulo, viewModel::mudarOrientacao, viewModel::adicionarRefeicao,
@@ -29,7 +34,8 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
 }
 
 @Composable
-fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResposta) -> Unit, aoDuplicar: (DietaResposta) -> Unit, aoRecarregar: () -> Unit) {
+fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResposta) -> Unit, aoDuplicar: (DietaResposta) -> Unit, aoRecarregar: () -> Unit,
+    pdf: @Composable (DietaResposta) -> Unit = {}) {
     val habilitado = !estado.semConexao && !estado.enviando && !estado.carregando
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
@@ -47,6 +53,7 @@ fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResp
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     BotaoTexto(stringResource(if (dieta.status == StatusDieta.RASCUNHO) Res.string.dieta_editar else Res.string.dieta_ver_acao), { aoAbrir(dieta) })
                     BotaoTexto(stringResource(Res.string.dieta_duplicar), { aoDuplicar(dieta) }, habilitado = habilitado)
+                    if (dieta.status == StatusDieta.PUBLICADA || dieta.status == StatusDieta.SUBSTITUIDA) pdf(dieta)
                 }
             }
         }

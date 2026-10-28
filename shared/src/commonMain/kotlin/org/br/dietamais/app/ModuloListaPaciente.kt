@@ -72,6 +72,7 @@ fun moduloLembretes(notificacao: org.br.dietamais.plataforma.NotificacaoLocal?) 
 fun moduloPerfilNutri(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaPerfilNutri> { org.br.dietamais.data.repositorio.PerfilNutriRepositorio(get()) }
     viewModel { org.br.dietamais.ui.nutri.assinatura.PerfilNutriViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    single<org.br.dietamais.data.repositorio.PortaPdf> { org.br.dietamais.data.repositorio.PdfRepositorio(get()) }
     single<org.br.dietamais.data.repositorio.PortaAssinatura> { org.br.dietamais.data.repositorio.AssinaturaRepositorio(get()) }
     viewModel { org.br.dietamais.ui.nutri.assinatura.AssinaturaViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }

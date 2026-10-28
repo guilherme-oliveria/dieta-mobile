@@ -72,7 +72,7 @@ Definição de pronto de toda tarefa:
 ## Fase 6 — Assinatura, PDF, privacidade e lojas
 
 - [x] **MOB-32 Assinatura.** `ui/nutri/assinatura`: plano, status, uso x limite, aviso de atraso/carência; "Assinar" abre o checkout no navegador externo (nunca compra dentro do app); modo só leitura quando `ASSINATURA_INATIVA`. *Depende de:* BE-26, BE-27.
-- [ ] **MOB-33 PDF.** Gerar e compartilhar PDF da dieta e da avaliação (download da URL pré-assinada + share nativo). *Depende de:* BE-28.
+- [x] **MOB-33 PDF.** Gerar e compartilhar PDF da dieta e da avaliação (download da URL pré-assinada + share nativo). *Depende de:* BE-28. Entregue: o app pede o link assinado e abre no navegador do sistema (baixar e compartilhar ficam com ele); envio da logo fica para MOB-33b.
 - [ ] **MOB-34 Privacidade.** Termos e política, exportar meus dados, excluir conta (com confirmação). *Depende de:* BE-29.
 - [ ] **MOB-35 Publicação.** Ícones e splash do design, nome "Dieta+", assinatura de release no CI (secrets), Play Console (teste interno), App Store Connect/TestFlight pelo Mac, `426 VERSAO_APP_OBSOLETA` → tela "atualize o app". *Depende de:* todas as anteriores.
 

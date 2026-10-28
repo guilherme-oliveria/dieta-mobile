@@ -18,7 +18,8 @@ import kotlin.uuid.Uuid
 
 /** Aba Dieta: refeições detalhadas, orientações e escolha da dieta em uso quando há mais de uma nutri (MOB-14). */
 @Composable
-fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> Unit, aoEscolher: (Uuid) -> Unit, modifier: Modifier = Modifier) {
+fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> Unit, aoEscolher: (Uuid) -> Unit, modifier: Modifier = Modifier,
+    pdf: @Composable (EstadoDietaPaciente) -> Unit = {}) {
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard),
         verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.aba_dieta), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
@@ -31,6 +32,7 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                 Text(dieta.titulo, style = MaterialTheme.typography.titleLarge)
                 Text(stringResource(Res.string.pac_dieta_nutri, dieta.nutricionista.nome, dieta.nutricionista.crn), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.pac_dieta_total, formatar(dieta.totais.kcal)), style = MaterialTheme.typography.labelLarge)
+                pdf(estado)
                 if (estado.alternativas.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {
                     Text(stringResource(Res.string.pac_dieta_escolher), style = MaterialTheme.typography.titleMedium)
                     estado.alternativas.forEach { s ->
