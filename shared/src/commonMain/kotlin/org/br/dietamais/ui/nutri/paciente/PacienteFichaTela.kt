@@ -15,7 +15,8 @@ import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVoltar: () -> Unit, aoConvidar: () -> Unit) {
+fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVoltar: () -> Unit, aoConvidar: () -> Unit,
+    abaConteudo: @Composable (AbaFicha, PacienteResposta) -> Unit = { _, _ -> }) {
     val paciente = estado.selecionado
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
@@ -38,10 +39,12 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                             AbaFicha.RESUMO -> Res.string.pacientes_resumo
                             AbaFicha.AVALIACOES -> Res.string.pacientes_avaliacoes
                             AbaFicha.DIETA -> Res.string.aba_dieta
+                            AbaFicha.LISTA -> Res.string.pacientes_lista
                             AbaFicha.ANAMNESE -> Res.string.pacientes_anamnese
                         })) }) }
                 }
-                if (estado.abaFicha != AbaFicha.RESUMO) EstadoVazio()
+                if (estado.abaFicha == AbaFicha.LISTA || estado.abaFicha == AbaFicha.DIETA) abaConteudo(estado.abaFicha, paciente)
+                else if (estado.abaFicha != AbaFicha.RESUMO) EstadoVazio()
                 else CardDieta(Modifier.fillMaxWidth()) {
                     DadoFicha(stringResource(Res.string.auth_email), paciente.email)
                     DadoFicha(stringResource(Res.string.pacientes_nascimento), paciente.dataNascimento?.let { "${it.day.toString().padStart(2, '0')}/${(it.month.ordinal + 1).toString().padStart(2, '0')}/${it.year}" })

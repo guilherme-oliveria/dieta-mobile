@@ -22,6 +22,11 @@ import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
 import org.br.dietamais.ui.nutri.pacientes.PacientesRota
 import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
 import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
+import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
+import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
+import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
+import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
+import org.br.dietamais.ui.nutri.pacientes.AbaFicha
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
 import org.br.dietamais.ui.auth.convite.ConviteTela
 import org.br.dietamais.plataforma.LinksConvite
@@ -115,6 +120,14 @@ private fun NavegacaoNutri() {
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
     val pacientes = koinViewModel<PacientesViewModel>(viewModelStoreOwner = dono)
     NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, conteudoPacientes = { classe, vinculo, abrir, voltar ->
-        PacientesRota(pacientes, classe, vinculo, abrir, voltar)
+        PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
+          if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
+          else {
+            val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
+            val estadoLista by lista.estado.collectAsState()
+            LaunchedEffect(paciente.id) { lista.abrir(paciente.id) }
+            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
+          }
+        })
     }, conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) })
 }

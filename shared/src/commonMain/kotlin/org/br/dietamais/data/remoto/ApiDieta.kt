@@ -91,6 +91,12 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     suspend inline fun <reified T> alterar(caminho: String, corpo: JsonElement, versao: Long): T =
         decodificar(requisitar(HttpMethod.Patch, caminho, corpo, versao = versao), serializer())
 
+    suspend inline fun <reified T> substituir(caminho: String, corpo: JsonElement, versao: Long): T =
+        decodificar(requisitar(HttpMethod.Put, caminho, corpo, versao = versao), serializer())
+
+    suspend inline fun <reified T> enviarComVersao(caminho: String, versao: Long, corpo: JsonElement? = null, chave: Uuid = novoIdLocal()): T =
+        decodificar(requisitar(HttpMethod.Post, caminho, corpo, chave, versao = versao), serializer())
+
     suspend fun entrar(requisicao: LoginRequisicao): SessaoResposta {
         val geracao = controle.geracao()
         val resposta = decodificar(requisitar(HttpMethod.Post, "auth/login", JsonContrato.encodeToJsonElement(requisicao), novoIdLocal(), publica = true), SessaoResposta.serializer())
