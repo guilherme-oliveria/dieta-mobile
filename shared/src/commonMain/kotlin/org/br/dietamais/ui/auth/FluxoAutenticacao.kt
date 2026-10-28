@@ -29,6 +29,9 @@ import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.data.sync.AgendadorLembretes
 import org.koin.compose.getKoin
+import org.br.dietamais.ui.paciente.compras.AcoesCompras
+import org.br.dietamais.ui.paciente.compras.ComprasTela
+import org.br.dietamais.ui.paciente.compras.ComprasViewModel
 import org.br.dietamais.ui.paciente.hoje.AcoesHoje
 import org.br.dietamais.ui.paciente.perfil.AcoesPerfil
 import org.br.dietamais.ui.paciente.perfil.PerfilPacienteTela
@@ -140,6 +143,11 @@ private fun NavegacaoPaciente() {
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },
         conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) },
+        conteudoCompras = {
+            val compras = koinViewModel<ComprasViewModel>(viewModelStoreOwner = dono)
+            val estadoCompras by compras.estado.collectAsState()
+            ComprasTela(estadoCompras, AcoesCompras(compras::mudarDias, compras::marcar, compras::limparMarcas, compras::compartilhar))
+        },
         conteudoPerfil = {
             val perfil = koinViewModel<PerfilPacienteViewModel>(viewModelStoreOwner = dono)
             val estadoPerfil by perfil.estado.collectAsState()

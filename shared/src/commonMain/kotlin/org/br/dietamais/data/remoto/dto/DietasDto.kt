@@ -20,7 +20,8 @@ data class TotaisNutricionaisResposta(val kcal: Double, val carboidratos: Double
 
 @Serializable
 data class ItemRefeicaoResposta(val id: Uuid, val alimentoId: Uuid, val grupoId: Uuid, val nomeAlimento: String,
-    val porcoes: Double, val medidaCaseira: String, val gramas: Double, val observacao: String? = null, val totais: TotaisNutricionaisResposta)
+    val porcoes: Double, val medidaCaseira: String, val gramas: Double, val observacao: String? = null, val totais: TotaisNutricionaisResposta,
+    val grupoNome: String? = null)
 @Serializable
 data class RefeicaoResposta(val id: Uuid, val nome: String, val horario: LocalTime, val ordem: Int,
     val itens: List<ItemRefeicaoResposta>, val totais: TotaisNutricionaisResposta)

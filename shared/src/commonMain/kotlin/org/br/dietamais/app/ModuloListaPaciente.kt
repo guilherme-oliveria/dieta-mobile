@@ -6,6 +6,7 @@ import org.br.dietamais.data.repositorio.PortaListaPaciente
 import org.br.dietamais.plataforma.EstadoConexao
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.recursos.Res
+import org.br.dietamais.recursos.compras_titulo_texto
 import org.br.dietamais.recursos.lembrete_corpo
 import org.br.dietamais.recursos.lembrete_titulo
 import org.jetbrains.compose.resources.getString
@@ -34,6 +35,8 @@ fun moduloLembretes(notificacao: org.br.dietamais.plataforma.NotificacaoLocal?) 
     single<org.br.dietamais.data.repositorio.PortaVinculosLocais> { org.br.dietamais.data.repositorio.VinculosLocaisRepositorio(get()) }
     single<org.br.dietamais.data.repositorio.PortaCalendario> { org.br.dietamais.data.repositorio.CalendarioRepositorio(get()) }
     viewModel { org.br.dietamais.ui.paciente.perfil.PerfilPacienteViewModel(get(), get(), get()) }
+    single<org.br.dietamais.data.repositorio.PortaCompras> { org.br.dietamais.data.repositorio.ComprasRepositorio(get()) }
+    viewModel { org.br.dietamais.ui.paciente.compras.ComprasViewModel(get(), get(), get(), { getString(Res.string.compras_titulo_texto) }) }
     if (notificacao != null) {
         single<org.br.dietamais.plataforma.NotificacaoLocal> { notificacao }
         single {

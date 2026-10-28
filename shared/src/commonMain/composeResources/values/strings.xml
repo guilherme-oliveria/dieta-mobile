@@ -336,4 +336,14 @@
     <string name="perfil_erro_geral">Não foi possível concluir. Tente de novo.</string>
     <string name="perfil_aviso_salvo">Preferências salvas.</string>
     <string name="perfil_aviso_revogado">Link da agenda revogado.</string>
+    <string name="compras_sem_dieta">Quando sua nutri publicar a dieta, a lista de compras aparece aqui.</string>
+    <string name="compras_periodo">Para quantos dias?</string>
+    <string name="compras_dias">%1$s dias</string>
+    <string name="compras_itens">Itens</string>
+    <string name="compras_titulo_texto">Lista de compras</string>
+    <string name="compras_compartilhar">Compartilhar lista</string>
+    <string name="compras_limpar">Desmarcar tudo</string>
+    <string name="compras_copiada">Lista copiada.</string>
+    <string name="compras_aberta">Escolha onde enviar a lista.</string>
+    <string name="compras_falhou">Não foi possível compartilhar a lista.</string>
 </resources>
