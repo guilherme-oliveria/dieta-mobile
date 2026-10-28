@@ -156,7 +156,7 @@ Resposta, um resultado por mutação, na mesma ordem:
 ]}
 ```
 
-- Implementado na BE-15: `checkins`, `agua` e `pesos` com `CRIAR` (ver [contrato-fase-3.md](contrato-fase-3.md)); `GET /sync` ganha as coleções `checkins`, `agua`, `pesos`. Demais entidades entram nas tarefas de cada módulo.
+- Implementado na BE-15: `checkins`, `agua` e `pesos` com `CRIAR` (ver [contrato-fase-3.md](contrato-fase-3.md)); `GET /sync` ganha as coleções `checkins`, `agua`, `pesos`. Escrita da nutri (`pacientes`, `alimentos`, `listas`, `dietas`, `avaliacoes`, `modelos`, `consultas`): ver [contrato-fase-5.md](contrato-fase-5.md).
 - `operacao`: `CRIAR`, `ATUALIZAR`, `EXCLUIR` (lógica). Até 200 mutações por lote. Cada mutação roda na sua própria transação.
 - `idMutacao` torna o envio idempotente: reenviar a mesma mutação devolve o mesmo resultado.
 - `APLICADA` → o app marca como enviada e atualiza `versao`. `CONFLITO` → guarda o `atual` e mostra a escolha à nutri ("manter o meu" reenvia com `versaoBase` = versão atual; "usar o do servidor" descarta a local). `REJEITADA` → desfaz localmente e mostra a mensagem do `codigo`.

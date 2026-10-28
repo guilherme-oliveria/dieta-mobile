@@ -106,7 +106,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                         Text(stringResource(Res.string.auth_assinatura_teste, it.limitePacientes, it.fimPeriodoEm.toString().substringBefore('T')),
                             style = MaterialTheme.typography.bodySmall)
                     }
-                    key(usuario.id, usuario.perfil) { AvisosDoUsuario() }
+                    key(usuario.id, usuario.perfil) { AvisosDoUsuario(); if (usuario.perfil == Perfil.NUTRICIONISTA) PendenciasDoUsuario() }
                     BotaoTexto(stringResource(Res.string.auth_sair), viewModel::sair, carregando = estado.carregando)
                     BotaoTexto(stringResource(Res.string.auth_tenho_codigo), { convites.abrir() }, habilitado = !estado.carregando)
                     if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
@@ -137,6 +137,14 @@ private fun AvisosDoUsuario() {
     val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
     AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono))
+}
+
+/** Conflitos e rejeições da escrita offline da nutri (MOB-30). */
+@Composable
+private fun PendenciasDoUsuario() {
+    val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
+    DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
+    org.br.dietamais.ui.pendencias.PendenciasRota(koinViewModel<org.br.dietamais.ui.pendencias.PendenciasViewModel>(viewModelStoreOwner = dono))
 }
 
 @Composable

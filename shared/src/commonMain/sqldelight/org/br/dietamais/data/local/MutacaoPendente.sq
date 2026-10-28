@@ -36,3 +36,26 @@ UPDATE mutacao_pendente SET tentativas = tentativas + 1 WHERE id_mutacao = ? AND
 
 doEscopo:
 SELECT * FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? ORDER BY id_mutacao;
+
+buscar:
+SELECT * FROM mutacao_pendente WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+abertaDoRegistro:
+SELECT COUNT(*) FROM mutacao_pendente
+WHERE usuario_id = ? AND perfil = ? AND entidade = ? AND id = ? AND status IN ('PENDENTE', 'CONFLITO');
+
+doRegistro:
+SELECT * FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? AND entidade = ? AND id = ? ORDER BY id_mutacao;
+
+reabrir:
+UPDATE mutacao_pendente SET versao_base = ?, status = 'PENDENTE', tentativas = 0
+WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+daSessaoAtual:
+SELECT m.* FROM mutacao_pendente AS m
+JOIN sessao AS s ON s.usuario_id = m.usuario_id AND s.perfil = m.perfil
+WHERE s.id = 1
+ORDER BY m.id_mutacao;
+
+removerDoRegistro:
+DELETE FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? AND entidade = ? AND id = ?;

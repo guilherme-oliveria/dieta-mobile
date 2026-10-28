@@ -64,7 +64,10 @@ class EnviadorFila(private val fonte: FonteEnvioSync, private val banco: BancoDi
             lote.forEach { m ->
                 val r = porId.getValue(m.idMutacao); val id = m.idMutacao.toString()
                 when (r.status) {
-                    StatusMutacao.APLICADA -> banco.mutacaoPendenteQueries.concluir(id, usuario, perfil)
+                    StatusMutacao.APLICADA -> {
+                        banco.mutacaoPendenteQueries.concluir(id, usuario, perfil)
+                        banco.limparAnteriorSeLivre(usuario, perfil, m.entidade, m.id.toString())
+                    }
                     StatusMutacao.CONFLITO -> {
                         banco.conflitoQueries.salvar(id, usuario, perfil, (r.atual ?: kotlinx.serialization.json.JsonNull).toString())
                         banco.mutacaoPendenteQueries.marcar("CONFLITO", id, usuario, perfil)
@@ -72,6 +75,7 @@ class EnviadorFila(private val fonte: FonteEnvioSync, private val banco: BancoDi
                     StatusMutacao.REJEITADA, StatusMutacao.OUTRO -> {
                         // a criação otimista some da tela; atualização/exclusão rejeitada só fica marcada
                         if (m.operacao == OperacaoMutacao.CRIAR) banco.registroSyncQueries.remover(usuario, perfil, m.entidade, m.id.toString())
+                        else banco.restaurarAnterior(usuario, perfil, m.entidade, m.id.toString())
                         banco.mutacaoPendenteQueries.marcar(if (r.status == StatusMutacao.REJEITADA) "REJEITADA" else "DESCONHECIDA", id, usuario, perfil)
                     }
                 }

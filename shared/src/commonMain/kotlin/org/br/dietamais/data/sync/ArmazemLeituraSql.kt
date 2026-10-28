@@ -51,6 +51,8 @@ class ArmazemLeituraSql(private val banco: BancoDieta, private val contextoAtual
         val dados = mudanca.dados
         if (mudanca.versao < 0 || (mudanca.excluido && dados != null) || (!mudanca.excluido && dados == null) ||
             (dados != null && id != null && id(dados) != mudanca.id)) throw RespostaInvalida()
+        // edição local ainda não resolvida (pendente ou em conflito) vale mais que o estado antigo do servidor
+        if (banco.mutacaoPendenteQueries.abertaDoRegistro(contexto.usuarioId.toString(), contexto.perfil.name, colecao, mudanca.id.toString()).executeAsOne() > 0) return
         val anterior = banco.registroSyncQueries.revisao(contexto.usuarioId.toString(), contexto.perfil.name, colecao, mudanca.id.toString()).executeAsOneOrNull()
         if (anterior != null && mudanca.versao < anterior) return
         banco.registroSyncQueries.salvar(contexto.usuarioId.toString(), contexto.perfil.name, colecao, mudanca.id.toString(),

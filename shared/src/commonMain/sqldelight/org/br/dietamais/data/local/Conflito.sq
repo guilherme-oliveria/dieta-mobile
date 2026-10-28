@@ -13,3 +13,14 @@ INSERT OR REPLACE INTO conflito (id_mutacao, usuario_id, perfil, atual_json) VAL
 
 limpar:
 DELETE FROM conflito;
+
+remover:
+DELETE FROM conflito WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+doEscopo:
+SELECT c.id_mutacao, c.atual_json FROM conflito AS c WHERE c.usuario_id = ? AND c.perfil = ?;
+
+daSessaoAtual:
+SELECT c.id_mutacao, c.atual_json FROM conflito AS c
+JOIN sessao AS s ON s.usuario_id = c.usuario_id AND s.perfil = c.perfil
+WHERE s.id = 1;
