@@ -20,3 +20,9 @@ data class AtualizarPreferenciasRequisicao(val tipos: List<PreferenciaTipo>, val
 data class RegistrarDispositivoRequisicao(val token: String, val plataforma: Plataforma, val nomeAparelho: String? = null)
 @Serializable
 data class DispositivoResposta(val id: kotlin.uuid.Uuid, val plataforma: Plataforma, val nomeAparelho: String? = null)
+
+@Serializable
+data class CalendarioTokenResposta(val token: String, val url: String, val urlWebcal: String) {
+    // o token é a credencial do feed: não aparece em log nem em toString
+    override fun toString() = "CalendarioTokenResposta[protegido]"
+}

@@ -127,6 +127,10 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         verificarErro(requisitar(HttpMethod.Post, caminho, corpo, chave))
     }
 
+    suspend fun excluir(caminho: String) {
+        verificarErro(requisitar(HttpMethod.Delete, caminho))
+    }
+
     suspend fun sair() = controle.encerrar { tokens ->
         if (tokens?.refreshToken != null) {
             val resposta = requisitar(HttpMethod.Post, "auth/logout", JsonContrato.encodeToJsonElement(LogoutRequisicao(tokens.refreshToken!!)), novoIdLocal(), publica = true)

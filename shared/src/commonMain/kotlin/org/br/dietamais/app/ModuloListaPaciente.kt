@@ -31,6 +31,9 @@ fun moduloDietaPaciente(ambiente: AmbienteDieta?) = module {
 
 fun moduloLembretes(notificacao: org.br.dietamais.plataforma.NotificacaoLocal?) = module {
     single<org.br.dietamais.data.repositorio.PortaPreferencias> { org.br.dietamais.data.repositorio.PreferenciasRepositorio(get(), get()) }
+    single<org.br.dietamais.data.repositorio.PortaVinculosLocais> { org.br.dietamais.data.repositorio.VinculosLocaisRepositorio(get()) }
+    single<org.br.dietamais.data.repositorio.PortaCalendario> { org.br.dietamais.data.repositorio.CalendarioRepositorio(get()) }
+    viewModel { org.br.dietamais.ui.paciente.perfil.PerfilPacienteViewModel(get(), get(), get()) }
     if (notificacao != null) {
         single<org.br.dietamais.plataforma.NotificacaoLocal> { notificacao }
         single {

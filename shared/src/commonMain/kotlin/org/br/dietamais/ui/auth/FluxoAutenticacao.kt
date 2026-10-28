@@ -30,6 +30,9 @@ import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.data.sync.AgendadorLembretes
 import org.koin.compose.getKoin
 import org.br.dietamais.ui.paciente.hoje.AcoesHoje
+import org.br.dietamais.ui.paciente.perfil.AcoesPerfil
+import org.br.dietamais.ui.paciente.perfil.PerfilPacienteTela
+import org.br.dietamais.ui.paciente.perfil.PerfilPacienteViewModel
 import org.br.dietamais.ui.paciente.hoje.HojeTela
 import org.br.dietamais.ui.paciente.substituicao.TrocaTela
 import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
@@ -136,7 +139,13 @@ private fun NavegacaoPaciente() {
             HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua))
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },
-        conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) })
+        conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) },
+        conteudoPerfil = {
+            val perfil = koinViewModel<PerfilPacienteViewModel>(viewModelStoreOwner = dono)
+            val estadoPerfil by perfil.estado.collectAsState()
+            PerfilPacienteTela(estadoPerfil, AcoesPerfil(perfil::mudarLembretes, perfil::mudarTipo, perfil::mudarSilencioAtivo, perfil::mudarInicio,
+                perfil::mudarFim, perfil::salvar, perfil::gerarLink, perfil::revogarLink))
+        })
 }
 
 @Composable
