@@ -65,6 +65,7 @@ Definição de pronto de toda tarefa:
 - [x] **MOB-29 Escrita offline da nutri** (consultas, avaliações, cadastro de paciente e alimentos; o restante está em MOB-29b). Ficha, alimentos, listas, rascunho de dieta, avaliação, modelos e consultas passam a gravar local + fila (ATUALIZAR/EXCLUIR com `versaoBase`). Ações que exigem online continuam desabilitadas sem rede. *Depende de:* MOB-16, BE-25.
 - [ ] **MOB-29b Escrita offline: dietas, listas e modelos.** Rascunho de dieta, lista de substituição e modelo de questionário gravando local + fila (hoje continuam online). Publicar, convidar e enviar questionário seguem exigindo rede. *Depende de:* MOB-29.
 - [x] **MOB-30 Conflitos e pendências.** Tela de conflito (lado a lado: minha versão × servidor; "manter a minha" / "usar a do servidor"); contador de pendências e lista do que falta enviar; teste de ponta a ponta com `MockEngine` devolvendo CONFLITO. *Depende de:* MOB-29.
+  - [x] Bugfix de idempotência: “manter a minha” cria nova idMutacao com a versão atual do servidor, em transação; regressão com cache por identidade e preservação de pendências/rollback. Demais apontamentos da auditoria são tratados separadamente.
 - [x] **MOB-31 Desktop pronto para consultório** (sync a cada 5 min mesmo com a janela na bandeja, menu e balões na bandeja, atalhos Ctrl+R/Ctrl+W/Ctrl+Q). *Depende de:* MOB-29.
 - [ ] **MOB-31b Pacotes do desktop no CI.** `nativeDistributions` (MSI, DMG, DEB) como artefato do workflow; exige editar `.github/workflows` (protegido para escrita remota: o Guilherme aplica). *Depende de:* MOB-31.
 
