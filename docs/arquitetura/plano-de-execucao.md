@@ -1,8 +1,8 @@
 # Dieta+ — plano de execução (backend + mobile)
 
-> Documento comum ao `dieta-backend` e ao `dieta-mobile`. **Cópia**: a oficial fica em `dieta-backend/docs/arquitetura/`; mude lá primeiro.
+> Documento comum ao `dieta-backend` e ao `dieta-mobile`. Cópia oficial em `dieta-backend/docs/arquitetura/`.
 > Criado em 24/10/2026 a partir de `visao-geral`, `plano-de-acao` (BE e MOB), `docs/design/` (mobile), `diagramas.md` e do canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC.
-> **Status: aguardando o Guilherme dizer quando começar.** Nenhuma tarefa daqui foi iniciada.
+> **Status: execução contínua autorizada pelo Guilherme.** As tarefas avançam por dependências e ondas, sem nova confirmação entre elas; QA aprovado e merge na develop continuam obrigatórios. O progresso por tarefa consta no plano de ação e na coordenação do projeto.
 
 Os `plano-de-acao.md` de cada repositório continuam sendo a lista de tarefas (o que fazer e o critério de pronto). Este arquivo diz **em que ordem, em paralelo com o quê e por qual branch** cada tarefa entra, e completa o que faltava nos planos.
 

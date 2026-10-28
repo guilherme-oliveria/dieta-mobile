@@ -61,7 +61,7 @@ Formato **RFC 9457 Problem Details** (`application/problem+json`), já nativo no
 - Os clientes decidem o que mostrar **pelo `codigo`**, nunca pelo texto.
 - `400` JSON inválido · `401` sem token/expirado (cliente tenta refresh uma vez) · `403` sem permissão · `404` não existe **ou não é seu** (não revelar existência) · `409` conflito de versão/duplicado · `422` regra de negócio · `429` limite de taxa · `5xx` erro do servidor (cliente pode repetir com a mesma `Idempotency-Key`).
 
-Códigos já definidos: `LOGIN_BLOQUEADO`, `CREDENCIAIS_INVALIDAS`, `EMAIL_NAO_CONFIRMADO`, `EMAIL_JA_CADASTRADO`, `TOKEN_INVALIDO`, `LIMITE_PACIENTES_ATINGIDO`, `ASSINATURA_INATIVA`, `CONVITE_INVALIDO`, `CONVITE_EXPIRADO`, `VINCULO_JA_EXISTE`, `DIETA_VAZIA`, `DIETA_NAO_EDITAVEL`, `VALOR_FORA_DO_INTERVALO`, `CONFLITO_VERSAO`, `OBRIGATORIO`, `FORMATO_INVALIDO`, `CONSENTIMENTO_OBRIGATORIO`, `PERFIL_INVALIDO`, `RECURSO_NAO_ENCONTRADO`, `NAO_AUTENTICADO`, `ACESSO_NEGADO`, `TAXA_EXCEDIDA`, `NAO_IMPLEMENTADO`, `ERRO_INTERNO`, `METODO_NAO_PERMITIDO`, `TIPO_CONTEUDO_NAO_SUPORTADO`, `CHAVE_IDEMPOTENCIA_REUTILIZADA`. Novo código: adicione aqui e na classe `CodigoErro` do backend.
+Códigos já definidos: `LOGIN_BLOQUEADO`, `CREDENCIAIS_INVALIDAS`, `EMAIL_NAO_CONFIRMADO`, `EMAIL_JA_CADASTRADO`, `TOKEN_INVALIDO`, `LIMITE_PACIENTES_ATINGIDO`, `ASSINATURA_INATIVA`, `CONVITE_INVALIDO`, `CONVITE_EXPIRADO`, `VINCULO_JA_EXISTE`, `DIETA_VAZIA`, `DIETA_NAO_EDITAVEL`, `VALOR_FORA_DO_INTERVALO`, `JUSTIFICATIVA_OBRIGATORIA`, `CONFLITO_VERSAO`, `OBRIGATORIO`, `FORMATO_INVALIDO`, `CONSENTIMENTO_OBRIGATORIO`, `PERFIL_INVALIDO`, `RECURSO_NAO_ENCONTRADO`, `NAO_AUTENTICADO`, `ACESSO_NEGADO`, `TAXA_EXCEDIDA`, `NAO_IMPLEMENTADO`, `ERRO_INTERNO`, `METODO_NAO_PERMITIDO`, `TIPO_CONTEUDO_NAO_SUPORTADO`, `CHAVE_IDEMPOTENCIA_REUTILIZADA`. Novo código: adicione aqui e na classe `CodigoErro` do backend.
 
 Códigos acrescentados em BE-C1: `CONSENTIMENTO_OBRIGATORIO` (422, RN-VIN-04), `PERFIL_INVALIDO` (403), `RECURSO_NAO_ENCONTRADO` (404, inclusive recurso de outro dono), `NAO_AUTENTICADO` (401), `ACESSO_NEGADO` (403), `TAXA_EXCEDIDA` (429) e `NAO_IMPLEMENTADO` (501). `campos` é sempre lista; `regra`, `traceId` e `atual` podem ser nulos. Conflito de versão traz o registro vigente em `atual`. O ID de regra de `TOKEN_INVALIDO` depende da operação (confirmação ou recuperação); erros técnicos sem RN usam `regra: null`.
 
@@ -87,7 +87,7 @@ BE-02 substitui apenas o stub de cadastro da nutri. Requisição e resposta mant
 
 ## Mapa de endpoints do MVP
 
-Contrato da fase 2: [contrato-fase-2.md](contrato-fase-2.md), com 16 operações ainda em 501 para MockEngine e exemplos tipados em `contrato/fase-2/`. BE-C2 publica o formato; as regras/persistência entram em BE-09..14 e BE-33. As operações reais da fase 1 permanecem implementadas.
+Contrato da fase 2: [contrato-fase-2.md](contrato-fase-2.md), com 17 operações e exemplos tipados em `contrato/fase-2/`. Após BE-10/BE-33, grupos/alimentos/lista do paciente e perfil são reais; oito operações de dietas continuam 501 até BE-11..13. Grupos são cópias próprias com campos opcionais macrosEstimados/versao/origemMacros, editáveis via PATCH /grupos-alimentos/{id} e If-Match. POST de alimento é idempotente, PATCH edita/desativa; lista do paciente usa If-Match próprio e auditoria clínica. Fonte/método inicial em [catálogo](catalogo-base.md). Exemplos legados continuam válidos; a fixture de desativação foi alinhada a ativo=false. Não há escrita global ou propagação para outras nutris. Perfil usa nome de exibição próprio, sem telefone/orientação nos resumos públicos. Fase 1 e GET /sync permanecem implementados; novas fontes de alimentos/listas só entram em BE-14.
 
 Visão geral para planejar; detalhe e schema no OpenAPI.
 
@@ -111,7 +111,7 @@ O app é offline-first: as telas leem **só do SQLite local**; um `Sincronizador
 
 ### Puxar mudanças — `GET /api/v1/sync?cursor=<cursor>&limite=500`
 
-- BE-08 implementa `pacientes`, `vinculos` e `nutris`. O diário de revisões por destinatário guarda somente metadados e é atualizado na mesma transação da alteração. A revisão só fica disponível junto com o commit.
+- BE-08 implementa `pacientes`, `vinculos` e `nutris`; BE-14 acrescenta `grupos`, `alimentos`, `listas`, `dietas` (nutri), `snapshots` e `dietaEmUso` (paciente) — ver [contrato-fase-2.md](contrato-fase-2.md). O diário de revisões por destinatário guarda somente metadados e é atualizado na mesma transação da alteração. A revisão só fica disponível junto com o commit.
 - Resposta:
 
 ```json
@@ -155,6 +155,7 @@ Resposta, um resultado por mutação, na mesma ordem:
 ]}
 ```
 
+- Implementado na BE-15: `checkins`, `agua` e `pesos` com `CRIAR` (ver [contrato-fase-3.md](contrato-fase-3.md)); `GET /sync` ganha as coleções `checkins`, `agua`, `pesos`. Demais entidades entram nas tarefas de cada módulo.
 - `operacao`: `CRIAR`, `ATUALIZAR`, `EXCLUIR` (lógica). Até 200 mutações por lote. Cada mutação roda na sua própria transação.
 - `idMutacao` torna o envio idempotente: reenviar a mesma mutação devolve o mesmo resultado.
 - `APLICADA` → o app marca como enviada e atualiza `versao`. `CONFLITO` → guarda o `atual` e mostra a escolha à nutri ("manter o meu" reenvia com `versaoBase` = versão atual; "usar o do servidor" descarta a local). `REJEITADA` → desfaz localmente e mostra a mensagem do `codigo`.
