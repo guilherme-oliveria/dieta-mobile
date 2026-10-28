@@ -36,10 +36,10 @@ class AgendaTelasTest {
         onNodeWithText("qua 28/10/2026").assertExists(); onAllNodesWithText("Sem consultas").assertCountEquals(6)
     }
 
-    @Test fun offlineDesabilitaAcoesMasMantemALeitura() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+    @Test fun offlineMantemLeituraEAcoesDeEscrita() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         setContent { DietaTheme { AgendaTela(EstadoAgenda(dia, consultas = listOf(consulta), pacientes = listOf(ana), semConexao = true), AcoesAgenda(), fuso) } }
         onNodeWithText("Ana Fictícia").assertIsDisplayed()
-        onNodeWithText("Nova consulta").assertIsNotEnabled(); onNodeWithText("Remarcar").assertIsNotEnabled(); onNodeWithText("Cancelar consulta").assertIsNotEnabled()
+        onNodeWithText("Nova consulta").assertIsEnabled(); onNodeWithText("Remarcar").assertIsEnabled(); onNodeWithText("Cancelar consulta").assertIsEnabled()
     }
 
     @Test fun consultaCanceladaNaoOfereceAcoes() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
@@ -64,10 +64,10 @@ class AgendaTelasTest {
         onNodeWithText("Escolha o paciente.").assertIsDisplayed(); onNodeWithText("Informe uma data válida (dd/mm/aaaa).").assertIsDisplayed()
     }
 
-    @Test fun formularioOfflineNaoSalva() = runSkikoComposeUiTest(size = Size(390f, 1200f)) {
+    @Test fun formularioOfflineSalvaNaFila() = runSkikoComposeUiTest(size = Size(390f, 1200f)) {
         val estado = EstadoAgenda(dia, pacientes = listOf(ana), formulario = FormularioConsulta(), semConexao = true)
         setContent { DietaTheme { FormularioConsultaTela(estado, AcoesFormularioConsulta()) } }
-        onNodeWithText("Salvar").assertIsNotEnabled()
+        onNodeWithText("Salvar").assertIsEnabled()
     }
 
     @Test fun avisoDeSobreposicaoAparece() = runSkikoComposeUiTest(size = Size(390f, 1400f)) {

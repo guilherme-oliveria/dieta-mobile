@@ -14,11 +14,12 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
-    single<org.br.dietamais.data.repositorio.PortaAvaliacoes> { org.br.dietamais.data.repositorio.AvaliacaoRepositorio(get(), get()) }
+    single { org.br.dietamais.data.sync.EscritaOffline(get(), aoEnfileirar = { ambiente?.solicitarLeitura() }) }
+    single<org.br.dietamais.data.repositorio.PortaAvaliacoes> { org.br.dietamais.data.repositorio.AvaliacaoRepositorio(get(), get(), get()) }
     single<org.br.dietamais.data.repositorio.PortaEvolucao> { org.br.dietamais.data.repositorio.EvolucaoRepositorio(get()) }
     viewModel { org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel(get(), getOrNull<org.br.dietamais.data.repositorio.PortaRotina>()) }
     viewModel { org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
-    single<org.br.dietamais.data.repositorio.PortaConsultas> { org.br.dietamais.data.repositorio.ConsultaRepositorio(get(), get()) }
+    single<org.br.dietamais.data.repositorio.PortaConsultas> { org.br.dietamais.data.repositorio.ConsultaRepositorio(get(), get(), get()) }
     viewModel { org.br.dietamais.ui.nutri.agenda.AgendaViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     viewModel { org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel(get()) }
     viewModel { org.br.dietamais.ui.nutri.painel.PainelViewModel(get(), get(), get(), get()) }

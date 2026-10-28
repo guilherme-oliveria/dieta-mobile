@@ -28,10 +28,10 @@ import kotlin.uuid.Uuid
 data class AcoesPendencias(val aoAbrir: () -> Unit = {}, val aoFechar: () -> Unit = {}, val aoSelecionar: (Uuid) -> Unit = {}, val aoVoltar: () -> Unit = {},
     val aoManterMinha: (Uuid) -> Unit = {}, val aoUsarServidor: (Uuid) -> Unit = {}, val aoDescartar: (Uuid) -> Unit = {})
 
-/** Só aparece quando há algo que pede decisão. */
+/** Contador do que ainda não foi aplicado no servidor; some quando a fila esvazia. */
 @Composable
 fun BotaoPendencias(estado: EstadoPendencias, acoes: AcoesPendencias, modifier: Modifier = Modifier) {
-    if (estado.precisaDeAtencao > 0) BotaoTexto(stringResource(Res.string.pendencias_botao_n, estado.precisaDeAtencao), acoes.aoAbrir, modifier)
+    if (estado.total > 0) BotaoTexto(stringResource(Res.string.pendencias_botao_n, estado.total), acoes.aoAbrir, modifier)
 }
 
 @Composable
@@ -56,10 +56,11 @@ private fun Lista(estado: EstadoPendencias, acoes: AcoesPendencias, modifier: Mo
     Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.pendencias_explicacao), style = MaterialTheme.typography.bodyMedium)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-            items(estado.pendencias.filter { it.estado != EstadoPendencia.AGUARDANDO }, key = { it.idMutacao.toString() }) { p ->
+            items(estado.pendencias, key = { it.idMutacao.toString() }) { p ->
                 CardDieta(Modifier.fillMaxWidth().clickable { acoes.aoSelecionar(p.idMutacao) }) {
                     Text(rotulo(p), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    Text(stringResource(textoEstado(p.estado)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(textoEstado(p.estado)), style = MaterialTheme.typography.bodySmall,
+                        color = if (p.estado == EstadoPendencia.AGUARDANDO) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error)
                 }
             }
         }
@@ -73,6 +74,7 @@ private fun Detalhe(p: Pendencia, acoes: AcoesPendencias, modifier: Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(rotulo(p), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(textoEstado(p.estado)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+        p.codigo?.let { Text(stringResource(Res.string.pendencias_motivo, motivo(it)), style = MaterialTheme.typography.bodyMedium) }
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             items(campos, key = { it.nome }) { c ->
                 CardDieta(Modifier.fillMaxWidth()) {
@@ -97,6 +99,16 @@ private fun Detalhe(p: Pendencia, acoes: AcoesPendencias, modifier: Modifier) {
         BotaoContornado(stringResource(Res.string.pendencias_descartar), { acoes.aoDescartar(p.idMutacao) }, Modifier.fillMaxWidth())
         BotaoTexto(stringResource(Res.string.pendencias_voltar), acoes.aoVoltar, Modifier.fillMaxWidth())
     }
+}
+
+@Composable
+private fun motivo(codigo: String): String = when (codigo) {
+    "LIMITE_PACIENTES_ATINGIDO" -> stringResource(Res.string.pendencias_codigo_LIMITE_PACIENTES_ATINGIDO)
+    "ASSINATURA_INATIVA" -> stringResource(Res.string.pendencias_codigo_ASSINATURA_INATIVA)
+    "VINCULO_JA_EXISTE" -> stringResource(Res.string.pendencias_codigo_VINCULO_JA_EXISTE)
+    "JUSTIFICATIVA_OBRIGATORIA" -> stringResource(Res.string.pendencias_codigo_JUSTIFICATIVA_OBRIGATORIA)
+    "RECURSO_NAO_ENCONTRADO" -> stringResource(Res.string.pendencias_codigo_RECURSO_NAO_ENCONTRADO)
+    else -> stringResource(Res.string.pendencias_codigo_outro, codigo)
 }
 
 private fun textoEstado(e: EstadoPendencia) = when (e) {

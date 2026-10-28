@@ -21,7 +21,7 @@ fun AlimentosTela(estado: EstadoAlimentos, aoBusca: (String) -> Unit = {}, aoGru
     aoAtivo: (Boolean) -> Unit = {}, aoNovo: () -> Unit = {}, aoEditar: (AlimentoResposta) -> Unit = {},
     aoDesativar: (AlimentoResposta) -> Unit = {}, aoAtualizar: () -> Unit = {}) {
     val margem = Dimens.margemTela(currentWindowAdaptiveInfoV2().windowSizeClass)
-    val habilitado = !estado.semConexao && !estado.enviando && !estado.atualizando
+    val habilitado = !estado.enviando && !estado.atualizando
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         LazyColumn(Modifier.fillMaxSize().testTag("lista-alimentos"), contentPadding = PaddingValues(margem),
             verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {

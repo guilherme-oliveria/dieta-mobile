@@ -20,12 +20,12 @@ class AlimentosTelasTest {
     private val grupo = JsonContrato.decodeFromString<GruposAlimentosResposta>(recursoContrato("fase-2/listarGruposAlimentos/resposta.json")).itens.single()
     private val alimento = JsonContrato.decodeFromString<AlimentoResposta>(recursoContrato("fase-2/criarAlimento/resposta.json"))
     private fun estado() = EstadoAlimentos(grupos = listOf(grupo), lista = listOf(alimento))
-    @Test fun offlinePreservaItemEDesabilitaCriarEditarDesativar() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+    @Test fun offlinePreservaItemEMantemCriarEditarDesativar() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         setContent { DietaTheme { AlimentosTela(estado().copy(semConexao = true)) } }
-        onNodeWithText("Novo alimento").assertIsNotEnabled()
+        onNodeWithText("Novo alimento").assertIsEnabled()
         onNodeWithTag("lista-alimentos").performScrollToNode(hasText("Alimento fictício"))
         onNodeWithText("Alimento fictício").assertIsDisplayed()
-        onNodeWithText("Editar").assertIsNotEnabled(); onNodeWithText("Desativar").assertIsNotEnabled()
+        onNodeWithText("Editar").assertIsEnabled(); onNodeWithText("Desativar").assertIsEnabled()
     }
     @Test fun formularioAceitaDecimalLocalEMantemAcaoExplicita() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         var estado by mutableStateOf(estado().copy(formulario = FormularioAlimento(grupoId = grupo.id)))

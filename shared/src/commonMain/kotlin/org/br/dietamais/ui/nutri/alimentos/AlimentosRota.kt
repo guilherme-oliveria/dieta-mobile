@@ -14,5 +14,5 @@ fun AlimentosRota(viewModel: AlimentosViewModel) {
     else AlimentosTela(estado, viewModel::mudarBusca, viewModel::mudarGrupo, viewModel::mudarAtivo, viewModel::novo,
         viewModel::editar, viewModel::pedirDesativacao, viewModel::atualizar)
     estado.desativar?.let { ConfirmarDesativacao(it, estado.enviando, viewModel::confirmarDesativacao, viewModel::fechar,
-        habilitado = !estado.semConexao && !estado.conflito, erro = estado.erro) }
+        habilitado = !estado.conflito, erro = estado.erro) }
 }

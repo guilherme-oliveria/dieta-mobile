@@ -22,7 +22,7 @@ data class AcoesAvaliacao(val aoMedida: (MedidaAvaliacao, String) -> Unit = { _,
 @Composable
 fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao) {
     val form = estado.formulario ?: return
-    val habilitado = !estado.enviando && !estado.semConexao
+    val habilitado = !estado.enviando
     val previa = previaImc(form.valores)
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -30,7 +30,6 @@ fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao) {
                 verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                 Text(stringResource(if (form.id == null) Res.string.avaliacao_nova else Res.string.avaliacao_editar),
                     style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
-                if (estado.semConexao) FaixaOffline()
                 MensagensAvaliacao(estado)
                 SecaoAvaliacao.entries.forEach { secao ->
                     Text(stringResource(rotuloSecao(secao)), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })

@@ -415,7 +415,7 @@
     <string name="avaliacao_erro_faixa">Valor fora do intervalo permitido.</string>
     <string name="avaliacao_erro_casas">Use no máximo 2 casas decimais.</string>
     <string name="avaliacao_erro_justificativa">Informe a justificativa da edição.</string>
-    <string name="avaliacao_msg_sem_conexao">Sem conexão. Conecte-se para salvar; o histórico salvo continua disponível.</string>
+    <string name="avaliacao_msg_sem_conexao">Sem conexão. O histórico salvo continua disponível; o que você salvar será enviado quando a conexão voltar.</string>
     <string name="avaliacao_msg_conflito">Esta avaliação foi alterada em outro lugar. Recarregamos os dados; revise e tente de novo.</string>
     <string name="avaliacao_msg_assinatura">Sua assinatura permite apenas leitura neste momento.</string>
     <string name="avaliacao_msg_vinculo">O vínculo com este paciente está encerrado: só leitura.</string>
@@ -588,7 +588,7 @@
     <string name="agenda_cancelar_texto">%1$s, %2$s às %3$s. O paciente passa a ver a consulta como cancelada.</string>
     <string name="agenda_cancelar_confirmar">Cancelar consulta</string>
     <string name="agenda_cancelar_desistir">Manter</string>
-    <string name="agenda_msg_sem_conexao">Sem conexão. Agendar, remarcar e cancelar exigem internet.</string>
+    <string name="agenda_msg_sem_conexao">Sem conexão. A agenda mostrada está salva no aparelho; o que você mudar será enviado quando a conexão voltar.</string>
     <string name="agenda_msg_conflito">A consulta foi alterada em outro lugar. A agenda foi atualizada; tente de novo.</string>
     <string name="agenda_msg_assinatura">Assinatura inativa: renove para continuar.</string>
     <string name="agenda_msg_vinculo">O vínculo com este paciente está encerrado.</string>
@@ -609,9 +609,16 @@
     <string name="agenda_dia_dom">dom</string>
     <string name="agenda_prox_titulo">Próxima consulta</string>
     <string name="agenda_prox_quando">%1$s às %2$s · %3$s</string>
+    <string name="pendencias_motivo">Motivo: %1$s</string>
+    <string name="pendencias_codigo_LIMITE_PACIENTES_ATINGIDO">o limite de pacientes do plano foi atingido</string>
+    <string name="pendencias_codigo_ASSINATURA_INATIVA">a assinatura não está ativa</string>
+    <string name="pendencias_codigo_VINCULO_JA_EXISTE">já existe um vínculo com este paciente</string>
+    <string name="pendencias_codigo_JUSTIFICATIVA_OBRIGATORIA">falta a justificativa da edição</string>
+    <string name="pendencias_codigo_RECURSO_NAO_ENCONTRADO">o registro não existe mais</string>
+    <string name="pendencias_codigo_outro">o servidor não aceitou (%1$s)</string>
     <string name="pendencias_botao_n">Pendências (%1$d)</string>
     <string name="pendencias_titulo">Pendências de envio</string>
-    <string name="pendencias_explicacao">Estas alterações feitas offline não puderam ser aplicadas. Escolha o que fazer com cada uma.</string>
+    <string name="pendencias_explicacao">Alterações feitas neste aparelho que o servidor ainda não aplicou. As que deram conflito ou foram recusadas pedem uma escolha.</string>
     <string name="pendencias_estado_aguardando">Aguardando envio</string>
     <string name="pendencias_estado_conflito">Em conflito: outra pessoa alterou antes</string>
     <string name="pendencias_estado_rejeitada">Recusada pelo servidor</string>

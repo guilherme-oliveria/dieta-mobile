@@ -32,7 +32,7 @@ fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, pod
             return@Column
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalAlignment = Alignment.CenterVertically) {
-            if (podeEditar) BotaoPrincipal(stringResource(Res.string.avaliacao_nova), acoes.aoNova, habilitado = !estado.semConexao)
+            if (podeEditar) BotaoPrincipal(stringResource(Res.string.avaliacao_nova), acoes.aoNova)
             BotaoContornado(stringResource(Res.string.avaliacao_comparar), acoes.aoComparar, habilitado = estado.selecionadas.size == 2)
             if (!estado.somenteLeitura) BotaoTexto(stringResource(Res.string.avaliacao_atualizar), acoes.aoAtualizar, habilitado = !estado.atualizando && !estado.semConexao)
         }
@@ -40,7 +40,7 @@ fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, pod
         when {
             estado.atualizando && estado.itens.isEmpty() -> EstadoCarregando()
             estado.itens.isEmpty() -> EstadoVazio(mensagem = stringResource(if (estado.somenteLeitura) Res.string.avaliacao_paciente_vazia else Res.string.avaliacao_vazia))
-            else -> estado.itens.forEach { CartaoAvaliacao(it, it.id in estado.selecionadas, podeEditar && !estado.semConexao, acoes) }
+            else -> estado.itens.forEach { CartaoAvaliacao(it, it.id in estado.selecionadas, podeEditar, acoes) }
         }
     }
 }

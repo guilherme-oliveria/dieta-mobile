@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
+import org.br.dietamais.data.sync.EscritaOffline
+import org.br.dietamais.data.sync.novoIdLocal
+import org.br.dietamais.data.sync.reprojetarAbertas
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -21,7 +25,8 @@ interface PortaAlimentos {
     suspend fun alterar(id: Uuid, versao: Long, requisicao: AtualizarAlimentoRequisicao): AlimentoResposta
 }
 
-class AlimentosRepositorio(private val api: ApiDieta, private val banco: BancoDieta) : PortaAlimentos {
+class AlimentosRepositorio(private val api: ApiDieta, private val banco: BancoDieta, private val escrita: EscritaOffline = EscritaOffline(banco),
+    private val agora: () -> kotlin.time.Instant = { kotlin.time.Clock.System.now() }) : PortaAlimentos {
     private val mutex = Mutex()
     override fun observar(): Flow<CatalogoAlimentos> = combine(
         banco.alimentoCacheQueries.daSessao("grupos").asFlow().mapToList(Dispatchers.Default),
@@ -43,6 +48,7 @@ class AlimentosRepositorio(private val api: ApiDieta, private val banco: BancoDi
             banco.alimentoCacheQueries.limparDaConta(contexto.contexto.usuarioId.toString(), contexto.contexto.perfil.name)
             grupos.forEach { salvar(contexto, "grupos", it.id, JsonContrato.encodeToString(it)) }
             alimentos.forEach { salvar(contexto, "alimentos", it.id, JsonContrato.encodeToString(it)) }
+            banco.reprojetarAbertas(contexto.contexto.usuarioId.toString(), contexto.contexto.perfil.name, "alimentos")
         }
     }
 
@@ -64,22 +70,26 @@ class AlimentosRepositorio(private val api: ApiDieta, private val banco: BancoDi
         return itens
     }
 
+    /** Offline-first (MOB-29): grava o alimento otimista e a mutação na fila; o servidor decide no /sync. */
     override suspend fun criar(requisicao: CriarAlimentoRequisicao, chave: Uuid): AlimentoResposta = mutex.withLock {
-        val contexto = contexto()
-        val resposta = api.enviar<AlimentoResposta>("alimentos", JsonContrato.encodeToJsonElement(requisicao), chave)
-        if (requisicao.id != null && resposta.id != requisicao.id) throw RespostaInvalida()
-        gravar(contexto, resposta)
+        contexto()
+        val id = requisicao.id ?: novoIdLocal()
+        val otimista = AlimentoResposta(id, null, requisicao.grupoId, requisicao.nome, requisicao.medidaCaseira, requisicao.gramasPorPorcao, true, 0, agora())
+        escrita.criar("alimentos", id, JsonContrato.encodeToJsonElement(requisicao.copy(id = id)).jsonObject, JsonContrato.encodeToString(otimista))
+        otimista
     }
     override suspend fun alterar(id: Uuid, versao: Long, requisicao: AtualizarAlimentoRequisicao): AlimentoResposta = mutex.withLock {
-        val contexto = contexto()
-        val resposta = api.alterar<AlimentoResposta>("alimentos/$id", JsonContrato.encodeToJsonElement(requisicao), versao)
-        if (resposta.id != id) throw RespostaInvalida()
-        gravar(contexto, resposta)
-    }
-    private fun gravar(contexto: OperacaoSessao, resposta: AlimentoResposta): AlimentoResposta {
-        if (resposta.versao < 0 || !resposta.gramasPorPorcao.isFinite() || resposta.gramasPorPorcao <= 0) throw RespostaInvalida()
-        banco.transaction { conferir(contexto); salvar(contexto, "alimentos", resposta.id, JsonContrato.encodeToString(resposta)) }
-        return resposta
+        contexto()
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull() ?: throw SessaoAlterada()
+        val guardado = banco.registroSyncQueries.dadosDe(sessao.usuario_id, sessao.perfil, "alimentos", id.toString()).executeAsOneOrNull()?.dados_json
+            // o catálogo pode ter vindo só pela API (cache de leitura): o registro local nasce dele para o instantâneo anterior existir
+            ?: banco.alimentoCacheQueries.buscar(sessao.usuario_id, sessao.perfil, "alimentos", id.toString()).executeAsOneOrNull()
+                ?.also { banco.registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, "alimentos", id.toString(), 0, 0, it) }
+        val atual = guardado?.let { JsonContrato.decodeFromString<AlimentoResposta>(it) } ?: throw ErroApi("RECURSO_NAO_ENCONTRADO", null, emptyList(), 404, null, null)
+        val nova = atual.copy(grupoId = requisicao.grupoId, nome = requisicao.nome, medidaCaseira = requisicao.medidaCaseira, gramasPorPorcao = requisicao.gramasPorPorcao,
+            ativo = requisicao.ativo, versao = versao + 1, atualizadoEm = agora())
+        escrita.atualizar("alimentos", id, versao, JsonContrato.encodeToJsonElement(requisicao).jsonObject, JsonContrato.encodeToString(nova))
+        nova
     }
     private fun salvar(contexto: OperacaoSessao, colecao: String, id: Uuid, json: String) =
         banco.alimentoCacheQueries.salvar(contexto.contexto.usuarioId.toString(), contexto.contexto.perfil.name, colecao, id.toString(), json)

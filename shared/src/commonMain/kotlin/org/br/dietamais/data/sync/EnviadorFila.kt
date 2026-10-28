@@ -74,8 +74,10 @@ class EnviadorFila(private val fonte: FonteEnvioSync, private val banco: BancoDi
                     }
                     StatusMutacao.REJEITADA, StatusMutacao.OUTRO -> {
                         // a criação otimista some da tela; atualização/exclusão rejeitada só fica marcada
-                        if (m.operacao == OperacaoMutacao.CRIAR) banco.registroSyncQueries.remover(usuario, perfil, m.entidade, m.id.toString())
+                        if (m.operacao == OperacaoMutacao.CRIAR) { banco.registroSyncQueries.remover(usuario, perfil, m.entidade, m.id.toString()); banco.projetar(usuario, perfil, m.entidade, m.id.toString()) }
                         else banco.restaurarAnterior(usuario, perfil, m.entidade, m.id.toString())
+                        // o código da regra fica guardado para a tela de pendências explicar o motivo
+                        r.codigo?.let { banco.conflitoQueries.salvar(id, usuario, perfil, kotlinx.serialization.json.buildJsonObject { put("codigo", kotlinx.serialization.json.JsonPrimitive(it)) }.toString()) }
                         banco.mutacaoPendenteQueries.marcar(if (r.status == StatusMutacao.REJEITADA) "REJEITADA" else "DESCONHECIDA", id, usuario, perfil)
                     }
                 }

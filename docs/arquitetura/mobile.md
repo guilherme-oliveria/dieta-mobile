@@ -155,3 +155,11 @@ Implementa exatamente o que está em `integracao.md`:
 - iOS: Xcode no Mac (do amigo do Guilherme ou runner macOS do GitHub); Apple Developer (US$ 99/ano).
 - Desktop: `compose.desktop.application.nativeDistributions` (MSI, DMG, DEB). Sem loja no MVP; download direto.
 - Configuração por ambiente (`URL_API`) via BuildKonfig ou objeto `Config` por flavor; padrão local `http://10.0.2.2:8080` no emulador Android e `http://localhost:8080` no desktop/iOS simulador.
+
+## Escrita offline da nutri e pendências (MOB-29, MOB-30)
+
+- `EscritaOffline` (`data/sync`) grava, na mesma transação, o registro otimista em `registro_sync` (revisão 0) e a mutação em `mutacao_pendente`. Na primeira edição de um registro guarda um instantâneo em `anterior/<coleção>` para desfazer uma recusa. A versão local do registro é `versaoBase + 1`.
+- O pull não sobrescreve registro com mutação aberta (PENDENTE ou CONFLITO). `paciente_cache` e `alimento_cache` são projeções do registro local (`projetar`).
+- `PendenciasRepositorio` expõe o que ainda não foi aplicado e resolve: **manter a minha** (reenvia com `versaoBase = atual.versao`), **usar a do servidor** (grava `atual` e descarta as mutações do registro) e **descartar** (volta ao instantâneo, ou apaga a criação).
+- A recusa guarda o `codigo` da regra na tabela `conflito` para a tela explicar o motivo.
+- Dietas, listas e modelos ainda gravam online (MOB-29b).

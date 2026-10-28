@@ -5,7 +5,14 @@ import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
+import org.br.dietamais.data.sync.EscritaOffline
+import org.br.dietamais.dominio.avaliacao.classificarImc
+import org.br.dietamais.dominio.avaliacao.imcDe
+import kotlin.time.Clock
+import kotlin.time.Instant
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -20,7 +27,12 @@ interface PortaAvaliacoes {
     suspend fun salvar(id: Uuid, versao: Long, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta
 }
 
-class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDieta) : PortaAvaliacoes {
+/**
+ * Criar e salvar são offline-first (MOB-29): gravam a avaliação otimista (IMC calculado pela mesma regra do servidor) e a mutação na fila.
+ * O `vinculoId` otimista é provisório; o servidor traz o real no próximo pull.
+ */
+class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDieta, private val escrita: EscritaOffline = EscritaOffline(banco),
+    private val agora: () -> Instant = { Clock.System.now() }) : PortaAvaliacoes {
     override fun observar(pacienteId: Uuid?): Flow<List<AvaliacaoResposta>> =
         banco.registroSyncQueries.daSessao("avaliacoes").asFlow().mapToList(Dispatchers.Default).map { linhas ->
             try {
@@ -39,21 +51,30 @@ class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDi
     }
 
     override suspend fun criar(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta {
-        val contexto = contexto()
+        contexto()
         val id = requisicao.id ?: org.br.dietamais.data.sync.novoIdLocal()
         val corpo = requisicao.copy(id = id)
-        val resposta = api.enviar<AvaliacaoResposta>("pacientes/$pacienteId/avaliacoes", JsonContrato.encodeToJsonElement(corpo), chave = id)
-        conferir(contexto)
-        if (resposta.pacienteId != pacienteId || resposta.id != id) throw RespostaInvalida()
-        return resposta.also { guardar(it) }
+        val agoraLocal = agora()
+        val imc = imcDe(corpo.pesoKg, corpo.estaturaM)
+        val otimista = AvaliacaoResposta(id, pacienteId, pacienteId, corpo.dataHora, corpo.pesoKg, corpo.estaturaM, imc, classificarImc(imc), corpo.perimetros, corpo.dobras,
+            corpo.composicao, corpo.parecer, corpo.compartilhada ?: true, 1, agoraLocal, agoraLocal)
+        // RN-SYN-04: no CRIAR a ficha vai dentro de `dados`
+        val dados = JsonObject(JsonContrato.encodeToJsonElement(corpo).jsonObject + ("pacienteId" to kotlinx.serialization.json.JsonPrimitive(pacienteId.toString())))
+        escrita.criar("avaliacoes", id, dados, JsonContrato.encodeToString(otimista))
+        return otimista
     }
 
     override suspend fun salvar(id: Uuid, versao: Long, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta {
-        val contexto = contexto()
-        val resposta = api.substituir<AvaliacaoResposta>("avaliacoes/$id", JsonContrato.encodeToJsonElement(requisicao.copy(id = id)), versao)
-        conferir(contexto)
-        if (resposta.id != id) throw RespostaInvalida()
-        return resposta.also { guardar(it) }
+        contexto()
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull() ?: throw SessaoAlterada()
+        val atual = banco.registroSyncQueries.dadosDe(sessao.usuario_id, sessao.perfil, "avaliacoes", id.toString()).executeAsOneOrNull()?.dados_json
+            ?.let { JsonContrato.decodeFromString<AvaliacaoResposta>(it) } ?: throw ErroApi("RECURSO_NAO_ENCONTRADO", null, emptyList(), 404, null, null)
+        val imc = imcDe(requisicao.pesoKg, requisicao.estaturaM)
+        val nova = atual.copy(dataHora = requisicao.dataHora, pesoKg = requisicao.pesoKg, estaturaM = requisicao.estaturaM, imc = imc, classificacaoImc = classificarImc(imc),
+            perimetros = requisicao.perimetros, dobras = requisicao.dobras, composicao = requisicao.composicao, parecer = requisicao.parecer,
+            compartilhada = requisicao.compartilhada ?: atual.compartilhada, versao = versao + 1, atualizadoEm = agora())
+        escrita.atualizar("avaliacoes", id, versao, JsonContrato.encodeToJsonElement(requisicao.copy(id = id)).jsonObject, JsonContrato.encodeToString(nova))
+        return nova
     }
 
     /** Só substitui o que o banco já tem se a versão for igual ou mais nova (o sync pode ter chegado antes). */

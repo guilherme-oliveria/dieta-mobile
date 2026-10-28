@@ -10,7 +10,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 fun moduloAlimentos(ambiente: AmbienteDieta?) = module {
-    single<PortaAlimentos> { AlimentosRepositorio(get(), get()) }
+    single<PortaAlimentos> { AlimentosRepositorio(get(), get(), org.br.dietamais.data.sync.EscritaOffline(get(), aoEnfileirar = { ambiente?.solicitarLeitura() })) }
     viewModel { AlimentosViewModel(get(), sessao = get<ApiDieta>().operacaoSessao,
         conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }

@@ -15,7 +15,7 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-/** Agenda da nutri (MOB-26): dia/semana lidos do banco local; criar, remarcar e cancelar exigem rede (o backend decide, RN-AGE-01). */
+/** Agenda da nutri (MOB-26): dia/semana lidos do banco local; criar, remarcar e cancelar gravam offline e vão na fila (o backend decide no sync, RN-AGE-01). */
 class AgendaViewModel(private val consultas: PortaConsultas, private val pacientes: PortaPacientes, private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     conectividade: Flow<Boolean>? = null, private val agora: () -> Instant = { Clock.System.now() }, private val fuso: () -> TimeZone = { TimeZone.currentSystemDefault() }) : ViewModel() {
     private val atual = MutableStateFlow(EstadoAgenda(dia = agora().toLocalDateTime(fuso()).date))
@@ -85,7 +85,7 @@ class AgendaViewModel(private val consultas: PortaConsultas, private val pacient
 
     fun salvar() {
         val e = atual.value; val form = e.formulario ?: return
-        if (e.enviando || e.semConexao) return
+        if (e.enviando) return
         val resultado = validarFormulario(form, fuso(), agora(), exigePaciente = form.id == null)
         if (resultado.erros.isNotEmpty()) { atual.update { it.copy(errosFormulario = resultado.erros) }; return }
         val inicio = checkNotNull(resultado.inicio); val duracao = checkNotNull(resultado.duracaoMin)
@@ -97,7 +97,7 @@ class AgendaViewModel(private val consultas: PortaConsultas, private val pacient
             try {
                 if (form.id == null) {
                     consultas.criar(CriarConsultaRequisicao(form.chave, checkNotNull(form.pacienteId), inicio, duracao, form.tipo, form.lugar.trim().ifEmpty { null }))
-                    atual.update { it.copy(formulario = null, conflitosAvisados = 0, aviso = MensagemAgenda.AGENDADA, semConexao = false, dia = diaLocal(inicio, fuso())) }
+                    atual.update { it.copy(formulario = null, conflitosAvisados = 0, aviso = MensagemAgenda.AGENDADA, dia = diaLocal(inicio, fuso())) }
                 } else {
                     val original = e.consultas.firstOrNull { it.id == form.id }
                     val pedido = AtualizarConsultaRequisicao(inicio.takeIf { original == null || it != original.inicio }, duracao.takeIf { original == null || it != original.duracaoMin },
@@ -105,7 +105,7 @@ class AgendaViewModel(private val consultas: PortaConsultas, private val pacient
                     if (pedido == AtualizarConsultaRequisicao()) atual.update { it.copy(formulario = null) }
                     else {
                         consultas.alterar(form.id, checkNotNull(form.versao), pedido)
-                        atual.update { it.copy(formulario = null, conflitosAvisados = 0, aviso = MensagemAgenda.REMARCADA, semConexao = false, dia = diaLocal(inicio, fuso())) }
+                        atual.update { it.copy(formulario = null, conflitosAvisados = 0, aviso = MensagemAgenda.REMARCADA, dia = diaLocal(inicio, fuso())) }
                     }
                 }
             }
@@ -121,10 +121,10 @@ class AgendaViewModel(private val consultas: PortaConsultas, private val pacient
     fun confirmarCancelamento() {
         val e = atual.value; val id = e.cancelandoId ?: return
         val consulta = e.consultas.firstOrNull { it.id == id } ?: run { atual.update { it.copy(cancelandoId = null) }; return }
-        if (e.enviando || e.semConexao) return
+        if (e.enviando) return
         atual.update { it.copy(enviando = true, erro = null, aviso = null) }
         operacao = viewModelScope.launch(dispatcher) {
-            try { consultas.alterar(id, consulta.versao, AtualizarConsultaRequisicao(status = StatusConsulta.CANCELADA)); atual.update { it.copy(cancelandoId = null, aviso = MensagemAgenda.CANCELADA, semConexao = false) } }
+            try { consultas.alterar(id, consulta.versao, AtualizarConsultaRequisicao(status = StatusConsulta.CANCELADA)); atual.update { it.copy(cancelandoId = null, aviso = MensagemAgenda.CANCELADA) } }
             catch (c: CancellationException) { throw c }
             catch (falha: Exception) { atual.update { it.copy(cancelandoId = null) }; apresentar(falha) }
             finally { atual.update { it.copy(enviando = false) } }

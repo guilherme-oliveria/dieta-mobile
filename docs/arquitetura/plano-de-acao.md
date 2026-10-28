@@ -62,8 +62,9 @@ Definição de pronto de toda tarefa:
 
 ## Fase 5 — Offline da nutri
 
-- [ ] **MOB-29 Escrita offline da nutri.** Ficha, alimentos, listas, rascunho de dieta, avaliação, modelos e consultas passam a gravar local + fila (ATUALIZAR/EXCLUIR com `versaoBase`). Ações que exigem online continuam desabilitadas sem rede. *Depende de:* MOB-16, BE-25.
-- [ ] **MOB-30 Conflitos e pendências.** Tela de conflito (lado a lado: minha versão × servidor; "manter a minha" / "usar a do servidor"); contador de pendências e lista do que falta enviar; teste de ponta a ponta com `MockEngine` devolvendo CONFLITO. *Depende de:* MOB-29.
+- [x] **MOB-29 Escrita offline da nutri** (consultas, avaliações, cadastro de paciente e alimentos; o restante está em MOB-29b). Ficha, alimentos, listas, rascunho de dieta, avaliação, modelos e consultas passam a gravar local + fila (ATUALIZAR/EXCLUIR com `versaoBase`). Ações que exigem online continuam desabilitadas sem rede. *Depende de:* MOB-16, BE-25.
+- [ ] **MOB-29b Escrita offline: dietas, listas e modelos.** Rascunho de dieta, lista de substituição e modelo de questionário gravando local + fila (hoje continuam online). Publicar, convidar e enviar questionário seguem exigindo rede. *Depende de:* MOB-29.
+- [x] **MOB-30 Conflitos e pendências.** Tela de conflito (lado a lado: minha versão × servidor; "manter a minha" / "usar a do servidor"); contador de pendências e lista do que falta enviar; teste de ponta a ponta com `MockEngine` devolvendo CONFLITO. *Depende de:* MOB-29.
 - [ ] **MOB-31 Desktop pronto para consultório.** Sync a cada 5 min, menu e notificações na bandeja, atalhos de teclado, `nativeDistributions` (MSI, DMG, DEB) gerados no CI como artefato. *Depende de:* MOB-29.
 
 ## Fase 6 — Assinatura, PDF, privacidade e lojas

@@ -23,9 +23,9 @@ class AvaliacaoTelasTest {
         onNodeWithText("IMC 22,86 · Peso normal").assertExists()
     }
 
-    @Test fun offlineDesabilitaSalvar() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+    @Test fun offlineSalvaNaFila() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = FormularioAvaliacao(), semConexao = true), AcoesAvaliacao()) } }
-        onNodeWithText("Salvar avaliação").performScrollTo().assertIsNotEnabled()
+        onNodeWithText("Salvar avaliação").performScrollTo().assertIsEnabled()
     }
 
     @Test fun historicoDoPacienteNaoOfereceEdicaoEComparaDuasDatas() = runSkikoComposeUiTest(size = Size(390f, 844f)) {

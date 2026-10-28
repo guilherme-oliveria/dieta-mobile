@@ -19,14 +19,13 @@ import kotlin.uuid.Uuid
 fun FormularioAlimentoTela(estado: EstadoAlimentos, aoCampo: (CampoAlimento, String) -> Unit = { _, _ -> },
     aoGrupo: (Uuid) -> Unit = {}, aoSalvar: () -> Unit = {}, aoFechar: () -> Unit = {}, aoAtualizar: () -> Unit = {}) {
     val form = estado.formulario ?: return
-    val habilitado = !estado.enviando && !estado.atualizando && !estado.semConexao && !estado.conflito
+    val habilitado = !estado.enviando && !estado.atualizando && !estado.conflito
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta),
                 verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                 Text(stringResource(if (form.versao == null) Res.string.alimentos_novo else Res.string.alimentos_editar),
                     style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
-                if (estado.semConexao) FaixaOffline()
                 MensagensAlimentos(estado)
                 CampoTexto(stringResource(Res.string.alimentos_nome), form.nome, { aoCampo(CampoAlimento.NOME, it) },
                     erro = estado.errosCampos["nome"]?.let { textoMensagemAlimentos(it) }, habilitado = habilitado)

@@ -44,11 +44,7 @@ fun CriarPacienteFormulario(estado: EstadoPacientes, aoCampo: (CampoPaciente, St
         CampoNumero(stringResource(Res.string.pacientes_altura), form.estatura, { aoCampo(CampoPaciente.ESTATURA, it) }, erro = estado.erroCampo("estaturaReferencia"), habilitado = !estado.envioEmAndamento)
         CampoTexto(stringResource(Res.string.pacientes_objetivo), form.objetivo, { aoCampo(CampoPaciente.OBJETIVO, it) }, erro = estado.erroCampo("objetivo"), habilitado = !estado.envioEmAndamento, singleLine = false)
         CampoTexto(stringResource(Res.string.pacientes_observacoes), form.observacoes, { aoCampo(CampoPaciente.OBSERVACOES, it) }, erro = estado.erroCampo("observacoes"), habilitado = !estado.envioEmAndamento, singleLine = false)
-        BotaoPrincipal(stringResource(Res.string.pacientes_salvar), aoSalvar, Modifier.fillMaxWidth(), habilitado = !estado.semConexao, carregando = estado.envioEmAndamento)
-        if (estado.semConexao) {
-            Text(stringResource(Res.string.pacientes_erro_rede), style = MaterialTheme.typography.bodySmall)
-            BotaoTexto(stringResource(Res.string.pacientes_atualizar), aoAtualizar, carregando = estado.atualizando)
-        }
+        BotaoPrincipal(stringResource(Res.string.pacientes_salvar), aoSalvar, Modifier.fillMaxWidth(), carregando = estado.envioEmAndamento)
         BotaoTexto(stringResource(Res.string.pacientes_cancelar), aoCancelar, Modifier.fillMaxWidth())
     }
 }

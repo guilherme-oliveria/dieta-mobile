@@ -42,12 +42,12 @@ class AlimentosViewModelTest {
         vm.salvar(); runCurrent(); assertEquals(porta.chaves[0], porta.chaves[1]); assertEquals(porta.criacoes[0], porta.criacoes[1])
         vm.mudarCampo(CampoAlimento.GRAMAS, "51"); assertNotEquals(porta.chaves[0], vm.estado.value.formulario!!.chave)
     }
-    @Test fun redeDesabilitaEscritaMasConservaListaSalva() = runTest {
+    @Test fun semRedeConservaListaSalvaEPermiteEscreverNaFila() = runTest {
         val rede = MutableStateFlow(true); val porta = PortaTeste()
         val vm = AlimentosViewModel(porta, StandardTestDispatcher(testScheduler), conectividade = rede)
         runCurrent(); rede.value = false; runCurrent(); vm.novo()
-        assertNull(vm.estado.value.formulario); assertEquals(1, vm.estado.value.lista.size)
-        vm.editar(alimento()); assertNull(vm.estado.value.formulario)
+        assertNotNull(vm.estado.value.formulario); assertEquals(1, vm.estado.value.lista.size)
+        vm.editar(alimento()); assertNotNull(vm.estado.value.formulario)
     }
     @Test fun conflitoNaoReenviaAutomaticamenteNemTrocaVersaoDoFormulario() = runTest {
         val porta = PortaTeste().apply { falha = ErroApi("CONFLITO_VERSAO", null, emptyList(), 409, null, null) }

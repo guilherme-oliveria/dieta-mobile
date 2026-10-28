@@ -104,7 +104,7 @@ class AlimentosViewModel(private val repositorio: PortaAlimentos, private val di
         }
     }
     fun descartarEAtualizar() { fechar(); atualizar() }
-    private fun podeEscrever() = !atual.value.semConexao && !atual.value.enviando && !atual.value.atualizando
+    private fun podeEscrever() = !atual.value.enviando && !atual.value.atualizando
     private fun executar(atualizacao: Boolean = false, bloco: suspend () -> Unit) {
         val esperada = geracao
         atual.update { it.copy(enviando = !atualizacao, atualizando = atualizacao, erro = null, aviso = null) }

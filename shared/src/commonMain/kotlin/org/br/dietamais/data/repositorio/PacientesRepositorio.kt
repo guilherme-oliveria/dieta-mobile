@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -26,7 +27,8 @@ interface PortaPacientes {
 }
 
 class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDieta,
-    private val sincronizador: Sincronizador = criarSincronizador(api, banco), private val aoAlterar: () -> Unit = {}) : PortaPacientes {
+    private val sincronizador: Sincronizador = criarSincronizador(api, banco), private val aoAlterar: () -> Unit = {},
+    private val escrita: EscritaOffline = EscritaOffline(banco, aoEnfileirar = aoAlterar), private val agora: () -> kotlin.time.Instant = { kotlin.time.Clock.System.now() }) : PortaPacientes {
     private val operacoes = Mutex()
     override suspend fun assinatura(): AssinaturaResumoResposta? {
         val contexto = contexto()
@@ -59,13 +61,17 @@ class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDi
         }
     }
 
+    /**
+     * Offline-first (MOB-29): grava a ficha otimista e a mutação na fila. O `vinculoId` provisório é o id da ficha; o servidor traz o real no pull.
+     * Limite de plano e e-mail repetido (RN-ASS-03, RN-PAC) são decididos no /sync e voltam como pendência recusada.
+     */
     override suspend fun criar(requisicao: CriarPacienteRequisicao, chave: Uuid): PacienteResposta = operacoes.withLock {
-        val contexto = contexto()
-        val resposta = api.enviar<PacienteResposta>("pacientes", JsonContrato.encodeToJsonElement(requisicao), chave)
-        if (resposta.id != requisicao.id) throw RespostaInvalida()
-        banco.transaction { conferir(contexto); salvar(contexto, resposta) }
-        aoAlterar()
-        resposta
+        contexto()
+        val agoraLocal = agora()
+        val otimista = PacienteResposta(requisicao.id, requisicao.id, requisicao.nome, requisicao.email, requisicao.dataNascimento, requisicao.sexo, requisicao.telefone,
+            requisicao.estaturaReferencia, requisicao.objetivo, requisicao.observacoes, StatusVinculo.CONVIDADO, 0, agoraLocal, agoraLocal)
+        escrita.criar("pacientes", requisicao.id, JsonContrato.encodeToJsonElement(requisicao).jsonObject, JsonContrato.encodeToString(otimista))
+        otimista
     }
 
     override suspend fun convidar(id: Uuid, chave: Uuid): ConviteCriadoResposta = operacoes.withLock {

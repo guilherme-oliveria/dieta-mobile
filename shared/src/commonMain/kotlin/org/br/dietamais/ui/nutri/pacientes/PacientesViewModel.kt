@@ -62,7 +62,7 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
     }
 
     fun abrirCriacao() {
-        if (atual.value.semConexao || atual.value.envioEmAndamento || atual.value.atualizando) return
+        if (atual.value.envioEmAndamento || atual.value.atualizando) return
         atual.update { it.copy(formulario = FormularioPaciente(), erro = null, aviso = null, errosCampos = emptyMap()) }
     }
     fun fecharCriacao() { cancelarOperacao(); atual.update { it.copy(formulario = null, errosCampos = emptyMap(), erro = null) } }
@@ -95,13 +95,12 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
         if (form.estatura.isNotBlank() && (estatura == null || !estatura.isFinite() || estatura <= 0)) campos["estaturaReferencia"] = MensagemPacientes.ALTURA_INVALIDA
         atual.update { it.copy(errosCampos = campos) }
         if (campos.isNotEmpty()) return
-        executar {
+        executar(exigeRede = false) {
             val resposta = repositorio.criar(CriarPacienteRequisicao(form.id, form.nome.trim(), form.email.opcional(), data, form.sexo,
                 form.telefone.opcional(), estatura, form.objetivo.opcional(), form.observacoes.opcional()), form.chave)
             selecionadoId = resposta.vinculoId
             atual.update { it.copy(formulario = null, aviso = MensagemPacientes.PACIENTE_CRIADO) }
             publicarLista()
-            atualizar()
         }
     }
 

@@ -6,10 +6,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
+import org.br.dietamais.data.sync.EscritaOffline
 import org.br.dietamais.data.sync.novoIdLocal
+import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -22,7 +25,12 @@ interface PortaConsultas {
     suspend fun alterar(id: Uuid, versao: Long, requisicao: AtualizarConsultaRequisicao): ConsultaResposta
 }
 
-class ConsultaRepositorio(private val api: ApiDieta, private val banco: BancoDieta) : PortaConsultas {
+/**
+ * Leitura do banco local; criar e alterar são offline-first (MOB-29): gravam a consulta otimista e a mutação na fila, e o backend decide no /sync
+ * (RN-AGE-01). Uma recusa volta pelas pendências. O `vinculoId` otimista é provisório; o servidor traz o real no próximo pull.
+ */
+class ConsultaRepositorio(private val api: ApiDieta, private val banco: BancoDieta, private val escrita: EscritaOffline = EscritaOffline(banco),
+    private val agora: () -> Instant = { Clock.System.now() }) : PortaConsultas {
     override fun observar(): Flow<List<ConsultaResposta>> =
         banco.registroSyncQueries.daSessao("consultas").asFlow().mapToList(Dispatchers.Default).map { linhas ->
             try { linhas.map { JsonContrato.decodeFromString<ConsultaResposta>(it) }.sortedWith(compareBy<ConsultaResposta> { it.inicio }.thenBy { it.id.toString() }) }
@@ -37,20 +45,26 @@ class ConsultaRepositorio(private val api: ApiDieta, private val banco: BancoDie
     }
 
     override suspend fun criar(requisicao: CriarConsultaRequisicao): ConsultaResposta {
-        val contexto = contexto()
+        contexto()
         val id = requisicao.id ?: novoIdLocal()
-        val resposta = api.enviar<ConsultaResposta>("consultas", JsonContrato.encodeToJsonElement(requisicao.copy(id = id)), chave = id)
-        conferir(contexto)
-        if (resposta.id != id || resposta.pacienteId != requisicao.pacienteId) throw RespostaInvalida()
-        return resposta.also { guardar(it) }
+        val pedido = requisicao.copy(id = id)
+        val agoraLocal = agora()
+        val otimista = ConsultaResposta(id, pedido.pacienteId, pedido.pacienteId, pedido.inicio, pedido.duracaoMin, pedido.tipo, pedido.lugar?.takeIf { it.isNotEmpty() },
+            StatusConsulta.AGENDADA, 1, agoraLocal, agoraLocal)
+        escrita.criar("consultas", id, JsonContrato.encodeToJsonElement(pedido).jsonObject, JsonContrato.encodeToString(otimista))
+        return otimista
     }
 
     override suspend fun alterar(id: Uuid, versao: Long, requisicao: AtualizarConsultaRequisicao): ConsultaResposta {
-        val contexto = contexto()
-        val resposta = api.alterar<ConsultaResposta>("consultas/$id", JsonContrato.encodeToJsonElement(requisicao), versao)
-        conferir(contexto)
-        if (resposta.id != id) throw RespostaInvalida()
-        return resposta.also { guardar(it) }
+        contexto()
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull() ?: throw SessaoAlterada()
+        val atual = banco.registroSyncQueries.dadosDe(sessao.usuario_id, sessao.perfil, "consultas", id.toString()).executeAsOneOrNull()?.dados_json
+            ?.let { JsonContrato.decodeFromString<ConsultaResposta>(it) } ?: throw ErroApi("RECURSO_NAO_ENCONTRADO", null, emptyList(), 404, null, null)
+        val nova = atual.copy(inicio = requisicao.inicio ?: atual.inicio, duracaoMin = requisicao.duracaoMin ?: atual.duracaoMin, tipo = requisicao.tipo ?: atual.tipo,
+            lugar = if (requisicao.lugar == null) atual.lugar else requisicao.lugar.ifEmpty { null }, status = requisicao.status ?: atual.status,
+            versao = versao + 1, atualizadoEm = agora())
+        escrita.atualizar("consultas", id, versao, JsonContrato.encodeToJsonElement(requisicao).jsonObject, JsonContrato.encodeToString(nova))
+        return nova
     }
 
     private fun guardar(consulta: ConsultaResposta) {

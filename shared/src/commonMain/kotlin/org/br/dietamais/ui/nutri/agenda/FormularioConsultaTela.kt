@@ -32,7 +32,7 @@ private val tiposEscolhiveis = listOf(TipoConsulta.PRIMEIRA, TipoConsulta.RETORN
 @Composable
 fun FormularioConsultaTela(estado: EstadoAgenda, acoes: AcoesFormularioConsulta) {
     val form = estado.formulario ?: return
-    val habilitado = !estado.enviando && !estado.semConexao
+    val habilitado = !estado.enviando
     val erros = estado.errosFormulario
     Dialog(onDismissRequest = acoes.aoFechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -41,7 +41,6 @@ fun FormularioConsultaTela(estado: EstadoAgenda, acoes: AcoesFormularioConsulta)
                     verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Text(stringResource(if (form.id == null) Res.string.agenda_form_titulo_nova else Res.string.agenda_form_titulo_remarcar),
                         style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
-                    if (estado.semConexao) FaixaOffline()
                     estado.erro?.let { Text(textoMensagemAgenda(it), color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
                     if (form.id == null) {
                         Text(stringResource(Res.string.agenda_form_paciente), style = MaterialTheme.typography.labelLarge)

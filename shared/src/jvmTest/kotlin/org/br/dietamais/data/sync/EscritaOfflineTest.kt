@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.*
 import org.br.dietamais.data.local.BancoDieta
+import org.br.dietamais.data.remoto.JsonContrato
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.data.repositorio.EstadoPendencia
 import org.br.dietamais.data.repositorio.PendenciasRepositorio
@@ -111,5 +112,15 @@ class EscritaOfflineTest {
         val repo = PendenciasRepositorio(banco)
         repo.descartar(repo.observar().first().single().idMutacao)
         assertNull(registro(banco)); assertTrue(FilaMutacoes(banco).pendentes().isEmpty())
+    }
+
+    @Test fun pacienteOtimistaApareceNoCacheESomeQuandoRejeitado() = comBanco { banco ->
+        val ficha = PacienteResposta(id, id, "Ana", status = StatusVinculo.CONVIDADO, versao = 0, criadoEm = kotlin.time.Instant.parse("2026-10-28T12:00:00Z"), atualizadoEm = kotlin.time.Instant.parse("2026-10-28T12:00:00Z"))
+        EscritaOffline(banco).criar("pacientes", id, obj("id" to id, "nome" to "Ana"), JsonContrato.encodeToString(ficha))
+        assertEquals(1, banco.pacienteCacheQueries.daSessao().executeAsList().size)
+        EnviadorFila(Fonte { l -> l.map { ResultadoMutacaoResposta(it.idMutacao, StatusMutacao.REJEITADA, codigo = "LIMITE_PACIENTES_ATINGIDO") } }, banco, { contexto }).enviar()
+        assertTrue(banco.pacienteCacheQueries.daSessao().executeAsList().isEmpty())
+        val p = PendenciasRepositorio(banco).observar().first().single()
+        assertEquals("LIMITE_PACIENTES_ATINGIDO", p.codigo)
     }
 }

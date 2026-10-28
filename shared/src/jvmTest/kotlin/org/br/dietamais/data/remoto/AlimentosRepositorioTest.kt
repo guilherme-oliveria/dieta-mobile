@@ -66,42 +66,36 @@ class AlimentosRepositorioTest {
         }
     }
 
-    @Test fun patchUsaVersaoClinicaIfMatchESalvaRespostaAutoritativa() = runTest {
+    @Test fun alterarGravaOtimistaEEnfileiraAtualizarSemChamarARede() = runTest {
         val requisicao = JsonContrato.decodeFromString<AtualizarAlimentoRequisicao>(recursoContrato("fase-2/atualizarAlimento/requisicao.json"))
-        val resposta = alimento().copy(ativo = false, versao = 2)
-        comRepositorio(MockEngine { req ->
-            assertEquals(HttpMethod.Patch, req.method)
-            assertEquals("/api/v1/alimentos/${resposta.id}", req.url.encodedPath)
-            assertEquals("\"1\"", req.headers[HttpHeaders.IfMatch])
-            assertEquals(requisicao, JsonContrato.decodeFromString<AtualizarAlimentoRequisicao>((req.body as TextContent).text))
-            json(JsonContrato.encodeToString(resposta))
-        }) { repo, _, _ ->
-            assertEquals(resposta, repo.alterar(resposta.id, 1, requisicao))
-            assertEquals(resposta, repo.observar().first().alimentos.single())
+        val id = alimento().id
+        comRepositorio(MockEngine { req -> when {
+            req.url.encodedPath.endsWith("grupos-alimentos") -> json(recursoContrato("fase-2/listarGruposAlimentos/resposta.json"))
+            req.url.parameters["ativo"] == "false" -> json(JsonContrato.encodeToString(PaginaAlimentosResposta(emptyList(), 0, 20, 0)))
+            req.method == HttpMethod.Get -> json(recursoContrato("fase-2/listarAlimentos/resposta.json"))
+            else -> error("escrita offline não chama a API: ${req.method} ${req.url}")
+        } }) { repo, _, banco ->
+            repo.atualizar()
+            val nova = repo.alterar(id, 1, requisicao)
+            assertFalse(nova.ativo); assertEquals(2, nova.versao)
+            assertEquals(nova, repo.observar().first().alimentos.single { it.id == id })
+            val m = org.br.dietamais.data.sync.FilaMutacoes(banco).pendentes().single()
+            assertEquals(org.br.dietamais.data.sync.OperacaoMutacao.ATUALIZAR, m.operacao); assertEquals(1L, m.versaoBase); assertEquals(id, m.id)
+            repo.atualizar() // recarregar pela API não apaga a edição ainda não enviada
+            assertEquals(nova, repo.observar().first().alimentos.single { it.id == id })
         }
     }
 
-    @Test fun criarMantemIdempotencyKeyEIdDoCliente() = runTest {
+    @Test fun criarGravaOtimistaEEnfileiraCriarComIdDoCliente() = runTest {
         val resposta = alimento(); val chave = Uuid.random()
         val requisicao = JsonContrato.decodeFromString<CriarAlimentoRequisicao>(recursoContrato("fase-2/criarAlimento/requisicao.json")).copy(id = resposta.id)
-        comRepositorio(MockEngine { req ->
-            assertEquals(HttpMethod.Post, req.method); assertEquals(chave.toString(), req.headers["Idempotency-Key"])
-            assertEquals(requisicao, JsonContrato.decodeFromString<CriarAlimentoRequisicao>((req.body as TextContent).text))
-            json(recursoContrato("fase-2/criarAlimento/resposta.json"), HttpStatusCode.Created)
-        }) { repo, _, _ -> assertEquals(resposta, repo.criar(requisicao, chave)) }
-    }
-
-    @Test fun conflitoPreservaCacheENaoAplicaAtualAutomaticamente() = runTest {
-        comRepositorio(MockEngine { req -> when {
-            req.method == HttpMethod.Patch -> json(recursoContrato("fase-2/atualizarAlimento/erro.json"), HttpStatusCode.Conflict)
-            req.url.encodedPath.endsWith("grupos-alimentos") -> json(recursoContrato("fase-2/listarGruposAlimentos/resposta.json"))
-            req.url.parameters["ativo"] == "false" -> json(JsonContrato.encodeToString(PaginaAlimentosResposta(emptyList(), 0, 20, 0)))
-            else -> json(recursoContrato("fase-2/listarAlimentos/resposta.json"))
-        } }) { repo, _, _ ->
-            repo.atualizar(); val antes = repo.observar().first()
-            val requisicao = JsonContrato.decodeFromString<AtualizarAlimentoRequisicao>(recursoContrato("fase-2/atualizarAlimento/requisicao.json"))
-            assertEquals("CONFLITO_VERSAO", assertFailsWith<ErroApi> { repo.alterar(alimento().id, 1, requisicao) }.codigo)
-            assertEquals(antes, repo.observar().first())
+        comRepositorio(MockEngine { error("escrita offline não chama a API") }) { repo, _, banco ->
+            val criado = repo.criar(requisicao, chave)
+            assertEquals(resposta.id, criado.id); assertEquals(requisicao.nome, criado.nome); assertTrue(criado.ativo)
+            assertEquals(criado, repo.observar().first().alimentos.single())
+            val m = org.br.dietamais.data.sync.FilaMutacoes(banco).pendentes().single()
+            assertEquals(org.br.dietamais.data.sync.OperacaoMutacao.CRIAR, m.operacao); assertEquals(resposta.id, m.id)
+            assertEquals(requisicao, JsonContrato.decodeFromString<CriarAlimentoRequisicao>(m.dados.toString()))
         }
     }
 

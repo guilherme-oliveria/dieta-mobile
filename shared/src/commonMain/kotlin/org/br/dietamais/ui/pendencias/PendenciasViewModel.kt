@@ -15,6 +15,7 @@ import org.br.dietamais.data.repositorio.PortaPendencias
 import kotlin.uuid.Uuid
 
 data class EstadoPendencias(val pendencias: List<Pendencia> = emptyList(), val aberto: Boolean = false, val selecionada: Uuid? = null) {
+    val total: Int get() = pendencias.size
     /** O que precisa de decisão da nutri; o que só aguarda envio não pede nada. */
     val precisaDeAtencao: Int get() = pendencias.count { it.estado != EstadoPendencia.AGUARDANDO }
     val detalhe: Pendencia? get() = pendencias.firstOrNull { it.idMutacao == selecionada }
@@ -30,7 +31,7 @@ class PendenciasViewModel(private val pendencias: PortaPendencias, private val d
             pendencias.observar().catch { }.collect { lista ->
                 atual.update { e ->
                     val aindaExiste = lista.any { it.idMutacao == e.selecionada }
-                    e.copy(pendencias = lista, selecionada = e.selecionada.takeIf { aindaExiste }, aberto = e.aberto && lista.any { it.estado != EstadoPendencia.AGUARDANDO })
+                    e.copy(pendencias = lista, selecionada = e.selecionada.takeIf { aindaExiste }, aberto = e.aberto && lista.isNotEmpty())
                 }
             }
         }

@@ -83,7 +83,7 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
 
     fun salvar() {
         val e = atual.value; val form = e.formulario ?: return; val paciente = e.pacienteId ?: return
-        if (ocupado() || e.semConexao) return
+        if (ocupado()) return
         val erros = validarMedidas(form.valores)
         val semJustificativa = form.exigeJustificativa && form.justificativa.isBlank()
         if (erros.isNotEmpty() || semJustificativa) { atual.update { it.copy(errosMedidas = erros, justificativaFaltando = semJustificativa) }; return }
@@ -93,7 +93,7 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         operacao = viewModelScope.launch(dispatcher) {
             try {
                 if (form.id == null) avaliacoes.criar(paciente, requisicao.copy(id = form.chave)) else avaliacoes.salvar(form.id, checkNotNull(form.versao), requisicao)
-                atual.update { it.copy(formulario = null, aviso = MensagemAvaliacao.SALVO, semConexao = false) }
+                atual.update { it.copy(formulario = null, aviso = MensagemAvaliacao.SALVO) }
             }
             catch (c: CancellationException) { throw c }
             catch (falha: Exception) { apresentar(falha) }

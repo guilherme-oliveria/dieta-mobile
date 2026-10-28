@@ -21,3 +21,9 @@ DELETE FROM alimento_cache WHERE usuario_id = ? AND perfil = ?;
 
 limpar:
 DELETE FROM alimento_cache;
+
+remover:
+DELETE FROM alimento_cache WHERE usuario_id = ? AND perfil = ? AND colecao = ? AND id = ?;
+
+buscar:
+SELECT conteudo_json FROM alimento_cache WHERE usuario_id = ? AND perfil = ? AND colecao = ? AND id = ?;

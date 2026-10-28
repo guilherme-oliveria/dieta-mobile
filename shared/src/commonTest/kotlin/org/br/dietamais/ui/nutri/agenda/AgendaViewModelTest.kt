@@ -86,12 +86,12 @@ class AgendaViewModelTest {
         assertNotNull(c.criada)
     }
 
-    @Test fun semConexaoNaoAgendaMasMostraAAgendaLocal() = runTest {
+    @Test fun semConexaoAgendaNaFilaEMostraAAgendaLocal() = runTest {
         val c = PortaConsultasFalsa(listOf(consultaFalsa(ana.id, agoraFalso + 2.hours))); c.falha = FalhaComunicacao()
         val vm = vm(c, online = false); vm.abrir(); advanceUntilIdle()
         c.falha = null
         vm.preencher(); vm.salvar(); advanceUntilIdle()
-        assertNull(c.criada); assertEquals(1, vm.estado.value.consultas.size); assertTrue(vm.estado.value.semConexao)
+        assertNotNull(c.criada); assertEquals(2, vm.estado.value.consultas.size)
     }
 
     @Test fun remarcarMandaSoOQueMudouComAVersaoQueTem() = runTest {

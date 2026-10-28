@@ -31,14 +31,14 @@ class PacientesViewModelTest {
         assertEquals(1, porta.atualizacoes)
     }
 
-    @Test fun redeIndisponivelMantemCacheEImpedeNovaEscrita() = runTest {
+    @Test fun redeIndisponivelMantemCacheEPermiteCadastrarNaFila() = runTest {
         val porta = PortaTeste(listOf(paciente())).apply { falhaAtualizar = FalhaComunicacao() }
         val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler))
         runCurrent()
         assertTrue(vm.estado.value.semConexao)
         assertEquals(1, vm.estado.value.lista.size)
         vm.abrirCriacao()
-        assertNull(vm.estado.value.formulario)
+        assertNotNull(vm.estado.value.formulario)
     }
 
     @Test fun formularioInvalidoNaoChegaAoServidor() = runTest {
@@ -122,14 +122,12 @@ class PacientesViewModelTest {
         assertNull(vm.estado.value.convite)
     }
 
-    @Test fun perdaDeConexaoDesabilitaCriacaoSemEsperarErroHttp() = runTest {
+    @Test fun perdaDeConexaoNaoImpedeCadastroOffline() = runTest {
         val online = MutableStateFlow(true)
         val vm = PacientesViewModel(PortaTeste(listOf(paciente())), compartilhar, StandardTestDispatcher(testScheduler), conectividade = online)
         runCurrent(); online.value = false; runCurrent()
-        vm.abrirCriacao(); assertNull(vm.estado.value.formulario)
+        vm.abrirCriacao(); assertNotNull(vm.estado.value.formulario)
         assertTrue(vm.estado.value.semConexao)
-        online.value = true; runCurrent(); vm.abrirCriacao()
-        assertNotNull(vm.estado.value.formulario)
     }
 
     private inner class PortaTeste(inicial: List<PacienteResposta> = emptyList()) : PortaPacientes {

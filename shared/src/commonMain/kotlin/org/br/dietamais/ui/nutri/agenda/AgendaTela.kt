@@ -29,7 +29,7 @@ data class AcoesAgenda(val aoModo: (ModoAgenda) -> Unit = {}, val aoAnterior: ()
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AgendaTela(estado: EstadoAgenda, acoes: AcoesAgenda, fuso: TimeZone = TimeZone.currentSystemDefault()) {
-    val online = !estado.semConexao && !estado.enviando
+    val online = !estado.enviando
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.agenda_titulo), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
         if (estado.semConexao) FaixaOffline()

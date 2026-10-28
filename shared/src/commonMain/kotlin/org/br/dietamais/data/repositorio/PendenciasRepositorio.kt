@@ -9,13 +9,14 @@ import kotlinx.serialization.json.*
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.sync.ANTERIOR
 import org.br.dietamais.data.sync.OperacaoMutacao
+import org.br.dietamais.data.sync.projetar
 import org.br.dietamais.data.sync.restaurarAnterior
 import kotlin.uuid.Uuid
 
 enum class EstadoPendencia { AGUARDANDO, CONFLITO, REJEITADA }
 
 data class Pendencia(val idMutacao: Uuid, val entidade: String, val operacao: OperacaoMutacao, val id: Uuid, val estado: EstadoPendencia,
-    val minha: JsonObject, val servidor: JsonObject?)
+    val minha: JsonObject, val servidor: JsonObject?, val codigo: String? = null)
 
 interface PortaPendencias {
     /** Mutações da sessão que ainda não foram aplicadas (aguardando, em conflito ou rejeitadas), da mais antiga para a mais nova. */
@@ -39,7 +40,7 @@ class PendenciasRepositorio(private val banco: BancoDieta, private val aoMudar: 
             val minha = objetoOuNulo(m.dados_json) ?: JsonObject(emptyMap())
             Pendencia(Uuid.parse(m.id_mutacao), m.entidade, OperacaoMutacao.valueOf(m.operacao), Uuid.parse(m.id),
                 when (m.status) { "PENDENTE" -> EstadoPendencia.AGUARDANDO; "CONFLITO" -> EstadoPendencia.CONFLITO; else -> EstadoPendencia.REJEITADA },
-                minha, atuais[m.id_mutacao])
+                minha, atuais[m.id_mutacao].takeIf { m.status == "CONFLITO" }, atuais[m.id_mutacao]?.takeIf { m.status != "CONFLITO" }?.get("codigo")?.jsonPrimitive?.contentOrNull)
         }
     }
 
@@ -57,6 +58,7 @@ class PendenciasRepositorio(private val banco: BancoDieta, private val aoMudar: 
                 linha.dados_json?.let(::objetoOuNulo)?.takeIf { "versao" in it }?.let { local ->
                     val novo = JsonObject(local + ("versao" to JsonPrimitive(versaoAtual + 1)))
                     banco.registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, m.entidade, m.id, 0, 0, novo.toString())
+                    banco.projetar(sessao.usuario_id, sessao.perfil, m.entidade, m.id)
                 }
             }
             true
@@ -81,6 +83,7 @@ class PendenciasRepositorio(private val banco: BancoDieta, private val aoMudar: 
             val m = banco.mutacaoPendenteQueries.buscar(idMutacao.toString(), sessao.usuario_id, sessao.perfil).executeAsOneOrNull() ?: return@transactionWithResult false
             val atual = banco.conflitoQueries.buscar(idMutacao.toString(), sessao.usuario_id, sessao.perfil).executeAsOneOrNull()?.let(::objetoOuNulo)
             efeito(sessao.usuario_id to sessao.perfil, m, atual)
+            banco.projetar(sessao.usuario_id, sessao.perfil, m.entidade, m.id)
             banco.mutacaoPendenteQueries.doRegistro(sessao.usuario_id, sessao.perfil, m.entidade, m.id).executeAsList()
                 .forEach { banco.conflitoQueries.remover(it.id_mutacao, sessao.usuario_id, sessao.perfil) }
             banco.mutacaoPendenteQueries.removerDoRegistro(sessao.usuario_id, sessao.perfil, m.entidade, m.id)
