@@ -32,6 +32,9 @@ import org.koin.compose.getKoin
 import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
+import org.br.dietamais.ui.nutri.assinatura.AcoesPerfilNutri
+import org.br.dietamais.ui.nutri.assinatura.ContaNutriTela
+import org.br.dietamais.ui.nutri.assinatura.PerfilNutriViewModel
 import org.br.dietamais.ui.paciente.hoje.AcoesHoje
 import org.br.dietamais.ui.paciente.perfil.AcoesPerfil
 import org.br.dietamais.ui.paciente.perfil.PerfilPacienteTela
@@ -171,5 +174,10 @@ private fun NavegacaoNutri() {
             ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
           }
         })
-    }, conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) })
+    }, conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
+    conteudoConta = {
+        val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
+        val estadoConta by conta.estado.collectAsState()
+        ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar))
+    })
 }

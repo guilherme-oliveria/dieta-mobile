@@ -36,7 +36,7 @@ Definição de pronto de toda tarefa:
 
 ## Fase 2b — Conta da nutri
 
-- [ ] **MOB-36 Perfil da nutri.** Parte "meus dados" da `ContaScreen` em `ui/nutri/assinatura`: nome de exibição, CRN, telefone, orientação padrão (usada ao publicar dieta). A parte de assinatura entra em MOB-32. *Depende de:* MOB-07, BE-33.
+- [x] **MOB-36 Perfil da nutri.** Parte "meus dados" da `ContaScreen` em `ui/nutri/assinatura`: nome de exibição, CRN, telefone, orientação padrão (usada ao publicar dieta). A parte de assinatura entra em MOB-32. *Depende de:* MOB-07, BE-33.
 
 ## Fase 3 — Rotina do paciente
 

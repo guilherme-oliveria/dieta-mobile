@@ -346,4 +346,17 @@
     <string name="compras_copiada">Lista copiada.</string>
     <string name="compras_aberta">Escolha onde enviar a lista.</string>
     <string name="compras_falhou">Não foi possível compartilhar a lista.</string>
+    <string name="conta_meus_dados">Meus dados</string>
+    <string name="conta_nome">Nome de exibição</string>
+    <string name="conta_crn">CRN (ex.: CRN-3 12345)</string>
+    <string name="conta_telefone">Telefone</string>
+    <string name="conta_orientacao">Orientação padrão</string>
+    <string name="conta_orientacao_ajuda">Este texto entra em toda dieta que você publicar sem orientação própria.</string>
+    <string name="conta_salvar">Salvar dados</string>
+    <string name="conta_salvo">Dados salvos.</string>
+    <string name="conta_erro_nome">Informe seu nome.</string>
+    <string name="conta_erro_crn">Use o formato CRN-3 12345.</string>
+    <string name="conta_erro_telefone">Telefone longo demais.</string>
+    <string name="conta_erro_conflito">Seus dados mudaram em outro aparelho. Atualizamos; revise e salve de novo.</string>
+    <string name="conta_erro_assinatura">Sua assinatura não permite esta alteração.</string>
 </resources>

@@ -16,6 +16,7 @@ import org.br.dietamais.app.moduloListaPaciente
 import org.br.dietamais.app.moduloDietas
 import org.br.dietamais.app.moduloDietaPaciente
 import org.br.dietamais.app.moduloLembretes
+import org.br.dietamais.app.moduloPerfilNutri
 import org.br.dietamais.plataforma.NotificacaoLocal
 import org.br.dietamais.app.AmbienteDieta
 import androidx.compose.runtime.DisposableEffect
@@ -63,7 +64,7 @@ fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDrive
         if (dadosDisponiveis) modules(moduloPacientes(compartilhamento, ambiente))
         if (dadosDisponiveis) modules(moduloAlimentos(ambiente))
         if (dadosDisponiveis) modules(moduloListaPaciente(ambiente))
-        if (dadosDisponiveis) modules(moduloDietas(ambiente), moduloDietaPaciente(ambiente), moduloLembretes(notificacao))
+        if (dadosDisponiveis) modules(moduloDietas(ambiente), moduloDietaPaciente(ambiente), moduloLembretes(notificacao), moduloPerfilNutri(ambiente))
     } }
     DisposableEffect(contexto) { onDispose { contexto.close() } }
     KoinIsolatedContext(contexto) {

@@ -63,3 +63,9 @@ data class EsqueciSenhaRequisicao(val email: String)
 data class RedefinirSenhaRequisicao(val token: String, val novaSenha: String) {
     override fun toString() = "RedefinirSenhaRequisicao[conteúdo protegido]"
 }
+
+@kotlinx.serialization.Serializable
+data class PerfilNutriResposta(val id: kotlin.uuid.Uuid, val nome: String, val crn: String, val telefone: String? = null,
+    val orientacaoPadrao: String? = null, val versao: Long, val atualizadoEm: kotlin.time.Instant)
+@kotlinx.serialization.Serializable
+data class AtualizarPerfilNutriRequisicao(val nome: String, val crn: String, val telefone: String? = null, val orientacaoPadrao: String? = null)
