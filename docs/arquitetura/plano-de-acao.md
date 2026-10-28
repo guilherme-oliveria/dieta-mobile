@@ -53,8 +53,8 @@ Definição de pronto de toda tarefa:
 
 - [x] **MOB-22 Avaliação.** `ui/nutri/avaliacao`: formulário em seções (medidas básicas, perímetros, dobras, composição, parecer), validação de intervalos (RN-AVA-03), IMC mostrado ao salvar; `HistoricoAvaliacoesScreen` com comparação de duas datas; paciente vê avaliações compartilhadas. *Depende de:* BE-19.
 - [x] **MOB-23 Evolução.** `ui/paciente/evolucao` e aba na ficha da nutri: gráficos de linha (peso, % gordura, perímetros, peso em casa) com `Canvas`; `RegistrarPesoSheet` (peso em casa offline pela fila, BE-15). *Depende de:* MOB-22, BE-20.
-- [ ] **MOB-24 Anamnese da nutri.** `ui/nutri/anamnese`: editar modelo (blocos, perguntas, tipos, condição), enviar ao paciente, ler respostas na ficha. *Depende de:* BE-21, BE-22.
-- [ ] **MOB-25 Anamnese do paciente.** `ui/paciente/anamnese`: wizard por bloco, salvar parcial (offline), enviar (online); condição de exibição. *Depende de:* MOB-24, BE-22.
+- [x] **MOB-24 Anamnese da nutri.** `ui/nutri/anamnese`: editar modelo (blocos, perguntas, tipos, condição), enviar ao paciente, ler respostas na ficha. *Depende de:* BE-21, BE-22.
+- [x] **MOB-25 Anamnese do paciente.** `ui/paciente/anamnese`: wizard por bloco, salvar parcial (offline), enviar (online); condição de exibição. *Depende de:* MOB-24, BE-22.
 - [ ] **MOB-26 Agenda de consultas.** `ui/nutri/agenda` (dia/semana, criar, remarcar, cancelar) e próxima consulta no Hoje do paciente. *Depende de:* BE-23.
 - [ ] **MOB-27 Push e central de avisos.** FCM no `androidApp` e no `iosApp` (token → `POST /eu/dispositivos`); ao receber, sync + navegação pela `rota`; `ui/notificacoes` · `AvisosScreen` com histórico e marcar como lido. Arquivos do Firebase fora do Git (secrets do CI). *Depende de:* BE-24, BE-34.
 - [ ] **MOB-28 Painel da nutri.** `ui/nutri/painel`: consultas do dia, pacientes sem check-in há 3 dias, questionários respondidos, uso do plano. *Depende de:* MOB-26, BE-16.

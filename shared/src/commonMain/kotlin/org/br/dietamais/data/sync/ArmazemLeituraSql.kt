@@ -37,6 +37,8 @@ class ArmazemLeituraSql(private val banco: BancoDieta, private val contextoAtual
         pagina.mudancas.agua.forEach { registrar(contexto, "agua", it, AguaResposta::id) }
         pagina.mudancas.pesos.forEach { registrar(contexto, "pesos", it, PesoResposta::id) }
         pagina.mudancas.avaliacoes.forEach { registrar(contexto, "avaliacoes", it, AvaliacaoResposta::id) }
+        pagina.mudancas.modelos.forEach { registrar(contexto, "modelos", it, ModeloQuestionarioResposta::id) }
+        pagina.mudancas.questionarios.forEach { registrar(contexto, "questionarios", it, QuestionarioResposta::id) }
         if (!pagina.temMais) banco.pacienteCacheQueries.concluirBootstrap(contexto.usuarioId.toString(), contexto.perfil.name)
         conferir(contexto)
         banco.cursorSyncQueries.salvar(contexto.usuarioId.toString(), contexto.perfil.name, pagina.cursor)

@@ -43,8 +43,12 @@ import org.br.dietamais.ui.paciente.hoje.HojeTela
 import org.br.dietamais.ui.paciente.substituicao.TrocaTela
 import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
 import org.br.dietamais.ui.nutri.pacientes.AbaFicha
+import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriRota
+import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriViewModel
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesNutriRota
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
+import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteRota
+import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoPacienteRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
@@ -147,7 +151,11 @@ private fun NavegacaoPaciente() {
     LaunchedEffect(agendador) { agendador?.executar() }
     NavegacaoApp(PerfilNavegacao.PACIENTE,
         conteudoHoje = {
-            HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua))
+            val anamnese = koinViewModel<AnamnesePacienteViewModel>(viewModelStoreOwner = dono)
+            Column(Modifier.fillMaxSize()) {
+                AnamnesePacienteRota(anamnese)
+                HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua), Modifier.weight(1f))
+            }
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },
         conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) },
@@ -174,6 +182,7 @@ private fun NavegacaoNutri() {
         PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
           if (aba == AbaFicha.EVOLUCAO) EvolucaoRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), paciente.id)
           else if (aba == AbaFicha.AVALIACOES) AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id)
+          else if (aba == AbaFicha.ANAMNESE) AnamneseNutriRota(koinViewModel<AnamneseNutriViewModel>(viewModelStoreOwner = dono), paciente.id)
           else if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
           else {
             val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
