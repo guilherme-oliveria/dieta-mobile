@@ -25,7 +25,7 @@ class AcoesPerfil(val aoMudarLembretes: (Boolean) -> Unit, val aoMudarTipo: (Tip
 
 /** Aba Perfil do paciente: lembretes, avisos, silêncio, minhas nutris e agenda do celular (MOB-19 e MOB-21). */
 @Composable
-fun PerfilPacienteTela(estado: EstadoPerfilPaciente, acoes: AcoesPerfil, modifier: Modifier = Modifier) {
+fun PerfilPacienteTela(estado: EstadoPerfilPaciente, acoes: AcoesPerfil, modifier: Modifier = Modifier, extras: @Composable ColumnScope.() -> Unit = {}) {
     val navegador = LocalUriHandler.current
     val habilitado = !estado.semConexao && !estado.enviando
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
@@ -75,6 +75,7 @@ fun PerfilPacienteTela(estado: EstadoPerfilPaciente, acoes: AcoesPerfil, modifie
                 BotaoTexto(stringResource(Res.string.perfil_agenda_revogar), acoes.aoRevogarLink, habilitado = habilitado)
             }
         }
+        extras()
     }
 }
 

@@ -685,4 +685,23 @@
     <string name="pdf_erro_sem_conexao">Sem conexão. O PDF precisa de internet.</string>
     <string name="pdf_erro_indisponivel">Este PDF não está disponível.</string>
     <string name="pdf_erro_geral">Não foi possível gerar o PDF. Tente de novo.</string>
+    <string name="privacidade_titulo">Privacidade</string>
+    <string name="privacidade_termos">Termos de uso</string>
+    <string name="privacidade_exportar_texto">Você pode pedir uma cópia dos seus dados. Avisamos por e-mail quando estiver pronta.</string>
+    <string name="privacidade_exportar">Exportar meus dados</string>
+    <string name="privacidade_exportacao_pendente">Preparando sua exportação…</string>
+    <string name="privacidade_exportacao_baixar">Baixar meus dados (disponível até %1$s)</string>
+    <string name="privacidade_exportacao_falhou">Não foi possível gerar a exportação. Peça de novo.</string>
+    <string name="privacidade_exportacao_enviada">Pedido enviado. Você receberá um e-mail quando estiver pronto.</string>
+    <string name="privacidade_excluir_texto">Excluir a conta apaga seu acesso para sempre. Os registros clínicos feitos pelas nutris são mantidos pelo prazo legal, sem identificar você.</string>
+    <string name="privacidade_excluir">Excluir minha conta</string>
+    <string name="privacidade_excluir_titulo">Excluir conta?</string>
+    <string name="privacidade_excluir_aviso">Isto não pode ser desfeito. Digite sua senha para confirmar.</string>
+    <string name="privacidade_excluir_confirmar">Excluir</string>
+    <string name="privacidade_cancelar">Cancelar</string>
+    <string name="privacidade_senha">Senha</string>
+    <string name="privacidade_erro_senha">Senha incorreta.</string>
+    <string name="privacidade_erro_senha_vazia">Informe sua senha.</string>
+    <string name="privacidade_erro_exportacao">Você já pediu uma exportação há pouco. Tente de novo em até 1 hora.</string>
+    <string name="privacidade_erro_geral">Não foi possível concluir. Tente de novo.</string>
 </resources>

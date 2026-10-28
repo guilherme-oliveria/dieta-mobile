@@ -30,6 +30,8 @@ import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.data.sync.AgendadorLembretes
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
+import org.br.dietamais.ui.privacidade.*
 import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
@@ -118,7 +120,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                 Box(Modifier.weight(1f)) {
                     key(usuario.id, usuario.perfil) {
                         if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
-                        else NavegacaoPaciente()
+                        else NavegacaoPaciente(viewModel::sair)
                     }
                 }
             }
@@ -169,7 +171,7 @@ private fun IndicadorAmbiente(ambiente: AmbienteDieta) {
 }
 
 @Composable
-private fun NavegacaoPaciente() {
+private fun NavegacaoPaciente(aoContaExcluida: () -> Unit) {
     // um ViewModel compartilhado: Hoje e Dieta leem o mesmo snapshot local
     val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
@@ -202,8 +204,12 @@ private fun NavegacaoPaciente() {
         conteudoPerfil = {
             val perfil = koinViewModel<PerfilPacienteViewModel>(viewModelStoreOwner = dono)
             val estadoPerfil by perfil.estado.collectAsState()
+            val priv = koinViewModel<PrivacidadeViewModel>(viewModelStoreOwner = dono) { parametersOf(true) }
+            val estadoPriv by priv.estado.collectAsState()
+            LaunchedEffect(estadoPriv.contaExcluida) { if (estadoPriv.contaExcluida) aoContaExcluida() }
             PerfilPacienteTela(estadoPerfil, AcoesPerfil(perfil::mudarLembretes, perfil::mudarTipo, perfil::mudarSilencioAtivo, perfil::mudarInicio,
-                perfil::mudarFim, perfil::salvar, perfil::gerarLink, perfil::revogarLink))
+                perfil::mudarFim, perfil::salvar, perfil::gerarLink, perfil::revogarLink),
+                extras = { PrivacidadeCard(estadoPriv, acoesPrivacidade(priv), comDadosPessoais = true) })
         })
 }
 
@@ -235,6 +241,14 @@ private fun NavegacaoNutri() {
         val assinatura = koinViewModel<AssinaturaViewModel>(viewModelStoreOwner = dono)
         val estadoAssinatura by assinatura.estado.collectAsState()
         ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar),
-            extras = { AssinaturaCard(estadoAssinatura, AcoesAssinatura(assinatura::assinar, assinatura::urlAberta, assinatura::recarregar)) })
+            extras = {
+                AssinaturaCard(estadoAssinatura, AcoesAssinatura(assinatura::assinar, assinatura::urlAberta, assinatura::recarregar))
+                val priv = koinViewModel<PrivacidadeViewModel>(viewModelStoreOwner = dono) { parametersOf(false) }
+                val estadoPriv by priv.estado.collectAsState()
+                PrivacidadeCard(estadoPriv, acoesPrivacidade(priv), comDadosPessoais = false)
+            })
     })
 }
+
+private fun acoesPrivacidade(v: PrivacidadeViewModel) = AcoesPrivacidade(v::abrirTermos, v::pedirExportacao, v::atualizarExportacao, v::abrirExportacao,
+    v::pedirExclusao, v::mudarSenha, v::confirmarExclusao, v::cancelarExclusao, v::urlAberta)
