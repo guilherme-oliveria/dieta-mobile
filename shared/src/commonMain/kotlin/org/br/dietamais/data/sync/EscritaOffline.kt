@@ -31,6 +31,7 @@ class EscritaOffline(private val banco: BancoDieta, private val fila: FilaMutaco
         if (guardarAnterior) {
             val jaTem = mutacaoPendenteQueries.doRegistro(sessao.usuario_id, sessao.perfil, colecao, id.toString()).executeAsList().isNotEmpty()
             val atual = registroSyncQueries.dadosDe(sessao.usuario_id, sessao.perfil, colecao, id.toString()).executeAsOneOrNull()
+            if (!jaTem && colecao == "alimentos") guardarBaseAlimento(sessao.usuario_id, sessao.perfil, id.toString())
             if (!jaTem && atual != null) registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, ANTERIOR + colecao, id.toString(), 0, 0, atual.dados_json)
         }
         registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, colecao, id.toString(), 0, 0, local)

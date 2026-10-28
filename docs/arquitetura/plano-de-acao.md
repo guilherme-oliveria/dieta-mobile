@@ -25,6 +25,7 @@ Definição de pronto de toda tarefa:
 ## Fase 2 — Alimentos e dieta
 
 - [x] **MOB-09 Sync de leitura.** `Sincronizador.puxar()` com cursor e `temMais`; aplica mudanças e exclusões no SQLite; `Conectividade` expect/actual; gatilhos (abrir, voltar do fundo, conexão voltou, 15 min); WorkManager no Android; indicador offline no shell. *Depende de:* MOB-04, MOB-05, BE-08.
+  - [x] Correção incremental: projetar grupos/alimentos em `alimento_cache` e conservar a base remota por conta/perfil, reaplicando pendências abertas do mesmo alimento após pull, refresh e resultado de envio. Rejeição parcial não desfaz edição já confirmada nem outra pendência. A ordem de múltiplas edições após `manterMinha` permanece backlog separado; este recorte não conclui MOB-10 nem a auditoria integral dos commits externos.
 - [ ] **MOB-10 Alimentos da nutri.** `ui/nutri/alimentos`: lista por grupo, busca, criar, editar, desativar (online nesta fase). *Depende de:* MOB-09, BE-10, BE-14.
   - [x] Recorte independente autorizado na onda5: DTOs/HTTP/cache/telas/testes contra BE-C2 aprovado `c35541d`; MockEngine somente em testes, 501 tratado como indisponibilidade. Ver `alimentos-da-nutri.md`.
   - [ ] Integração final: BE-09/catálogo e BE-10/BE-14 implementadas, aprovadas/mergeadas; sincronizar contrato final e fontes reais de sync. Este gate não é liberado pelo recorte independente.

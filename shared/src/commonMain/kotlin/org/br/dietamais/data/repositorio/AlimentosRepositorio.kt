@@ -12,6 +12,7 @@ import kotlinx.serialization.json.jsonObject
 import org.br.dietamais.data.sync.EscritaOffline
 import org.br.dietamais.data.sync.novoIdLocal
 import org.br.dietamais.data.sync.reprojetarAbertas
+import org.br.dietamais.data.sync.receberAlimentoDoCatalogo
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -47,7 +48,7 @@ class AlimentosRepositorio(private val api: ApiDieta, private val banco: BancoDi
             conferir(contexto)
             banco.alimentoCacheQueries.limparDaConta(contexto.contexto.usuarioId.toString(), contexto.contexto.perfil.name)
             grupos.forEach { salvar(contexto, "grupos", it.id, JsonContrato.encodeToString(it)) }
-            alimentos.forEach { salvar(contexto, "alimentos", it.id, JsonContrato.encodeToString(it)) }
+            alimentos.forEach { banco.receberAlimentoDoCatalogo(contexto.contexto.usuarioId.toString(), contexto.contexto.perfil.name, it) }
             banco.reprojetarAbertas(contexto.contexto.usuarioId.toString(), contexto.contexto.perfil.name, "alimentos")
         }
     }
