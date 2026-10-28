@@ -33,6 +33,9 @@ import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
 import org.br.dietamais.ui.nutri.assinatura.AcoesPerfilNutri
+import org.br.dietamais.ui.nutri.assinatura.AcoesAssinatura
+import org.br.dietamais.ui.nutri.assinatura.AssinaturaCard
+import org.br.dietamais.ui.nutri.assinatura.AssinaturaViewModel
 import org.br.dietamais.ui.nutri.assinatura.ContaNutriTela
 import org.br.dietamais.ui.nutri.assinatura.PerfilNutriViewModel
 import org.br.dietamais.ui.paciente.hoje.AcoesHoje
@@ -224,6 +227,9 @@ private fun NavegacaoNutri() {
     conteudoConta = {
         val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
         val estadoConta by conta.estado.collectAsState()
-        ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar))
+        val assinatura = koinViewModel<AssinaturaViewModel>(viewModelStoreOwner = dono)
+        val estadoAssinatura by assinatura.estado.collectAsState()
+        ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar),
+            extras = { AssinaturaCard(estadoAssinatura, AcoesAssinatura(assinatura::assinar, assinatura::urlAberta, assinatura::recarregar)) })
     })
 }

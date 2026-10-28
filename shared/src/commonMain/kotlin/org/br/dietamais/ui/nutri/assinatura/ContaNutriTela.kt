@@ -19,11 +19,12 @@ class AcoesPerfilNutri(val aoMudarNome: (String) -> Unit, val aoMudarCrn: (Strin
     val aoMudarOrientacao: (String) -> Unit, val aoSalvar: () -> Unit, val aoRecarregar: () -> Unit)
 
 @Composable
-fun ContaNutriTela(estado: EstadoPerfilNutri, acoes: AcoesPerfilNutri, modifier: Modifier = Modifier) {
+fun ContaNutriTela(estado: EstadoPerfilNutri, acoes: AcoesPerfilNutri, modifier: Modifier = Modifier, extras: @Composable ColumnScope.() -> Unit = {}) {
     val habilitado = !estado.semConexao && !estado.enviando
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.aba_conta), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
         if (estado.semConexao) FaixaOffline()
+        extras()
         estado.erro?.let { Text(stringResource(texto(it)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
         estado.aviso?.let { Text(stringResource(texto(it)), style = MaterialTheme.typography.bodySmall) }
         if (!estado.carregado) {

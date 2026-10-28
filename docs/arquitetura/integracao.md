@@ -61,7 +61,7 @@ Formato **RFC 9457 Problem Details** (`application/problem+json`), já nativo no
 - Os clientes decidem o que mostrar **pelo `codigo`**, nunca pelo texto.
 - `400` JSON inválido · `401` sem token/expirado (cliente tenta refresh uma vez) · `403` sem permissão · `404` não existe **ou não é seu** (não revelar existência) · `409` conflito de versão/duplicado · `422` regra de negócio · `429` limite de taxa · `5xx` erro do servidor (cliente pode repetir com a mesma `Idempotency-Key`).
 
-Códigos já definidos: `LOGIN_BLOQUEADO`, `CREDENCIAIS_INVALIDAS`, `EMAIL_NAO_CONFIRMADO`, `EMAIL_JA_CADASTRADO`, `TOKEN_INVALIDO`, `LIMITE_PACIENTES_ATINGIDO`, `ASSINATURA_INATIVA`, `CONVITE_INVALIDO`, `CONVITE_EXPIRADO`, `VINCULO_JA_EXISTE`, `DIETA_VAZIA`, `DIETA_NAO_EDITAVEL`, `VALOR_FORA_DO_INTERVALO`, `JUSTIFICATIVA_OBRIGATORIA`, `QUESTIONARIO_FECHADO`, `CONSULTA_CANCELADA`, `CONFLITO_VERSAO`, `OBRIGATORIO`, `FORMATO_INVALIDO`, `CONSENTIMENTO_OBRIGATORIO`, `PERFIL_INVALIDO`, `RECURSO_NAO_ENCONTRADO`, `NAO_AUTENTICADO`, `ACESSO_NEGADO`, `TAXA_EXCEDIDA`, `NAO_IMPLEMENTADO`, `ERRO_INTERNO`, `METODO_NAO_PERMITIDO`, `TIPO_CONTEUDO_NAO_SUPORTADO`, `CHAVE_IDEMPOTENCIA_REUTILIZADA`. Novo código: adicione aqui e na classe `CodigoErro` do backend.
+Códigos já definidos: `LOGIN_BLOQUEADO`, `CREDENCIAIS_INVALIDAS`, `EMAIL_NAO_CONFIRMADO`, `EMAIL_JA_CADASTRADO`, `TOKEN_INVALIDO`, `LIMITE_PACIENTES_ATINGIDO`, `ASSINATURA_INATIVA`, `CONVITE_INVALIDO`, `CONVITE_EXPIRADO`, `VINCULO_JA_EXISTE`, `DIETA_VAZIA`, `DIETA_NAO_EDITAVEL`, `VALOR_FORA_DO_INTERVALO`, `JUSTIFICATIVA_OBRIGATORIA`, `QUESTIONARIO_FECHADO`, `CONSULTA_CANCELADA`, `ASSINATURA_JA_ATIVA`, `PAGAMENTO_INDISPONIVEL`, `EXPORTACAO_EM_ANDAMENTO`, `VINCULO_ATIVO`, `VERSAO_APP_OBSOLETA`, `CONFLITO_VERSAO`, `OBRIGATORIO`, `FORMATO_INVALIDO`, `CONSENTIMENTO_OBRIGATORIO`, `PERFIL_INVALIDO`, `RECURSO_NAO_ENCONTRADO`, `NAO_AUTENTICADO`, `ACESSO_NEGADO`, `TAXA_EXCEDIDA`, `NAO_IMPLEMENTADO`, `ERRO_INTERNO`, `METODO_NAO_PERMITIDO`, `TIPO_CONTEUDO_NAO_SUPORTADO`, `CHAVE_IDEMPOTENCIA_REUTILIZADA`. Novo código: adicione aqui e na classe `CodigoErro` do backend.
 
 Códigos acrescentados em BE-C1: `CONSENTIMENTO_OBRIGATORIO` (422, RN-VIN-04), `PERFIL_INVALIDO` (403), `RECURSO_NAO_ENCONTRADO` (404, inclusive recurso de outro dono), `NAO_AUTENTICADO` (401), `ACESSO_NEGADO` (403), `TAXA_EXCEDIDA` (429) e `NAO_IMPLEMENTADO` (501). `campos` é sempre lista; `regra`, `traceId` e `atual` podem ser nulos. Conflito de versão traz o registro vigente em `atual`. O ID de regra de `TOKEN_INVALIDO` depende da operação (confirmação ou recuperação); erros técnicos sem RN usam `regra: null`.
 
@@ -156,7 +156,7 @@ Resposta, um resultado por mutação, na mesma ordem:
 ]}
 ```
 
-- Implementado na BE-15: `checkins`, `agua` e `pesos` com `CRIAR` (ver [contrato-fase-3.md](contrato-fase-3.md)); `GET /sync` ganha as coleções `checkins`, `agua`, `pesos`. Escrita da nutri (`pacientes`, `alimentos`, `listas`, `dietas`, `avaliacoes`, `modelos`, `consultas`): ver [contrato-fase-5.md](contrato-fase-5.md).
+- Implementado na BE-15: `checkins`, `agua` e `pesos` com `CRIAR` (ver [contrato-fase-3.md](contrato-fase-3.md)); `GET /sync` ganha as coleções `checkins`, `agua`, `pesos`. Escrita da nutri (`pacientes`, `alimentos`, `listas`, `dietas`, `avaliacoes`, `modelos`, `consultas`): ver [contrato-fase-5.md](contrato-fase-5.md). Assinatura, checkout, PDF, LGPD e admin (fase 6): [contrato-fase-6.md](contrato-fase-6.md).
 - `operacao`: `CRIAR`, `ATUALIZAR`, `EXCLUIR` (lógica). Até 200 mutações por lote. Cada mutação roda na sua própria transação.
 - `idMutacao` torna o envio idempotente: reenviar a mesma mutação devolve o mesmo resultado.
 - `APLICADA` → o app marca como enviada e atualiza `versao`. `CONFLITO` → guarda o `atual` e mostra a escolha à nutri ("manter o meu" reenvia com `versaoBase` = versão atual; "usar o do servidor" descarta a local). `REJEITADA` → desfaz localmente e mostra a mensagem do `codigo`.
@@ -199,7 +199,7 @@ Ações que **exigem online** (o app desabilita o botão sem conexão): login/ca
 
 - Mudança **compatível** (campo novo opcional, endpoint novo, valor de enum novo) entra em `/api/v1`. Clientes **ignoram campos desconhecidos** e tratam enum desconhecido como "outro".
 - Mudança **incompatível** (remover/renomear campo, mudar tipo, mudar significado) exige `/api/v2` daquele recurso, mantendo o v1 por pelo menos 6 meses (apps antigos nas lojas).
-- O app envia `X-App-Versao: 1.4.0` e `X-Plataforma: ANDROID`. O backend pode responder `426 VERSAO_APP_OBSOLETA` abaixo de uma versão mínima configurada.
+- O app envia `X-App-Versao: 1.4.0` e `X-Plataforma: ANDROID`. Abaixo da versão mínima configurada (`APP_VERSAO_MINIMA`), o backend responde `426 VERSAO_APP_OBSOLETA` em qualquer rota de `/api/v1` (menos webhooks e links públicos de arquivo); o app mostra a tela de atualização e não repete a chamada. Sem o cabeçalho não há bloqueio. Limite geral: `429 TAXA_EXCEDIDA` com `Retry-After` (segundos) acima de 300 requisições por minuto por usuário; o app espera o `Retry-After` e repete (leitura) ou mantém a mutação na fila (escrita).
 
 ## Como os clientes consomem o contrato
 

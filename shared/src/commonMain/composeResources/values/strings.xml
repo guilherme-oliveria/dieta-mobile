@@ -663,4 +663,21 @@
     <string name="painel_plano_uso">%1$d de %2$d pacientes</string>
     <string name="painel_plano_atencao">Há uma pendência na assinatura. Veja em Conta.</string>
     <string name="painel_paciente">Paciente</string>
+    <string name="assinatura_titulo">Minha assinatura</string>
+    <string name="assinatura_plano">Plano %1$s</string>
+    <string name="assinatura_status_teste">Período de teste</string>
+    <string name="assinatura_status_ativa">Assinatura ativa</string>
+    <string name="assinatura_status_atraso">Pagamento em atraso</string>
+    <string name="assinatura_status_cancelada">Assinatura cancelada</string>
+    <string name="assinatura_status_expirada">Assinatura expirada</string>
+    <string name="assinatura_status_outro">Situação indisponível</string>
+    <string name="assinatura_teste_ate">Teste até %1$s</string>
+    <string name="assinatura_periodo_ate">Período até %1$s</string>
+    <string name="assinatura_atraso">Regularize o pagamento até %1$s. Depois disso você só poderá consultar os dados.</string>
+    <string name="assinatura_somente_leitura">Sua assinatura está inativa: você só pode consultar os dados até contratar um plano.</string>
+    <string name="assinatura_escolha">Contratar um plano</string>
+    <string name="assinatura_assinar_plano">Assinar %1$s (até %2$d pacientes) · %3$s/mês</string>
+    <string name="assinatura_navegador">O pagamento é feito no navegador, fora do app.</string>
+    <string name="assinatura_pagamento_indisponivel">O pagamento está indisponível no momento. Tente mais tarde.</string>
+    <string name="assinatura_erro_ja_ativa">Sua assinatura já está ativa.</string>
 </resources>
