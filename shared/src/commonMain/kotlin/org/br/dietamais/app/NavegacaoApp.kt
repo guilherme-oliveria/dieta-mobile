@@ -58,6 +58,7 @@ fun NavegacaoApp(
     conteudoPerfil: (@Composable () -> Unit)? = null,
     conteudoCompras: (@Composable () -> Unit)? = null,
     conteudoEvolucao: (@Composable () -> Unit)? = null,
+    conteudoAgenda: (@Composable () -> Unit)? = null,
 ) {
     // Trocar/limpar a sessão descarta também a pilha e os estados do perfil anterior.
     key(perfil) {
@@ -80,7 +81,7 @@ fun NavegacaoApp(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 composable<Entrada> { AbaVazia(Res.string.entrar, classeJanela) }
-                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos, conteudoConta)
+                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos, conteudoConta, conteudoAgenda)
                 if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela, conteudoHoje, conteudoDieta, conteudoPerfil, conteudoCompras, conteudoEvolucao)
             }
         }
@@ -113,7 +114,7 @@ private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass, hoje: (@Compo
     }
 }
 
-private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?, alimentos: (@Composable () -> Unit)?, conta: (@Composable () -> Unit)?) {
+private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?, alimentos: (@Composable () -> Unit)?, conta: (@Composable () -> Unit)?, agenda: (@Composable () -> Unit)? = null) {
     navigation<GrafoNutri>(startDestination = RotaNutri.Inicio) {
         composable<RotaNutri.Inicio> { AbaVazia(Res.string.aba_inicio, classe) }
         navigation<RotaNutri.Pacientes>(startDestination = RotaNutri.ListaPacientes) {
@@ -134,7 +135,7 @@ private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: Nav
                 )
             }
         }
-        composable<RotaNutri.Agenda> { AbaVazia(Res.string.aba_agenda, classe) }
+        composable<RotaNutri.Agenda> { if (agenda != null) agenda() else AbaVazia(Res.string.aba_agenda, classe) }
         composable<RotaNutri.Alimentos> { if (alimentos != null) alimentos() else AbaVazia(Res.string.aba_alimentos, classe) }
         composable<RotaNutri.Conta> { if (conta != null) conta() else AbaVazia(Res.string.aba_conta, classe) }
     }

@@ -43,6 +43,8 @@ import org.br.dietamais.ui.paciente.hoje.HojeTela
 import org.br.dietamais.ui.paciente.substituicao.TrocaTela
 import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
 import org.br.dietamais.ui.nutri.pacientes.AbaFicha
+import org.br.dietamais.ui.nutri.agenda.AgendaRota
+import org.br.dietamais.ui.nutri.agenda.AgendaViewModel
 import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriRota
 import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriViewModel
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesNutriRota
@@ -50,6 +52,8 @@ import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
 import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteRota
 import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoPacienteRota
+import org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel
+import org.br.dietamais.ui.paciente.hoje.ProximaConsultaRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
@@ -154,6 +158,7 @@ private fun NavegacaoPaciente() {
             val anamnese = koinViewModel<AnamnesePacienteViewModel>(viewModelStoreOwner = dono)
             Column(Modifier.fillMaxSize()) {
                 AnamnesePacienteRota(anamnese)
+                ProximaConsultaRota(koinViewModel<ConsultasPacienteViewModel>(viewModelStoreOwner = dono))
                 HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua), Modifier.weight(1f))
             }
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
@@ -191,7 +196,8 @@ private fun NavegacaoNutri() {
             ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
           }
         })
-    }, conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
+    }, conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
+    conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
     conteudoConta = {
         val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
         val estadoConta by conta.estado.collectAsState()

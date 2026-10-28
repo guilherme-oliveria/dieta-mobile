@@ -83,3 +83,27 @@ Nova coleção `avaliacoes` em `GET /sync` (opcional no JSON; ignore ausente). A
 ### Sync
 
 Coleções novas em `GET /sync`: `modelos` (só nutri) e `questionarios` (nutri dona e paciente, já com `respostas`). `POST /sync` aceita do paciente `entidade: "questionarios"`, `operacao: "ATUALIZAR"`, `id` do questionário, `dados: {respostas: {...}}` (mesma mesclagem do REST; `versaoBase` é ignorada). Resultado `APLICADA` com a nova `versao`, ou `REJEITADA` (`QUESTIONARIO_FECHADO`, `FORMATO_INVALIDO`, `ACESSO_NEGADO`). Concluir o questionário (`/enviar`) exige conexão.
+
+## Agenda de consultas (BE-23)
+
+| Método/caminho | Perfil | Requisição | Sucesso |
+| --- | --- | --- | --- |
+| GET /consultas?de&ate&pacienteId | nutri | — | 200 `{itens: [ConsultaResposta]}` |
+| POST /consultas | nutri | `CriarConsultaRequisicao` (`Idempotency-Key` opcional) | 201 `ConsultaResposta` + `ETag` |
+| PATCH /consultas/{id} | nutri | `AtualizarConsultaRequisicao` + `If-Match: "<versao>"` | 200 + `ETag` |
+| GET /eu/consultas?de&ate | paciente | — | 200 `{itens: [...]}` |
+
+`CriarConsultaRequisicao`: `{id?, pacienteId, inicio, duracaoMin, tipo, lugar?}`. `pacienteId` é o id da ficha; `tipo`: `PRIMEIRA`, `RETORNO`, `ONLINE`; `duracaoMin` 5–480; `lugar` até 200 caracteres (endereço ou link da videochamada).
+`ConsultaResposta`: `{id, pacienteId, vinculoId, inicio, duracaoMin, tipo, lugar?, status: AGENDADA|CANCELADA, versao, criadoEm, atualizadoEm}`.
+`AtualizarConsultaRequisicao`: `{inicio?, duracaoMin?, tipo?, lugar?, status?}`. Campo ausente não muda; `lugar: ""` limpa. `status` só aceita `CANCELADA` e não vem junto de outros campos.
+
+- A janela da listagem é `[de, ate)` em ISO-8601. Padrão: de ontem até 90 dias adiante; no máximo 366 dias (senão 400 `FORMATO_INVALIDO`). Vem do mais cedo para o mais tarde e inclui canceladas. `pacienteId` restringe a um paciente (ficha de outra nutri: 404).
+- RN-AGE-01: `inicio` no passado (tolerância de 5 min) ou além de 2 anos dá 400 `FORMATO_INVALIDO`. Vínculo `ENCERRADO` só lê (403 `ACESSO_NEGADO`, RN-VIN-05); `CONVIDADO` pode ter consulta marcada.
+- Consulta cancelada não muda mais: 422 `CONSULTA_CANCELADA` (inclusive repetir o cancelamento). Para remarcar uma cancelada, crie outra.
+- `If-Match` desatualizado: 409 `CONFLITO_VERSAO` com `atual` (RN-SYN-02). Consulta de outra nutri: 404.
+- O backend não impede duas consultas no mesmo horário; o app pode avisar.
+- Lembretes (RN-AGE-02) e push ficam em BE-24; nenhum texto de push leva dado clínico.
+
+### Sync e .ics
+
+Coleção nova `consultas` em `GET /sync`, para a nutri dona e para o paciente (canceladas continuam, com `status`). O feed `.ics` do paciente passa a levar as consultas dos últimos 30 dias em diante como eventos únicos em UTC (`UID:consulta-<id>@dietamais.com.br`, `SEQUENCE` = versão − 1, `STATUS:CANCELLED` quando cancelada, `LOCATION` com o `lugar`). O título é genérico (`Dieta+: Primeira consulta`, `Dieta+: Consulta de retorno`, `Dieta+: Consulta online`).
