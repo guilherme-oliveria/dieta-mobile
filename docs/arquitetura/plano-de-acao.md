@@ -30,8 +30,8 @@ Definição de pronto de toda tarefa:
   - [ ] Integração final: BE-09/catálogo e BE-10/BE-14 implementadas, aprovadas/mergeadas; sincronizar contrato final e fontes reais de sync. Este gate não é liberado pelo recorte independente.
 - [x] **MOB-11 Lista de substituição do paciente.** Aba na ficha: remover/adicionar alimentos para aquele paciente. *Depende de:* MOB-10.
 - [x] **MOB-12 Montador de dieta.** `ui/nutri/dieta`: refeições (nome, horário, reordenar), itens (buscar alimento, porções), totais em tempo real com `CalculadoraTotais` em `dominio` (mesma fórmula do backend, teste com a dieta de 2509 kcal); salvar rascunho. Layout de duas colunas no expandido. *Depende de:* MOB-10, BE-11.
-- [ ] **MOB-13 Publicar e duplicar dieta.** Publicar (exige online, confirmação), duplicar, ver histórico de versões; tratar `DIETA_VAZIA`. *Depende de:* MOB-12, BE-12.
-- [ ] **MOB-14 Hoje e Dieta (paciente).** `ui/paciente/hoje` (refeições do dia, próxima em destaque) e `ui/paciente/dieta` (refeição detalhada), lendo o snapshot local; seletor de dieta em uso quando houver mais de uma nutri; `OrientacoesScreen` e o estado "sua nutri está montando sua dieta" quando não há dieta publicada. *Depende de:* MOB-09, BE-13.
+- [x] **MOB-13 Publicar e duplicar dieta.** Publicar (exige online, confirmação), duplicar, ver histórico de versões; tratar `DIETA_VAZIA`. *Depende de:* MOB-12, BE-12.
+- [x] **MOB-14 Hoje e Dieta (paciente).** `ui/paciente/hoje` (refeições do dia, próxima em destaque) e `ui/paciente/dieta` (refeição detalhada), lendo o snapshot local; seletor de dieta em uso quando houver mais de uma nutri; `OrientacoesScreen` e o estado "sua nutri está montando sua dieta" quando não há dieta publicada. *Depende de:* MOB-09, BE-13.
 - [ ] **MOB-15 Trocar alimento.** `ui/paciente/substituicao`: substitutos do mesmo grupo da lista congelada, com quantidade equivalente (`calcularSubstituto` em `dominio`, com teste); escolher grava check-in TROCADO (local, enviado na fase 3). *Depende de:* MOB-14.
 
 ## Fase 2b — Conta da nutri

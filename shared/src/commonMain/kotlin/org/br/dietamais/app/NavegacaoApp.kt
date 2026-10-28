@@ -52,6 +52,8 @@ fun NavegacaoApp(
     aoPrepararNavegacao: (NavHostController) -> Unit = {},
     conteudoPacientes: ConteudoPacientes? = null,
     conteudoAlimentos: (@Composable () -> Unit)? = null,
+    conteudoHoje: (@Composable () -> Unit)? = null,
+    conteudoDieta: (@Composable () -> Unit)? = null,
 ) {
     // Trocar/limpar a sessão descarta também a pilha e os estados do perfil anterior.
     key(perfil) {
@@ -75,7 +77,7 @@ fun NavegacaoApp(
             ) {
                 composable<Entrada> { AbaVazia(Res.string.entrar, classeJanela) }
                 if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos)
-                if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela)
+                if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela, conteudoHoje, conteudoDieta)
             }
         }
         if (perfil == null) Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
@@ -97,10 +99,10 @@ fun NavegacaoApp(
     }
 }
 
-private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass) {
+private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass, hoje: (@Composable () -> Unit)?, dieta: (@Composable () -> Unit)?) {
     navigation<GrafoPaciente>(startDestination = RotaPaciente.Hoje) {
-        composable<RotaPaciente.Hoje> { AbaVazia(Res.string.aba_hoje, classe) }
-        composable<RotaPaciente.Dieta> { AbaVazia(Res.string.aba_dieta, classe) }
+        composable<RotaPaciente.Hoje> { if (hoje != null) hoje() else AbaVazia(Res.string.aba_hoje, classe) }
+        composable<RotaPaciente.Dieta> { if (dieta != null) dieta() else AbaVazia(Res.string.aba_dieta, classe) }
         composable<RotaPaciente.Compras> { AbaVazia(Res.string.aba_compras, classe) }
         composable<RotaPaciente.Evolucao> { AbaVazia(Res.string.aba_evolucao, classe) }
         composable<RotaPaciente.Perfil> { AbaVazia(Res.string.aba_perfil, classe) }

@@ -25,6 +25,18 @@ class SyncLeituraSqlTest {
         assertTrue(banco.registroSyncQueries.daSessao("vinculos").executeAsList().isEmpty())
     }
 
+    @Test fun colecoesDaFase2e3SaoGuardadasInclusiveComIdDeEnvelopeDiferenteDoDto() = comBanco { banco ->
+        val armazem = ArmazemLeituraSql(banco) { contexto }; armazem.cursor(contexto)
+        val emUso = MudancaSyncResposta(Uuid.random(), 3, false, DietaEmUsoResposta(Uuid.random(), 2))
+        val agua = AguaResposta(Uuid.random(), Uuid.random(), 250, kotlin.time.Instant.parse("2026-10-28T12:00:00Z"))
+        val base = vazia("0").mudancas
+        armazem.aplicar(contexto, vazia("9").copy(mudancas = base.copy(dietaEmUso = listOf(emUso), agua = listOf(MudancaSyncResposta(agua.id, 1, false, agua)))))
+        assertEquals(1, banco.registroSyncQueries.daSessao("dietaEmUso").executeAsList().size)
+        assertEquals(1, banco.registroSyncQueries.daSessao("agua").executeAsList().size)
+        val errada = MudancaSyncResposta(Uuid.random(), 1, false, agua)
+        assertFailsWith<RespostaInvalida> { armazem.aplicar(contexto, vazia("10").copy(mudancas = base.copy(agua = listOf(errada)))) }
+    }
+
     @Test fun revisaoDaProjecaoNaoSubstituiVersaoClinicaNemImpedeNovaFichaComVersaoMenor() = comBanco { banco ->
         val armazem = ArmazemLeituraSql(banco) { contexto }; armazem.cursor(contexto)
         val original = pagina().mudancas.pacientes.single()

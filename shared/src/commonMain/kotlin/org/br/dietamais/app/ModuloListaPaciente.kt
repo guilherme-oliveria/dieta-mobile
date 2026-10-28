@@ -17,3 +17,8 @@ fun moduloDietas(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaDietas> { org.br.dietamais.data.repositorio.DietasRepositorio(get(), get()) }
     viewModel { org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }
+
+fun moduloDietaPaciente(ambiente: AmbienteDieta?) = module {
+    single<org.br.dietamais.data.repositorio.PortaDietaPaciente> { org.br.dietamais.data.repositorio.DietaPacienteRepositorio(get(), get()) }
+    viewModel { org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+}

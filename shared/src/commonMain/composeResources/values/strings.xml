@@ -275,4 +275,19 @@
     <string name="dieta_salva">Rascunho salvo.</string>
     <string name="dieta_publicada">Dieta publicada.</string>
     <string name="dieta_duplicada">Novo rascunho criado a partir da dieta.</string>
+    <string name="pac_sem_dieta">Sua nutri está montando sua dieta. Assim que ela publicar, ela aparece aqui.</string>
+    <string name="pac_dieta_nutri">Nutricionista: %1$s · CRN %2$s</string>
+    <string name="pac_dieta_total">Total do dia: %1$s kcal</string>
+    <string name="pac_dieta_kcal_refeicao">%1$s kcal</string>
+    <string name="pac_dieta_item">%1$s · %2$s (%3$s g)</string>
+    <string name="pac_dieta_orientacoes">Orientações</string>
+    <string name="pac_dieta_escolher">Dieta em uso</string>
+    <string name="pac_dieta_usar">Usar esta dieta</string>
+    <string name="pac_dieta_em_uso">Em uso</string>
+    <string name="pac_dieta_ver">Ver itens</string>
+    <string name="pac_dieta_ocultar">Ocultar itens</string>
+    <string name="pac_hoje_dia_acabou">Você já passou por todas as refeições de hoje.</string>
+    <string name="pac_erro_sem_conexao">Sem conexão. Para trocar a dieta em uso, conecte-se à internet.</string>
+    <string name="pac_erro_conflito">A escolha mudou em outro aparelho. Tente de novo.</string>
+    <string name="pac_erro_geral">Não foi possível concluir. Tente de novo.</string>
 </resources>

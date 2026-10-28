@@ -25,6 +25,9 @@ import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
 import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
+import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
+import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
+import org.br.dietamais.ui.paciente.hoje.HojeTela
 import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
 import org.br.dietamais.ui.nutri.pacientes.AbaFicha
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
@@ -80,7 +83,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                 Box(Modifier.weight(1f)) {
                     key(usuario.id, usuario.perfil) {
                         if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
-                        else NavegacaoApp(PerfilNavegacao.PACIENTE)
+                        else NavegacaoPaciente()
                     }
                 }
             }
@@ -112,6 +115,18 @@ private fun IndicadorAmbiente(ambiente: AmbienteDieta) {
             catch (_: Exception) { falhaLocal = true }
         }
     }
+}
+
+@Composable
+private fun NavegacaoPaciente() {
+    // um ViewModel compartilhado: Hoje e Dieta leem o mesmo snapshot local
+    val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
+    DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
+    val vm = koinViewModel<DietaPacienteViewModel>(viewModelStoreOwner = dono)
+    val estado by vm.estado.collectAsState()
+    NavegacaoApp(PerfilNavegacao.PACIENTE,
+        conteudoHoje = { HojeTela(estado) },
+        conteudoDieta = { DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher) })
 }
 
 @Composable

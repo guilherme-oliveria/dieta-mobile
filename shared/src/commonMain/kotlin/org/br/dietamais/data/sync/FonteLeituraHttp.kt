@@ -12,7 +12,7 @@ class FonteLeituraHttp(private val api: ApiDieta, private val limite: Int = 500)
             cursor?.let { put("cursor", it) }
             put("limite", limite.toString())
         })
-        if (resposta.mudancas.pacientes.size + resposta.mudancas.vinculos.size + resposta.mudancas.nutris.size > limite) throw RespostaInvalida()
+        if (resposta.mudancas.total > limite) throw RespostaInvalida()
         return resposta
     }
 }
