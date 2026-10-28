@@ -62,6 +62,7 @@ fun NavegacaoApp(
     conteudoCompras: (@Composable () -> Unit)? = null,
     conteudoEvolucao: (@Composable () -> Unit)? = null,
     conteudoAgenda: (@Composable () -> Unit)? = null,
+    conteudoInicio: (@Composable () -> Unit)? = null,
     /** Da ficha (`/pacientes/{id}` do aviso) para o vínculo, que é o que a ficha aberta usa; nulo cai na lista. */
     resolverVinculo: (String) -> String? = { null },
 ) {
@@ -86,7 +87,7 @@ fun NavegacaoApp(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 composable<Entrada> { AbaVazia(Res.string.entrar, classeJanela) }
-                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos, conteudoConta, conteudoAgenda)
+                if (perfil == PerfilNavegacao.NUTRICIONISTA) grafoNutri(classeJanela, controlador, conteudoPacientes, conteudoAlimentos, conteudoConta, conteudoAgenda, conteudoInicio)
                 if (perfil == PerfilNavegacao.PACIENTE) grafoPaciente(classeJanela, conteudoHoje, conteudoDieta, conteudoPerfil, conteudoCompras, conteudoEvolucao)
             }
         }
@@ -127,9 +128,9 @@ private fun NavGraphBuilder.grafoPaciente(classe: WindowSizeClass, hoje: (@Compo
     }
 }
 
-private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?, alimentos: (@Composable () -> Unit)?, conta: (@Composable () -> Unit)?, agenda: (@Composable () -> Unit)? = null) {
+private fun NavGraphBuilder.grafoNutri(classe: WindowSizeClass, controlador: NavHostController, conteudo: ConteudoPacientes?, alimentos: (@Composable () -> Unit)?, conta: (@Composable () -> Unit)?, agenda: (@Composable () -> Unit)? = null, inicio: (@Composable () -> Unit)? = null) {
     navigation<GrafoNutri>(startDestination = RotaNutri.Inicio) {
-        composable<RotaNutri.Inicio> { AbaVazia(Res.string.aba_inicio, classe) }
+        composable<RotaNutri.Inicio> { if (inicio != null) inicio() else AbaVazia(Res.string.aba_inicio, classe) }
         navigation<RotaNutri.Pacientes>(startDestination = RotaNutri.ListaPacientes) {
             composable<RotaNutri.ListaPacientes> {
                 if (conteudo != null) conteudo(classe, null,

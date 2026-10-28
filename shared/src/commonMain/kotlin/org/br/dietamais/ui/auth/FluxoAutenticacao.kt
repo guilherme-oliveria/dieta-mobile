@@ -56,6 +56,8 @@ import org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel
 import org.br.dietamais.ui.paciente.hoje.ProximaConsultaRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoRota
 import org.br.dietamais.ui.notificacoes.AvisosRota
+import org.br.dietamais.ui.nutri.painel.PainelRota
+import org.br.dietamais.ui.nutri.painel.PainelViewModel
 import org.br.dietamais.ui.notificacoes.AvisosViewModel
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
 import org.br.dietamais.ui.auth.convite.ConviteViewModel
@@ -208,7 +210,8 @@ private fun NavegacaoNutri() {
             ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
           }
         })
-    }, conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
+    }, conteudoInicio = { PainelRota(koinViewModel<PainelViewModel>(viewModelStoreOwner = dono)) },
+    conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
     conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
     conteudoConta = {
         val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)

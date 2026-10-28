@@ -619,4 +619,18 @@
     <string name="avisos_quando">%1$s às %2$s</string>
     <string name="avisos_msg_sem_conexao">Sem conexão. Tente marcar como lido quando estiver online.</string>
     <string name="avisos_msg_erro">Não foi possível marcar como lido. Tente novamente.</string>
+    <string name="painel_titulo">Início</string>
+    <string name="painel_atualizar">Atualizar</string>
+    <string name="painel_offline">Sem conexão: mostrando o que está salvo no aparelho.</string>
+    <string name="painel_consultas_hoje">Consultas de hoje</string>
+    <string name="painel_sem_consultas">Nenhuma consulta hoje.</string>
+    <string name="painel_abrir_agenda">Abrir agenda</string>
+    <string name="painel_sem_checkin">Sem registros há 3 dias</string>
+    <string name="painel_sem_checkin_vazio">Todos os pacientes estão em dia.</string>
+    <string name="painel_respondidos">Questionários respondidos</string>
+    <string name="painel_respondidos_vazio">Nenhum questionário respondido nos últimos 7 dias.</string>
+    <string name="painel_plano">Seu plano</string>
+    <string name="painel_plano_uso">%1$d de %2$d pacientes</string>
+    <string name="painel_plano_atencao">Há uma pendência na assinatura. Veja em Conta.</string>
+    <string name="painel_paciente">Paciente</string>
 </resources>

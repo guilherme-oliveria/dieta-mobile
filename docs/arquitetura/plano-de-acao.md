@@ -58,7 +58,7 @@ Definição de pronto de toda tarefa:
 - [x] **MOB-26 Agenda de consultas.** `ui/nutri/agenda` (dia/semana, criar, remarcar, cancelar) e próxima consulta no Hoje do paciente. *Depende de:* BE-23.
 - [x] **MOB-27 Push e central de avisos (Android e comum).** Registro do token em `POST /eu/dispositivos` (`RegistradorPush`), sync ao receber o push, navegação pela `rota` (`DestinoAviso`) e `ui/notificacoes` com a central de avisos (histórico do sync, marcar como lido). FCM no `androidApp` sem `google-services.json` (propriedades `fcmAppId`, `fcmApiKey`, `fcmProjectId`, `fcmSenderId` do Gradle). O código de Android não pôde ser compilado na nuvem: confie no CI. *Depende de:* BE-24, BE-34.
 - [ ] **MOB-27b Push no iOS.** Firebase por Swift Package Manager no `iosApp`, capability Push Notifications, chave APNs no Firebase, `AppDelegate` repassando o token e o toque para `ReceptorPush` (ver mobile.md). Precisa de conta Apple e de um Mac. *Depende de:* MOB-27.
-- [ ] **MOB-28 Painel da nutri.** `ui/nutri/painel`: consultas do dia, pacientes sem check-in há 3 dias, questionários respondidos, uso do plano. *Depende de:* MOB-26, BE-16.
+- [x] **MOB-28 Painel da nutri.** `ui/nutri/painel`: consultas do dia, pacientes sem check-in há 3 dias, questionários respondidos, uso do plano. *Depende de:* MOB-26, BE-16.
 
 ## Fase 5 — Offline da nutri
 
