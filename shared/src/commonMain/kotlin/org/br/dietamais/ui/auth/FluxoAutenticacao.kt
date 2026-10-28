@@ -27,6 +27,8 @@ import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
 import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
+import org.br.dietamais.data.sync.AgendadorLembretes
+import org.koin.compose.getKoin
 import org.br.dietamais.ui.paciente.hoje.AcoesHoje
 import org.br.dietamais.ui.paciente.hoje.HojeTela
 import org.br.dietamais.ui.paciente.substituicao.TrocaTela
@@ -126,6 +128,9 @@ private fun NavegacaoPaciente() {
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
     val vm = koinViewModel<DietaPacienteViewModel>(viewModelStoreOwner = dono)
     val estado by vm.estado.collectAsState()
+    val koin = getKoin()
+    val agendador = remember(koin) { koin.getOrNull<AgendadorLembretes>() }
+    LaunchedEffect(agendador) { agendador?.executar() }
     NavegacaoApp(PerfilNavegacao.PACIENTE,
         conteudoHoje = {
             HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua))

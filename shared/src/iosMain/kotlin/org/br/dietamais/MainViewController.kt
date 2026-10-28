@@ -7,6 +7,7 @@ import org.br.dietamais.plataforma.ArmazenamentoSeguro
 import org.br.dietamais.plataforma.IdentidadeDispositivo
 import org.br.dietamais.plataforma.Compartilhador
 import org.br.dietamais.plataforma.Config
+import org.br.dietamais.plataforma.NotificadorLocal
 import org.br.dietamais.plataforma.Conectividade
 import org.br.dietamais.app.criarAmbienteDieta
 import platform.Foundation.NSBundle
@@ -14,7 +15,8 @@ import platform.Foundation.NSBundle
 fun MainViewController() = ComposeUIViewController {
     val identidade = remember { IdentidadeDispositivo() }
     val compartilhador = remember { Compartilhador() }
-    App(ambiente = AmbienteIos.ambiente, identidadeDispositivo = identidade, compartilhamento = compartilhador)
+    val notificador = remember { NotificadorLocal() }
+    App(ambiente = AmbienteIos.ambiente, identidadeDispositivo = identidade, compartilhamento = compartilhador, notificacao = notificador)
 }
 
 internal object AmbienteIos {

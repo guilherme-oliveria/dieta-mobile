@@ -306,4 +306,6 @@
     <string name="pac_agua_titulo">Água</string>
     <string name="pac_agua_progresso">%1$s de %2$s ml</string>
     <string name="pac_agua_mais">+ %1$s ml</string>
+    <string name="lembrete_titulo">Dieta+</string>
+    <string name="lembrete_corpo">Hora da refeição: %1$s</string>
 </resources>

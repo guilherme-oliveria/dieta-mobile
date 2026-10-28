@@ -13,6 +13,7 @@ import org.br.dietamais.plataforma.IdentidadeDispositivo
 import org.br.dietamais.plataforma.Compartilhador
 import org.br.dietamais.plataforma.Conectividade
 import org.br.dietamais.plataforma.Config
+import org.br.dietamais.plataforma.NotificadorLocal
 import org.br.dietamais.app.criarAmbienteDieta
 import org.br.dietamais.ui.theme.Dimens
 import java.awt.Dimension
@@ -31,9 +32,11 @@ fun main() = application {
         val cofre = remember { ArmazenamentoSeguro() }
         val identidade = remember { IdentidadeDispositivo() }
         val compartilhador = remember { Compartilhador() }
+        val notificador = remember { NotificadorLocal() }
+        DisposableEffect(notificador) { onDispose { kotlinx.coroutines.runBlocking { notificador.cancelarTudo() } } }
         val versao = remember { versaoAplicacao() }
         val ambiente = remember { criarAmbienteDieta(Config(), fabrica, cofre, versao, Conectividade()) }
         DisposableEffect(ambiente) { onDispose { ambiente.close() } }
-        App(ambiente = ambiente, identidadeDispositivo = identidade, compartilhamento = compartilhador)
+        App(ambiente = ambiente, identidadeDispositivo = identidade, compartilhamento = compartilhador, notificacao = notificador)
     }
 }

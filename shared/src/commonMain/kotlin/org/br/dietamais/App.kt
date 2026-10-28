@@ -15,6 +15,8 @@ import org.br.dietamais.app.moduloAlimentos
 import org.br.dietamais.app.moduloListaPaciente
 import org.br.dietamais.app.moduloDietas
 import org.br.dietamais.app.moduloDietaPaciente
+import org.br.dietamais.app.moduloLembretes
+import org.br.dietamais.plataforma.NotificacaoLocal
 import org.br.dietamais.app.AmbienteDieta
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -40,7 +42,8 @@ import org.koin.dsl.koinApplication
 fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDriver: FabricaDriver? = null,
     cofreSessao: CofreSessao? = null, versaoApp: String = "1.0.0",
     identidadeDispositivo: IdentidadeDispositivo? = null, termosCadastro: TermosCadastro? = null,
-    compartilhamento: Compartilhamento = Compartilhamento { throw CompartilhamentoIndisponivel() }, ambiente: AmbienteDieta? = null) {
+    compartilhamento: Compartilhamento = Compartilhamento { throw CompartilhamentoIndisponivel() }, ambiente: AmbienteDieta? = null,
+    notificacao: NotificacaoLocal? = null) {
     val dadosDisponiveis = ambiente != null || (fabricaDriver != null && cofreSessao != null)
     val autenticacaoDisponivel = dadosDisponiveis && identidadeDispositivo != null
     if (ambiente != null) {
@@ -48,7 +51,7 @@ fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDrive
         LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { ambiente.primeiroPlano(false) }
         DisposableEffect(ambiente) { onDispose { ambiente.primeiroPlano(false) } }
     }
-    val contexto = remember(ambiente, fabricaDriver, cofreSessao, identidadeDispositivo) { koinApplication {
+    val contexto = remember(ambiente, fabricaDriver, cofreSessao, identidadeDispositivo, notificacao) { koinApplication {
         modules(moduloApp(ambiente?.config ?: config))
         if (ambiente != null) modules(moduloAmbiente(ambiente))
         else {
@@ -60,7 +63,7 @@ fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDrive
         if (dadosDisponiveis) modules(moduloPacientes(compartilhamento, ambiente))
         if (dadosDisponiveis) modules(moduloAlimentos(ambiente))
         if (dadosDisponiveis) modules(moduloListaPaciente(ambiente))
-        if (dadosDisponiveis) modules(moduloDietas(ambiente), moduloDietaPaciente(ambiente))
+        if (dadosDisponiveis) modules(moduloDietas(ambiente), moduloDietaPaciente(ambiente), moduloLembretes(notificacao))
     } }
     DisposableEffect(contexto) { onDispose { contexto.close() } }
     KoinIsolatedContext(contexto) {
