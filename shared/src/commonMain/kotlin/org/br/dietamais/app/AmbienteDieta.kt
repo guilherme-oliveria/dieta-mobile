@@ -9,9 +9,11 @@ import org.br.dietamais.data.remoto.ApiDieta
 import org.br.dietamais.data.remoto.dto.Plataforma
 import org.br.dietamais.data.sync.*
 import org.br.dietamais.plataforma.*
+import kotlin.time.Duration.Companion.minutes
 
 class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: ApiDieta,
-    val conectividade: ObservadorConectividade, dispatcher: CoroutineDispatcher = Dispatchers.Default) : AutoCloseable {
+    val conectividade: ObservadorConectividade, dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    intervaloSync: kotlin.time.Duration = 15.minutes, private val sempreAtivo: Boolean = false) : AutoCloseable {
     val banco get() = bancoLocal.banco
     private val trabalho = SupervisorJob()
     private val escopo = CoroutineScope(trabalho + dispatcher)
@@ -22,7 +24,7 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
     val sincronizador = Sincronizador(FonteLeituraHttp(api), ArmazemLeituraSql(banco, contextoAtual), contextoAtual)
     private val contexto = api.operacaoSessao.map { contextoAtual() }.stateIn(escopo, SharingStarted.Eagerly, contextoAtual())
     private val enviador = EnviadorFila(FonteEnvioHttp(api), banco, contextoAtual)
-    private val coordenador = CoordenadorLeitura(escopo, contexto, conectividade.estado, { sincronizarFila() })
+    private val coordenador = CoordenadorLeitura(escopo, contexto, conectividade.estado, { sincronizarFila() }, intervaloSync)
     private var falhasEnvio = 0
     private val registradorPush = RegistradorPush(DispositivosPushHttp(api, plataformaApi()), escopo, contexto, ReceptorPush.token,
         conectividade.estado.map { it != EstadoConexao.INDISPONIVEL }, ativo = plataformaApi() != Plataforma.DESKTOP)
@@ -46,7 +48,18 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
             catch (_: Exception) { /* A tela de autenticação/Worker apresenta a falha do cofre ao restaurar. */ }
         }
     }
-    fun primeiroPlano(ativo: Boolean) = coordenador.primeiroPlano(ativo)
+    /** No desktop o app segue sincronizando com a janela escondida na bandeja (`sempreAtivo`). */
+    fun primeiroPlano(ativo: Boolean) = coordenador.primeiroPlano(ativo || sempreAtivo)
+
+    /** Avisos não lidos que chegaram depois da primeira leitura; o desktop os mostra na bandeja (sem dado clínico, RN-NOT-02). */
+    fun avisosNovos(): Flow<org.br.dietamais.data.remoto.dto.AvisoResposta> = flow {
+        val vistos = mutableSetOf<kotlin.uuid.Uuid>()
+        var primeira = true
+        org.br.dietamais.data.repositorio.AvisosRepositorio(api, banco).observar().collect { lista ->
+            lista.filter { !it.lido && vistos.add(it.id) }.forEach { if (!primeira) emit(it) }
+            primeira = false
+        }
+    }
     fun solicitarLeitura() = coordenador.solicitar()
 
     suspend fun sincronizarAgora(): ResultadoLeituraSync {
@@ -74,8 +87,8 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
 }
 
 fun criarAmbienteDieta(config: Config, fabrica: FabricaDriver, cofre: CofreSessao, versaoApp: String,
-    conectividade: ObservadorConectividade): AmbienteDieta {
+    conectividade: ObservadorConectividade, intervaloSync: kotlin.time.Duration = 15.minutes, sempreAtivo: Boolean = false): AmbienteDieta {
     val local = BancoLocal(fabrica.criar())
-    return try { AmbienteDieta(config, local, ApiDieta(config, versaoApp, plataformaApi(), cofre, local.banco), conectividade) }
+    return try { AmbienteDieta(config, local, ApiDieta(config, versaoApp, plataformaApi(), cofre, local.banco), conectividade, intervaloSync = intervaloSync, sempreAtivo = sempreAtivo) }
     catch (falha: Exception) { local.close(); conectividade.close(); throw falha }
 }

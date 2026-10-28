@@ -163,3 +163,10 @@ Implementa exatamente o que está em `integracao.md`:
 - `PendenciasRepositorio` expõe o que ainda não foi aplicado e resolve: **manter a minha** (reenvia com `versaoBase = atual.versao`), **usar a do servidor** (grava `atual` e descarta as mutações do registro) e **descartar** (volta ao instantâneo, ou apaga a criação).
 - A recusa guarda o `codigo` da regra na tabela `conflito` para a tela explicar o motivo.
 - Dietas, listas e modelos ainda gravam online (MOB-29b).
+
+## Desktop no consultório (MOB-31)
+
+- `criarAmbienteDieta(intervaloSync = 5.minutes, sempreAtivo = true)` no desktop: o app sincroniza a cada 5 min mesmo com a janela escondida.
+- Fechar a janela esconde o app na bandeja (quando o sistema tem bandeja); o menu da bandeja tem Abrir, Sincronizar agora e Sair. Avisos novos viram balão na bandeja (só o título, sem dado clínico).
+- Atalhos: Ctrl+R sincroniza, Ctrl+W esconde, Ctrl+Q sai.
+- Os pacotes (MSI, DMG, DEB) ainda dependem de um job no CI (MOB-31b).
