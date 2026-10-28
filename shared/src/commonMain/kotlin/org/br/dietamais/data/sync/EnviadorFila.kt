@@ -66,6 +66,10 @@ class EnviadorFila(private val fonte: FonteEnvioSync, private val banco: BancoDi
                 when (r.status) {
                     StatusMutacao.APLICADA -> {
                         banco.mutacaoPendenteQueries.concluir(id, usuario, perfil)
+                        if (m.entidade == "alimentos") {
+                            banco.confirmarAlimento(usuario, perfil, m, r.versao)
+                            banco.reconciliarAlimento(usuario, perfil, m.id.toString())
+                        }
                         banco.limparAnteriorSeLivre(usuario, perfil, m.entidade, m.id.toString())
                     }
                     StatusMutacao.CONFLITO -> {
@@ -73,12 +77,13 @@ class EnviadorFila(private val fonte: FonteEnvioSync, private val banco: BancoDi
                         banco.mutacaoPendenteQueries.marcar("CONFLITO", id, usuario, perfil)
                     }
                     StatusMutacao.REJEITADA, StatusMutacao.OUTRO -> {
+                        banco.mutacaoPendenteQueries.marcar(if (r.status == StatusMutacao.REJEITADA) "REJEITADA" else "DESCONHECIDA", id, usuario, perfil)
                         // a criação otimista some da tela; atualização/exclusão rejeitada só fica marcada
-                        if (m.operacao == OperacaoMutacao.CRIAR) { banco.registroSyncQueries.remover(usuario, perfil, m.entidade, m.id.toString()); banco.projetar(usuario, perfil, m.entidade, m.id.toString()) }
+                        if (m.entidade == "alimentos") banco.reconciliarAlimento(usuario, perfil, m.id.toString())
+                        else if (m.operacao == OperacaoMutacao.CRIAR) { banco.registroSyncQueries.remover(usuario, perfil, m.entidade, m.id.toString()); banco.projetar(usuario, perfil, m.entidade, m.id.toString()) }
                         else banco.restaurarAnterior(usuario, perfil, m.entidade, m.id.toString())
                         // o código da regra fica guardado para a tela de pendências explicar o motivo
                         r.codigo?.let { banco.conflitoQueries.salvar(id, usuario, perfil, kotlinx.serialization.json.buildJsonObject { put("codigo", kotlinx.serialization.json.JsonPrimitive(it)) }.toString()) }
-                        banco.mutacaoPendenteQueries.marcar(if (r.status == StatusMutacao.REJEITADA) "REJEITADA" else "DESCONHECIDA", id, usuario, perfil)
                     }
                 }
             }

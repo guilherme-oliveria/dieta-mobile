@@ -12,6 +12,8 @@ import org.br.dietamais.data.sync.OperacaoMutacao
 import org.br.dietamais.data.sync.novoIdLocal
 import org.br.dietamais.data.sync.projetar
 import org.br.dietamais.data.sync.restaurarAnterior
+import org.br.dietamais.data.sync.reconciliarAlimento
+import org.br.dietamais.data.sync.escolherAlimentoServidor
 import kotlin.uuid.Uuid
 
 enum class EstadoPendencia { AGUARDANDO, CONFLITO, REJEITADA }
@@ -70,6 +72,7 @@ class PendenciasRepositorio(private val banco: BancoDieta, private val aoMudar: 
     }
 
     override fun usarServidor(idMutacao: Uuid) = encerrar(idMutacao) { (usuario, perfil), m, atual ->
+        if (m.entidade == "alimentos") banco.escolherAlimentoServidor(usuario, perfil, m.id, atual)
         if (atual != null) banco.registroSyncQueries.salvar(usuario, perfil, m.entidade, m.id, 0, 0, atual.toString())
         else banco.registroSyncQueries.remover(usuario, perfil, m.entidade, m.id)
     }
@@ -90,6 +93,7 @@ class PendenciasRepositorio(private val banco: BancoDieta, private val aoMudar: 
             banco.mutacaoPendenteQueries.doRegistro(sessao.usuario_id, sessao.perfil, m.entidade, m.id).executeAsList()
                 .forEach { banco.conflitoQueries.remover(it.id_mutacao, sessao.usuario_id, sessao.perfil) }
             banco.mutacaoPendenteQueries.removerDoRegistro(sessao.usuario_id, sessao.perfil, m.entidade, m.id)
+            if (m.entidade == "alimentos") banco.reconciliarAlimento(sessao.usuario_id, sessao.perfil, m.id)
             banco.registroSyncQueries.remover(sessao.usuario_id, sessao.perfil, ANTERIOR + m.entidade, m.id)
             true
         }

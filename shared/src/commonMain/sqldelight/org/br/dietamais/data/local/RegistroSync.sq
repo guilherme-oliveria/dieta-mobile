@@ -30,3 +30,6 @@ DELETE FROM registro_sync WHERE usuario_id = ? AND perfil = ? AND colecao = ? AN
 
 dadosDe:
 SELECT dados_json FROM registro_sync WHERE usuario_id = ? AND perfil = ? AND colecao = ? AND id = ? AND excluido = 0;
+
+estadoDe:
+SELECT * FROM registro_sync WHERE usuario_id = ? AND perfil = ? AND colecao = ? AND id = ?;
