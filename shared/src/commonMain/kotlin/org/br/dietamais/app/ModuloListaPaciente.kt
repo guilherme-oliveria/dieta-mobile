@@ -15,6 +15,8 @@ import org.koin.dsl.module
 
 fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaAvaliacoes> { org.br.dietamais.data.repositorio.AvaliacaoRepositorio(get(), get()) }
+    single<org.br.dietamais.data.repositorio.PortaEvolucao> { org.br.dietamais.data.repositorio.EvolucaoRepositorio(get()) }
+    viewModel { org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel(get(), getOrNull<org.br.dietamais.data.repositorio.PortaRotina>()) }
     viewModel { org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }
 

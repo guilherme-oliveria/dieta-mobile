@@ -29,3 +29,16 @@ Cópia oficial no backend. Mobile e frontend acompanham este contrato. Como na f
 ### Sync
 
 Nova coleção `avaliacoes` em `GET /sync` (opcional no JSON; ignore ausente). A nutri recebe todas as do vínculo; o paciente recebe as compartilhadas e, ao descompartilhar ou excluir, uma lápide (`excluido=true`).
+
+## Evolução (BE-20)
+
+| Método/caminho | Perfil | Sucesso |
+| --- | --- | --- |
+| GET /pacientes/{id}/evolucao | nutri | 200 `EvolucaoResposta` |
+| GET /eu/evolucao | paciente | 200 `EvolucaoResposta` |
+
+`EvolucaoResposta`: `{pacienteId, series: [{medida, unidade, pontos: [{dataHora, valor}]}]}`. Cada série traz os pontos em ordem cronológica crescente (até 500, os mais recentes); séries sem nenhum ponto não aparecem. `medida`: `PESO`, `IMC`, `PERCENTUAL_GORDURA`, `PESO_GORDO`, `PESO_MAGRO`, `PERIMETRO_PESCOCO`, `PERIMETRO_TORAX`, `PERIMETRO_CINTURA`, `PERIMETRO_ABDOMEN`, `PERIMETRO_QUADRIL`, `PERIMETRO_BRACO`, `PERIMETRO_ANTEBRACO`, `PERIMETRO_COXA`, `PERIMETRO_PANTURRILHA`, `PESO_EM_CASA`. Ignore `medida` desconhecida (o backend pode acrescentar séries).
+
+- Avaliações: a nutri vê todas as do vínculo; o paciente só as compartilhadas (RN-AVA-05). Séries opcionais (perímetros, composição) só têm pontos das avaliações que as preencheram.
+- `PESO_EM_CASA` vem dos registros `POST /eu/pesos`. A nutri só o recebe com vínculo ATIVO (igual ao sync); com vínculo encerrado vêm só as avaliações.
+- Nutri sem o paciente: 404. Perfil trocado: 403 `PERFIL_INVALIDO`.

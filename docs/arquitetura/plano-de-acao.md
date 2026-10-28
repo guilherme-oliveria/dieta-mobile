@@ -52,7 +52,7 @@ Definição de pronto de toda tarefa:
 ## Fase 4 — Acompanhamento
 
 - [x] **MOB-22 Avaliação.** `ui/nutri/avaliacao`: formulário em seções (medidas básicas, perímetros, dobras, composição, parecer), validação de intervalos (RN-AVA-03), IMC mostrado ao salvar; `HistoricoAvaliacoesScreen` com comparação de duas datas; paciente vê avaliações compartilhadas. *Depende de:* BE-19.
-- [ ] **MOB-23 Evolução.** `ui/paciente/evolucao` e aba na ficha da nutri: gráficos de linha (peso, % gordura, perímetros, peso em casa) com `Canvas`; `RegistrarPesoSheet` (peso em casa offline pela fila, BE-15). *Depende de:* MOB-22, BE-20.
+- [x] **MOB-23 Evolução.** `ui/paciente/evolucao` e aba na ficha da nutri: gráficos de linha (peso, % gordura, perímetros, peso em casa) com `Canvas`; `RegistrarPesoSheet` (peso em casa offline pela fila, BE-15). *Depende de:* MOB-22, BE-20.
 - [ ] **MOB-24 Anamnese da nutri.** `ui/nutri/anamnese`: editar modelo (blocos, perguntas, tipos, condição), enviar ao paciente, ler respostas na ficha. *Depende de:* BE-21, BE-22.
 - [ ] **MOB-25 Anamnese do paciente.** `ui/paciente/anamnese`: wizard por bloco, salvar parcial (offline), enviar (online); condição de exibição. *Depende de:* MOB-24, BE-22.
 - [ ] **MOB-26 Agenda de consultas.** `ui/nutri/agenda` (dia/semana, criar, remarcar, cancelar) e próxima consulta no Hoje do paciente. *Depende de:* BE-23.

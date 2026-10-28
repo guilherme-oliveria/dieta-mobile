@@ -38,12 +38,13 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                         text = { Text(stringResource(when (aba) {
                             AbaFicha.RESUMO -> Res.string.pacientes_resumo
                             AbaFicha.AVALIACOES -> Res.string.pacientes_avaliacoes
+                            AbaFicha.EVOLUCAO -> Res.string.pacientes_evolucao
                             AbaFicha.DIETA -> Res.string.aba_dieta
                             AbaFicha.LISTA -> Res.string.pacientes_lista
                             AbaFicha.ANAMNESE -> Res.string.pacientes_anamnese
                         })) }) }
                 }
-                if (estado.abaFicha == AbaFicha.LISTA || estado.abaFicha == AbaFicha.DIETA || estado.abaFicha == AbaFicha.AVALIACOES) abaConteudo(estado.abaFicha, paciente)
+                if (estado.abaFicha == AbaFicha.LISTA || estado.abaFicha == AbaFicha.DIETA || estado.abaFicha == AbaFicha.AVALIACOES || estado.abaFicha == AbaFicha.EVOLUCAO) abaConteudo(estado.abaFicha, paciente)
                 else if (estado.abaFicha != AbaFicha.RESUMO) EstadoVazio()
                 else CardDieta(Modifier.fillMaxWidth()) {
                     DadoFicha(stringResource(Res.string.auth_email), paciente.email)
