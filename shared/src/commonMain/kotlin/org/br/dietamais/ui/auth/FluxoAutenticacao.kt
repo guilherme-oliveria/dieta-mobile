@@ -6,6 +6,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.lifecycle.ViewModelStore
@@ -104,20 +108,23 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                 aoAtualizarTermos = convites::atualizarTermos)
             estado.restaurando -> EstadoCarregando()
             usuario != null -> Column(Modifier.fillMaxSize()) {
-                Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
-                    .heightIn(max = Dimens.alturaCabecalhoAutenticado).verticalScroll(rememberScrollState())
-                    .padding(horizontal = Dimens.margemCompacta)) {
-                    estado.erro?.let { MensagemAutenticacaoTexto(it, alerta = true) }
-                    if (!usuario.emailConfirmado) Text(stringResource(Res.string.auth_email_nao_confirmado),
-                        color = MaterialTheme.colorScheme.onErrorContainer, style = MaterialTheme.typography.bodySmall)
-                    estado.assinatura?.takeIf { it.status == StatusAssinatura.TESTE }?.let {
-                        Text(stringResource(Res.string.auth_assinatura_teste, it.limitePacientes, it.fimPeriodoEm.toString().substringBefore('T')),
-                            style = MaterialTheme.typography.bodySmall)
+                Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                        .heightIn(max = Dimens.alturaCabecalhoAutenticado).verticalScroll(rememberScrollState())) {
+                        BarraTopoAutenticada(usuario.perfil == Perfil.NUTRICIONISTA, usuario.id, estado.carregando,
+                            aoSair = viewModel::sair, aoTenhoCodigo = { convites.abrir() }, usuarioPerfil = usuario.perfil)
+                        Column(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.espacoMedio),
+                            verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                            estado.erro?.let { MensagemAutenticacaoTexto(it, alerta = true) }
+                            if (!usuario.emailConfirmado) FaixaAlerta(stringResource(Res.string.auth_email_nao_confirmado))
+                            estado.assinatura?.takeIf { it.status == StatusAssinatura.TESTE }?.let {
+                                Text(stringResource(Res.string.auth_assinatura_teste, it.limitePacientes, it.fimPeriodoEm.toString().substringBefore('T')),
+                                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
+                        }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     }
-                    key(usuario.id, usuario.perfil) { AvisosDoUsuario(); if (usuario.perfil == Perfil.NUTRICIONISTA) PendenciasDoUsuario() }
-                    BotaoTexto(stringResource(Res.string.auth_sair), viewModel::sair, carregando = estado.carregando)
-                    BotaoTexto(stringResource(Res.string.auth_tenho_codigo), { convites.abrir() }, habilitado = !estado.carregando)
-                    if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
                 }
                 Box(Modifier.weight(1f)) {
                     key(usuario.id, usuario.perfil) {
@@ -136,6 +143,35 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                 TelaAutenticacao.ESCOLHER_PERFIL -> EscolherPerfilTela(estado, viewModel::escolherPerfil, viewModel::voltar)
             }
         }
+    }
+}
+
+/** Barra de topo: marca à esquerda; avisos e pendências à direita; "Tenho um código" e "Sair" no menu. */
+@Composable
+private fun BarraTopoAutenticada(nutri: Boolean, idUsuario: kotlin.uuid.Uuid, carregando: Boolean, aoSair: () -> Unit,
+    aoTenhoCodigo: () -> Unit, usuarioPerfil: Perfil?) {
+    var menu by remember { mutableStateOf(false) }
+    Row(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta), verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f).semantics { heading() })
+        key(idUsuario, usuarioPerfil) { AvisosDoUsuario(); if (nutri) PendenciasDoUsuario() }
+        Box {
+            TextButton({ menu = true }) { Text(stringResource(Res.string.auth_menu_conta)) }
+            DropdownMenu(menu, { menu = false }) {
+                DropdownMenuItem({ Text(stringResource(Res.string.auth_tenho_codigo)) }, { menu = false; aoTenhoCodigo() }, enabled = !carregando)
+                DropdownMenuItem({ Text(stringResource(Res.string.auth_sair)) }, { menu = false; aoSair() }, enabled = !carregando)
+            }
+        }
+    }
+}
+
+/** Aviso que pede ação: fundo `errorContainer`, texto `onErrorContainer`, borda de alerta. */
+@Composable
+private fun FaixaAlerta(texto: String) {
+    Surface(shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.errorContainer,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error), modifier = Modifier.fillMaxWidth()) {
+        Text(texto, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
     }
 }
 

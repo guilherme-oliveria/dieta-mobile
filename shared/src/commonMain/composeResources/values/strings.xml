@@ -67,6 +67,7 @@
     <string name="auth_perfil_paciente">Como paciente</string>
     <string name="auth_email_nao_confirmado">Confirme seu e-mail pelo link recebido antes de convidar pacientes.</string>
     <string name="auth_assinatura_teste">Plano teste: %1$d pacientes. Período até %2$s.</string>
+    <string name="auth_menu_conta">Conta</string>
     <string name="auth_sair">Sair</string>
     <string name="auth_erro_obrigatorio">Preencha este campo.</string>
     <string name="auth_erro_email">Informe um e-mail válido.</string>
