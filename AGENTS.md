@@ -5,7 +5,7 @@ Instruções para agentes de código (Codex, Claude Code e outros). O `CLAUDE.md
 ## O projeto
 
 Dieta+: app para nutricionistas e pacientes (multi-nutri, com assinatura). Este repositório é o **app**: Kotlin Multiplatform + Compose Multiplatform, um código só para **Android, iOS e Desktop**, com perfil nutri e perfil paciente, **offline-first**.
-Repositórios irmãos: `guilherme-oliveria/dieta-backend` (API Java/Spring, fonte de verdade das regras) e `guilherme-oliveria/dieta-frontend` (Angular, pós-MVP).
+Repositório irmão: `guilherme-oliveria/dieta-backend` (API Java/Spring, fonte de verdade das regras). O `guilherme-oliveria/dieta-frontend` (Angular) foi arquivado: a web sai daqui, como alvo `wasmJs`.
 Idioma: **português** em docs, commits, PRs, textos da UI e nomes de domínio. Termos técnicos (ViewModel, repository) ficam em inglês.
 
 ## Leia antes de começar
