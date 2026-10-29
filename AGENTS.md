@@ -27,7 +27,7 @@ Cores do tema já estão em `ui/theme` (verde `#2E7D4F`, fundo `#F5F6F1`, laranj
 
 ## Stack
 
-Kotlin 2.4 · Compose Multiplatform 1.12 · Material 3 · AGP 9 · alvos `android`, `iosArm64`, `iosSimulatorArm64`, `jvm` (desktop). Pacote `org.br.dietamais` (o backend usa `com.br.dietamais`; não renomeie).
+Kotlin 2.4 · Compose Multiplatform 1.12 · Material 3 · AGP 9 · alvos `android`, `iosArm64`, `iosSimulatorArm64`, `jvm` (desktop) e `wasmJs` (web, online-only; ver `docs/arquitetura/web.md`). Pacote `org.br.dietamais` (o backend usa `com.br.dietamais`; não renomeie).
 Bibliotecas planejadas (MOB-01): Ktor, kotlinx.serialization, SQLDelight, Koin, Navigation Compose, kotlinx-datetime, multiplatform-settings, Kermit. Versões só pelo `gradle/libs.versions.toml`.
 
 ## Comandos
@@ -38,6 +38,8 @@ Bibliotecas planejadas (MOB-01): Ktor, kotlinx.serialization, SQLDelight, Koin, 
 | Testes Android (host) | `./gradlew :shared:testAndroidHostTest` |
 | Testes iOS (só no Mac) | `./gradlew :shared:iosSimulatorArm64Test` |
 | App Android | `./gradlew :androidApp:assembleDebug` |
+| Web (navegador) | `./gradlew :webApp:wasmJsBrowserDevelopmentRun` |
+| Build da web | `./gradlew :webApp:wasmJsBrowserDistribution` |
 | App desktop | `./gradlew :desktopApp:run` (hot reload: `:desktopApp:hotRun --auto`) |
 | iOS | abrir `iosApp/` no Xcode |
 
@@ -53,7 +55,7 @@ shared/src/commonMain/kotlin/org/br/dietamais/
   dominio/<area>   regras puras e modelos
   data/{local,remoto,sync,repositorio}
   plataforma/      expect (actual em androidMain, iosMain, jvmMain)
-androidApp/  iosApp/  desktopApp/   só pontos de entrada e config de plataforma
+androidApp/  iosApp/  desktopApp/  webApp/   só pontos de entrada e config de plataforma
 ```
 
 ## Regras inegociáveis

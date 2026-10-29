@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -25,6 +26,9 @@ kotlin {
     }
     
     jvm()
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs { browser() }
     
     android {
        namespace = "org.br.dietamais.shared"
@@ -58,6 +62,9 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             implementation(libs.sqldelight.driver.native)
+        }
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.js)
         }
         jvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)

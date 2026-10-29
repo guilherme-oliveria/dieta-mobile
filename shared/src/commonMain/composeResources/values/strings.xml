@@ -707,4 +707,6 @@
     <string name="privacidade_erro_geral">Não foi possível concluir. Tente de novo.</string>
     <string name="atualizar_titulo">Atualize o app</string>
     <string name="atualizar_texto">Esta versão do Dieta+ não funciona mais. Instale a versão mais recente na loja do seu aparelho (ou baixe a nova versão no computador) e abra de novo. Seus dados estão guardados.</string>
+    <string name="web_em_construcao">Você entrou como %1$s. As telas do Dieta+ no navegador chegam nas próximas etapas.</string>
+    <string name="web_aba_no_app">Esta aba ainda não está na versão para navegador. Use o app.</string>
 </resources>

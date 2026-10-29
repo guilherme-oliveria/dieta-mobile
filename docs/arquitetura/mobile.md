@@ -69,7 +69,7 @@ Schema do SQLDelight em `shared/src/commonMain/sqldelight/org/br/dietamais/data/
 
 A fundação de MOB-04 (drivers, schema inicial, isolamento da fila e versionamento) está documentada em [banco-local.md](banco-local.md).
 
-`androidMain`, `iosMain` e `jvmMain` só têm os `actual` de `plataforma/` e os drivers. Os apps (`androidApp`, `iosApp`, `desktopApp`) só inicializam: FCM, permissões, deep links, janela do desktop.
+`androidMain`, `iosMain`, `jvmMain` e `wasmJsMain` só têm os `actual` de `plataforma/` e os drivers (a web não tem driver: ver `web.md`). Os apps (`androidApp`, `iosApp`, `desktopApp`, `webApp`) só inicializam: FCM, permissões, deep links, janela do desktop.
 
 Observação: o pacote do app é `org.br.dietamais` e o do backend é `com.br.dietamais`. Está certo assim; não renomeie.
 

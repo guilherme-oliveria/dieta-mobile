@@ -12,7 +12,11 @@ interface PortaListaPaciente {
     suspend fun salvar(pacienteId: Uuid, versao: Long, requisicao: AtualizarListaSubstituicaoRequisicao): ListaSubstituicaoResposta
 }
 
-class ListaPacienteRepositorio(private val api: ApiDieta, private val banco: BancoDieta) : PortaListaPaciente {
+class ListaPacienteRepositorio(private val api: ApiDieta, private val conferirArmazem: (OperacaoSessao) -> Unit) : PortaListaPaciente {
+    constructor(api: ApiDieta, banco: BancoDieta) : this(api, { esperado ->
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull()
+        if (sessao?.usuario_id != esperado.contexto.usuarioId.toString() || sessao.perfil != esperado.contexto.perfil.name) throw SessaoAlterada()
+    })
     override suspend fun obter(pacienteId: Uuid): ListaSubstituicaoResposta {
         val contexto = contexto()
         val resposta = api.obter<ListaSubstituicaoResposta>("pacientes/$pacienteId/lista-substituicao")
@@ -29,7 +33,7 @@ class ListaPacienteRepositorio(private val api: ApiDieta, private val banco: Ban
     }
     private fun contexto() = api.operacaoSessao.value?.takeIf { it.contexto.perfil == Perfil.NUTRICIONISTA } ?: throw SessaoAlterada()
     private fun conferir(esperado: OperacaoSessao) {
-        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull()
-        if (api.operacaoSessao.value != esperado || sessao?.usuario_id != esperado.contexto.usuarioId.toString() || sessao.perfil != esperado.contexto.perfil.name) throw SessaoAlterada()
+        if (api.operacaoSessao.value != esperado) throw SessaoAlterada()
+        conferirArmazem(esperado)
     }
 }

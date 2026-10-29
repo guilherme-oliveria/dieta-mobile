@@ -17,7 +17,8 @@ Começou para uma nutricionista (a tia do Guilherme), mas é **multi-nutricionis
 | --- | --- | --- | --- |
 | `dieta-backend` | API REST em Java 25 + Spring Boot 4.1, Postgres 18, Liquibase. Única fonte de verdade e de regras. | Todos os clientes | MVP |
 | `dieta-mobile` | App Kotlin Multiplatform + Compose Multiplatform. Um app só, com perfil nutri e perfil paciente. Android, iOS e Desktop (Windows/Mac/Linux). Offline-first. | Paciente (celular), nutri (celular, tablet, desktop) | MVP |
-| `dieta-frontend` | Site em Angular 22 + Angular Material. | Nutri (computador), paciente (opcional) | Pós-MVP |
+| `dieta-frontend` | Site em Angular (**plano B**: fica parado e será arquivado depois do ponto de decisão do MOB-43). | — | Arquivado |
+| web em KMP | Alvo `wasmJs` do `dieta-mobile` (Compose para web, online-only). | Nutri e paciente | P1 (MOB-40 a MOB-46) |
 
 ```
  ┌──────────────┐   HTTPS/JSON (REST /api/v1)   ┌─────────────────────┐
@@ -55,7 +56,7 @@ As tarefas detalhadas estão no `docs/arquitetura/plano-de-acao.md` de cada repo
 | 4. Acompanhamento | Avaliação (IMC calculado), anamnese, evolução, agenda de consultas, push | BE-19 a BE-24 | MOB-22 a MOB-28 | — |
 | 5. Offline da nutri | Nutri edita sem internet (desktop/tablet) com sync e conflitos | BE-25 | MOB-29 a MOB-31 | — |
 | 6. Cobrança e LGPD | Assinatura paga (gateway), PDF, exportar/excluir dados, publicação nas lojas | BE-26 a BE-32 | MOB-32 a MOB-35 | — |
-| P1. Web da nutri | Site Angular com as telas da nutri e página de assinatura | — | — | WEB-00 a WEB-13 |
+| P1. Web | Nutri e paciente no navegador, como alvo `wasmJs` do app (online) | — | — | BE-37, MOB-40 a MOB-46 |
 | P2. Crescimento | Troca de nutri com cópia de histórico, clínicas, vitrine de nutris, consultoria paga, anúncios, fórmulas da planilha (7 dobras), RabbitMQ | a definir | a definir | a definir |
 
 Cada fase termina com algo que a nutri real consegue usar. As fases 1 a 3 já substituem a entrega da dieta em PDF.
@@ -68,7 +69,7 @@ Cada fase termina com algo que a nutri real consegue usar. As fases 1 a 3 já su
 | Backend | Java 25, Spring Boot 4.1.2, Gradle Kotlin DSL, pacote `com.br.dietamais` |
 | Banco | Postgres 18, migrações com Liquibase (não Flyway) |
 | Mobile | KMP + Compose Multiplatform (template Shared UI), Android + iOS + Desktop, pacote `org.br.dietamais` |
-| Web | Fora do MVP; depois em Angular 22 (Node 24, Docker) |
+| Web | Fora do MVP; depois como alvo `wasmJs` do KMP no `dieta-mobile` (decisão de 29/10/2026), servida na mesma origem da API |
 | Firebase | Só FCM para push |
 | Mensageria | Nenhuma no MVP (Spring scheduling + tabela de pendências); RabbitMQ depois; Kafka descartado |
 | Plano | R$ 29,90/mês até 20 pacientes; Teste com 5 pacientes; valores em tabela do banco |

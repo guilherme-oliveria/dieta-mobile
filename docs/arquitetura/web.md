@@ -62,3 +62,31 @@ Renovar a sessão na web: `POST /auth/refresh` sem corpo; o backend lê o cookie
 | Rodar no navegador | `./gradlew :webApp:wasmJsBrowserDevelopmentRun` |
 | Testes comuns no navegador | `./gradlew :shared:wasmJsBrowserTest` |
 | Build de produção | `./gradlew :webApp:wasmJsBrowserDistribution` (sai em `webApp/build/dist/wasmJs/productionExecutable/`) |
+
+## Achados na implementação (MOB-40)
+
+- Todas as bibliotecas do `commonMain` (Ktor, Koin, Navigation, `material3-adaptive`, SQLDelight runtime, multiplatform-settings, Kermit, Compose Resources) compilam para `wasmJs` sem troca de versão; só entrou `ktor-client-js`.
+- `Plataforma` ganhou `WEB` (o backend aceita desde o BE-37). O CORS do backend agora libera o cabeçalho `X-Plataforma`; sem isso o preflight do navegador falharia.
+- Na nuvem do Claude, `:webApp:wasmJsBrowserDistribution` não roda (o yarn baixa o `karma` de `codeload.github.com`, bloqueado). Lá vale `:webApp:compileProductionExecutableKotlinWasmJs`; o CI do GitHub faz a distribuição completa.
+- MOB-41 enxuto: `ApiDieta` usa `ArmazemSessao` (`ArmazemSessaoSql` no app, `ArmazemSessaoMemoria` na web); o construtor antigo com `BancoDieta` continua. O `offlineMain` físico foi adiado (a web nunca instancia banco, fila ou sync; o DCE do Kotlin/Wasm remove o que não é usado) e só volta se o bundle ficar grande demais.
+- Atenção MOB-42: `SessaoLocal.validar` e o refresh hoje exigem `refreshToken` no corpo; na web ele vem só no cookie (BE-37), então a validação e `POST /auth/refresh` (sem corpo, `credentials: include`) precisam de um modo web.
+- `FabricaDriver` tem `actual` provisório em `wasmJsMain` (lança erro); MOB-41 o remove ao mover o banco para o `offlineMain`.
+- MOB-42: o `fetch` do navegador só manda o cookie do refresh na mesma origem, e o Ktor Js 3.6 não expõe `credentials: include` no código comum. Por isso site e API ficam na mesma origem, também em desenvolvimento (o servidor de dev precisa encaminhar `/api` para o backend; `window.DIETA_URL_API` só serve se a API estiver na mesma origem por outro caminho).
+
+## Medições do ponto de decisão (MOB-43, primeira entrega)
+
+Build de produção (`wasmJsProductionExecutable`), medido na nuvem com `gzip -9`:
+
+| Arquivo | Bruto | gzip |
+| --- | --- | --- |
+| `dietamais.wasm` (app: login, pacientes, montador, Ktor, Koin, Compose) | 5,95 MB | 1,78 MB |
+| `skiko.wasm` (renderização do Compose) | 8,64 MB | 3,33 MB |
+| **Total do primeiro carregamento** | 14,6 MB | **cerca de 5,1 MB** |
+
+Não medidos aqui (precisam de um navegador real): tempo de abertura em 4G simulado, leitor de tela e gerenciador de senhas. O `skiko.wasm` é fixo e domina o total; o app cresce com cada tela nova.
+
+## Como a web é construída e publicada (sem Node, sem nginx)
+
+- **Build:** `./gradlew :webApp:wasmJsBrowserDistribution` gera `webApp/build/dist/wasmJs/productionExecutable/`: `index.html`, `styles.css`, `dietamais.js` e os `.wasm`. São só arquivos estáticos; o Node do Gradle só existe na hora de compilar (no CI), nunca no servidor.
+- **Servir:** o Caddy que já termina o HTTPS da API na VPS serve esses arquivos (`/srv/web`) e encaminha `/api/*` e `/legal/*` para o backend. Uma origem só, sem CORS na prática e com o cookie do refresh funcionando. Não há contêiner novo (ver `dieta-backend/ops/Caddyfile` e `docs/operacao/deploy-beta.md`).
+- **Desenvolvimento:** `./gradlew :webApp:wasmJsBrowserDevelopmentRun` abre `http://localhost:8081` e encaminha `/api` para `http://localhost:8080`. No backend: `WEB_ORIGEM=http://localhost:8081` e `CORS_ORIGENS=http://localhost:8081`.

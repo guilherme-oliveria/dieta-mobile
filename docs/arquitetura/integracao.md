@@ -175,7 +175,7 @@ Ações que **exigem online** (o app desabilita o botão sem conexão): login/ca
 
 ## Push (FCM)
 
-- O app registra o token em `POST /api/v1/eu/dispositivos` `{token, plataforma: ANDROID|IOS|DESKTOP, nomeAparelho}`. Desktop não tem FCM: usa só o sync periódico.
+- O app registra o token em `POST /api/v1/eu/dispositivos` `{token, plataforma: ANDROID|IOS|DESKTOP|WEB, nomeAparelho}`. Desktop não tem FCM: usa só o sync periódico.
 - Payload sempre genérico (RN-NOT-02): `{ "tipo": "NOVA_DIETA", "sync": true, "rota": "paciente/dieta" }`. O app ao receber faz um sync e navega pela `rota`.
 - Backend envia via fila na tabela `aviso`: o aviso é gravado logo após o commit do evento (e por jobs de lembrete); um job `@Scheduled` (a cada 30 s) envia, respeita preferências e silêncio e tenta até 5 vezes. Detalhes em `contrato-fase-4.md` (BE-24).
 
@@ -201,12 +201,12 @@ Ações que **exigem online** (o app desabilita o botão sem conexão): login/ca
 
 - Mudança **compatível** (campo novo opcional, endpoint novo, valor de enum novo) entra em `/api/v1`. Clientes **ignoram campos desconhecidos** e tratam enum desconhecido como "outro".
 - Mudança **incompatível** (remover/renomear campo, mudar tipo, mudar significado) exige `/api/v2` daquele recurso, mantendo o v1 por pelo menos 6 meses (apps antigos nas lojas).
-- O app envia `X-App-Versao: 1.4.0` e `X-Plataforma: ANDROID`. Abaixo da versão mínima configurada (`APP_VERSAO_MINIMA`), o backend responde `426 VERSAO_APP_OBSOLETA` em qualquer rota de `/api/v1` (menos webhooks e links públicos de arquivo); o app mostra a tela de atualização e não repete a chamada. Sem o cabeçalho não há bloqueio. Limite geral: `429 TAXA_EXCEDIDA` com `Retry-After` (segundos) acima de 300 requisições por minuto por usuário; o app espera o `Retry-After` e repete (leitura) ou mantém a mutação na fila (escrita).
+- O app envia `X-App-Versao: 1.4.0` e `X-Plataforma: ANDROID` (`ANDROID|IOS|DESKTOP|WEB`; a web, em KMP, manda `WEB`). Abaixo da versão mínima configurada (`APP_VERSAO_MINIMA`; para `X-Plataforma: WEB` vale `APP_VERSAO_MINIMA_WEB`, vazia = sem bloqueio), o backend responde `426 VERSAO_APP_OBSOLETA` em qualquer rota de `/api/v1` (menos webhooks e links públicos de arquivo); o app mostra a tela de atualização e não repete a chamada. Sem o cabeçalho não há bloqueio. Limite geral: `429 TAXA_EXCEDIDA` com `Retry-After` (segundos) acima de 300 requisições por minuto por usuário; o app espera o `Retry-After` e repete (leitura) ou mantém a mutação na fila (escrita).
 
 ## Como os clientes consomem o contrato
 
 | Cliente | Como |
 | --- | --- |
 | Mobile (KMP) | DTOs escritos à mão em `shared/.../data/remoto/dto` com `kotlinx.serialization`, espelhando o OpenAPI; cliente Ktor. Teste de contrato: JSONs de exemplo em `commonTest/resources/contrato/` copiados do backend. |
-| Web (Angular) | Cliente gerado do OpenAPI com `openapi-generator` (`typescript-angular`) em `src/app/api/` (não editar à mão). Script `npm run api:gerar`. |
+| Web (KMP, alvo `wasmJs` do `dieta-mobile`) | Mesmo `ApiDieta` e DTOs do app, online-only. Sessão no navegador (BE-37): pedido com `Origin` igual a `WEB_ORIGEM` (login, refresh) recebe o `refreshToken` **só no cookie** `HttpOnly` (o corpo vem sem o campo) e o access fica em memória; `refresh` e `logout` vão sem corpo, com `credentials: include`. CORS libera `X-Plataforma`. O cliente Angular gerado (`dieta-frontend`) não será usado. |
 | Backend | `springdoc-openapi` gera o documento. Exemplos JSON de cada DTO ficam em `src/test/resources/contrato/` e um teste garante que eles continuam válidos. |

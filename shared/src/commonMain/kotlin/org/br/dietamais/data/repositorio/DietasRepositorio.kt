@@ -16,7 +16,13 @@ interface PortaDietas {
     suspend fun duplicar(id: Uuid, chave: Uuid = novoIdLocal()): DietaResposta
 }
 
-class DietasRepositorio(private val api: ApiDieta, private val banco: BancoDieta) : PortaDietas {
+/** [conferirArmazem] confere a sessão guardada fora da memória; a web (sem banco) não tem nada a conferir. */
+class DietasRepositorio(private val api: ApiDieta, private val conferirArmazem: (OperacaoSessao) -> Unit) : PortaDietas {
+    constructor(api: ApiDieta, banco: BancoDieta) : this(api, { esperado ->
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull()
+        if (sessao?.usuario_id != esperado.contexto.usuarioId.toString() || sessao.perfil != esperado.contexto.perfil.name) throw SessaoAlterada()
+    })
+
     override suspend fun listar(pacienteId: Uuid): List<DietaResposta> {
         val contexto = contexto()
         val resposta = api.obter<DietasResposta>("pacientes/$pacienteId/dietas")
@@ -53,7 +59,7 @@ class DietasRepositorio(private val api: ApiDieta, private val banco: BancoDieta
     }
     private fun contexto() = api.operacaoSessao.value?.takeIf { it.contexto.perfil == Perfil.NUTRICIONISTA } ?: throw SessaoAlterada()
     private fun conferir(esperado: OperacaoSessao) {
-        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull()
-        if (api.operacaoSessao.value != esperado || sessao?.usuario_id != esperado.contexto.usuarioId.toString() || sessao.perfil != esperado.contexto.perfil.name) throw SessaoAlterada()
+        if (api.operacaoSessao.value != esperado) throw SessaoAlterada()
+        conferirArmazem(esperado)
     }
 }
