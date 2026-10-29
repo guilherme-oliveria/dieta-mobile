@@ -1,6 +1,6 @@
 # Dieta+ — diagramas de arquitetura de software
 
-> Documento comum aos 3 repositórios (`dieta-backend`, `dieta-mobile`, `dieta-frontend`), com o mesmo conteúdo nos três. Ao mudar, atualize as 3 cópias.
+> Documento comum aos 3 repositórios (`dieta-backend`, `dieta-mobile` e o `dieta-frontend`, arquivado), com o mesmo conteúdo nos repositórios ativos. Ao mudar, atualize as 3 cópias.
 > Os diagramas são Mermaid e o GitHub os desenha direto no navegador. O texto de cada regra está em `visao-geral.md`, `integracao.md`, `backend.md`, `mobile.md` e `web.md`. Se algum diagrama divergir deles, o texto vale.
 
 Níveis, no estilo C4:
@@ -47,7 +47,7 @@ flowchart TB
     subgraph clientes["Clientes"]
         direction LR
         mob["<b>dieta-mobile</b><br/>Kotlin Multiplatform + Compose MP<br/>Android · iOS · Desktop<br/>offline-first"]
-        web["<b>dieta-frontend</b><br/>Angular 22 + Angular Material<br/>pós-MVP, só online"]
+        web["<b>web (alvo wasmJs do dieta-mobile)</b><br/>Compose para web<br/>nutri e paciente, só online"]
     end
 
     sqlite[("SQLite local<br/>SQLDelight")]
@@ -366,14 +366,14 @@ flowchart TB
         a["Android<br/>celular e tablet"]
         i["iPhone e iPad"]
         d["Desktop<br/>Windows, Mac, Linux"]
-        nav["Navegador<br/>(site, pós-MVP)"]
+        nav["Navegador<br/>(web KMP)"]
     end
 
     subgraph vps["VPS · Docker Compose (compose.prod.yaml)"]
         direction TB
         caddy["Caddy :443<br/>TLS automático"]
         be["dieta-backend<br/>imagem Docker, Java 25"]
-        fe["dieta-frontend<br/>nginx com o build do Angular"]
+        fe["web KMP<br/>arquivos estáticos servidos pelo Caddy"]
         pg[("Postgres 18<br/>volume + backup diário criptografado")]
         minio[("MinIO ou S3 externo")]
     end
@@ -389,7 +389,7 @@ flowchart TB
         direction LR
         r1["dieta-backend<br/>Actions: ./gradlew build"]
         r2["dieta-mobile<br/>Actions: Android + desktop no Linux,<br/>iOS no macOS"]
-        r3["dieta-frontend<br/>Actions: build + testes"]
+        r3["dieta-mobile (web)<br/>Actions: wasmJsBrowserDistribution"]
     end
 
     a & i & d -- "api.dietamais.com.br" --> caddy
@@ -400,7 +400,7 @@ flowchart TB
     be --> minio
     be --> fcm & mail & gw
     r1 -. "imagem" .-> be
-    r3 -. "imagem" .-> fe
+    r3 -. "artefato da web" .-> fe
     r2 -. "AAB / IPA / instaladores" .-> lojas["Play Store, App Store,<br/>instaladores do desktop"]
     lojas -.-> a & i & d
 ```

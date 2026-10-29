@@ -1,6 +1,6 @@
 # Dieta+ — visão geral do produto
 
-> Documento comum aos 3 repositórios (`dieta-backend`, `dieta-mobile`, `dieta-frontend`).
+> Documento comum aos repositórios `dieta-backend` e `dieta-mobile` (o `dieta-frontend` foi arquivado).
 > A cópia oficial fica em `dieta-backend/docs/arquitetura/`. Ao mudar, atualize as 3 cópias no mesmo dia.
 
 ## O que é
@@ -17,7 +17,7 @@ Começou para uma nutricionista (a tia do Guilherme), mas é **multi-nutricionis
 | --- | --- | --- | --- |
 | `dieta-backend` | API REST em Java 25 + Spring Boot 4.1, Postgres 18, Liquibase. Única fonte de verdade e de regras. | Todos os clientes | MVP |
 | `dieta-mobile` | App Kotlin Multiplatform + Compose Multiplatform. Um app só, com perfil nutri e perfil paciente. Android, iOS e Desktop (Windows/Mac/Linux). Offline-first. | Paciente (celular), nutri (celular, tablet, desktop) | MVP |
-| `dieta-frontend` | Site em Angular (**plano B**: fica parado e será arquivado depois do ponto de decisão do MOB-43). | — | Arquivado |
+| `dieta-frontend` | Site em Angular. **Arquivado**: a web saiu no alvo `wasmJs` do `dieta-mobile`. | — | Arquivado |
 | web em KMP | Alvo `wasmJs` do `dieta-mobile` (Compose para web, online-only). | Nutri e paciente | P1 (MOB-40 a MOB-46) |
 
 ```
@@ -29,8 +29,8 @@ Começou para uma nutricionista (a tia do Guilherme), mas é **multi-nutricionis
         │ SQLite local (SQLDelight)             │                     │ ───▶ FCM (push)
         │                                       │                     │ ───▶ E-mail (SMTP)
  ┌──────────────┐   HTTPS/JSON (REST /api/v1)   │                     │ ◀─── Webhook do gateway de pagamento
- │dieta-frontend│ ───────────────────────────▶ │                     │
- │ Angular      │                               └─────────────────────┘
+ │ web (wasmJs) │ ───────────────────────────▶ │                     │
+ │ no navegador │                               └─────────────────────┘
  └──────────────┘          Agenda Google/Apple ──▶ GET /cal/{token}.ics (feed público por token)
 ```
 
