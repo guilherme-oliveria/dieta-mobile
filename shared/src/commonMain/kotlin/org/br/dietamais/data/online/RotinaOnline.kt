@@ -32,6 +32,8 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
     private val agora: () -> Instant = { Clock.System.now() }) : PortaRotina {
     private class Dados(val dono: Uuid, val rotina: DadosRotina)
     private val guardado = MutableStateFlow<Dados?>(null)
+    /** Registros enviados e ainda sem resposta: a releitura do período não pode apagá-los. */
+    private val pendentes = mutableSetOf<Uuid>()
 
     private val visivel: Flow<DadosRotina> = combine(api.sessao, guardado) { sessao, dados ->
         if (sessao != null && dados?.dono == sessao.usuarioId) dados.rotina else DadosRotina()
@@ -48,14 +50,21 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
         val hoje = agora().toLocalDateTime(fuso()).date
         val resposta = api.obter<RotinaResposta>("eu/rotina", mapOf("de" to hoje.minus(DatePeriod(days = DIAS - 1)).toString(), "ate" to hoje.toString()))
         if (api.operacaoSessao.value != esperado) throw SessaoAlterada()
-        guardado.value = Dados(esperado.contexto.usuarioId, DadosRotina(resposta.checkins, resposta.agua, resposta.pesos))
+        val dono = esperado.contexto.usuarioId
+        guardado.update { atual ->
+            val local = atual?.takeIf { it.dono == dono }?.rotina ?: DadosRotina()
+            Dados(dono, DadosRotina(
+                resposta.checkins + local.checkins.filter { c -> c.id in pendentes && resposta.checkins.none { it.id == c.id } },
+                resposta.agua + local.agua.filter { a -> a.id in pendentes && resposta.agua.none { it.id == a.id } },
+                resposta.pesos + local.pesos.filter { p -> p.id in pendentes && resposta.pesos.none { it.id == p.id } }))
+        }
     }
 
     override fun registrarCheckin(dietaId: Uuid, refeicaoId: Uuid, data: LocalDate, status: StatusCheckin, trocas: List<TrocaCheckin>, agora: Instant) {
         require((status == StatusCheckin.TROCADO) == trocas.isNotEmpty() && status != StatusCheckin.OUTRO)
         val id = novoIdLocal()
         val corpo = JsonContrato.encodeToJsonElement(CheckinRequisicao(id, dietaId, refeicaoId, data, status, trocas, agora))
-        otimista({ it.copy(checkins = it.checkins + CheckinResposta(id, donoAtual(), dietaId, refeicaoId, data, status, trocas, agora)) },
+        otimista(id, { it.copy(checkins = it.checkins + CheckinResposta(id, donoAtual(), dietaId, refeicaoId, data, status, trocas, agora)) },
             { it.copy(checkins = it.checkins.filter { c -> c.id != id }) },
             { val r = api.enviar<CheckinResposta>("eu/checkins", corpo, id); substituindo { d -> d.copy(checkins = d.checkins.map { c -> if (c.id == id) r else c }) } })
     }
@@ -64,7 +73,7 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
         require(ml in 1..5000)
         val id = novoIdLocal()
         val corpo = JsonContrato.encodeToJsonElement(AguaRequisicao(id, ml, agora))
-        otimista({ it.copy(agua = it.agua + AguaResposta(id, donoAtual(), ml, agora)) }, { it.copy(agua = it.agua.filter { a -> a.id != id }) },
+        otimista(id, { it.copy(agua = it.agua + AguaResposta(id, donoAtual(), ml, agora)) }, { it.copy(agua = it.agua.filter { a -> a.id != id }) },
             { val r = api.enviar<AguaResposta>("eu/agua", corpo, id); substituindo { d -> d.copy(agua = d.agua.map { a -> if (a.id == id) r else a }) } })
     }
 
@@ -72,7 +81,7 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
         require(pesoKg in 20.0..400.0)
         val id = novoIdLocal()
         val corpo = JsonContrato.encodeToJsonElement(PesoRequisicao(id, pesoKg, agora))
-        otimista({ it.copy(pesos = it.pesos + PesoResposta(id, donoAtual(), pesoKg, agora)) }, { it.copy(pesos = it.pesos.filter { p -> p.id != id }) },
+        otimista(id, { it.copy(pesos = it.pesos + PesoResposta(id, donoAtual(), pesoKg, agora)) }, { it.copy(pesos = it.pesos.filter { p -> p.id != id }) },
             { val r = api.enviar<PesoResposta>("eu/pesos", corpo, id); substituindo { d -> d.copy(pesos = d.pesos.map { p -> if (p.id == id) r else p }) } })
     }
 
@@ -85,14 +94,16 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
 
     private fun substituindo(mudar: (DadosRotina) -> DadosRotina): (DadosRotina) -> DadosRotina = mudar
 
-    private fun otimista(adicionar: (DadosRotina) -> DadosRotina, desfazer: (DadosRotina) -> DadosRotina, enviar: suspend () -> ((DadosRotina) -> DadosRotina)) {
+    private fun otimista(id: Uuid, adicionar: (DadosRotina) -> DadosRotina, desfazer: (DadosRotina) -> DadosRotina, enviar: suspend () -> ((DadosRotina) -> DadosRotina)) {
         val dono = donoAtual()
         contexto()
+        pendentes += id
         atualizar(dono, adicionar)
         escopo.launch {
             try { val confirmar = enviar(); atualizar(dono, confirmar) }
             catch (cancelamento: CancellationException) { atualizar(dono, desfazer); throw cancelamento }
             catch (_: Exception) { atualizar(dono, desfazer) }
+            finally { pendentes -= id }
         }
     }
 
