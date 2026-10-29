@@ -2,6 +2,16 @@ package org.br.dietamais.app
 
 import kotlinx.coroutines.flow.map
 import org.br.dietamais.data.online.AlimentosOnline
+import org.br.dietamais.data.online.AvaliacoesOnline
+import org.br.dietamais.data.online.ConsultasOnline
+import org.br.dietamais.data.repositorio.ListaPacienteRepositorio
+import org.br.dietamais.data.repositorio.PortaAvaliacoes
+import org.br.dietamais.data.repositorio.PortaConsultas
+import org.br.dietamais.data.repositorio.PortaListaPaciente
+import org.br.dietamais.ui.nutri.agenda.AgendaViewModel
+import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
+import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
+import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.data.remoto.ApiDieta
 import org.br.dietamais.data.online.PacientesOnline
 import org.br.dietamais.data.repositorio.AssinaturaRepositorio
@@ -41,6 +51,13 @@ fun moduloWebNutri(ambiente: AmbienteWeb, compartilhamento: Compartilhamento) = 
     viewModel { PerfilNutriViewModel(get(), conectividade = online) }
     viewModel { p -> PrivacidadeViewModel(get(), conectividade = online, exportacaoDisponivel = p.get()) }
     viewModel { AssinaturaViewModel(get(), conectividade = online) }
+    single<PortaConsultas> { ConsultasOnline(get()) }
+    single<PortaAvaliacoes> { AvaliacoesOnline(get()) }
+    single<PortaListaPaciente> { ListaPacienteRepositorio(get<ApiDieta>()) { } }
+    viewModel { AgendaViewModel(get(), get(), conectividade = online) }
+    viewModel { AvaliacoesViewModel(get(), conectividade = online) }
+    viewModel { AlimentosViewModel(get(), sessao = get<ApiDieta>().operacaoSessao, conectividade = online) }
+    viewModel { ListaPacienteViewModel(get(), get(), conectividade = online) }
     viewModel { PacientesViewModel(get(), get(), conectividade = online) }
     viewModel { MontadorDietaViewModel(get(), get(), conectividade = online) }
 }

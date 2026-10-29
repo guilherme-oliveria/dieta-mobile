@@ -7,6 +7,8 @@ import kotlinx.coroutines.test.runTest
 import org.br.dietamais.data.remoto.ApiDieta
 import org.br.dietamais.data.remoto.ArmazemSessaoMemoria
 import org.br.dietamais.data.remoto.CofreMemoria
+import org.br.dietamais.data.remoto.JsonContrato
+import org.br.dietamais.data.remoto.dto.CriarPacienteRequisicao
 import org.br.dietamais.data.remoto.dto.Plataforma
 import org.br.dietamais.data.remoto.recursoContrato
 import org.br.dietamais.plataforma.Config
@@ -43,6 +45,21 @@ class PacientesOnlineTest {
             assertEquals("Paciente de Exemplo", porta.observar().first().single().nome)
             api.sair()
             assertTrue(porta.observar().first().isEmpty(), "lista da conta anterior não pode aparecer")
+        }
+    }
+
+    @Test fun criarGuardaOQueOServidorGravouENaoMostraParaOutraConta() = runTest {
+        val engine = MockEngine { req ->
+            assertEquals("/api/v1/pacientes", req.url.encodedPath); assertEquals(HttpMethod.Post, req.method)
+            assertNotNull(req.headers["Idempotency-Key"])
+            respond(recursoContrato("criarPaciente/resposta.json"), HttpStatusCode.Created, json)
+        }
+        api(engine).use { api ->
+            api.restaurarSessao()
+            val porta = PacientesOnline(api)
+            val pedido = JsonContrato.decodeFromString<CriarPacienteRequisicao>(recursoContrato("criarPaciente/requisicao.json"))
+            val criado = porta.criar(pedido, kotlin.uuid.Uuid.random())
+            assertEquals(criado.vinculoId, porta.observar().first().single().vinculoId)
         }
     }
 }

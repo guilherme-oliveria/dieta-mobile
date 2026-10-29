@@ -12,6 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import org.br.dietamais.recursos.web_aba_no_app
+import org.br.dietamais.ui.comum.EstadoVazio
+import org.br.dietamais.ui.nutri.agenda.AgendaRota
+import org.br.dietamais.ui.nutri.agenda.AgendaViewModel
+import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
+import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
+import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
+import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesNutriRota
+import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
+import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import org.br.dietamais.ui.auth.acoesPrivacidade
@@ -48,7 +58,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * ponto de decisão; até lá o resto da navegação mostra o estado vazio padrão.
  */
 @Composable
-fun ShellWebNutri(nome: String, aoSair: () -> Unit) {
+fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androidx.navigation.NavHostController) -> Unit = {}) {
     val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
     val alimentos = koinInject<PortaAlimentos>()
@@ -62,13 +72,25 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit) {
             Text(nome, style = MaterialTheme.typography.bodyMedium)
             TextButton(aoSair) { Text(stringResource(Res.string.auth_sair)) }
         }
-        NavegacaoApp(PerfilNavegacao.NUTRICIONISTA,
+        NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, aoPrepararNavegacao = aoPrepararNavegacao,
             resolverVinculo = { ficha -> pacientes.estado.value.lista.firstOrNull { it.id.toString() == ficha }?.vinculoId?.toString() },
             conteudoPacientes = { classe, vinculo, abrir, voltar ->
                 PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
-                    if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
+                    when (aba) {
+                        AbaFicha.DIETA -> DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
+                        AbaFicha.AVALIACOES -> AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id)
+                        AbaFicha.LISTA -> {
+                            val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
+                            val estadoLista by lista.estado.collectAsState()
+                            LaunchedEffect(paciente.id) { lista.abrir(paciente.id) }
+                            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
+                        }
+                        else -> EstadoVazio(mensagem = stringResource(Res.string.web_aba_no_app))
+                    }
                 })
             },
+            conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
+            conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
             conteudoConta = {
                 val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
                 val estadoConta by conta.estado.collectAsState()

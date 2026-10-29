@@ -42,8 +42,10 @@ import org.koin.dsl.koinApplication
 @Composable
 fun AppWeb(ambiente: AmbienteWeb, identidadeDispositivo: IdentidadeDispositivo, compartilhamento: Compartilhamento,
     termosCadastro: TermosCadastro? = null,
+    /** Liga a pilha de navegação à URL e ao botão voltar do navegador (só existe no `wasmJsMain`). */
+    aoPrepararNavegacao: (androidx.navigation.NavHostController) -> Unit = {},
     shell: @Composable (org.br.dietamais.data.remoto.dto.UsuarioResposta, () -> Unit) -> Unit = { usuario, sair ->
-        if (usuario.perfil == Perfil.NUTRICIONISTA) ShellWebNutri(usuario.nome, sair) else ShellProvisorio(usuario.nome, sair)
+        if (usuario.perfil == Perfil.NUTRICIONISTA) ShellWebNutri(usuario.nome, sair, aoPrepararNavegacao) else ShellProvisorio(usuario.nome, sair)
     }) {
     val contexto = remember(ambiente, identidadeDispositivo, compartilhamento) { koinApplication {
         modules(moduloApp(ambiente.config), moduloWeb(ambiente), moduloAutenticacao(identidadeDispositivo, termosCadastro),
