@@ -29,3 +29,15 @@ class VersaoObsoletaTest {
         }
     }
 }
+
+class EnderecoApiDesenvolvimentoTest {
+    private fun cria(url: String) = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).use { driver ->
+        BancoDieta.Schema.create(driver)
+        ApiDieta(Config(url), "1.0", Plataforma.DESKTOP, CofreMemoria(), BancoDieta(driver), MockEngine { respond("{}") }).close()
+    }
+
+    @Test fun aceitaHttpSoParaRedePrivadaELocal() {
+        cria("http://192.168.0.10:8080"); cria("http://10.1.2.3:8080"); cria("http://172.20.0.5:8080"); cria("http://localhost:8080")
+        listOf("http://8.8.8.8", "http://172.32.0.1", "http://192.169.0.1", "http://exemplo.com").forEach { assertFailsWith<IllegalArgumentException>(it) { cria(it) } }
+    }
+}

@@ -35,6 +35,8 @@ android {
         require(conviteHost.matches(Regex("[a-zA-Z0-9.-]+"))) { "conviteHost deve conter apenas um domínio, sem esquema ou caminho" }
         manifestPlaceholders["conviteHost"] = conviteHost
         resValue("string", "convite_host", conviteHost)
+        // URL da API só para desenvolvimento (ex.: -PurlApi=http://192.168.0.10:8080 em aparelho físico); vazio = padrão do app (10.0.2.2 no emulador).
+        resValue("string", "url_api_dev", providers.gradleProperty("urlApi").orElse("").get())
         // Firebase sem google-services.json: as credenciais do projeto vêm de propriedades do Gradle (secrets do CI), nunca do Git.
         // Sem elas o push fica desligado e o app funciona normalmente.
         mapOf("fcm_app_id" to "fcmAppId", "fcm_api_key" to "fcmApiKey", "fcm_project_id" to "fcmProjectId", "fcm_sender_id" to "fcmSenderId").forEach { (recurso, propriedade) ->

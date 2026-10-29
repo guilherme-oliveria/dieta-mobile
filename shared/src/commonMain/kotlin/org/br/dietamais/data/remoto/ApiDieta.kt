@@ -198,8 +198,11 @@ private fun enderecoApi(configurada: String): Url {
         require(url.protocol in listOf(URLProtocol.HTTP, URLProtocol.HTTPS) && url.user.isNullOrEmpty() &&
             url.password.isNullOrEmpty() && url.parameters.isEmpty() && url.fragment.isEmpty())
         require(url.encodedPath in listOf("", "/", "/api/v1"))
-        require(url.protocol == URLProtocol.HTTPS || url.host in setOf("localhost", "127.0.0.1", "10.0.2.2", "::1"))
+        require(url.protocol == URLProtocol.HTTPS || url.host in setOf("localhost", "127.0.0.1", "10.0.2.2", "::1") || REDE_PRIVADA.matches(url.host))
         val prefixo = if (url.encodedPath == "/api/v1") "" else "/api/v1"
         return Url(url.toString().trimEnd('/') + prefixo + "/")
     } catch (falha: Exception) { throw IllegalArgumentException("URL da API inválida.") }
 }
+
+/** Desenvolvimento: API no PC/WSL acessada pela rede local (http só para IPv4 privado; o Android ainda exige o build debug para liberar o tráfego). */
+private val REDE_PRIVADA = Regex("(10\\.\\d{1,3}|192\\.168|172\\.(1[6-9]|2\\d|3[01]))\\.\\d{1,3}\\.\\d{1,3}")
