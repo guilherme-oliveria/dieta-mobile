@@ -18,7 +18,11 @@ import org.br.dietamais.app.AmbienteWeb
 import org.br.dietamais.app.moduloApp
 import org.br.dietamais.app.moduloAutenticacao
 import org.br.dietamais.app.moduloConvites
+import org.br.dietamais.app.ShellWebNutri
 import org.br.dietamais.app.moduloWeb
+import org.br.dietamais.app.moduloWebNutri
+import org.br.dietamais.data.remoto.dto.Perfil
+import org.br.dietamais.plataforma.Compartilhamento
 import org.br.dietamais.plataforma.IdentidadeDispositivo
 import org.br.dietamais.recursos.Res
 import org.br.dietamais.recursos.auth_sair
@@ -36,11 +40,14 @@ import org.koin.dsl.koinApplication
  * MOB-44, trocando [shell]; até lá, depois do login aparece só um aviso com "Sair".
  */
 @Composable
-fun AppWeb(ambiente: AmbienteWeb, identidadeDispositivo: IdentidadeDispositivo, termosCadastro: TermosCadastro? = null,
-    shell: @Composable (org.br.dietamais.data.remoto.dto.UsuarioResposta, () -> Unit) -> Unit = { usuario, sair -> ShellProvisorio(usuario.nome, sair) }) {
-    val contexto = remember(ambiente, identidadeDispositivo) { koinApplication {
+fun AppWeb(ambiente: AmbienteWeb, identidadeDispositivo: IdentidadeDispositivo, compartilhamento: Compartilhamento,
+    termosCadastro: TermosCadastro? = null,
+    shell: @Composable (org.br.dietamais.data.remoto.dto.UsuarioResposta, () -> Unit) -> Unit = { usuario, sair ->
+        if (usuario.perfil == Perfil.NUTRICIONISTA) ShellWebNutri(usuario.nome, sair) else ShellProvisorio(usuario.nome, sair)
+    }) {
+    val contexto = remember(ambiente, identidadeDispositivo, compartilhamento) { koinApplication {
         modules(moduloApp(ambiente.config), moduloWeb(ambiente), moduloAutenticacao(identidadeDispositivo, termosCadastro),
-            moduloConvites(identidadeDispositivo))
+            moduloConvites(identidadeDispositivo), moduloWebNutri(ambiente, compartilhamento))
     } }
     DisposableEffect(contexto) { onDispose { contexto.close() } }
     KoinIsolatedContext(contexto) {

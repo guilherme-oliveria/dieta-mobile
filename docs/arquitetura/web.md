@@ -72,3 +72,15 @@ Renovar a sessão na web: `POST /auth/refresh` sem corpo; o backend lê o cookie
 - Atenção MOB-42: `SessaoLocal.validar` e o refresh hoje exigem `refreshToken` no corpo; na web ele vem só no cookie (BE-37), então a validação e `POST /auth/refresh` (sem corpo, `credentials: include`) precisam de um modo web.
 - `FabricaDriver` tem `actual` provisório em `wasmJsMain` (lança erro); MOB-41 o remove ao mover o banco para o `offlineMain`.
 - MOB-42: o `fetch` do navegador só manda o cookie do refresh na mesma origem, e o Ktor Js 3.6 não expõe `credentials: include` no código comum. Por isso site e API ficam na mesma origem, também em desenvolvimento (o servidor de dev precisa encaminhar `/api` para o backend; `window.DIETA_URL_API` só serve se a API estiver na mesma origem por outro caminho).
+
+## Medições do ponto de decisão (MOB-43, primeira entrega)
+
+Build de produção (`wasmJsProductionExecutable`), medido na nuvem com `gzip -9`:
+
+| Arquivo | Bruto | gzip |
+| --- | --- | --- |
+| `dietamais.wasm` (app: login, pacientes, montador, Ktor, Koin, Compose) | 5,95 MB | 1,78 MB |
+| `skiko.wasm` (renderização do Compose) | 8,64 MB | 3,33 MB |
+| **Total do primeiro carregamento** | 14,6 MB | **cerca de 5,1 MB** |
+
+Não medidos aqui (precisam de um navegador real): tempo de abertura em 4G simulado, leitor de tela e gerenciador de senhas. O `skiko.wasm` é fixo e domina o total; o app cresce com cada tela nova.
