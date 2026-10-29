@@ -14,6 +14,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import org.br.dietamais.recursos.web_aba_no_app
 import org.br.dietamais.ui.comum.EstadoVazio
+import org.br.dietamais.ui.notificacoes.AvisosRota
+import org.br.dietamais.ui.notificacoes.AvisosViewModel
+import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriRota
+import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriViewModel
+import org.br.dietamais.ui.nutri.painel.PainelRota
+import org.br.dietamais.ui.nutri.painel.PainelViewModel
+import org.br.dietamais.ui.paciente.evolucao.EvolucaoRota
+import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
 import org.br.dietamais.ui.nutri.agenda.AgendaRota
 import org.br.dietamais.ui.nutri.agenda.AgendaViewModel
 import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
@@ -54,8 +62,8 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * Nutri na web (MOB-43, primeira entrega): pacientes e a aba Dieta com o montador. As outras abas e telas chegam depois do
- * ponto de decisão; até lá o resto da navegação mostra o estado vazio padrão.
+ * Nutri na web (MOB-43): painel, pacientes (dieta, avaliações, lista, evolução e anamnese), agenda, alimentos, conta e avisos.
+ * Sem sync, o gráfico de evolução da nutri não traz os pesos que o paciente registra em casa.
  */
 @Composable
 fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androidx.navigation.NavHostController) -> Unit = {}) {
@@ -69,6 +77,7 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f))
+            AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono))
             Text(nome, style = MaterialTheme.typography.bodyMedium)
             TextButton(aoSair) { Text(stringResource(Res.string.auth_sair)) }
         }
@@ -85,10 +94,13 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
                             LaunchedEffect(paciente.id) { lista.abrir(paciente.id) }
                             ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
                         }
+                        AbaFicha.EVOLUCAO -> EvolucaoRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), paciente.id)
+                        AbaFicha.ANAMNESE -> AnamneseNutriRota(koinViewModel<AnamneseNutriViewModel>(viewModelStoreOwner = dono), paciente.id)
                         else -> EstadoVazio(mensagem = stringResource(Res.string.web_aba_no_app))
                     }
                 })
             },
+            conteudoInicio = { PainelRota(koinViewModel<PainelViewModel>(viewModelStoreOwner = dono)) },
             conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
             conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
             conteudoConta = {

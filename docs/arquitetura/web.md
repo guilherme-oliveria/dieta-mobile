@@ -54,6 +54,9 @@ Renovar a sessão na web: `POST /auth/refresh` sem corpo; o backend lê o cookie
 - Primeiro carregamento de alguns MB: tela de carregamento no `index.html`, cache forte dos `.wasm` com nome versionado.
 - Sem SEO: o app é desenhado em canvas. Landing, planos e checkout ficam numa página HTML estática à parte.
 - Acessibilidade e autofill de senha são mais fracos que num site em HTML: MOB-45 confere leitor de tela, teclado e gerenciador de senhas.
+- Sem fila em disco: as respostas parciais da anamnese do paciente aparecem na hora e seguem para a API em ordem; se a aba fechar antes de chegarem, perdem-se. Concluir só vale com tudo já enviado (RN-ANA-03).
+- Sem push: a central de avisos recarrega ao abrir e a cada minuto, enquanto a aba está aberta.
+- Sem sync, a nutri não vê os pesos que o paciente registra em casa (não há endpoint para ela); o gráfico de evolução da web mostra só as avaliações. O painel mostra só os questionários que a nutri já abriu na sessão.
 
 ## Comandos (a partir de MOB-40)
 
