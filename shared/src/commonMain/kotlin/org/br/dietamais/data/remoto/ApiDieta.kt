@@ -18,6 +18,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.serializer
+import org.br.dietamais.data.local.ArmazemSessaoSql
 import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.data.sync.novoIdLocal
@@ -29,10 +30,13 @@ import org.br.dietamais.plataforma.motorHttp
 import kotlin.uuid.Uuid
 
 class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre: CofreSessao,
-    banco: BancoDieta, private val engine: HttpClientEngine = motorHttp()) : AutoCloseable {
+    armazem: ArmazemSessao, private val engine: HttpClientEngine = motorHttp()) : AutoCloseable {
+    /** Montagem offline-first: a sessão também fica na tabela `sessao` e o logout limpa os caches do banco. */
+    constructor(config: Config, versaoApp: String, plataforma: Plataforma, cofre: CofreSessao,
+        banco: BancoDieta, engine: HttpClientEngine = motorHttp()) : this(config, versaoApp, plataforma, cofre, ArmazemSessaoSql(banco), engine)
     private val origem = enderecoApi(config.URL_API)
     private val base = origem.toString()
-    private val controle = SessaoLocal(cofre, banco)
+    private val controle = SessaoLocal(cofre, armazem)
     val sessao = controle.fluxo
     val operacaoSessao = controle.fluxoOperacao
     private val obsoleta = kotlinx.coroutines.flow.MutableStateFlow(false)

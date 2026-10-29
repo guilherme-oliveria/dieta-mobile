@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import org.br.dietamais.data.local.BancoDieta
 import org.br.dietamais.data.remoto.dto.Perfil
 import org.br.dietamais.data.remoto.dto.SessaoResposta
 import org.br.dietamais.plataforma.CofreSessao
@@ -19,7 +18,7 @@ data class OperacaoSessao(val contexto: ContextoSessao, val id: Long) {
     override fun toString() = "OperacaoSessao[identidade protegida]"
 }
 
-internal class SessaoLocal(private val cofre: CofreSessao, private val banco: BancoDieta) {
+internal class SessaoLocal(private val cofre: CofreSessao, private val armazem: ArmazemSessao) {
     private val mutex = Mutex()
     private var carregada = false
     private var atual: SessaoResposta? = null
@@ -48,7 +47,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
             } else {
                 try { validar(resposta) } catch (falha: RespostaInvalida) { apagar(); throw falha }
                 operacao.value = null
-                if (anterior?.usuario?.id != resposta.usuario.id || anterior.usuario.perfil != resposta.usuario.perfil) limparBanco()
+                if (anterior?.usuario?.id != resposta.usuario.id || anterior.usuario.perfil != resposta.usuario.perfil) armazem.limpar()
                 geracao++
                 salvar(resposta)
             }
@@ -92,7 +91,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
                 try { JsonContrato.decodeFromString<SessaoResposta>(it).also(::validar) }
                 catch (falha: Exception) { apagar(); throw RespostaInvalida() }
             }
-            if (resposta == null) limparBanco() else banco.sessaoQueries.salvar(resposta.usuario.id.toString(), resposta.usuario.perfil!!.name)
+            if (resposta == null) armazem.limpar() else armazem.salvar(resposta.usuario.id.toString(), resposta.usuario.perfil!!.name)
             atual = resposta
             carregada = true
             estado.value = resposta?.contexto()
@@ -109,7 +108,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
     private suspend fun salvar(resposta: SessaoResposta) {
         try {
             cofre.gravar(JsonContrato.encodeToString(resposta))
-            banco.sessaoQueries.salvar(resposta.usuario.id.toString(), resposta.usuario.perfil!!.name)
+            armazem.salvar(resposta.usuario.id.toString(), resposta.usuario.perfil!!.name)
             atual = resposta
             carregada = true
             estado.value = resposta.contexto()
@@ -126,17 +125,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val banco: Ba
         atual = null
         carregada = true
         estado.value = null
-        try { cofre.limpar() } finally { limparBanco() }
-    }
-
-    private fun limparBanco() = banco.transaction {
-        banco.alimentoCacheQueries.limpar()
-        banco.registroSyncQueries.limpar()
-        banco.pacienteCacheQueries.limpar()
-        banco.conflitoQueries.limpar()
-        banco.mutacaoPendenteQueries.limpar()
-        banco.cursorSyncQueries.limpar()
-        banco.sessaoQueries.limpar()
+        try { cofre.limpar() } finally { armazem.limpar() }
     }
 
     private fun SessaoResposta.tokens() = BearerTokens(requireNotNull(accessToken), refreshToken)
