@@ -73,7 +73,8 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
     // O montador só observa o catálogo; na web quem o carrega é o shell.
     LaunchedEffect(alimentos) { try { alimentos.atualizar() } catch (cancelamento: CancellationException) { throw cancelamento } catch (_: Exception) { } }
     val pacientes = koinViewModel<PacientesViewModel>(viewModelStoreOwner = dono)
-    Column(Modifier.fillMaxSize()) {
+    val atalhos = remember { AtalhosWeb(PerfilNavegacao.NUTRICIONISTA) }
+    Column(Modifier.fillMaxSize().then(atalhos.modificador)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f))
@@ -81,7 +82,7 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
             Text(nome, style = MaterialTheme.typography.bodyMedium)
             TextButton(aoSair) { Text(stringResource(Res.string.auth_sair)) }
         }
-        NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, aoPrepararNavegacao = aoPrepararNavegacao,
+        NavegacaoApp(PerfilNavegacao.NUTRICIONISTA, aoPrepararNavegacao = { atalhos.registrar(it, aoPrepararNavegacao) },
             resolverVinculo = { ficha -> pacientes.estado.value.lista.firstOrNull { it.id.toString() == ficha }?.vinculoId?.toString() },
             conteudoPacientes = { classe, vinculo, abrir, voltar ->
                 PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->

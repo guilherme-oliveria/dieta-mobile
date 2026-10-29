@@ -64,7 +64,8 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
     // um ViewModel compartilhado: Hoje e Dieta leem os mesmos dados
     val vm = koinViewModel<DietaPacienteViewModel>(viewModelStoreOwner = dono)
     val estado by vm.estado.collectAsState()
-    Column(Modifier.fillMaxSize()) {
+    val atalhos = remember { AtalhosWeb(PerfilNavegacao.PACIENTE) }
+    Column(Modifier.fillMaxSize().then(atalhos.modificador)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f))
@@ -72,7 +73,7 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
             Text(nome, style = MaterialTheme.typography.bodyMedium)
             TextButton(aoSair) { Text(stringResource(Res.string.auth_sair)) }
         }
-        NavegacaoApp(PerfilNavegacao.PACIENTE, aoPrepararNavegacao = aoPrepararNavegacao,
+        NavegacaoApp(PerfilNavegacao.PACIENTE, aoPrepararNavegacao = { atalhos.registrar(it, aoPrepararNavegacao) },
             conteudoHoje = {
                 Column(Modifier.fillMaxSize()) {
                     AnamnesePacienteRota(koinViewModel<AnamnesePacienteViewModel>(viewModelStoreOwner = dono))

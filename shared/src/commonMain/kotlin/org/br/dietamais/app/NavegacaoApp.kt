@@ -98,11 +98,7 @@ fun NavegacaoApp(
             itens, selecionado?.chave,
             aoSelecionar = { chave ->
                 val destino = destinos.first { it.chave == chave }
-                controlador.navigate(destino.rota) {
-                    popUpTo(controlador.graph.findStartDestination().id) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
+                controlador.irParaAba(destino.rota)
             },
             classeJanela = classeJanela, content = conteudo,
         )
@@ -169,6 +165,15 @@ private fun navegarParaAviso(controlador: NavHostController, destino: DestinoAvi
         restoreState = destino !is DestinoAviso.Paciente
     }
 }
+
+internal fun NavHostController.irParaAba(rota: Any) = navigate(rota) {
+    popUpTo(graph.findStartDestination().id) { saveState = true }
+    launchSingleTop = true
+    restoreState = true
+}
+
+/** Atalho Alt+1..5 (web): a aba na posição do número, na mesma ordem da navegação; fora disso, nulo. */
+fun rotaDoAtalho(perfil: PerfilNavegacao, numero: Int): Any? = destinosDoPerfil(perfil).getOrNull(numero - 1)?.rota
 
 private fun destinosDoPerfil(perfil: PerfilNavegacao?) = when (perfil) {
     PerfilNavegacao.PACIENTE -> listOf(
