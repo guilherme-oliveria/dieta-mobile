@@ -84,3 +84,9 @@ Build de produção (`wasmJsProductionExecutable`), medido na nuvem com `gzip -9
 | **Total do primeiro carregamento** | 14,6 MB | **cerca de 5,1 MB** |
 
 Não medidos aqui (precisam de um navegador real): tempo de abertura em 4G simulado, leitor de tela e gerenciador de senhas. O `skiko.wasm` é fixo e domina o total; o app cresce com cada tela nova.
+
+## Como a web é construída e publicada (sem Node, sem nginx)
+
+- **Build:** `./gradlew :webApp:wasmJsBrowserDistribution` gera `webApp/build/dist/wasmJs/productionExecutable/`: `index.html`, `styles.css`, `dietamais.js` e os `.wasm`. São só arquivos estáticos; o Node do Gradle só existe na hora de compilar (no CI), nunca no servidor.
+- **Servir:** o Caddy que já termina o HTTPS da API na VPS serve esses arquivos (`/srv/web`) e encaminha `/api/*` e `/legal/*` para o backend. Uma origem só, sem CORS na prática e com o cookie do refresh funcionando. Não há contêiner novo (ver `dieta-backend/ops/Caddyfile` e `docs/operacao/deploy-beta.md`).
+- **Desenvolvimento:** `./gradlew :webApp:wasmJsBrowserDevelopmentRun` abre `http://localhost:8081` e encaminha `/api` para `http://localhost:8080`. No backend: `WEB_ORIGEM=http://localhost:8081` e `CORS_ORIGENS=http://localhost:8081`.
