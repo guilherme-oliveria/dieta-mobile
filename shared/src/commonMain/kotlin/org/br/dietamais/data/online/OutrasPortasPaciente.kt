@@ -1,5 +1,6 @@
 package org.br.dietamais.data.online
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -7,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.encodeToJsonElement
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -67,8 +69,14 @@ class VinculosOnline(private val api: ApiDieta) : PortaVinculosLocais {
     }
 }
 
-/** Evolução do paciente: avaliações compartilhadas (`GET /eu/avaliacoes`) e pesos em casa (da rotina). */
+/**
+ * Evolução: o paciente vê as avaliações compartilhadas e os pesos em casa (da rotina); a nutri vê as avaliações da ficha aberta.
+ * Os pesos de casa só chegam à nutri pelo sync, que a web não tem; o gráfico dela mostra só as avaliações.
+ */
 class EvolucaoOnline(private val avaliacoes: PortaAvaliacoes, private val rotina: PortaRotina) : PortaEvolucao {
     override fun observar(pacienteId: Uuid?): Flow<DadosEvolucao> =
-        combine(avaliacoes.observar(pacienteId), rotina.observar()) { a, r -> DadosEvolucao(a, r.pesos) }
+        if (pacienteId == null) combine(avaliacoes.observar(null), rotina.observar()) { a, r -> DadosEvolucao(a, r.pesos) }
+        else avaliacoes.observar(pacienteId).map { DadosEvolucao(it) }.onStart {
+            try { avaliacoes.atualizar(pacienteId) } catch (c: CancellationException) { throw c } catch (_: Exception) { }
+        }
 }

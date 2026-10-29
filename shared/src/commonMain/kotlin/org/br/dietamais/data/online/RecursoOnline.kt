@@ -40,4 +40,10 @@ class RecursoOnline<T>(private val sessao: StateFlow<ContextoSessao?>, private v
         val atual = dados.value?.takeIf { it.dono == dono }?.itens.orEmpty()
         dados.value = Dados(dono, if (atual.any(mesmo)) atual.map { if (mesmo(it)) novo else it } else atual + novo)
     }
+
+    /** Troca a lista inteira do dono atual por `transformar(lista)`; sem sessão, não faz nada. */
+    fun trocar(transformar: (List<T>) -> List<T>) {
+        val dono = sessao.value?.usuarioId ?: return
+        dados.value = Dados(dono, transformar(dados.value?.takeIf { it.dono == dono }?.itens.orEmpty()))
+    }
 }

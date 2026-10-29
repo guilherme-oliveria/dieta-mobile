@@ -26,6 +26,7 @@ import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
 import org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel
 import org.br.dietamais.ui.paciente.perfil.PerfilPacienteViewModel
 import org.jetbrains.compose.resources.getString
+import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -40,6 +41,7 @@ fun moduloWebPaciente(ambiente: AmbienteWeb) = module {
     single<PortaVinculosLocais> { VinculosOnline(get()) }
     single<PortaCalendario> { CalendarioRepositorio(get()) }
     viewModel { DietaPacienteViewModel(get(), get(), conectividade = online) }
+    viewModel { AnamnesePacienteViewModel(get(), conectividade = online) }
     viewModel { ConsultasPacienteViewModel(get()) }
     viewModel { EvolucaoViewModel(get(), get<PortaRotina>()) }
     viewModel { ComprasViewModel(get(), get(), get(), { getString(Res.string.compras_titulo_texto) }) }

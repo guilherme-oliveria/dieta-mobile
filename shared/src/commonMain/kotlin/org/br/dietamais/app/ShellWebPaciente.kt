@@ -27,6 +27,10 @@ import org.br.dietamais.recursos.pdf_dieta
 import org.br.dietamais.ui.auth.acoesPrivacidade
 import org.br.dietamais.ui.comum.BotaoPdf
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
+import org.br.dietamais.ui.notificacoes.AvisosRota
+import org.br.dietamais.ui.notificacoes.AvisosViewModel
+import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteRota
+import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel
 import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
@@ -50,8 +54,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 /**
- * Paciente na web (MOB-44): Hoje, Dieta, Evolução, Compras e Perfil, tudo pela API. A anamnese e os lembretes locais ficam para o
- * app; a tela do perfil avisa para instalá-lo.
+ * Paciente na web (MOB-44): Hoje (com a anamnese), Dieta, Evolução, Compras e Perfil, e a central de avisos, tudo pela API. Os
+ * lembretes locais ficam para o app; a tela do perfil avisa para instalá-lo.
  */
 @Composable
 fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androidx.navigation.NavHostController) -> Unit = {}) {
@@ -64,12 +68,14 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f))
+            AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono))
             Text(nome, style = MaterialTheme.typography.bodyMedium)
             TextButton(aoSair) { Text(stringResource(Res.string.auth_sair)) }
         }
         NavegacaoApp(PerfilNavegacao.PACIENTE, aoPrepararNavegacao = aoPrepararNavegacao,
             conteudoHoje = {
                 Column(Modifier.fillMaxSize()) {
+                    AnamnesePacienteRota(koinViewModel<AnamnesePacienteViewModel>(viewModelStoreOwner = dono))
                     ProximaConsultaRota(koinViewModel<ConsultasPacienteViewModel>(viewModelStoreOwner = dono))
                     HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua), Modifier.weight(1f))
                 }

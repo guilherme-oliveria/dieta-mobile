@@ -33,6 +33,8 @@ import org.br.dietamais.plataforma.Compartilhamento
 import org.br.dietamais.plataforma.EstadoConexao
 import org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel
 import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
+import org.br.dietamais.ui.nutri.anamnese.AnamneseNutriViewModel
+import org.br.dietamais.ui.nutri.painel.PainelViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -60,4 +62,6 @@ fun moduloWebNutri(ambiente: AmbienteWeb, compartilhamento: Compartilhamento) = 
     viewModel { ListaPacienteViewModel(get(), get(), conectividade = online) }
     viewModel { PacientesViewModel(get(), get(), conectividade = online) }
     viewModel { MontadorDietaViewModel(get(), get(), conectividade = online) }
+    viewModel { PainelViewModel(get(), get(), get(), get()) }
+    viewModel { AnamneseNutriViewModel(get(), conectividade = online) }
 }
