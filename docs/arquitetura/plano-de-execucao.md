@@ -152,3 +152,60 @@ Fase 5 de `plano-de-acao-ui.md`: rodar cada tela em Android (celular e tablet), 
 3. Cria a branch a partir de `develop` (ou usa a que o ambiente deu) e abre o PR para `develop`.
 4. Se o endpoint ainda não existe, usa os JSONs do BE-Cn da fase com `MockEngine` e diz isso no PR.
 5. No mesmo PR, marca `[x]` no `plano-de-acao.md`. Quando todas as tarefas de uma onda estiverem `[x]`, a última PR da onda marca a onda como concluída aqui (coluna "Integração").
+
+## 8. O que falta para finalizar (levantamento de 29/10/2026)
+
+Estado: backend até BE-38 e mobile até MOB-46 (nutri e paciente completos na web, PRs mobile #21 a #23 e backend #26 e #27 na `develop`). Falta fechar a **qualidade e a confiança** (validação de verdade, acessibilidade, ponta a ponta) e a **saída para produção**, que depende do Guilherme. A web e o app só passaram por teste de fumaça; o CI do GitHub não valida nada hoje (ver item A1).
+
+### 8.1 O que o agente faz sozinho (em ordem de prioridade)
+
+| # | Item | O que fazer | Pronto quando |
+| --- | --- | --- | --- |
+| A1 | **Validação pelo WSL do Guilherme como CI** | O CI do GitHub falha em 4 segundos sem rodar nada em todas as execuções desde a #19 de 26/10, sinal típico de cobrança/conta (item G-11). Enquanto isso: `ops/validar-wsl.sh` em cada repo (`./gradlew build` no backend; `:shared:jvmTest` e `:shared:wasmJsBrowserDistribution` no mobile), com resultado em arquivo. O agente aprova e faz merge na `develop` de PR cujo script passou no WSL (autorizado pelo Guilherme) | Script nos dois repos, documentado no `AGENTS.md`; um PR validado pelo script |
+| A2 | **Teste instável `ExportacaoApiTest`** | Achar a causa (geração em segundo plano e e-mail assíncrono contra o relógio/espera) e tornar determinístico: `Clock` fixo ou espera por condição, sem `sleep` | 20 execuções seguidas verdes |
+| A3 | **Fechar MOB-10** | O gate "integração final" ficou aberto, mas BE-09, BE-10 e BE-14 já estão `[x]`. Conferir que o app usa os endpoints reais e as fontes de sync, trocar mocks, marcar `[x]` | MOB-10 `[x]` sem mock em produção |
+| A4 | **Teste de ponta a ponta automatizado** | Playwright (Chromium) contra `compose.yaml` + web: nutri cadastra e convida, paciente aceita, nutri monta e publica a dieta, paciente vê o Hoje e registra Comi; mais o teste de isolamento entre duas nutris | Cenário roda sozinho no WSL e no CI |
+| A5 | **MOB-43 medições** | Tamanho do bundle (gzip), abertura em 4G simulado, autofill de senha (atributos) via Chromium; anotar no PR para o ponto de decisão | Números em `web.md` |
+| A6 | **MOB-45 acessibilidade da web e do canvas** | Compose para web desenha em canvas: confirmar que a árvore de `semantics` chega ao leitor de tela, `contentDescription` em todo botão de ícone (inclui `CampoTexto`), `heading()` nos títulos, ordem de foco em Entrar, Hoje, montador e ficha, foco visível, contraste, fonte a 200%, alvo de toque mínimo; conferir os artboards do canvas com a mesma lista. Pendências antigas do QA entram aqui (`raioCampo` x `raioBotao`, ícone Pessoa repetido, tabelas clínicas na limpeza do logout) | Checklist de `plataformas.md` marcado; medição por ferramenta (axe/Lighthouse) anexada. A revisão com leitor de tela real fica em G-14 |
+| A7 | **Pendências de contrato** | Item da dieta com `grupoNome` (agrupa a lista de compras); espelhar `contrato-fase-2/3` e `integracao.md` nas cópias; remover referências ao `dieta-frontend` (arquivado) dos `AGENTS.md` e docs comuns | Cópias idênticas; sem menção ao Angular como plano B |
+| A8 | **Adiados do mobile** | MOB-29b (dietas, listas e modelos offline), MOB-18b (ações na notificação), MOB-33b (envio da logo). O código de Android e iOS não compila na nuvem: validar no WSL e no CI | Cada um `[x]` |
+| A9 | **Ensaio de produção sem VPS** | Subir `compose.prod.yaml` localmente (Caddy interno), rodar `ops/backup.sh` e `ops/testar-restauracao.sh`, conferir logs JSON, `426` e CORS da web | Roteiro e resultado em `docs/operacao/` |
+| A10 | **Release candidata** | `CHANGELOG`, notas de versão, tabela de variáveis, checklist de loja preenchido até onde dá sem contas; `release/0.x` até `1.1.0` prontos para o Guilherme aprovar | PRs de release abertos |
+| A11 | **Atualizar status dos marcos** | Marcar M1 a M5 e M7 conforme o que foi entregue e o que ainda tem pendência | Tabela da seção 3 com status |
+
+Ordem sugerida: A1, A2, A3 → A4 → A5, A6 → A7, A8 → A9, A10, A11.
+
+### 8.2 Depende de contas e decisões, mas o agente deixa pronto
+
+MOB-27b (push iOS: código e roteiro prontos, precisa do Mac e do Firebase), MOB-31b (workflow dos pacotes de desktop: texto pronto para colar), MOB-35a (assinatura de release: roteiro e secrets listados).
+
+## 9. Para o Guilherme
+
+Tudo que só você pode fazer, na ordem em que destrava o resto.
+
+**GitHub**
+- **G-11 Cobrança/CI do GitHub.** Verificar *Settings → Billing* (e o limite de minutos do Actions): os workflows terminam em 4 segundos com falha. Até resolver, a validação é o script no seu WSL (A1).
+- **G-01 / G-12 Workflows e regras.** Copiar `ops/github/*` do backend (Dependabot, varredura de segurança, `deploy.yml`) para `.github/` e os workflows do mobile (`MOB-31b`, `wasmJsBrowserDistribution` como artefato); rulesets de `main` e `develop`; secrets do Actions.
+- **G-09 Releases.** Aprovar os PRs `release/X.Y.Z → main` (`.github/` e `main` são só seus).
+- **G-10** Arquivar o `dieta-frontend`: já feito.
+
+**VPS e publicação (BE-32b e MOB-46)**
+- Escolher a VPS e o domínio (`api.dietamais.com.br`?), apontar o DNS, criar `.env.prod` (variáveis de `docs/operacao/configuracao-producao.md`), destino do backup fora da VPS, criar o primeiro usuário `ADMIN`.
+- Publicar a web na mesma origem da API (`WEB_ORIGEM` e `CORS_ORIGENS`) e trocar a CSP de "só relatório" para ativa depois de olhar os relatórios.
+
+**Termos, políticas e LGPD**
+- Escrever e aprovar os **termos de uso** (`docs/legal/terms-of-use.md` está como 1.0.0 RASCUNHO) e autorizar a publicação: **sem isso o cadastro continua bloqueado (BE-36)**.
+- **Política de privacidade** publicada (exigida pelas lojas e pela LGPD) e texto do termo de consentimento do paciente (`CONSENTIMENTO_VERSAO` e `CONSENTIMENTO_TEXTO`). Recomendo uma revisão jurídica, pois são dados de saúde.
+- Confirmar as suposições S1 a S10 de `visao-geral.md` (G-03), em especial planos, preços e regras de assinatura (S3, S4).
+
+**Contas e credenciais**
+- **E-mail transacional:** provedor SMTP (SES, Mailgun…) com domínio verificado (SPF/DKIM); confirmação de e-mail, convite e recuperação de senha dependem disso.
+- **Firebase (G-05):** projeto só para push; `google-services.json`, `GoogleService-Info.plist` e a credencial do servidor como secrets.
+- **Apple Developer e Mac do amigo (G-06):** TestFlight, certificados, chave APNs (MOB-27b, MOB-35a).
+- **Google Play Console (G-06):** teste interno e keystore de release.
+- **Asaas ou outro gateway (G-08):** conta sandbox e chave do webhook; depois a conta de produção.
+
+**Revisões que exigem pessoa e aparelho**
+- **G-14 Acessibilidade com leitor de tela real:** NVDA (Windows), VoiceOver (iPhone e Mac), TalkBack (Android), usando o checklist da A6; testar também Safari e Firefox e a web no iPhone.
+- Revisar o **catálogo base** (macros estimados, `docs/arquitetura/catalogo-base.md`) com a nutri e testar o **beta com a nutri real** (marco M3).
+- Texto, ícone, capturas de tela e conferência das regras da App Store e da Play Store para assinatura contratada fora do app (S4).
