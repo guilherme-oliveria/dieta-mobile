@@ -18,7 +18,7 @@ enum class Perfil { ADMIN, NUTRICIONISTA, PACIENTE, OUTRO }
 object PerfilSerializer : EnumComOutro<Perfil>("Perfil", Perfil.entries.toTypedArray(), Perfil.OUTRO)
 
 @Serializable(with = PlataformaSerializer::class)
-enum class Plataforma { ANDROID, IOS, DESKTOP, OUTRO }
+enum class Plataforma { ANDROID, IOS, DESKTOP, WEB, OUTRO }
 object PlataformaSerializer : EnumComOutro<Plataforma>("Plataforma", Plataforma.entries.toTypedArray(), Plataforma.OUTRO)
 
 @Serializable(with = StatusAssinaturaSerializer::class)

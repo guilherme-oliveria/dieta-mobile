@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dieta+</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="carregando" role="status">
+    <strong>Dieta+</strong>
+    <span>Carregando…</span>
+</div>
+<div id="nao-suportado" hidden>
+    <strong>Navegador não suportado</strong>
+    <p>Use Chrome ou Edge 119+, Firefox 120+ ou Safari 18.2+. No celular, você também pode instalar o app.</p>
+</div>
+<script>
+    // Compose para web exige WasmGC. Sem ele, mostra o aviso em vez de uma tela em branco.
+    var suportaWasmGc = (function () {
+        try {
+            return WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 95, 1, 120, 0]));
+        } catch (e) { return false; }
+    })();
+    if (suportaWasmGc) {
+        var s = document.createElement("script");
+        s.src = "dietamais.js";
+        document.head.appendChild(s);
+    } else {
+        document.getElementById("carregando").hidden = true;
+        document.getElementById("nao-suportado").hidden = false;
+    }
+</script>
+</body>
+</html>

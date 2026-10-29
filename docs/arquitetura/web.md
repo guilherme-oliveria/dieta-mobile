@@ -62,3 +62,10 @@ Renovar a sessão na web: `POST /auth/refresh` sem corpo; o backend lê o cookie
 | Rodar no navegador | `./gradlew :webApp:wasmJsBrowserDevelopmentRun` |
 | Testes comuns no navegador | `./gradlew :shared:wasmJsBrowserTest` |
 | Build de produção | `./gradlew :webApp:wasmJsBrowserDistribution` (sai em `webApp/build/dist/wasmJs/productionExecutable/`) |
+
+## Achados na implementação (MOB-40)
+
+- Todas as bibliotecas do `commonMain` (Ktor, Koin, Navigation, `material3-adaptive`, SQLDelight runtime, multiplatform-settings, Kermit, Compose Resources) compilam para `wasmJs` sem troca de versão; só entrou `ktor-client-js`.
+- `Plataforma` ganhou `WEB` (o backend aceita desde o BE-37). O CORS do backend agora libera o cabeçalho `X-Plataforma`; sem isso o preflight do navegador falharia.
+- Na nuvem do Claude, `:webApp:wasmJsBrowserDistribution` não roda (o yarn baixa o `karma` de `codeload.github.com`, bloqueado). Lá vale `:webApp:compileProductionExecutableKotlinWasmJs`; o CI do GitHub faz a distribuição completa.
+- `FabricaDriver` tem `actual` provisório em `wasmJsMain` (lança erro); MOB-41 o remove ao mover o banco para o `offlineMain`.
