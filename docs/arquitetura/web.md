@@ -57,6 +57,8 @@ Renovar a sessão na web: `POST /auth/refresh` sem corpo; o backend lê o cookie
 - Sem fila em disco: as respostas parciais da anamnese do paciente aparecem na hora e seguem para a API em ordem; se a aba fechar antes de chegarem, perdem-se. Concluir só vale com tudo já enviado (RN-ANA-03).
 - Sem push: a central de avisos recarrega ao abrir e a cada minuto, enquanto a aba está aberta.
 - Sem sync, a nutri não vê os pesos que o paciente registra em casa (não há endpoint para ela); o gráfico de evolução da web mostra só as avaliações. O painel mostra só os questionários que a nutri já abriu na sessão.
+- Link do convite: `/convite/{codigo}` abre o convite (o servidor precisa devolver `index.html` para qualquer caminho, como o Caddy faz com `try_files`; o servidor de desenvolvimento usa `historyApiFallback`). O `index.html` tem `<base href="/">` para o JS e o CSS carregarem de qualquer caminho.
+- Atalhos: Alt+1 a Alt+5 trocam de aba, na ordem da navegação.
 
 ## Comandos (a partir de MOB-40)
 
