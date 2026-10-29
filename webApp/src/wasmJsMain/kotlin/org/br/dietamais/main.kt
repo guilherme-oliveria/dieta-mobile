@@ -1,17 +1,23 @@
 package org.br.dietamais
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import kotlinx.browser.document
-import org.br.dietamais.ui.theme.DietaTheme
+import org.br.dietamais.app.criarAmbienteWeb
+import org.br.dietamais.plataforma.ArmazenamentoSeguro
+import org.br.dietamais.plataforma.Config
+import org.br.dietamais.plataforma.Conectividade
+import org.br.dietamais.plataforma.IdentidadeDispositivo
 
-/** MOB-40: ponto de entrada da web. O app de verdade entra em MOB-42 (sessão no navegador). */
+/** Versão enviada em `X-App-Versao`; o `APP_VERSAO_MINIMA_WEB` do backend (vazio = sem bloqueio) compara com ela. */
+private const val VERSAO_WEB = "1.1.0"
+
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     document.getElementById("carregando")?.let { it.parentNode?.removeChild(it) }
     ComposeViewport(document.body!!) {
-        DietaTheme { Text("Dieta+ no navegador", style = MaterialTheme.typography.headlineMedium) }
+        val ambiente = remember { criarAmbienteWeb(Config(), ArmazenamentoSeguro(), VERSAO_WEB, Conectividade()) }
+        AppWeb(ambiente, remember { IdentidadeDispositivo() })
     }
 }

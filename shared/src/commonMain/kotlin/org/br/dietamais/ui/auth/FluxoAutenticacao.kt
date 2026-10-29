@@ -83,7 +83,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("DEPRECATION")
-fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convites: ConviteViewModel = koinViewModel(), ambiente: AmbienteDieta? = null) {
+fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convites: ConviteViewModel = koinViewModel(), ambiente: AmbienteDieta? = null,
+    shellAutenticado: (@Composable (org.br.dietamais.data.remoto.dto.UsuarioResposta, () -> Unit) -> Unit)? = null) {
     val estado by viewModel.estado.collectAsState()
     val convite by convites.estado.collectAsState()
     val link by LinksConvite.pendente.collectAsState()
@@ -107,6 +108,7 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                 autenticando = estado.carregando || estado.restaurando, aoTermosUso = convites::aceitarTermosUso,
                 aoAtualizarTermos = convites::atualizarTermos)
             estado.restaurando -> EstadoCarregando()
+            usuario != null && shellAutenticado != null -> shellAutenticado(usuario, viewModel::sair)
             usuario != null -> Column(Modifier.fillMaxSize()) {
                 Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
