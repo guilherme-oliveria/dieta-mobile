@@ -27,3 +27,6 @@ data class CheckinRequisicao(val id: Uuid? = null, val dietaId: Uuid, val refeic
 data class AguaRequisicao(val id: Uuid? = null, val ml: Int, val registradoEm: Instant)
 @Serializable
 data class PesoRequisicao(val id: Uuid? = null, val pesoKg: Double, val registradoEm: Instant)
+
+@Serializable
+data class RotinaResposta(val checkins: List<CheckinResposta> = emptyList(), val agua: List<AguaResposta> = emptyList(), val pesos: List<PesoResposta> = emptyList())

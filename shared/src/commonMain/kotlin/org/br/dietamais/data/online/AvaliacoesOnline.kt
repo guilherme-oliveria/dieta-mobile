@@ -2,6 +2,7 @@ package org.br.dietamais.data.online
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.encodeToJsonElement
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -15,6 +16,16 @@ class AvaliacoesOnline(private val api: ApiDieta) : PortaAvaliacoes {
     override fun observar(pacienteId: Uuid?): Flow<List<AvaliacaoResposta>> = recurso.fluxo.map { lista ->
         lista.filter { pacienteId == null || it.pacienteId == pacienteId }
             .sortedWith(compareByDescending<AvaliacaoResposta> { it.dataHora }.thenByDescending { it.criadoEm })
+    }.let { fluxo ->
+        // Paciente: sem `atualizar` na tela, então a primeira leitura vem ao abrir (só as avaliações que a nutri compartilhou).
+        if (pacienteId == null && api.sessao.value?.perfil == Perfil.PACIENTE) fluxo.onStart { carregarMinhas() } else fluxo
+    }
+
+    private suspend fun carregarMinhas() {
+        val esperado = api.operacaoSessao.value?.takeIf { it.contexto.perfil == Perfil.PACIENTE } ?: throw SessaoAlterada()
+        val resposta = api.obter<AvaliacoesResposta>("eu/avaliacoes")
+        if (api.operacaoSessao.value != esperado) throw SessaoAlterada()
+        resposta.itens.forEach { nova -> recurso.gravado(nova) { it.id == nova.id } }
     }
 
     override suspend fun atualizar(pacienteId: Uuid) {

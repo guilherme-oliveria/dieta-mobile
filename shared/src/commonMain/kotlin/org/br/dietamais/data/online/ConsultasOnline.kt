@@ -2,6 +2,7 @@ package org.br.dietamais.data.online
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.encodeToJsonElement
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
@@ -15,6 +16,15 @@ class ConsultasOnline(private val api: ApiDieta) : PortaConsultas {
 
     override fun observar(): Flow<List<ConsultaResposta>> =
         recurso.fluxo.map { it.sortedWith(compareBy<ConsultaResposta> { c -> c.inicio }.thenBy { c -> c.id.toString() }) }
+            .let { fluxo -> if (api.sessao.value?.perfil == Perfil.PACIENTE) fluxo.onStart { carregarMinhas() } else fluxo }
+
+    /** Paciente: só leitura, janela padrão do servidor (de ontem a 90 dias). */
+    private suspend fun carregarMinhas() {
+        val esperado = api.operacaoSessao.value?.takeIf { it.contexto.perfil == Perfil.PACIENTE } ?: throw SessaoAlterada()
+        val resposta = api.obter<ConsultasResposta>("eu/consultas")
+        if (api.operacaoSessao.value != esperado) throw SessaoAlterada()
+        resposta.itens.forEach { nova -> recurso.gravado(nova) { it.id == nova.id } }
+    }
 
     override suspend fun atualizar(de: Instant, ate: Instant) {
         val esperado = contexto()
