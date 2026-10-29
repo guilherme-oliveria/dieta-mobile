@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
+import platform.UIKit.popoverPresentationController
 
 actual class Compartilhador : Compartilhamento {
     actual override suspend fun compartilhar(texto: String) = withContext(Dispatchers.Main) {
