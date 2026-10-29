@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 class ListaPacienteViewModelTest {
     private val grupo = GrupoAlimentoResposta(Uuid.parse("019a0f32-5000-7000-8000-000000000001"), "Grupo fictício", 150.0, 25.0, 5.0, 3.0)
     private val paciente = Uuid.parse("019a0f32-5000-7000-8000-0000000000aa")
-    private fun alimento(n: Int) = AlimentoResposta(Uuid.parse("019a0f32-5000-7000-8000-0000000001%02d".format(n)), null, grupo.id, "Alimento $n",
+    private fun alimento(n: Int) = AlimentoResposta(Uuid.parse("019a0f32-5000-7000-8000-0000000001${n.toString().padStart(2, '0')}"), null, grupo.id, "Alimento $n",
         "1 unidade", 50.0, true, 1, Instant.parse("2026-10-26T12:00:00Z"))
     private val a1 = alimento(1); private val a2 = alimento(2)
 
