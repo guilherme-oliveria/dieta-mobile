@@ -57,8 +57,11 @@ Cada onda tem o que o backend, o mobile e o design fazem ao mesmo tempo. Uma ond
 | 13 | **BE-C5** · BE-25 sync com conflito | MOB-29 escrita offline · MOB-30 conflitos · MOB-31 desktop | — | **Marco M5** |
 | 14 | **BE-C6** · BE-26 gateway · BE-27 ciclo da assinatura · BE-28 PDFs | MOB-32 assinatura · MOB-33 PDF | — | — |
 | 15 | BE-29 LGPD · BE-30 admin · BE-31 endurecimento · BE-32 produção | MOB-34 privacidade · MOB-35 lojas | — | **Marco M6 = 1.0.0** |
+| 16. Web (P1) | **BE-37** modo navegador | **MOB-40** alvo web · **MOB-41** separar offline → MOB-42 sessão no navegador → MOB-43 telas da nutri (ponto de decisão) → MOB-44 paciente · MOB-45 navegador e acessibilidade → MOB-46 publicação | **DES-07** web | **Marco M7 = 1.1.0** (web da nutri e do paciente) |
 
 Tarefas sem dependência entre si dentro da mesma coluna e onda podem ir em PRs paralelos (por exemplo BE-17 e BE-18, ou MOB-17 e MOB-20).
+
+A onda 16 não espera o M6: MOB-40 e MOB-41 não mudam comportamento do app e podem entrar já; BE-37 também. Só MOB-46 depende da VPS (BE-32b). MOB-41 mexe em muitos arquivos do `shared`: faça num PR só, sem outra tarefa do mobile aberta ao mesmo tempo, para evitar conflito.
 
 ## 3. Marcos (cada um vira uma `release/`)
 
@@ -70,6 +73,7 @@ Tarefas sem dependência entre si dentro da mesma coluna e onda podem ir em PRs 
 | M4 | 0.4.0 | Avaliação com IMC, evolução, anamnese, agenda de consultas, push e central de avisos | Push chega no Android e no iPhone sem dado clínico no texto |
 | M5 | 0.5.0 | Nutri edita sem internet no tablet/desktop e resolve conflitos | Teste de ponta a ponta com duas edições concorrentes |
 | M6 | 1.0.0 | Assinatura paga, PDFs, exportar/excluir dados, app nas lojas | Checklist de loja (seção 6) e revisão ASVS de BE-31 |
+| M7 | 1.1.0 | Usar o Dieta+ no navegador do computador ou do celular, nutri e paciente, sem instalar nada (online) | Chrome, Firefox e Safari; login, montar e publicar dieta, check-in do paciente; recarregar a página mantém a sessão |
 
 As fases 1 a 3 do roadmap (`visao-geral.md`) já substituem o PDF da nutri; por isso o deploy de beta (BE-32a) foi antecipado para a onda 9, como o plano do backend recomendava.
 
@@ -85,6 +89,7 @@ Feitas no canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC, seguindo `co
 | DES-04 Dieta e alimentos | `AlimentosScreen`, `MontarDietaScreen` compacto, `PublicarDialog` (resumo do que mudou + aviso de push) | MOB-10 a MOB-13 |
 | DES-05 Acompanhamento | `AgendaScreen` (dia e semana), `AvaliacaoScreen` compacto, `HistoricoAvaliacoesScreen`, `ModeloAnamneseScreen`, `RespostasAnamneseScreen`, `AvisosScreen` | MOB-22 a MOB-28 |
 | DES-06 Conta, privacidade e desktop | `ContaScreen` (5 estados de assinatura), `AvisoSomenteLeitura`, `MinhasNutrisScreen`, `PrivacidadeScreen`, `PdfDietaScreen`, `IndicadorSync`, `DialogoConflito`, `PrimeiraSyncScreen` | MOB-29 a MOB-34 |
+| DES-07 Web | Conferir no expandido (≥1280 px) as telas da nutri que o tablet já tem; `index.html` (carregando e "navegador não suportado"); aviso "instale o app para receber lembretes" do paciente | MOB-40, MOB-44 |
 
 Estados carregando, vazio, erro e sem internet não ganham artboard próprio: usam `EstadoVazio`, `EstadoErro` e `FaixaOffline` de `componentes.md`.
 
@@ -102,6 +107,7 @@ Lacunas encontradas ao cruzar os planos com o canvas e os docs de design. Já es
 | BE-33 Perfil da nutri | `GET/PATCH /eu/nutri` (nome de exibição, CRN, telefone, orientação padrão); logo fica para BE-28 | A `ContaScreen` e a orientação padrão (RN-DIE) não tinham endpoint de edição |
 | BE-34 Central de avisos | Tabela `aviso` (o que virou push também fica no histórico), `GET /eu/avisos`, `POST /eu/avisos/{id}/lido`; `FonteSync` | `AvisosScreen` (sino) não tinha fonte de dados |
 | BE-35 Dados de exemplo | Changeset com `context: dev` (nunca roda em produção): nutri, 3 pacientes, a dieta de 2509 kcal e a lista de substituição dos PDFs | Integração do mobile e prints sem digitar tudo de novo |
+| BE-37 Modo navegador | `WEB` em `Plataforma`, refresh só no cookie para a origem do site, versão mínima própria da web | A web em KMP (onda 16) usa o mesmo backend sem guardar refresh token no JavaScript |
 
 ### Mobile
 
@@ -118,6 +124,7 @@ Lacunas encontradas ao cruzar os planos com o canvas e os docs de design. Já es
 | MOB-27 (ampliada) | `AvisosScreen` lendo BE-34 |
 | MOB-35a Beta interno | Assinatura de debug/beta no CI, Play Console teste interno, TestFlight pelo Mac, MSI/DMG como artefato |
 | MOB-36 Perfil da nutri | Parte "dados da nutri" da `ContaScreen` (nome, CRN, orientação padrão) com BE-33; assinatura entra em MOB-32 |
+| MOB-40 a MOB-46 Web | Alvo `wasmJs`, separação do código offline (`offlineMain`), Portas só-API sobre `RecursoOnline`, publicação estática no Caddy (`web.md`) |
 
 ### Tarefas do Guilherme (ninguém mais consegue fazer)
 
@@ -132,6 +139,7 @@ Lacunas encontradas ao cruzar os planos com o canvas e os docs de design. Já es
 | G-07 VPS e domínio | Onda 9 | Escolher a VPS e o domínio (`api.dietamais.com.br`?) para o beta |
 | G-08 Gateway | Onda 14 | Conta sandbox no Asaas (ou outro, S3) e a chave do webhook como secret |
 | G-09 Releases | Cada marco | Aprovar o PR `release/X.Y.Z → main` |
+| G-10 Arquivar o site Angular | Depois do ponto de decisão do MOB-43 | Arquivar `guilherme-oliveria/dieta-frontend` no GitHub (Settings → Archive) e tirá-lo do projeto; até lá ele fica parado como plano B |
 
 ## 6. Antes da loja (M6)
 
