@@ -18,7 +18,8 @@ data class OperacaoSessao(val contexto: ContextoSessao, val id: Long) {
     override fun toString() = "OperacaoSessao[identidade protegida]"
 }
 
-internal class SessaoLocal(private val cofre: CofreSessao, private val armazem: ArmazemSessao) {
+/** [refreshNoCorpo] é falso na web: o refresh vive só no cookie HttpOnly e a resposta não o traz (BE-37). */
+internal class SessaoLocal(private val cofre: CofreSessao, private val armazem: ArmazemSessao, private val refreshNoCorpo: Boolean = true) {
     private val mutex = Mutex()
     private var carregada = false
     private var atual: SessaoResposta? = null
@@ -61,7 +62,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val armazem: 
             // Outro 401 pode ter sido atendido antes deste, ou pode ter ocorrido login/logout.
             if (sessao.accessToken != antigo) return@withContext sessao.tokens()
             try {
-                val resposta = renovar(requireNotNull(sessao.refreshToken))
+                val resposta = renovar(if (refreshNoCorpo) requireNotNull(sessao.refreshToken) else "")
                 validar(resposta)
                 if (resposta.usuario.id != sessao.usuario.id || resposta.usuario.perfil != sessao.usuario.perfil) throw RespostaInvalida()
                 salvar(resposta)
@@ -101,7 +102,7 @@ internal class SessaoLocal(private val cofre: CofreSessao, private val armazem: 
     }
 
     private fun validar(resposta: SessaoResposta) {
-        if (resposta.accessToken.isNullOrBlank() || resposta.refreshToken.isNullOrBlank() || resposta.expiraEm == null ||
+        if (resposta.accessToken.isNullOrBlank() || (refreshNoCorpo && resposta.refreshToken.isNullOrBlank()) || resposta.expiraEm == null ||
             resposta.usuario.perfil !in setOf(Perfil.NUTRICIONISTA, Perfil.PACIENTE) || resposta.usuario.perfil !in resposta.usuario.perfis) throw RespostaInvalida()
     }
 

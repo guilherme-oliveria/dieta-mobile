@@ -34,9 +34,10 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     /** Montagem offline-first: a sessão também fica na tabela `sessao` e o logout limpa os caches do banco. */
     constructor(config: Config, versaoApp: String, plataforma: Plataforma, cofre: CofreSessao,
         banco: BancoDieta, engine: HttpClientEngine = motorHttp()) : this(config, versaoApp, plataforma, cofre, ArmazemSessaoSql(banco), engine)
+    private val web = plataforma == Plataforma.WEB
     private val origem = enderecoApi(config.URL_API)
     private val base = origem.toString()
-    private val controle = SessaoLocal(cofre, armazem)
+    private val controle = SessaoLocal(cofre, armazem, refreshNoCorpo = plataforma != Plataforma.WEB)
     val sessao = controle.fluxo
     val operacaoSessao = controle.fluxoOperacao
     private val obsoleta = kotlinx.coroutines.flow.MutableStateFlow(false)
@@ -71,9 +72,9 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
                         val resposta = try {
                             client.post(base + "auth/refresh") {
                                 markAsRefreshTokenRequest()
-                                contentType(ContentType.Application.Json)
                                 header("Idempotency-Key", novoIdLocal().toString())
-                                setBody(RefreshRequisicao(token))
+                                // Web: sem corpo; o navegador manda o cookie HttpOnly e o backend confere a Origin.
+                                if (!web) { contentType(ContentType.Application.Json); setBody(RefreshRequisicao(token)) }
                             }
                         } catch (cancelamento: CancellationException) { throw cancelamento }
                         catch (falha: Exception) { throw FalhaComunicacao() }
@@ -111,7 +112,15 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         return resposta
     }
 
-    suspend fun restaurarSessao() { controle.tokens() }
+    /** Na web, recarregar a página perde o access (só em memória): tenta o refresh silencioso pelo cookie; sem cookie válido, fica sem sessão. */
+    suspend fun restaurarSessao() {
+        if (controle.tokens() != null || !web) return
+        val geracao = controle.geracao()
+        val resposta = try { requisitar(HttpMethod.Post, "auth/refresh", publica = true, chave = novoIdLocal()) }
+        catch (cancelamento: CancellationException) { throw cancelamento }
+        catch (falha: FalhaComunicacao) { return }
+        if (resposta.status.value in 200..299) controle.receber(decodificar(resposta, SessaoResposta.serializer()), geracao)
+    }
     internal suspend fun aguardarOperacoesSessao() = controle.aguardarOperacoes()
     suspend fun usuarioAtual(): UsuarioResposta? = controle.usuarioAtual()
     suspend fun consultarTermosUso(): TermosUsoResposta = obter("legal/terms-of-use", publica = true)
@@ -139,7 +148,9 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
     }
 
     suspend fun sair() = controle.encerrar { tokens ->
-        if (tokens?.refreshToken != null) {
+        if (web && tokens != null) {
+            verificarErro(requisitar(HttpMethod.Post, "auth/logout", null, novoIdLocal(), publica = true))
+        } else if (tokens?.refreshToken != null) {
             val resposta = requisitar(HttpMethod.Post, "auth/logout", JsonContrato.encodeToJsonElement(LogoutRequisicao(tokens.refreshToken!!)), novoIdLocal(), publica = true)
             verificarErro(resposta)
         }
