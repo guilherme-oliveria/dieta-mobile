@@ -22,7 +22,10 @@ fun MainViewController() = ComposeUIViewController {
 internal object AmbienteIos {
     val ambiente by lazy {
         val dominio = NSBundle.mainBundle.objectForInfoDictionaryKey("ConviteHost") as? String
-        val config = Config(DOMINIOS_CONVITE = listOfNotNull(dominio).filter { it.isNotBlank() && it != "nao-configurado.invalid" }.toSet())
+        val convites = listOfNotNull(dominio).filter { it.isNotBlank() && it != "nao-configurado.invalid" }.toSet()
+        // Host da API (sem esquema) vindo do xcconfig; vazio mantém o padrão de desenvolvimento (localhost).
+        val hostApi = (NSBundle.mainBundle.objectForInfoDictionaryKey("DietaApiHost") as? String)?.trim().orEmpty()
+        val config = if (hostApi.isEmpty() || hostApi.startsWith("$(")) Config(DOMINIOS_CONVITE = convites) else Config(URL_API = "https://$hostApi", DOMINIOS_CONVITE = convites)
         val versao = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: "1.0"
         criarAmbienteDieta(config, FabricaDriver(), ArmazenamentoSeguro(), versao, Conectividade())
     }

@@ -7,6 +7,8 @@
     <key>UIBackgroundModes</key>
     <array><string>fetch</string></array>
 
+    <key>DietaApiHost</key>
+    <string>$(API_HOST)</string>
     <key>ConviteHost</key>
     <string>$(CONVITE_HOST)</string>
     <key>CFBundleURLTypes</key>

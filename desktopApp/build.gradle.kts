@@ -28,6 +28,8 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "org.br.dietamais.MainKt"
+        // URL da API embutida no instalador: ./gradlew :desktopApp:packageMsi -PurlApi=https://api.exemplo.com.br (vazio = localhost)
+        providers.gradleProperty("urlApi").orNull?.takeIf { it.isNotBlank() }?.let { jvmArgs("-Ddieta.url.api=$it") }
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

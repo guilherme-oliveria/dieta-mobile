@@ -8,3 +8,6 @@ MARKETING_VERSION=1.0
 
 // Configure somente após definir o domínio e publicar a associação AASA.
 CONVITE_HOST=nao-configurado.invalid
+
+// Host da API em produção, sem https:// (o xcconfig trata // como comentário). Vazio = localhost, só para o simulador.
+API_HOST=
