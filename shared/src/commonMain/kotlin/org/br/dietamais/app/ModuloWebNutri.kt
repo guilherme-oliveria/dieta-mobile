@@ -4,7 +4,16 @@ import kotlinx.coroutines.flow.map
 import org.br.dietamais.data.online.AlimentosOnline
 import org.br.dietamais.data.remoto.ApiDieta
 import org.br.dietamais.data.online.PacientesOnline
+import org.br.dietamais.data.repositorio.AssinaturaRepositorio
 import org.br.dietamais.data.repositorio.DietasRepositorio
+import org.br.dietamais.data.repositorio.PerfilNutriRepositorio
+import org.br.dietamais.data.repositorio.PortaAssinatura
+import org.br.dietamais.data.repositorio.PortaPerfilNutri
+import org.br.dietamais.data.repositorio.PortaPrivacidade
+import org.br.dietamais.data.repositorio.PrivacidadeRepositorio
+import org.br.dietamais.ui.nutri.assinatura.AssinaturaViewModel
+import org.br.dietamais.ui.nutri.assinatura.PerfilNutriViewModel
+import org.br.dietamais.ui.privacidade.PrivacidadeViewModel
 import org.br.dietamais.data.repositorio.PdfRepositorio
 import org.br.dietamais.data.repositorio.PortaAlimentos
 import org.br.dietamais.data.repositorio.PortaDietas
@@ -25,6 +34,13 @@ fun moduloWebNutri(ambiente: AmbienteWeb, compartilhamento: Compartilhamento) = 
     single<PortaAlimentos> { AlimentosOnline(get()) }
     single<PortaDietas> { DietasRepositorio(get<ApiDieta>()) { } }
     single<PortaPdf> { PdfRepositorio(get()) }
+    // Conta da nutri: estas Portas já eram só-API
+    single<PortaPerfilNutri> { PerfilNutriRepositorio(get<ApiDieta>()) }
+    single<PortaPrivacidade> { PrivacidadeRepositorio(get<ApiDieta>()) }
+    single<PortaAssinatura> { AssinaturaRepositorio(get<ApiDieta>()) }
+    viewModel { PerfilNutriViewModel(get(), conectividade = online) }
+    viewModel { p -> PrivacidadeViewModel(get(), conectividade = online, exportacaoDisponivel = p.get()) }
+    viewModel { AssinaturaViewModel(get(), conectividade = online) }
     viewModel { PacientesViewModel(get(), get(), conectividade = online) }
     viewModel { MontadorDietaViewModel(get(), get(), conectividade = online) }
 }

@@ -290,7 +290,7 @@ private fun NavegacaoNutri() {
     })
 }
 
-private fun acoesPrivacidade(v: PrivacidadeViewModel) = AcoesPrivacidade(v::abrirTermos, v::pedirExportacao, v::atualizarExportacao, v::abrirExportacao,
+internal fun acoesPrivacidade(v: PrivacidadeViewModel) = AcoesPrivacidade(v::abrirTermos, v::pedirExportacao, v::atualizarExportacao, v::abrirExportacao,
     v::pedirExclusao, v::mudarSenha, v::confirmarExclusao, v::cancelarExclusao, v::urlAberta)
 
 @Composable

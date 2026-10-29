@@ -11,7 +11,19 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import org.br.dietamais.ui.auth.acoesPrivacidade
+import org.br.dietamais.ui.nutri.assinatura.AcoesAssinatura
+import org.br.dietamais.ui.nutri.assinatura.AcoesPerfilNutri
+import org.br.dietamais.ui.nutri.assinatura.AssinaturaCard
+import org.br.dietamais.ui.nutri.assinatura.AssinaturaViewModel
+import org.br.dietamais.ui.nutri.assinatura.ContaNutriTela
+import org.br.dietamais.ui.nutri.assinatura.PerfilNutriViewModel
+import org.br.dietamais.ui.privacidade.PrivacidadeCard
+import org.br.dietamais.ui.privacidade.PrivacidadeViewModel
+import org.koin.core.parameter.parametersOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -56,6 +68,19 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit) {
                 PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
                     if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
                 })
+            },
+            conteudoConta = {
+                val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
+                val estadoConta by conta.estado.collectAsState()
+                val assinatura = koinViewModel<AssinaturaViewModel>(viewModelStoreOwner = dono)
+                val estadoAssinatura by assinatura.estado.collectAsState()
+                ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar),
+                    extras = {
+                        AssinaturaCard(estadoAssinatura, AcoesAssinatura(assinatura::assinar, assinatura::urlAberta, assinatura::recarregar))
+                        val priv = koinViewModel<PrivacidadeViewModel>(viewModelStoreOwner = dono) { parametersOf(false) }
+                        val estadoPriv by priv.estado.collectAsState()
+                        PrivacidadeCard(estadoPriv, acoesPrivacidade(priv), comDadosPessoais = false)
+                    })
             })
     }
 }
