@@ -20,8 +20,8 @@ data class AcoesEvolucao(val aoSerie: (SerieEvolucao) -> Unit = {}, val aoInterv
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-fun EvolucaoTela(estado: EstadoEvolucao, acoes: AcoesEvolucao, agora: Instant = Clock.System.now(), modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+fun EvolucaoTela(estado: EstadoEvolucao, acoes: AcoesEvolucao, agora: Instant = Clock.System.now(), modifier: Modifier = Modifier, rolavel: Boolean = true) {
+    Column(modifier.fillMaxWidth().rolavelSe(rolavel).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         estado.erro?.takeIf { !estado.registrandoPeso }?.let { Text(textoMensagemEvolucao(it), color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
         estado.aviso?.let { Text(textoMensagemEvolucao(it), color = MaterialTheme.colorScheme.primary, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         if (estado.podeRegistrarPeso) BotaoPrincipal(stringResource(Res.string.evolucao_registrar_peso), acoes.aoRegistrarPeso)

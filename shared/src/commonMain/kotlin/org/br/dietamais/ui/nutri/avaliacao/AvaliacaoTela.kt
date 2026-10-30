@@ -20,13 +20,13 @@ data class AcoesAvaliacao(val aoMedida: (MedidaAvaliacao, String) -> Unit = { _,
 
 /** Formulário em seções (RN-AVA-01): básicas, perímetros, dobras e composição; IMC calculado em tempo real como prévia. */
 @Composable
-fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao) {
+fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Boolean = true) {
     val form = estado.formulario ?: return
     val habilitado = !estado.enviando
     val previa = previaImc(form.valores)
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta),
+            Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta),
                 verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                 Text(stringResource(if (form.id == null) Res.string.avaliacao_nova else Res.string.avaliacao_editar),
                     style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })

@@ -20,7 +20,7 @@ private fun acoes(vm: EvolucaoViewModel) = AcoesEvolucao(vm::escolherSerie, vm::
 fun EvolucaoRota(viewModel: EvolucaoViewModel, pacienteId: Uuid) {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(pacienteId) { viewModel.abrir(pacienteId) }
-    EvolucaoTela(estado, acoes(viewModel))
+    EvolucaoTela(estado, acoes(viewModel), rolavel = false) // dentro da ficha, que já rola
 }
 
 /** Aba Evolução do paciente: gráficos (com registro de peso) e, em outra guia, as avaliações compartilhadas. */
