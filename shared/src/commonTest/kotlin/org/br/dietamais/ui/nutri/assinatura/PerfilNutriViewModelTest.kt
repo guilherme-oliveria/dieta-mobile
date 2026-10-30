@@ -15,6 +15,9 @@ class PerfilNutriViewModelTest {
     private fun perfil(versao: Long = 0, nome: String = "Ana") = PerfilNutriResposta(Uuid.random(), nome, "CRN-3 12345", null, null, versao, Instant.parse("2026-01-01T00:00:00Z"))
     private class Porta(var atual: PerfilNutriResposta) : PortaPerfilNutri {
         var falha: Exception? = null; var enviado: AtualizarPerfilNutriRequisicao? = null; var versaoEnviada: Long? = null
+        var logo: Pair<ByteArray, String>? = null; var logoRemovida = false
+        override suspend fun enviarLogo(bytes: ByteArray, tipo: String) { falha?.let { throw it }; logo = bytes to tipo }
+        override suspend fun removerLogo() { falha?.let { throw it }; logoRemovida = true }
         override suspend fun obter() = atual
         override suspend fun salvar(versao: Long, requisicao: AtualizarPerfilNutriRequisicao): PerfilNutriResposta {
             falha?.let { throw it }; enviado = requisicao; versaoEnviada = versao
@@ -47,5 +50,40 @@ class PerfilNutriViewModelTest {
     @Test fun semConexaoNaoChamaAApi() = runTest {
         val p = Porta(perfil()); val vm = vm(p, online = false); advanceUntilIdle()
         assertFalse(vm.estado.value.carregado); assertEquals(MensagemPerfilNutri.SEM_CONEXAO, vm.estado.value.erro)
+    }
+
+    private val png = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3)
+    private val jpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0xE0.toByte(), 1, 2, 3)
+
+    @Test fun logoPngEJpegSaemComOTipoCerto() = runTest {
+        val p = Porta(perfil()); val vm = vm(p); advanceUntilIdle()
+        vm.enviarLogo(png); advanceUntilIdle()
+        assertEquals("image/png", p.logo?.second); assertEquals(MensagemPerfilNutri.LOGO_ENVIADA, vm.estado.value.aviso)
+        vm.enviarLogo(jpeg); advanceUntilIdle()
+        assertEquals("image/jpeg", p.logo?.second)
+    }
+
+    @Test fun logoQueNaoEImagemOuPassaDoLimiteNaoVaiParaOServidor() = runTest {
+        val p = Porta(perfil()); val vm = vm(p); advanceUntilIdle()
+        vm.enviarLogo(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9)); advanceUntilIdle()
+        assertEquals(MensagemPerfilNutri.LOGO_INVALIDA, vm.estado.value.erro); assertNull(p.logo)
+        vm.enviarLogo(png + ByteArray(LIMITE_LOGO)); advanceUntilIdle()
+        assertEquals(MensagemPerfilNutri.LOGO_GRANDE, vm.estado.value.erro); assertNull(p.logo)
+        vm.enviarLogo(png + ByteArray(LIMITE_LOGO - png.size)); advanceUntilIdle()
+        assertNotNull(p.logo, "exatamente 512 KB ainda passa")
+    }
+
+    @Test fun removerLogoAvisaEErroDeApiViraMensagem() = runTest {
+        val p = Porta(perfil()); val vm = vm(p); advanceUntilIdle()
+        vm.removerLogo(); advanceUntilIdle()
+        assertTrue(p.logoRemovida); assertEquals(MensagemPerfilNutri.LOGO_REMOVIDA, vm.estado.value.aviso)
+        p.falha = ErroApi("ASSINATURA_INATIVA", null, emptyList(), 403, null, null)
+        vm.enviarLogo(png); advanceUntilIdle()
+        assertEquals(MensagemPerfilNutri.ASSINATURA_INATIVA, vm.estado.value.erro)
+    }
+
+    @Test fun tipoDaImagemPelosBytes() {
+        assertEquals("image/png", tipoDaImagem(png)); assertEquals("image/jpeg", tipoDaImagem(jpeg))
+        assertNull(tipoDaImagem(byteArrayOf())); assertNull(tipoDaImagem("GIF89a....".encodeToByteArray()))
     }
 }

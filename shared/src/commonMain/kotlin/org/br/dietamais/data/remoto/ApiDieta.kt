@@ -153,6 +153,11 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         verificarErro(requisitar(HttpMethod.Post, caminho, corpo, chave))
     }
 
+    /** Envia um arquivo (ex.: a logo dos PDFs) como corpo cru com o tipo informado, sem JSON. */
+    suspend fun enviarImagem(caminho: String, bytes: ByteArray, tipo: ContentType) {
+        verificarErro(requisitar(HttpMethod.Put, caminho, bytes = bytes, tipoBytes = tipo))
+    }
+
     suspend fun excluir(caminho: String) {
         verificarErro(requisitar(HttpMethod.Delete, caminho))
     }
@@ -168,7 +173,8 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
 
     @PublishedApi
     internal suspend fun requisitar(metodo: HttpMethod, caminho: String, corpo: JsonElement? = null, chave: Uuid? = null,
-        parametros: Map<String, String> = emptyMap(), publica: Boolean = false, versao: Long? = null): HttpResponse {
+        parametros: Map<String, String> = emptyMap(), publica: Boolean = false, versao: Long? = null,
+        bytes: ByteArray? = null, tipoBytes: ContentType? = null): HttpResponse {
         require(caminho.matches(Regex("[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*"))) { "Caminho fora da API." }
         require(versao == null || versao >= 0)
         val termosUso = caminho == "legal/terms-of-use"
@@ -185,6 +191,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
                 if (chave != null) header("Idempotency-Key", chave.toString())
                 if (versao != null) header(HttpHeaders.IfMatch, "\"$versao\"")
                 if (corpo != null) { contentType(ContentType.Application.Json); setBody(corpo) }
+                if (bytes != null) { contentType(checkNotNull(tipoBytes)); setBody(bytes) }
             }
         } catch (cancelamento: CancellationException) { throw cancelamento }
         catch (falha: ArmazenamentoSeguroIndisponivel) { throw falha }

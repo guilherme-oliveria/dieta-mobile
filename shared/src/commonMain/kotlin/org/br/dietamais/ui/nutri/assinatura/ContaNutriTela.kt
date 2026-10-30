@@ -16,7 +16,9 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 class AcoesPerfilNutri(val aoMudarNome: (String) -> Unit, val aoMudarCrn: (String) -> Unit, val aoMudarTelefone: (String) -> Unit,
-    val aoMudarOrientacao: (String) -> Unit, val aoSalvar: () -> Unit, val aoRecarregar: () -> Unit)
+    val aoMudarOrientacao: (String) -> Unit, val aoSalvar: () -> Unit, val aoRecarregar: () -> Unit,
+    /** Nulo onde ainda não há seletor de imagem (web e iOS): a seção da logo some. */
+    val aoEscolherLogo: (() -> Unit)? = null, val aoRemoverLogo: () -> Unit = {})
 
 @Composable
 fun ContaNutriTela(estado: EstadoPerfilNutri, acoes: AcoesPerfilNutri, modifier: Modifier = Modifier, extras: @Composable ColumnScope.() -> Unit = {}) {
@@ -37,6 +39,12 @@ fun ContaNutriTela(estado: EstadoPerfilNutri, acoes: AcoesPerfilNutri, modifier:
             CampoTexto(stringResource(Res.string.conta_orientacao), estado.orientacao, acoes.aoMudarOrientacao, habilitado = habilitado, singleLine = false)
             Text(stringResource(Res.string.conta_orientacao_ajuda), style = MaterialTheme.typography.bodySmall)
             BotaoPrincipal(stringResource(Res.string.conta_salvar), acoes.aoSalvar, habilitado = habilitado && estado.alterado, carregando = estado.enviando)
+            acoes.aoEscolherLogo?.let { escolher ->
+                Text(stringResource(Res.string.conta_logo_titulo), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                Text(stringResource(Res.string.conta_logo_ajuda), style = MaterialTheme.typography.bodySmall)
+                BotaoContornado(stringResource(Res.string.conta_logo_escolher), escolher, habilitado = habilitado)
+                BotaoTexto(stringResource(Res.string.conta_logo_remover), acoes.aoRemoverLogo, habilitado = habilitado)
+            }
         }
     }
 }
@@ -49,5 +57,9 @@ private fun texto(m: MensagemPerfilNutri): StringResource = when (m) {
     MensagemPerfilNutri.CONFLITO -> Res.string.conta_erro_conflito
     MensagemPerfilNutri.ASSINATURA_INATIVA -> Res.string.conta_erro_assinatura
     MensagemPerfilNutri.ERRO -> Res.string.perfil_erro_geral
+    MensagemPerfilNutri.LOGO_ENVIADA -> Res.string.conta_logo_enviada
+    MensagemPerfilNutri.LOGO_REMOVIDA -> Res.string.conta_logo_removida
+    MensagemPerfilNutri.LOGO_INVALIDA -> Res.string.conta_logo_invalida
+    MensagemPerfilNutri.LOGO_GRANDE -> Res.string.conta_logo_grande
     MensagemPerfilNutri.SALVO -> Res.string.conta_salvo
 }

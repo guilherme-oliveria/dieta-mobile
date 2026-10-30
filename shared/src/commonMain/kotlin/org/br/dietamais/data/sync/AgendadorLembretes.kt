@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.hours
  * Sem permissão ou com o interruptor desligado, cancela tudo.
  */
 class AgendadorLembretes(private val dietas: PortaDietaPaciente, private val rotina: PortaRotina, private val preferencias: PortaPreferencias,
-    private val notificacao: NotificacaoLocal, private val textos: suspend () -> Pair<String, (String) -> String>,
+    private val notificacao: NotificacaoLocal, private val textos: suspend () -> TextosLembrete,
     private val relogio: Clock = Clock.System, private val fuso: () -> TimeZone = { TimeZone.currentSystemDefault() },
     private val tique: Flow<Unit> = flow { while (true) { emit(Unit); kotlinx.coroutines.delay(6.hours) } }) {
 
@@ -29,8 +29,8 @@ class AgendadorLembretes(private val dietas: PortaDietaPaciente, private val rot
                 val agora = relogio.now(); val zona = fuso()
                 val hoje = agora.toLocalDateTime(zona).date
                 val feitas = e.rotina.checkins.filter { it.data == hoje && it.dietaId == dieta.dietaId }.map { it.refeicaoId }.toSet()
-                val (titulo, corpo) = textos()
-                notificacao.agendar(planejarLembretes(dieta.refeicoes, agora, zona, e.silencio, feitas), titulo, corpo)
+                val lembretes = planejarLembretes(dieta.refeicoes, agora, zona, e.silencio, feitas).map { it.copy(dietaId = dieta.dietaId) }
+                notificacao.agendar(lembretes, textos())
             } catch (c: CancellationException) { throw c }
             catch (_: Exception) { /* lembrete é melhor esforço: falha do agendador não derruba o app */ }
         }

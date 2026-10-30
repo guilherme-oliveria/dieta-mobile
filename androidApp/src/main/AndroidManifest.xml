@@ -47,6 +47,7 @@
         </service>
         <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="avisos" />
         <receiver android:name="org.br.dietamais.plataforma.LembreteReceiver" android:exported="false" />
+        <receiver android:name="org.br.dietamais.plataforma.AcaoLembreteReceiver" android:exported="false" />
         <receiver android:name="org.br.dietamais.plataforma.ReinicioLembretesReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

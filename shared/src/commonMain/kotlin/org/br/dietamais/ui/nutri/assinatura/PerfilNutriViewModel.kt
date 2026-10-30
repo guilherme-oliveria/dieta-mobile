@@ -8,7 +8,7 @@ import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.data.repositorio.PortaPerfilNutri
 
-enum class MensagemPerfilNutri { NOME_OBRIGATORIO, CRN_INVALIDO, TELEFONE_LONGO, SEM_CONEXAO, CONFLITO, ASSINATURA_INATIVA, ERRO, SALVO }
+enum class MensagemPerfilNutri { NOME_OBRIGATORIO, CRN_INVALIDO, TELEFONE_LONGO, SEM_CONEXAO, CONFLITO, ASSINATURA_INATIVA, ERRO, SALVO, LOGO_ENVIADA, LOGO_REMOVIDA, LOGO_INVALIDA, LOGO_GRANDE }
 
 data class EstadoPerfilNutri(val carregado: Boolean = false, val versao: Long = 0, val nome: String = "", val crn: String = "", val telefone: String = "",
     val orientacao: String = "", val alterado: Boolean = false, val enviando: Boolean = false, val semConexao: Boolean = false,
@@ -32,6 +32,17 @@ class PerfilNutriViewModel(private val repositorio: PortaPerfilNutri, private va
         it.copy(carregado = true, versao = p.versao, nome = p.nome, crn = p.crn, telefone = p.telefone.orEmpty(), orientacao = p.orientacaoPadrao.orEmpty(),
             alterado = false, errosCampos = emptyMap())
     }
+
+    /** PNG ou JPEG de até 512 KB (BE-28). A conferência pelos bytes é do backend; aqui só poupa o envio de um arquivo que ele recusaria. */
+    fun enviarLogo(bytes: ByteArray) {
+        val tipo = tipoDaImagem(bytes)
+        when {
+            tipo == null -> atual.update { it.copy(erro = MensagemPerfilNutri.LOGO_INVALIDA, aviso = null) }
+            bytes.size > LIMITE_LOGO -> atual.update { it.copy(erro = MensagemPerfilNutri.LOGO_GRANDE, aviso = null) }
+            else -> executar { repositorio.enviarLogo(bytes, tipo); atual.update { it.copy(aviso = MensagemPerfilNutri.LOGO_ENVIADA) } }
+        }
+    }
+    fun removerLogo() = executar { repositorio.removerLogo(); atual.update { it.copy(aviso = MensagemPerfilNutri.LOGO_REMOVIDA) } }
 
     fun mudarNome(v: String) = editar { it.copy(nome = v.take(150)) }
     fun mudarCrn(v: String) = editar { it.copy(crn = v.take(20)) }
@@ -69,4 +80,13 @@ class PerfilNutriViewModel(private val repositorio: PortaPerfilNutri, private va
     }
 
     private companion object { val CRN = Regex("CRN-[1-9][0-9]* [0-9]+") }
+}
+
+const val LIMITE_LOGO = 512 * 1024
+
+/** `image/png` ou `image/jpeg` pelos primeiros bytes; qualquer outra coisa devolve nulo. */
+fun tipoDaImagem(bytes: ByteArray): String? = when {
+    bytes.size >= 8 && bytes[0] == 0x89.toByte() && bytes[1] == 0x50.toByte() && bytes[2] == 0x4E.toByte() && bytes[3] == 0x47.toByte() -> "image/png"
+    bytes.size >= 3 && bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() && bytes[2] == 0xFF.toByte() -> "image/jpeg"
+    else -> null
 }
