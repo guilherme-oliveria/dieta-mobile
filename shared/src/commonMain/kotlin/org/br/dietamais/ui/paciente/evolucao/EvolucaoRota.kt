@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesPacienteRota
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
@@ -28,6 +30,7 @@ fun EvolucaoPacienteRota(viewModel: EvolucaoViewModel, avaliacoes: AvaliacoesVie
     LaunchedEffect(Unit) { viewModel.abrir(null) }
     var guia by remember { mutableIntStateOf(0) }
     Column(Modifier.fillMaxSize().padding(horizontal = Dimens.margemCompacta)) {
+        Text(stringResource(Res.string.aba_evolucao), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(vertical = Dimens.espacoMedio).semantics { heading() })
         TabRow(selectedTabIndex = guia) {
             Tab(guia == 0, { guia = 0 }, text = { Text(stringResource(Res.string.evolucao_aba_graficos)) })
             Tab(guia == 1, { guia = 1 }, text = { Text(stringResource(Res.string.evolucao_aba_avaliacoes)) })

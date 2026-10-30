@@ -2,6 +2,7 @@ package org.br.dietamais.ui.paciente.perfil
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import org.br.dietamais.data.remoto.dto.StatusVinculo
@@ -81,9 +83,10 @@ fun PerfilPacienteTela(estado: EstadoPerfilPaciente, acoes: AcoesPerfil, modifie
 
 @Composable
 private fun Interruptor(rotulo: String, marcado: Boolean, aoMudar: (Boolean) -> Unit, habilitado: Boolean = true) {
-    Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).toggleable(marcado, enabled = habilitado, role = Role.Switch, onValueChange = aoMudar),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(rotulo, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Switch(checked = marcado, onCheckedChange = aoMudar, enabled = habilitado)
+        Switch(checked = marcado, onCheckedChange = null, enabled = habilitado)
     }
 }
 

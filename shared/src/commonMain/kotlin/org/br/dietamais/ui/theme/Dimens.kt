@@ -37,6 +37,7 @@ object Dimens {
     val iconePadrao = 24.dp
     val iconeEstado = 36.dp
     val raioPequeno = 8.dp
+    val anelFoco = 2.dp
     val raioCampo = 12.dp
     val raioBotao = 14.dp
     val raioCard = 20.dp

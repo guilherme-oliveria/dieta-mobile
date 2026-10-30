@@ -146,3 +146,31 @@ O app passou de 5,95 MB (MOB-43, primeira entrega) para 6,86 MB brutos com as te
 Leitura: no 4G bom a primeira abertura leva uns 7 s; em 4G fraco passa de 30 s, quase tudo é download do `skiko.wasm` e do `.wasm` do app. Nas aberturas seguintes só há revalidação (o Caddy manda `no-cache` com ETag e os `.wasm` têm hash no nome, então dá para trocar para `Cache-Control: public, max-age=31536000, immutable` nos `.wasm` e ganhar mais uns 1,5 s sem nenhum byte). A nutri no desktop em rede fixa não sente; a paciente em 4G fraco sente na primeira vez, e para ela o app Android/iOS segue sendo o caminho principal (a web da paciente é conveniência).
 
 **Autofill de senha: não funciona.** Na tela de Entrar não existe nenhum `<input>`, `<form>` nem `type="password"`: os campos são `<div role="textbox" contenteditable>` sem `autocomplete` nem `name` (e `aria-label` "E-mail" e "Senha"). O gerenciador de senhas do navegador não oferece salvar nem preencher. Opções para o ponto de decisão do Guilherme: (1) aceitar, já que o app é a forma principal para a paciente; (2) fazer a tela de Entrar em HTML puro no `index.html` (form com `autocomplete="username"`/`current-password`), que entrega a sessão ao Compose; (3) esperar suporte a autofill do Compose para web. Não implementei nenhuma: muda arquitetura de login.
+
+## Acessibilidade da web (A6, MOB-45, 29/10/2026)
+
+`e2e/acessibilidade.spec.ts` roda o axe-core na árvore de semantics do Compose (shadow root aberto) em 20 telas de nutri e paciente e faz parte do `ops/e2e-wsl.sh`. Resultado e correções:
+
+| Achado | Situação |
+| --- | --- |
+| Nenhum botão, campo, aba ou checkbox sem nome acessível | Passa em todas as telas |
+| `Checkbox` da lista de compras (10 por tela) e `Switch` do perfil (5) sem nome (`aria-command-name`, grave) | **Corrigido:** a linha inteira virou o controle (`toggleable`), com o texto do item como nome |
+| Aba Evolução do paciente sem título | **Corrigido:** `heading()` |
+| Página sem `<h1>`, sem `<main>` e conteúdo fora de landmark (`page-has-heading-one`, `landmark-one-main`, `region`) | **Corrigido** no `index.html` (`<header><h1>` só para leitor de tela e `<main id="app">` como raiz do Compose) |
+| Botões sem foco visível de verdade (só um véu do M3) | **Corrigido:** contorno de 2 dp (`plataformas.md` já pedia) |
+| Dia/período escolhido parecia desabilitado (texto cinza claro, contraste de uns 1,9:1) | **Corrigido:** `BotaoTexto(selecionado = true)` |
+| `heading` sem `aria-level`, `list` sem `listitem`, `<canvas role="generic">` (axe: crítico) | **Do Compose 1.12 para web**, não dá para corrigir no app. O teste aceita só essas três regras e falha em qualquer outra |
+| Estado selecionado (aba atual, chip) não vai para o DOM (`aria-selected`, `aria-current` e `aria-pressed` ausentes) | Aberto; confirmar com leitor de tela (G-14) e acompanhar o Compose |
+| Árvore desatualizada depois que folha ou diálogo fecha | **Aberto, o mais grave:** ver abaixo |
+| `BordaCampo` com 1,41:1 sobre branco (WCAG 1.4.11 pede 3:1) | Decisão de design (ver `plataformas.md`) |
+| Autofill de senha | Não funciona (seção "Medições da A5") |
+
+**Árvore desatualizada.** Depois que uma folha (Novo paciente, Gerar convite) ou diálogo (Publicar, Ler termos) fecha, a tela volta ao normal, mas o DOM de acessibilidade continua com o conteúdo da folha, ou fica vazio, e nada o atualiza dali em diante na mesma página (testei espera de 12 s, clique, Tab, Escape, rolagem, redimensionar e atalhos). Só uma página nova resolve. Um leitor de tela leria a folha que já fechou. Causa provável: o Compose para web não republica a árvore da raiz quando o popup sai. Próximos passos: testar a próxima versão do Compose Multiplatform, abrir issue no JetBrains/compose-multiplatform com o caso mínimo e, enquanto isso, avaliar trocar a folha por tela cheia nos fluxos que mais importam (Gerar convite, Publicar).
+
+**Pendências antigas do QA:**
+
+- `raioCampo` x `raioBotao`: `FormasDieta.campo` usava o raio do botão (14 dp) e `raioCampo` (12 dp) ficava só no tema M3. Agora o campo usa `raioCampo`.
+- Ícone Pessoa repetido: Pacientes e Conta da nutri tinham o mesmo desenho. Pacientes ganhou o ícone `Pacientes` (duas pessoas).
+- Tabelas clínicas na limpeza do logout: as 7 tabelas do banco local já eram todas limpas por `ArmazemSessaoSql.limpar()`. Novo `LimpezaLogoutTest` enche todas as tabelas e falha se uma tabela nova ficar fora da limpeza.
+
+**Fonte a 200%:** o navegador não tem escala de fonte do sistema; o equivalente é o zoom de 200%, que reduz a janela a 640×450 px CSS. Em Entrar, Hoje, Compras, Início e Pacientes o layout se manteve e nenhum texto foi cortado.

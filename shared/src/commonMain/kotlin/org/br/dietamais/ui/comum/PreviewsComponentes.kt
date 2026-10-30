@@ -108,7 +108,7 @@ private fun IconesPreview() = PreviewBase {
     ) {
         listOf(
             IconesDieta.Casa, IconesDieta.Talheres, IconesDieta.Carrinho, IconesDieta.Grafico,
-            IconesDieta.Pessoa, IconesDieta.Sino, IconesDieta.Agua, IconesDieta.Cadeado,
+            IconesDieta.Pessoa, IconesDieta.Pacientes, IconesDieta.Sino, IconesDieta.Agua, IconesDieta.Cadeado,
             IconesDieta.Calendario, IconesDieta.Lista, IconesDieta.Mais, IconesDieta.Voltar,
             IconesDieta.Fechar, IconesDieta.Busca, IconesDieta.Alerta, IconesDieta.Informacao, IconesDieta.SemInternet,
         ).forEach { Icon(it, contentDescription = null, modifier = Modifier.size(Dimens.iconePadrao)) }

@@ -185,7 +185,7 @@ private fun destinosDoPerfil(perfil: PerfilNavegacao?) = when (perfil) {
     )
     PerfilNavegacao.NUTRICIONISTA -> listOf(
         DestinoPrincipal("inicio", RotaNutri.Inicio, Res.string.aba_inicio, IconesDieta.Casa),
-        DestinoPrincipal("pacientes", RotaNutri.Pacientes, Res.string.aba_pacientes, IconesDieta.Pessoa),
+        DestinoPrincipal("pacientes", RotaNutri.Pacientes, Res.string.aba_pacientes, IconesDieta.Pacientes),
         DestinoPrincipal("agenda", RotaNutri.Agenda, Res.string.aba_agenda, IconesDieta.Calendario),
         DestinoPrincipal("alimentos", RotaNutri.Alimentos, Res.string.aba_alimentos, IconesDieta.Lista),
         DestinoPrincipal("conta", RotaNutri.Conta, Res.string.aba_conta, IconesDieta.Pessoa),

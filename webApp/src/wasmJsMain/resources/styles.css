@@ -3,3 +3,6 @@ html, body { margin: 0; height: 100%; background: #F5F6F1; color: #1B1F1A; font-
 #carregando strong { color: #2E7D4F; font-size: 28px; }
 #nao-suportado strong { color: #C2551F; font-size: 20px; }
 [hidden] { display: none !important; }
+main { height: 100%; }
+/* Título da página só para leitor de tela e para o axe/Lighthouse: o Compose desenha os títulos de cada tela no canvas. */
+.so-leitor-de-tela { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
