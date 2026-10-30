@@ -5,7 +5,7 @@
 //
 // Cada fase abre a página do zero e entra de novo. Motivos (achados da A4, ver docs/arquitetura/web.md):
 //  - depois que uma folha ou diálogo do Compose fecha, a árvore de semantics do DOM continua mostrando a folha;
-//  - recarregar a página perde a sessão na web (o AmbienteWeb não chama restaurarSessao()).
+//  - o login por fase deixa cada cenário independente (o F5 em si é coberto por sessao-f5.spec.ts).
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { abrir, botao, campo, clicar, digitar, entrar, NUTRI_EXEMPLO, SENHA_EXEMPLO, tocar, veTexto } from "./apoio.ts";
 

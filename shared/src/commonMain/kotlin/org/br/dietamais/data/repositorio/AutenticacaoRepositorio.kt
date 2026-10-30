@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.encodeToJsonElement
 import org.br.dietamais.data.remoto.ApiDieta
 import org.br.dietamais.data.remoto.ContextoSessao
+import org.br.dietamais.data.remoto.FalhaComunicacao
+import org.br.dietamais.data.remoto.ResultadoRestauracao
 import org.br.dietamais.data.remoto.JsonContrato
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.plataforma.IdentidadeDispositivo
@@ -24,7 +26,14 @@ interface PortaAutenticacao {
 
 class AutenticacaoRepositorio(private val api: ApiDieta, private val identidade: IdentidadeDispositivo) : PortaAutenticacao {
     override val sessao = api.sessao
-    override suspend fun restaurar(): UsuarioResposta? = api.usuarioAtual()
+    /** Na web o refresh pelo cookie acontece aqui; sem rede ou com a API fora do ar a falha sobe (o cookie segue valendo), em vez de virar "sem sessão". */
+    override suspend fun restaurar(): UsuarioResposta? {
+        when (api.restaurarSessao()) {
+            ResultadoRestauracao.SEM_REDE, ResultadoRestauracao.INDISPONIVEL -> throw FalhaComunicacao()
+            else -> Unit
+        }
+        return api.usuarioAtual()
+    }
     override suspend fun entrar(email: String, senha: String, perfil: Perfil?) = api.entrar(LoginRequisicao(email, senha,
         DispositivoRequisicao(identidade.obter(), plataformaApi(), "Dieta+ ${plataformaApi().name}"), perfil))
     override suspend fun cadastrar(requisicao: CadastroNutriRequisicao, chave: Uuid) {

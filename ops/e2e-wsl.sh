@@ -49,6 +49,8 @@ echo "== Backend (bootRun com dados de exemplo, perfil dev)"
 	export DB_URL="jdbc:postgresql://localhost:$pg_porta/dietamais" SPRING_DOCKER_COMPOSE_ENABLED=false
 	# A web e a API ficam na mesma origem (o cookie do refresh depende disso); o link do convite precisa ser HTTPS (o app recusa outro esquema).
 	export WEB_ORIGEM=http://localhost:8081 CORS_ORIGENS=http://localhost:8081 EMAIL_URL_CONVITE=https://localhost:8081/convite
+	# A suíte faz dezenas de logins do mesmo IP; o limite padrão (10 por janela) travaria os cenários seguintes.
+	export DIETA_AUTH_LOGIN_LIMITE_IP=1000
 	exec setsid ./gradlew bootRun --args=--dieta.dev.dados-exemplo=true --max-workers=2
 ) >build/e2e-backend.log 2>&1 &
 pid_backend=$!
