@@ -1,0 +1,13 @@
+{
+  "name": "dieta-mobile-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Teste de ponta a ponta da web (Compose/wasmJs) contra o backend, com Playwright",
+  "scripts": {
+    "web": "node servidor-web.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}

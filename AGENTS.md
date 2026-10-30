@@ -43,6 +43,7 @@ Bibliotecas planejadas (MOB-01): Ktor, kotlinx.serialization, SQLDelight, Koin, 
 | App desktop | `./gradlew :desktopApp:run` (hot reload: `:desktopApp:hotRun --auto`) |
 | iOS | abrir `iosApp/` no Xcode |
 | Validar no WSL (igual ao CI, sem iOS) | `ops/validar-wsl.sh` |
+| Teste de ponta a ponta da web (Playwright + backend real) | `ops/e2e-wsl.sh` (ver `e2e/README.md`) |
 
 ## Estrutura
 

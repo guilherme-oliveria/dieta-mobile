@@ -1,0 +1,18 @@
+# Postgres 18 só para o teste de ponta a ponta: projeto, porta e volume próprios (não mexe no banco de desenvolvimento).
+name: dietamais-e2e
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: dietamais
+      POSTGRES_USER: dietamais
+      POSTGRES_PASSWORD: dietamais
+    ports:
+      - "127.0.0.1:${E2E_PG_PORTA:-5433}:5432"
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dietamais -d dietamais"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
