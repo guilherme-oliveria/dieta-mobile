@@ -10,7 +10,7 @@ import org.br.dietamais.data.repositorio.PortaConvites
 import org.br.dietamais.data.sync.novoIdLocal
 import org.br.dietamais.dominio.convite.extrairCodigoConvite
 import org.br.dietamais.dominio.contas.permiteCadastro
-import kotlinx.datetime.TimeZone
+import org.br.dietamais.plataforma.idFusoDoAparelho
 import org.br.dietamais.plataforma.ArmazenamentoSeguroIndisponivel
 
 class ConviteViewModel(private val repositorio: PortaConvites, private val dominios: Set<String> = emptySet(),
@@ -106,7 +106,7 @@ class ConviteViewModel(private val repositorio: PortaConvites, private val domin
             if (entrada.senha.length < 10) campos["senha"] = MensagemConvite.SENHA_CURTA
             atual.update { it.copy(errosCampos = campos) }
             if (campos.isNotEmpty()) return
-            CadastroPacienteRequisicao(entrada.nome.trim(), entrada.email.trim(), entrada.senha, TimeZone.currentSystemDefault().id,
+            CadastroPacienteRequisicao(entrada.nome.trim(), entrada.email.trim(), entrada.senha, idFusoDoAparelho(),
                 aceitouTermos = true, versaoTermos = termos.versao)
         } else null
         val chaveEnvio = chave
