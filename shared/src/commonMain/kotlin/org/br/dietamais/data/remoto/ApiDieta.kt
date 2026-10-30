@@ -77,7 +77,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
                                 if (!web) { contentType(ContentType.Application.Json); setBody(RefreshRequisicao(token)) }
                             }
                         } catch (cancelamento: CancellationException) { throw cancelamento }
-                        catch (falha: Exception) { throw FalhaComunicacao() }
+                        catch (falha: Throwable) { throw comoFalhaDeRede(falha) }
                         if (resposta.status.value == 429 || resposta.status.value >= 500) throw FalhaComunicacao()
                         decodificar(resposta, SessaoResposta.serializer())
                     }
@@ -189,7 +189,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         } catch (cancelamento: CancellationException) { throw cancelamento }
         catch (falha: ArmazenamentoSeguroIndisponivel) { throw falha }
         catch (falha: RespostaInvalida) { throw falha }
-        catch (falha: Exception) { throw FalhaComunicacao() }
+        catch (falha: Throwable) { throw comoFalhaDeRede(falha) }
         if (resposta.status.value == 426) obsoleta.value = true
         if (resposta.status == HttpStatusCode.Unauthorized && !semBearer) controle.rejeitar(geracao)
         if (resposta.status.value in 200..299 && geracao != null && !controle.corresponde(geracao)) throw SessaoAlterada()
@@ -233,3 +233,9 @@ private fun enderecoApi(configurada: String): Url {
 private val REDE_PRIVADA = Regex("(10\\.\\d{1,3}|192\\.168|172\\.(1[6-9]|2\\d|3[01]))\\.\\d{1,3}\\.\\d{1,3}")
 
 enum class ResultadoRestauracao { NAO_APLICAVEL, JA_ATIVA, RESTAURADA, SEM_SESSAO, SEM_REDE, INDISPONIVEL }
+
+/**
+ * Qualquer falha ao falar com a API (sem rede, DNS, CORS, `fetch` abortado) vira [FalhaComunicacao]. Pega `Throwable` porque no
+ * Kotlin/Wasm o `JsException` do `fetch` não é uma `Exception`; `Error` (OutOfMemory, AssertionError de teste) segue subindo.
+ */
+internal fun comoFalhaDeRede(falha: Throwable): Throwable = if (falha is Error) falha else FalhaComunicacao()
