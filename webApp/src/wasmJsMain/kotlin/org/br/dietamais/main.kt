@@ -25,7 +25,7 @@ fun main() {
     document.getElementById("carregando")?.let { it.parentNode?.removeChild(it) }
     // Link direto do convite (`/convite/{codigo}`): entra pelo mesmo caminho do link aberto no app
     codigoDoCaminhoWeb(window.location.pathname)?.let { receberLinkConvite("dietamais://convite/$it") }
-    ComposeViewport(document.body!!) {
+    ComposeViewport(document.getElementById("app")!!) {
         val ambiente = remember { criarAmbienteWeb(Config(), ArmazenamentoSeguro(), VERSAO_WEB, Conectividade()) }
         AppWeb(ambiente, remember { IdentidadeDispositivo() }, remember { Compartilhador() }, aoPrepararNavegacao = { controlador ->
             // MOB-45: URL e botão voltar do navegador acompanham a navegação do app

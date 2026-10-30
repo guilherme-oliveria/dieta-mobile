@@ -17,6 +17,7 @@ object IconesDieta {
     val Carrinho by lazy { icone("Carrinho", "M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6", "M10.5 20a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0M19.5 20a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0") }
     val Grafico by lazy { icone("Gráfico", "M3 3v18h18M7 15l4-4 3 3 6-6") }
     val Pessoa by lazy { icone("Pessoa", "M4 21a8 8 0 0 1 16 0M16 8a4 4 0 1 1-8 0a4 4 0 1 1 8 0") }
+    val Pacientes by lazy { icone("Pacientes", "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", "M13 7a4 4 0 1 1-8 0a4 4 0 1 1 8 0", "M22 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75") }
     val Sino by lazy { icone("Sino", "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0") }
     val Agua by lazy { icone("Água", "M12 2.7s6 6.4 6 11.3a6 6 0 0 1-12 0c0-4.9 6-11.3 6-11.3z") }
     val Cadeado by lazy { icone("Cadeado", "M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2zM7 11V7a5 5 0 0 1 10 0v4") }

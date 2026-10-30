@@ -2,6 +2,7 @@ package org.br.dietamais.ui.paciente.compras
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import org.br.dietamais.dominio.rotina.textoPeso
@@ -30,14 +32,17 @@ fun ComprasTela(estado: EstadoCompras, acoes: AcoesCompras, modifier: Modifier =
             else -> {
                 Text(stringResource(Res.string.compras_periodo), style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    listOf(3, 7, 14).forEach { d -> BotaoTexto(stringResource(Res.string.compras_dias, d.toString()), { acoes.aoMudarDias(d) }, habilitado = d != estado.dias) }
+                    listOf(3, 7, 14).forEach { d -> BotaoTexto(stringResource(Res.string.compras_dias, d.toString()), { acoes.aoMudarDias(d) }, selecionado = d == estado.dias) }
                 }
                 estado.grupos.forEach { g ->
                     CardDieta(Modifier.fillMaxWidth()) {
                         Text(g.nome ?: stringResource(Res.string.compras_itens), style = MaterialTheme.typography.titleMedium)
                         g.itens.forEach { i ->
-                            Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque), verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(checked = i.alimentoId in estado.marcados, onCheckedChange = { acoes.aoMarcar(i.alimentoId, it) })
+                            val marcado = i.alimentoId in estado.marcados
+                            // A linha toda é o controle (nome = texto do item); o Checkbox é só o desenho.
+                            Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).toggleable(marcado, role = Role.Checkbox) { acoes.aoMarcar(i.alimentoId, it) },
+                                verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(checked = marcado, onCheckedChange = null)
                                 Text("${i.nome} · ${textoPeso(i.gramas)}", style = MaterialTheme.typography.bodyLarge)
                             }
                         }

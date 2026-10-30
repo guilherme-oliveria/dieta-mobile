@@ -4,7 +4,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 
 object FormasDieta {
-    val campo = RoundedCornerShape(Dimens.raioBotao)
+    val campo = RoundedCornerShape(Dimens.raioCampo)
     val botao = RoundedCornerShape(Dimens.raioBotao)
     val card = RoundedCornerShape(Dimens.raioCard)
     val destaque = RoundedCornerShape(Dimens.raioDestaque)

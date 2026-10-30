@@ -33,7 +33,7 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
             else -> {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     estado.dias.forEach { d ->
-                        BotaoTexto(rotuloDia(d, estado.hoje), { acoes.aoMudarDia(d) }, habilitado = d != estado.dia)
+                        BotaoTexto(rotuloDia(d, estado.hoje), { acoes.aoMudarDia(d) }, selecionado = d == estado.dia)
                     }
                 }
                 val proxima = estado.proxima
