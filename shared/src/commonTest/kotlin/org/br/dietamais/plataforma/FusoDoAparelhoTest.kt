@@ -10,7 +10,8 @@ class FusoDoAparelhoTest {
     fun devolveIdentificadorIanaQueOBackendAceita() {
         val id = idFusoDoAparelho()
         assertNotEquals("SYSTEM", id)
-        assertTrue(id == "UTC" || id.contains('/'), "esperava um id IANA (Regiao/Cidade), veio '$id'")
+        // Aparelho real devolve Regiao/Cidade; o simulador do CI roda em GMT/UTC, que o backend também aceita.
+        assertTrue(id == "UTC" || id == "GMT" || id.contains('/'), "esperava um id IANA (Regiao/Cidade), veio '$id'")
         TimeZone.of(id)
     }
 }

@@ -14,7 +14,9 @@ class ContrasteTelasTest {
 
     private fun exige(texto: Color, fundo: Color, nome: String, minimo: Double = 4.5) {
         val r = razao(texto, fundo)
-        assertTrue(r >= minimo, "$nome: contraste ${"%.2f".format(r)}:1, o mínimo é $minimo:1")
+        // sem String.format: não existe no código comum (iOS)
+        val duasCasas = (r * 100).toInt() / 100.0
+        assertTrue(r >= minimo, "$nome: contraste $duasCasas:1, o mínimo é $minimo:1")
     }
 
     @Test

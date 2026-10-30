@@ -708,4 +708,12 @@
     <string name="atualizar_titulo">Atualize o app</string>
     <string name="atualizar_texto">Esta versão do Dieta+ não funciona mais. Instale a versão mais recente na loja do seu aparelho (ou baixe a nova versão no computador) e abra de novo. Seus dados estão guardados.</string>
     <string name="web_aba_no_app">Esta aba ainda não está na versão para navegador. Use o app.</string>
+    <string name="conta_logo_titulo">Logo dos PDFs</string>
+    <string name="conta_logo_ajuda">PNG ou JPEG de até 512 KB. Aparece no cabeçalho dos PDFs da dieta e da avaliação.</string>
+    <string name="conta_logo_escolher">Escolher imagem</string>
+    <string name="conta_logo_remover">Remover logo</string>
+    <string name="conta_logo_enviada">Logo salva.</string>
+    <string name="conta_logo_removida">Logo removida.</string>
+    <string name="conta_logo_invalida">Escolha uma imagem PNG ou JPEG.</string>
+    <string name="conta_logo_grande">A imagem passa de 512 KB. Escolha uma menor.</string>
 </resources>
