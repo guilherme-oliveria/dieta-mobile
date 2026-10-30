@@ -280,7 +280,9 @@ private fun NavegacaoNutri() {
         val estadoConta by conta.estado.collectAsState()
         val assinatura = koinViewModel<AssinaturaViewModel>(viewModelStoreOwner = dono)
         val estadoAssinatura by assinatura.estado.collectAsState()
-        ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar),
+        val seletorLogo = org.br.dietamais.plataforma.rememberSeletorImagem { imagem -> conta.enviarLogo(imagem.bytes) }
+        ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar,
+            seletorLogo, conta::removerLogo),
             extras = {
                 AssinaturaCard(estadoAssinatura, AcoesAssinatura(assinatura::assinar, assinatura::urlAberta, assinatura::recarregar))
                 val priv = koinViewModel<PrivacidadeViewModel>(viewModelStoreOwner = dono) { parametersOf(false) }
