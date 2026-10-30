@@ -23,6 +23,12 @@ class LembretesTest {
         assertEquals(Instant.parse("2026-10-28T15:30:00Z"), l.first().quando)
     }
 
+    @Test fun cadaLembreteLevaODiaDaRefeicaoParaOBotaoDaNotificacao() {
+        val l = planejarLembretes(listOf(almoco), agora, fuso, dias = 2)
+        assertEquals(listOf("2026-10-28", "2026-10-29"), l.map { it.dia.toString() })
+        assertTrue(l.all { it.dietaId == null }, "a dieta é preenchida por quem agenda (AgendadorLembretes)")
+    }
+
     @Test fun refeicaoJaFeitaHojeNaoLembraMasAmanhaSim() {
         val l = planejarLembretes(listOf(almoco), agora, fuso, feitasHoje = setOf(almoco.id), dias = 2)
         assertEquals(1, l.size); assertEquals(Instant.parse("2026-10-29T15:30:00Z"), l.single().quando)

@@ -7,8 +7,11 @@ import org.br.dietamais.plataforma.EstadoConexao
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.recursos.Res
 import org.br.dietamais.recursos.compras_titulo_texto
+import org.br.dietamais.recursos.comi
 import org.br.dietamais.recursos.lembrete_corpo
 import org.br.dietamais.recursos.lembrete_titulo
+import org.br.dietamais.recursos.pulei
+import org.br.dietamais.recursos.troquei
 import org.jetbrains.compose.resources.getString
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -62,8 +65,9 @@ fun moduloLembretes(notificacao: org.br.dietamais.plataforma.NotificacaoLocal?) 
         single<org.br.dietamais.plataforma.NotificacaoLocal> { notificacao }
         single {
             org.br.dietamais.data.sync.AgendadorLembretes(get(), get(), get(), get(), {
-                getString(Res.string.lembrete_titulo) to
-                    getString(Res.string.lembrete_corpo).let { modelo -> { nome: String -> modelo.replace("%1\$s", nome) } }
+                val modelo = getString(Res.string.lembrete_corpo)
+                org.br.dietamais.dominio.rotina.TextosLembrete(getString(Res.string.lembrete_titulo), { nome: String -> modelo.replace("%1\$s", nome) },
+                    org.br.dietamais.dominio.rotina.RotulosAcoes(getString(Res.string.comi), getString(Res.string.troquei), getString(Res.string.pulei)))
             })
         }
     }
