@@ -112,14 +112,24 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         return resposta
     }
 
-    /** Na web, recarregar a página perde o access (só em memória): tenta o refresh silencioso pelo cookie; sem cookie válido, fica sem sessão. */
-    suspend fun restaurarSessao() {
-        if (controle.tokens() != null || !web) return
+    /**
+     * Na web, recarregar a página perde o access (só em memória): tenta o refresh silencioso pelo cookie. O resultado distingue
+     * "não há sessão" (cookie ausente ou vencido: 401) de "não deu para saber" (sem rede, 5xx, 429): neste caso o cookie continua
+     * valendo e quem chama não deve tratar como logout.
+     */
+    suspend fun restaurarSessao(): ResultadoRestauracao {
+        if (controle.tokens() != null) return ResultadoRestauracao.JA_ATIVA
+        if (!web) return ResultadoRestauracao.NAO_APLICAVEL
         val geracao = controle.geracao()
         val resposta = try { requisitar(HttpMethod.Post, "auth/refresh", publica = true, chave = novoIdLocal()) }
         catch (cancelamento: CancellationException) { throw cancelamento }
-        catch (falha: FalhaComunicacao) { return }
-        if (resposta.status.value in 200..299) controle.receber(decodificar(resposta, SessaoResposta.serializer()), geracao)
+        catch (falha: FalhaComunicacao) { return ResultadoRestauracao.SEM_REDE }
+        val status = resposta.status.value
+        if (status in 200..299) {
+            controle.receber(decodificar(resposta, SessaoResposta.serializer()), geracao)
+            return ResultadoRestauracao.RESTAURADA
+        }
+        return if (status == 400 || status == 401 || status == 403) ResultadoRestauracao.SEM_SESSAO else ResultadoRestauracao.INDISPONIVEL
     }
     internal suspend fun aguardarOperacoesSessao() = controle.aguardarOperacoes()
     suspend fun usuarioAtual(): UsuarioResposta? = controle.usuarioAtual()
@@ -221,3 +231,5 @@ private fun enderecoApi(configurada: String): Url {
 
 /** Desenvolvimento: API no PC/WSL acessada pela rede local (http só para IPv4 privado; o Android ainda exige o build debug para liberar o tráfego). */
 private val REDE_PRIVADA = Regex("(10\\.\\d{1,3}|192\\.168|172\\.(1[6-9]|2\\d|3[01]))\\.\\d{1,3}\\.\\d{1,3}")
+
+enum class ResultadoRestauracao { NAO_APLICAVEL, JA_ATIVA, RESTAURADA, SEM_SESSAO, SEM_REDE, INDISPONIVEL }
