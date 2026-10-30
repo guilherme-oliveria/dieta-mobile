@@ -6,7 +6,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 
 ## [Não lançado] — pendente
 
-- **Web:** recarregar a página desloga (o `AmbienteWeb` não chama `restaurarSessao()`; o marco M7 pede que a sessão sobreviva ao F5); cadastro de nutri bloqueado (termos de uso não configurados no `main.kt`); árvore de acessibilidade desatualizada depois que folha ou diálogo fecha; autofill de senha não funciona (campos do Compose não são `<input>`). Detalhes e medições em `docs/arquitetura/web.md`.
+- **Web:** cadastro de nutri bloqueado (termos de uso não configurados no `main.kt`); árvore de acessibilidade desatualizada depois que folha ou diálogo fecha; autofill de senha não funciona (campos do Compose não são `<input>`). Detalhes e medições em `docs/arquitetura/web.md`.
 - MOB-18b Ações Comi/Troquei/Pulei na notificação, MOB-27b push no iOS, MOB-29b escrita offline de dietas, listas e modelos, MOB-31b pacotes do desktop no CI, MOB-33b envio da logo, MOB-35a beta interno (assinatura de release, Play Console, TestFlight).
 - MOB-46 Publicação da web na VPS (depende do BE-32b).
 - Conferir com leitor de tela real (NVDA, VoiceOver, TalkBack), Safari e Firefox (G-14).
@@ -16,6 +16,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 - MOB-40 Alvo `wasmJs` e build da web no CI. MOB-41 `ApiDieta` sem banco local (`ArmazemSessao`). MOB-42 Sessão no navegador: access em memória, refresh por cookie, `X-Plataforma: WEB`.
 - MOB-43 Telas da nutri pela API (pacientes, montador de dieta, avaliações, lista de substituição, alimentos, agenda, conta, painel, avisos, anamnese, evolução). Medido na A5: 5,5 MB gzip no primeiro carregamento, 7 s em 4G rápido, 31 s em 4G lento.
 - MOB-44 Telas do paciente (Hoje, Dieta, Evolução, Compras, Perfil, anamnese, avisos). MOB-45 URL e botão voltar do navegador, link direto do convite, atalhos Alt+1 a Alt+5; acessibilidade medida com axe-core (A6): controles com nome, títulos, foco visível nos botões, contraste.
+- Sessão: recarregar a página (F5) mantém a sessão pelo refresh do cookie, com tela de carregando; sem rede avisa e não desloga (`e2e/sessao-f5.spec.ts`); queda de rede do navegador agora vira falha de comunicação.
 - Correções: aceite de convite pela web (`fuso` `SYSTEM` recusado pelo backend), checkbox das compras e switch do perfil sem nome acessível, título da aba Evolução, dia selecionado parecendo desabilitado.
 - Teste de ponta a ponta com Playwright (`e2e/`, `ops/e2e-wsl.sh`).
 
