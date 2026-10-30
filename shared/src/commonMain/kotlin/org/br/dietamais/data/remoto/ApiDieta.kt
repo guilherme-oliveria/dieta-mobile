@@ -235,7 +235,8 @@ private val REDE_PRIVADA = Regex("(10\\.\\d{1,3}|192\\.168|172\\.(1[6-9]|2\\d|3[
 enum class ResultadoRestauracao { NAO_APLICAVEL, JA_ATIVA, RESTAURADA, SEM_SESSAO, SEM_REDE, INDISPONIVEL }
 
 /**
- * Qualquer falha ao falar com a API (sem rede, DNS, CORS, `fetch` abortado) vira [FalhaComunicacao]. Pega `Throwable` porque no
- * Kotlin/Wasm o `JsException` do `fetch` não é uma `Exception`; `Error` (OutOfMemory, AssertionError de teste) segue subindo.
+ * Qualquer falha ao falar com a API (sem rede, DNS, CORS, `fetch` abortado) vira [FalhaComunicacao]. No navegador o motor JS do Ktor
+ * lança `kotlin.Error("Fail to fetch")` (um `Error` puro) e o Kotlin/Wasm lança `JsException` (um `Throwable`): nenhum é `Exception`.
+ * Subclasses de `Error` (OutOfMemory, AssertionError de teste) seguem subindo.
  */
-internal fun comoFalhaDeRede(falha: Throwable): Throwable = if (falha is Error) falha else FalhaComunicacao()
+internal fun comoFalhaDeRede(falha: Throwable): Throwable = if (falha !is Error || falha::class == Error::class) FalhaComunicacao() else falha
