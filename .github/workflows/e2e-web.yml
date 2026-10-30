@@ -10,7 +10,8 @@ on:
 jobs:
   e2e:
     name: Fluxo completo no Chromium
-    runs-on: ubuntu-latest
+    # ubuntu-latest já aponta para o 26.04, que o Playwright 1.56 ainda não suporta
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
