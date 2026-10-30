@@ -26,8 +26,12 @@ async function nutriNaLista(page: Page) {
 }
 
 async function abrirFicha(page: Page, nome: string) {
-  await clicar(page, page.getByRole("button", { name: nome }));
-  await expect(page.getByRole("heading", { name: nome })).toBeAttached();
+  const titulo = page.getByRole("heading", { name: nome });
+  // O clique é por coordenada: se a lista se rearruma entre medir e clicar (paciente recém-criada), o toque erra. Tenta de novo enquanto a ficha não abre.
+  await expect(async () => {
+    if ((await titulo.count()) === 0) await clicar(page, page.getByRole("button", { name: nome }));
+    await expect(titulo).toBeAttached({ timeout: 5_000 });
+  }).toPass({ timeout: 40_000 });
 }
 
 test.describe.configure({ mode: "serial" });
