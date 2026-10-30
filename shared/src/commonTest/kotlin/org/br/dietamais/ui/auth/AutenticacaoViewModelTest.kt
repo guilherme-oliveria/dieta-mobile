@@ -143,6 +143,37 @@ class AutenticacaoViewModelTest {
         assertEquals(0, porta.saidas)
     }
 
+    @Test fun recarregarPaginaMostraCarregandoEDepoisAContaRestauradaSemPassarPelaTelaDeEntrar() = runTest {
+        val liberar = CompletableDeferred<Unit>()
+        val porta = PortaTeste().apply { esperaRestaurar = liberar; salvo = usuario; sessao.value = ContextoSessao(usuario.id, Perfil.NUTRICIONISTA) }
+        val vm = AutenticacaoViewModel(porta, termos, StandardTestDispatcher(testScheduler))
+        runCurrent()
+        assertTrue(vm.estado.value.restaurando, "enquanto o refresh não responde, a tela é de carregando e não de Entrar")
+        assertNull(vm.estado.value.usuario)
+        liberar.complete(Unit); runCurrent()
+        assertFalse(vm.estado.value.restaurando)
+        assertEquals(usuario, vm.estado.value.usuario)
+    }
+
+    @Test fun semSessaoNoCookieVaiParaEntrarSemErro() = runTest {
+        val porta = PortaTeste().apply { salvo = null }
+        val vm = AutenticacaoViewModel(porta, termos, StandardTestDispatcher(testScheduler))
+        runCurrent()
+        assertFalse(vm.estado.value.restaurando)
+        assertNull(vm.estado.value.usuario)
+        assertNull(vm.estado.value.erro)
+    }
+
+    @Test fun semRedeNaRestauracaoAvisaMasNaoApagaNadaNemFicaPresoNoCarregando() = runTest {
+        val porta = PortaTeste().apply { falhaRestaurar = FalhaComunicacao() }
+        val vm = AutenticacaoViewModel(porta, termos, StandardTestDispatcher(testScheduler))
+        runCurrent()
+        assertFalse(vm.estado.value.restaurando)
+        assertNull(vm.estado.value.usuario)
+        assertEquals(MensagemAutenticacao.SEM_CONEXAO, vm.estado.value.erro)
+        assertEquals(0, porta.saidas, "falha de rede não é logout")
+    }
+
     @Test fun contextoDeOutroUsuarioRecusaShellEEncerraSessao() = runTest {
         val porta = PortaTeste().apply { respostaEu = EuResposta(usuario.copy(id = Uuid.random()), vinculos = emptyList()) }
         val vm = AutenticacaoViewModel(porta, termos, StandardTestDispatcher(testScheduler))
@@ -171,6 +202,8 @@ class AutenticacaoViewModelTest {
         var esperaEntrada: CompletableDeferred<Unit>? = null
         var falhaCadastro: Exception? = null
         var salvo: UsuarioResposta? = null
+        var falhaRestaurar: Exception? = null
+        var esperaRestaurar: CompletableDeferred<Unit>? = null
         var respostaEu: EuResposta? = null
         var falhaEu: Exception? = null
         var esperaEu: CompletableDeferred<Unit>? = null
@@ -179,7 +212,7 @@ class AutenticacaoViewModelTest {
         val cadastros = mutableListOf<CadastroNutriRequisicao>()
         val chavesCadastro = mutableListOf<Uuid>()
         val recuperacoes = mutableListOf<String>()
-        override suspend fun restaurar(): UsuarioResposta? = salvo
+        override suspend fun restaurar(): UsuarioResposta? { esperaRestaurar?.await(); falhaRestaurar?.let { throw it }; return salvo }
         override suspend fun entrar(email: String, senha: String, perfil: Perfil?): SessaoResposta {
             entradas += LoginRequisicao(email, senha, DispositivoRequisicao(Uuid.random(), Plataforma.DESKTOP, "Teste"), perfil)
             esperaEntrada?.await(); falha?.let { throw it }; return resposta

@@ -14,6 +14,46 @@ import org.br.dietamais.plataforma.IdentidadeDispositivo
 import kotlin.test.*
 
 class AutenticacaoRepositorioTest {
+
+    private val usuarioJson = """{"id":"019a0f32-5000-7000-8000-000000000001","nome":"Nutri","email":"nutri@example.invalid","emailConfirmado":true,
+        "perfis":["NUTRICIONISTA"],"perfil":"NUTRICIONISTA","nutricionistaId":"019a0f32-5000-7000-8000-000000000002","pacienteId":null,"fuso":"America/Sao_Paulo"}"""
+    private val jsonHeaders = headersOf(HttpHeaders.ContentType, "application/json")
+    private val problema = headersOf(HttpHeaders.ContentType, "application/problem+json")
+    private fun restaurandoNaWeb(engine: MockEngine, bloco: suspend (AutenticacaoRepositorio) -> Unit) = runTest {
+        JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).use { driver ->
+            BancoDieta.Schema.create(driver).value
+            ApiDieta(Config("https://app.example.invalid"), "1.0", Plataforma.WEB, CofreMemoria(), ArmazemSessaoMemoria, engine).use { api ->
+                bloco(AutenticacaoRepositorio(api, IdentidadeDispositivo()))
+            }
+        }
+    }
+
+    @Test fun restaurarNaWebRenovaPeloCookieEDevolveOUsuario() {
+        var chamadas = 0
+        restaurandoNaWeb(MockEngine { req ->
+            assertEquals("/api/v1/auth/refresh", req.url.encodedPath)
+            chamadas++
+            respond("""{"accessToken":"ACCESS_FICTICIO","expiraEm":"2026-10-24T12:15:00Z","usuario":$usuarioJson}""", HttpStatusCode.OK, jsonHeaders)
+        }) { repositorio ->
+            assertEquals(Perfil.NUTRICIONISTA, repositorio.restaurar()?.perfil)
+            assertEquals(1, chamadas)
+        }
+    }
+
+    @Test fun restaurarSemCookieValidoDevolveNuloEDeixaIrParaEntrar() {
+        restaurandoNaWeb(MockEngine { respond("""{"type":"about:blank","title":"Não autenticado","status":401,"codigo":"TOKEN_INVALIDO","campos":[]}""", HttpStatusCode.Unauthorized, problema) }) { repositorio ->
+            assertNull(repositorio.restaurar())
+        }
+    }
+
+    @Test fun restaurarSemRedeOuComApiForaDoArNaoViraLogout() {
+        restaurandoNaWeb(MockEngine { throw java.io.IOException("sem rede") }) { repositorio ->
+            assertFailsWith<FalhaComunicacao> { repositorio.restaurar() }
+        }
+        restaurandoNaWeb(MockEngine { respond("""{"type":"about:blank","title":"Indisponível","status":503,"codigo":"INDISPONIVEL","campos":[]}""", HttpStatusCode.ServiceUnavailable, problema) }) { repositorio ->
+            assertFailsWith<FalhaComunicacao> { repositorio.restaurar() }
+        }
+    }
     @Test fun recuperacaoERedefinicaoAceitamRespostaVaziaSemBearer() = runTest {
         val caminhos = mutableListOf<String>()
         comApi(MockEngine { requisicao ->
