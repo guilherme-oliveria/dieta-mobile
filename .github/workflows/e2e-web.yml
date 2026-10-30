@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          repository: guilherme-oliveira/dieta-backend
+          repository: guilherme-oliveria/dieta-backend
           ref: develop
           path: dieta-backend
           token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
