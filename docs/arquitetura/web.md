@@ -95,3 +95,27 @@ Não medidos aqui (precisam de um navegador real): tempo de abertura em 4G simul
 - **Build:** `./gradlew :webApp:wasmJsBrowserDistribution` gera `webApp/build/dist/wasmJs/productionExecutable/`: `index.html`, `styles.css`, `dietamais.js` e os `.wasm`. São só arquivos estáticos; o Node do Gradle só existe na hora de compilar (no CI), nunca no servidor.
 - **Servir:** o Caddy que já termina o HTTPS da API na VPS serve esses arquivos (`/srv/web`) e encaminha `/api/*` e `/legal/*` para o backend. Uma origem só, sem CORS na prática e com o cookie do refresh funcionando. Não há contêiner novo (ver `dieta-backend/ops/Caddyfile` e `docs/operacao/deploy-beta.md`).
 - **Desenvolvimento:** `./gradlew :webApp:wasmJsBrowserDevelopmentRun` abre `http://localhost:8081` e encaminha `/api` para `http://localhost:8080`. No backend: `WEB_ORIGEM=http://localhost:8081` e `CORS_ORIGENS=http://localhost:8081`.
+
+## Achados do e2e (A4, 29/10/2026)
+
+Rodando o fluxo completo no Chromium (`e2e/`, `ops/e2e-wsl.sh`) contra o backend real, saíram estes pontos. Os dois primeiros são positivos e definem como os testes (e o leitor de tela) enxergam a web.
+
+**Acessibilidade e automação**
+
+- **A árvore de `semantics` chega ao DOM.** O Compose cria, dentro de um shadow root aberto, elementos com `role` (`heading`, `button`, `textbox`, `list`), `aria-label` e texto. Os botões de ícone e os campos têm nome (`Mostrar senha`, `Buscar paciente`, `Fechar planilha`). O Playwright atravessa o shadow DOM: os testes usam `getByRole`/`getByText`, sem coordenadas.
+- O canvas fica por cima dos elementos e **intercepta o clique**; campos de texto são `<div contenteditable>`; elementos fora da janela chegam com caixa 0×0. O `e2e/apoio.ts` contorna os três (clique por coordenadas, digitação por teclado, rolagem por roda do mouse).
+- **Árvore desatualizada depois que uma folha ou diálogo fecha** (Novo paciente, Gerar convite, Ler termos de uso, Publicar). A tela volta ao normal, mas o DOM continua com o conteúdo da folha (ou fica vazio) e nada o atualiza: nem espera de 12 s, clique, Tab, Escape, rolagem, redimensionar a janela nem atalho Alt+N. Um leitor de tela continuaria lendo a folha fechada. **Entra na A6** (investigar a versão do Compose e a ordem de desmontagem do `ModalBottomSheet`/`AlertDialog`). No e2e, cada fase abre a página do zero.
+- Navegador headless do Linux sem `locale` quebra o Compose (`Incorrect locale information provided`); o Playwright usa `pt-BR`.
+
+**Bugs encontrados**
+
+- **Aceite de convite pela web falhava sempre** (`400 FORMATO_INVALIDO`): o app mandava `"fuso":"SYSTEM"` (kotlinx-datetime no navegador). Corrigido em `idFusoDoAparelho()` (PR "Corrige o fuso enviado no aceite do convite pela web").
+- **Recarregar a página desloga.** O `web.md` promete refresh silencioso, mas o `AmbienteWeb` nunca chama `ApiDieta.restaurarSessao()` (só o `AmbienteDieta` do app chama): depois do F5 não sai nenhum `POST /auth/refresh` e a tela volta para Entrar, mesmo com o cookie `refreshToken` (`HttpOnly`, `Secure`, `Strict`) guardado. Pendente.
+- **Cadastro de nutri está bloqueado na web:** o `main.kt` passa `termosCadastro = null`, então a tela mostra "Os termos de uso estão indisponíveis" (esperado até o Guilherme publicar os termos, BE-36, mas vale ligar o app aos termos publicados em `/legal/terms-of-use`, que o cadastro do paciente já usa). O e2e cria a segunda nutri pela API.
+- **"Gerar convite" falha com o link padrão do backend.** O backend gera `dietamais://convites/CODIGO` (padrão de `EMAIL_URL_CONVITE`), mas `PacientesOnline.convidar` só aceita `https` e responde `RespostaInvalida`, que a tela mostra como "Não foi possível concluir". Em produção o link deve ser `https://…/convite` (já recomendado em `configuracao-producao.md`); o e2e sobe o backend com `EMAIL_URL_CONVITE=https://localhost:8081/convite`. Decidir se o app deve aceitar também o esquema `dietamais`.
+- Texto do consentimento de desenvolvimento aparece com acentos quebrados ("FictÃ­cio"): o `application-dev.properties` é lido como Latin-1. Só afeta o perfil `dev`.
+- O plano Teste (5 pacientes) e a carga de exemplo (3 pacientes) deixam espaço para 2 cadastros por banco: o e2e sobe um banco novo a cada execução.
+
+## E2E (A4)
+
+`ops/e2e-wsl.sh` (veja `e2e/README.md`) sobe Postgres 18, backend e web de produção e roda `e2e/fluxo-completo.spec.ts`: nutri cadastra e convida, paciente aceita, nutri monta e publica a dieta, paciente vê o Hoje e marca Comi, e uma segunda nutri recebe `404` na paciente da primeira. Workflow manual/por PR em `.github/workflows/e2e-web.yml`.
