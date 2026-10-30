@@ -77,7 +77,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
                                 if (!web) { contentType(ContentType.Application.Json); setBody(RefreshRequisicao(token)) }
                             }
                         } catch (cancelamento: CancellationException) { throw cancelamento }
-                        catch (falha: Exception) { throw FalhaComunicacao() }
+                        catch (falha: Throwable) { throw comoFalhaDeRede(falha) }
                         if (resposta.status.value == 429 || resposta.status.value >= 500) throw FalhaComunicacao()
                         decodificar(resposta, SessaoResposta.serializer())
                     }
@@ -112,14 +112,24 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         return resposta
     }
 
-    /** Na web, recarregar a página perde o access (só em memória): tenta o refresh silencioso pelo cookie; sem cookie válido, fica sem sessão. */
-    suspend fun restaurarSessao() {
-        if (controle.tokens() != null || !web) return
+    /**
+     * Na web, recarregar a página perde o access (só em memória): tenta o refresh silencioso pelo cookie. O resultado distingue
+     * "não há sessão" (cookie ausente ou vencido: 401) de "não deu para saber" (sem rede, 5xx, 429): neste caso o cookie continua
+     * valendo e quem chama não deve tratar como logout.
+     */
+    suspend fun restaurarSessao(): ResultadoRestauracao {
+        if (controle.tokens() != null) return ResultadoRestauracao.JA_ATIVA
+        if (!web) return ResultadoRestauracao.NAO_APLICAVEL
         val geracao = controle.geracao()
         val resposta = try { requisitar(HttpMethod.Post, "auth/refresh", publica = true, chave = novoIdLocal()) }
         catch (cancelamento: CancellationException) { throw cancelamento }
-        catch (falha: FalhaComunicacao) { return }
-        if (resposta.status.value in 200..299) controle.receber(decodificar(resposta, SessaoResposta.serializer()), geracao)
+        catch (falha: FalhaComunicacao) { return ResultadoRestauracao.SEM_REDE }
+        val status = resposta.status.value
+        if (status in 200..299) {
+            controle.receber(decodificar(resposta, SessaoResposta.serializer()), geracao)
+            return ResultadoRestauracao.RESTAURADA
+        }
+        return if (status == 400 || status == 401 || status == 403) ResultadoRestauracao.SEM_SESSAO else ResultadoRestauracao.INDISPONIVEL
     }
     internal suspend fun aguardarOperacoesSessao() = controle.aguardarOperacoes()
     suspend fun usuarioAtual(): UsuarioResposta? = controle.usuarioAtual()
@@ -179,7 +189,7 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         } catch (cancelamento: CancellationException) { throw cancelamento }
         catch (falha: ArmazenamentoSeguroIndisponivel) { throw falha }
         catch (falha: RespostaInvalida) { throw falha }
-        catch (falha: Exception) { throw FalhaComunicacao() }
+        catch (falha: Throwable) { throw comoFalhaDeRede(falha) }
         if (resposta.status.value == 426) obsoleta.value = true
         if (resposta.status == HttpStatusCode.Unauthorized && !semBearer) controle.rejeitar(geracao)
         if (resposta.status.value in 200..299 && geracao != null && !controle.corresponde(geracao)) throw SessaoAlterada()
@@ -221,3 +231,12 @@ private fun enderecoApi(configurada: String): Url {
 
 /** Desenvolvimento: API no PC/WSL acessada pela rede local (http só para IPv4 privado; o Android ainda exige o build debug para liberar o tráfego). */
 private val REDE_PRIVADA = Regex("(10\\.\\d{1,3}|192\\.168|172\\.(1[6-9]|2\\d|3[01]))\\.\\d{1,3}\\.\\d{1,3}")
+
+enum class ResultadoRestauracao { NAO_APLICAVEL, JA_ATIVA, RESTAURADA, SEM_SESSAO, SEM_REDE, INDISPONIVEL }
+
+/**
+ * Qualquer falha ao falar com a API (sem rede, DNS, CORS, `fetch` abortado) vira [FalhaComunicacao]. No navegador o motor JS do Ktor
+ * lança `kotlin.Error("Fail to fetch")` (um `Error` puro) e o Kotlin/Wasm lança `JsException` (um `Throwable`): nenhum é `Exception`.
+ * Subclasses de `Error` (OutOfMemory, AssertionError de teste) seguem subindo.
+ */
+internal fun comoFalhaDeRede(falha: Throwable): Throwable = if (falha !is Error || falha::class == Error::class) FalhaComunicacao() else falha
