@@ -1,6 +1,7 @@
 package org.br.dietamais.plataforma
 
 import org.br.dietamais.dominio.rotina.Lembrete
+import org.br.dietamais.dominio.rotina.TextosLembrete
 import java.awt.MenuItem
 import java.awt.PopupMenu
 import java.awt.SystemTray
@@ -20,7 +21,8 @@ actual class NotificadorLocal : NotificacaoLocal {
 
     actual override suspend fun pedirPermissao(): Boolean = permitido()
 
-    actual override suspend fun agendar(lembretes: List<Lembrete>, titulo: String, corpo: (String) -> String) {
+    actual override suspend fun agendar(lembretes: List<Lembrete>, textos: TextosLembrete) {
+        val titulo = textos.titulo; val corpo = textos.corpo
         cancelarTudo()
         if (!permitido()) return
         synchronized(trava) {
