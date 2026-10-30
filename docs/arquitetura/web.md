@@ -119,3 +119,30 @@ Rodando o fluxo completo no Chromium (`e2e/`, `ops/e2e-wsl.sh`) contra o backend
 ## E2E (A4)
 
 `ops/e2e-wsl.sh` (veja `e2e/README.md`) sobe Postgres 18, backend e web de produção e roda `e2e/fluxo-completo.spec.ts`: nutri cadastra e convida, paciente aceita, nutri monta e publica a dieta, paciente vê o Hoje e marca Comi, e uma segunda nutri recebe `404` na paciente da primeira. Workflow manual/por PR em `.github/workflows/e2e-web.yml`.
+
+## Medições da A5 (MOB-43, 29/10/2026)
+
+Medido no Chromium 141 do Playwright, no WSL, com `E2E_MEDIR=1 ops/e2e-wsl.sh medicoes` (`e2e/medicoes.spec.ts`; resultado bruto em `build/medicoes-web.json`). O servidor de teste imita o Caddy da produção: gzip nível 5, ETag e `Cache-Control: no-cache`.
+
+**Bundle do primeiro carregamento** (`wasmJsBrowserDistribution`, sem `composeResources`):
+
+| Arquivo | Bruto | gzip -9 | gzip -5 (Caddy) | brotli |
+| --- | --- | --- | --- | --- |
+| `…wasm` do app (login, pacientes, dieta, avaliação, agenda, anamnese, Ktor, Koin, Compose) | 6,86 MB | 1,95 MB | 1,97 MB | 1,40 MB |
+| `skiko.wasm` (renderização) | 8,64 MB | 3,20 MB | 3,22 MB | 2,50 MB |
+| `dietamais.js` | 0,54 MB | 0,10 MB | 0,10 MB | 0,08 MB |
+| **Total** | 16,0 MB | **5,5 MB** (5,25 MiB) | 5,5 MB | 4,2 MB |
+
+O app passou de 5,95 MB (MOB-43, primeira entrega) para 6,86 MB brutos com as telas novas (+15%). Medido na rede, o primeiro carregamento transfere 5,9 MB (inclui fontes e `strings`). O Caddy já oferece `zstd` e `gzip`; **brotli economiza cerca de 24%** sobre o gzip, mas o `encode` do Caddy não faz brotli (só se vier pré-comprimido ou por módulo).
+
+**Abertura até o formulário de Entrar** (celular 390×844, cache vazio e depois recarga na mesma sessão):
+
+| Rede | Primeira vez | Segunda vez (revalida, 304) | Bytes na segunda vez |
+| --- | --- | --- | --- |
+| Sem limite (loopback) | 1,4 s | 0,7 s | 2,4 KB |
+| 4G rápido (9 Mbps, 165 ms) | **7,1 s** | 2,1 s | 2,4 KB |
+| 4G lento (1,6 Mbps, 150 ms) | **31,1 s** | 2,0 s | 2,4 KB |
+
+Leitura: no 4G bom a primeira abertura leva uns 7 s; em 4G fraco passa de 30 s, quase tudo é download do `skiko.wasm` e do `.wasm` do app. Nas aberturas seguintes só há revalidação (o Caddy manda `no-cache` com ETag e os `.wasm` têm hash no nome, então dá para trocar para `Cache-Control: public, max-age=31536000, immutable` nos `.wasm` e ganhar mais uns 1,5 s sem nenhum byte). A nutri no desktop em rede fixa não sente; a paciente em 4G fraco sente na primeira vez, e para ela o app Android/iOS segue sendo o caminho principal (a web da paciente é conveniência).
+
+**Autofill de senha: não funciona.** Na tela de Entrar não existe nenhum `<input>`, `<form>` nem `type="password"`: os campos são `<div role="textbox" contenteditable>` sem `autocomplete` nem `name` (e `aria-label` "E-mail" e "Senha"). O gerenciador de senhas do navegador não oferece salvar nem preencher. Opções para o ponto de decisão do Guilherme: (1) aceitar, já que o app é a forma principal para a paciente; (2) fazer a tela de Entrar em HTML puro no `index.html` (form com `autocomplete="username"`/`current-password`), que entrega a sessão ao Compose; (3) esperar suporte a autofill do Compose para web. Não implementei nenhuma: muda arquitetura de login.
