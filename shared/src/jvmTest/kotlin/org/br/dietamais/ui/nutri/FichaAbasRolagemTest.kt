@@ -57,4 +57,23 @@ class FichaAbasRolagemTest {
         setContent { DietaTheme { EvolucaoTela(EstadoEvolucao(carregado = true), AcoesEvolucao()) } }
         onNode(hasScrollAction()).assertExists()
     }
+
+    @Test fun abaDietaComListaEMontadorAbertoDentroDaFichaNaoFechaOApp() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val rascunho = org.br.dietamais.ui.nutri.dieta.RascunhoDieta(titulo = "Plano fictício")
+        setContent { DietaTheme { PacienteFichaTela(EstadoPacientes(selecionado = paciente, abaFicha = AbaFicha.DIETA), {}, {}, {}) { _, _ ->
+            org.br.dietamais.ui.nutri.dieta.DietasListaTela(org.br.dietamais.ui.nutri.dieta.EstadoDieta(), {}, {}, {}, {})
+            androidx.compose.ui.window.Dialog(onDismissRequest = {}, properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)) {
+                org.br.dietamais.ui.nutri.dieta.MontarDietaTela(org.br.dietamais.ui.nutri.dieta.EstadoDieta(rascunho = rascunho), org.br.dietamais.ui.nutri.dieta.AcoesMontador())
+            }
+        } } }
+        waitForIdle()
+        onNodeWithText("Pessoa fictícia").assertExists()
+    }
+
+    @Test fun abaListaDentroDaFichaNaoFechaOApp() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        setContent { DietaTheme { PacienteFichaTela(EstadoPacientes(selecionado = paciente, abaFicha = AbaFicha.LISTA), {}, {}, {}) { _, _ ->
+            org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela(org.br.dietamais.ui.nutri.listapaciente.EstadoListaPaciente())
+        } } }
+        onNodeWithText("Pessoa fictícia").assertExists()
+    }
 }
