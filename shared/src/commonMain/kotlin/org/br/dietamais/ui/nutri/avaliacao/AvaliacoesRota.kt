@@ -22,7 +22,7 @@ fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid, sexo: 
     if (estado.formulario != null) AvaliacaoTela(estado, AcoesAvaliacao(viewModel::mudarMedida, viewModel::mudarParecer, viewModel::mudarCompartilhada,
         viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar, viewModel::proximoPasso, viewModel::passoAnterior, viewModel::repetirMedidasDaUltima,
         viewModel::mudarProtocoloDobras, viewModel::mudarProtocoloMassa, { viewModel.mudarCompartilhamento(medidas = it) }, { viewModel.mudarCompartilhamento(composicao = it) },
-        { viewModel.mudarCompartilhamento(resumo = it) }), rolavel = false)
+        { viewModel.mudarCompartilhamento(resumo = it) }, viewModel::mudarEnergia), rolavel = false)
     else HistoricoAvaliacoesTela(estado, AcoesHistorico(viewModel::nova, viewModel::editar, viewModel::alternarSelecao, viewModel::comparar,
         viewModel::voltarDaComparacao, viewModel::recarregar,
         pdf = { a -> BotaoPdf(stringResource(Res.string.pdf_avaliacao), !estado.semConexao, { pdf.link(RecursoPdf.AVALIACAO, a.id) }) }), rolavel = false)

@@ -25,7 +25,9 @@ data class AvaliacaoResposta(val id: Uuid, val pacienteId: Uuid, val vinculoId: 
     // Avaliação ampliada (BE-41): todos opcionais; o app antigo e o backend antigo continuam compatíveis.
     val faixaEtaria: FaixaEtariaAvaliacao? = null, val protocolo: ProtocoloAvaliacaoDto? = null,
     val complementares: MedidasComplementaresDto? = null, val resultados: ResultadosAvaliacaoDto? = null,
-    val compartilhamento: CompartilhamentoAvaliacaoDto? = null)
+    val compartilhamento: CompartilhamentoAvaliacaoDto? = null,
+    // Energia e metas (BE-43b): a escolha da nutri e o que o servidor calculou.
+    val energia: EnergiaAvaliacaoDto? = null, val energiaResultado: EnergiaResultadoDto? = null)
 
 @Serializable(with = FaixaEtariaAvaliacaoSerializer::class)
 enum class FaixaEtariaAvaliacao { CRIANCA, ADOLESCENTE, ADULTO, IDOSO, OUTRO }
@@ -63,4 +65,22 @@ data class SalvarAvaliacaoRequisicao(val id: Uuid? = null, val dataHora: Instant
     val justificativa: String? = null,
     // Avaliação ampliada (BE-41): opcionais; sem eles o servidor usa o padrão da nutri e o compartilhamento padrão.
     val protocolo: ProtocoloAvaliacaoDto? = null, val complementares: MedidasComplementaresDto? = null,
-    val compartilhamento: CompartilhamentoAvaliacaoDto? = null)
+    val compartilhamento: CompartilhamentoAvaliacaoDto? = null, val energia: EnergiaAvaliacaoDto? = null)
+
+/**
+ * Escolhas da nutri para o gasto energético e as metas (BE-43b). Valores como texto (método, protocolos, lactação): valor desconhecido nunca falha.
+ * `rotinaMet` só é guardada para devolver ao servidor na edição; a tela de rotina do MET ainda não existe no app.
+ */
+@Serializable
+data class EnergiaAvaliacaoDto(val metodo: String? = null, val gestante: Boolean? = null, val lactacao: String? = null, val carboidrato: String? = null,
+    val proteina: String? = null, val lipidio: String? = null, val dislipidemico: Boolean? = null, val colesterolTotal: Double? = null,
+    val rotinaMet: kotlinx.serialization.json.JsonElement? = null)
+
+@Serializable
+data class MetaMacroDto(val percentualMinimo: Double? = null, val percentualMaximo: Double? = null, val gramasMinimo: Double? = null, val gramasMaximo: Double? = null)
+
+/** Calculado e gravado pelo servidor (RN-CAL-01); campo ausente = sem dado, com o motivo em `motivosNulos` (RN-CAL-04). */
+@Serializable
+data class EnergiaResultadoDto(val metodo: String? = null, val gebKcal: Double? = null, val getKcal: Double? = null, val vetKcal: Double? = null,
+    val kcalPorKg: Double? = null, val carboidrato: MetaMacroDto? = null, val proteina: MetaMacroDto? = null, val lipidio: MetaMacroDto? = null,
+    val colesterolMaximoMg: Double? = null, val motivosNulos: Map<String, String> = emptyMap())

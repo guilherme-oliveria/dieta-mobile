@@ -123,6 +123,8 @@ class AvaliacoesViewModelTest {
         vm.preencherComCintura(); vm.proximoPasso()
         assertEquals(PassoAvaliacao.COMPOSICAO, vm.estado.value.formulario?.passo); assertTrue(vm.estado.value.errosMedidas.isEmpty())
         vm.proximoPasso() // composição nunca bloqueia
+        assertEquals(PassoAvaliacao.NECESSIDADES, vm.estado.value.formulario?.passo)
+        vm.proximoPasso() // necessidades também não
         val form = assertNotNull(vm.estado.value.formulario)
         assertEquals(PassoAvaliacao.RESUMO, form.passo); assertTrue(form.parecer.startsWith("O avaliado apresenta"), form.parecer)
         vm.mudarParecer("Meu texto"); vm.passoAnterior(); vm.proximoPasso()
@@ -138,6 +140,27 @@ class AvaliacoesViewModelTest {
         val enviado = assertNotNull(p.criada)
         assertEquals("TRES", enviado.protocolo?.dobras); assertEquals("MUSCULAR", enviado.protocolo?.massa)
         assertEquals(17.5, enviado.complementares?.punhoCm); assertEquals(false, enviado.compartilhamento?.composicao); assertNull(enviado.compartilhamento?.medidas)
+    }
+
+    @Test fun salvaAsEscolhasDeEnergiaEReabreComElas() = runTest {
+        val p = Porta(); val vm = vm(p); vm.abrir(paciente); advanceUntilIdle()
+        vm.nova(); vm.preencher()
+        vm.mudarEnergia(org.br.dietamais.dominio.avaliacao.EscolhasEnergia(nivel = org.br.dietamais.dominio.calculos.NivelAtividade.MODERADO,
+            carboidrato = org.br.dietamais.dominio.calculos.ProtocoloCarboidrato.FAIXA_ESPORTIVA, objetivo = org.br.dietamais.dominio.calculos.ObjetivoPeso.PERDA, kgPorMes = "2"))
+        vm.salvar(); advanceUntilIdle()
+        val enviado = assertNotNull(p.criada)
+        assertEquals("FAO_2004", enviado.energia?.metodo); assertEquals("FAIXA_ESPORTIVA", enviado.energia?.carboidrato)
+        assertEquals("MODERADO", enviado.complementares?.nivelAtividade); assertEquals("PERDA", enviado.complementares?.objetivo); assertEquals(2.0, enviado.complementares?.objetivoKgPorMes)
+        val gravada = item(9, 70.0).copy(energia = enviado.energia, complementares = enviado.complementares)
+        val vm2 = vm(Porta(listOf(gravada))); vm2.abrir(paciente); advanceUntilIdle(); vm2.editar(gravada.id)
+        val e = assertNotNull(vm2.estado.value.formulario).energia
+        assertEquals(org.br.dietamais.dominio.calculos.ProtocoloCarboidrato.FAIXA_ESPORTIVA, e.carboidrato); assertEquals("2", e.kgPorMes)
+    }
+
+    @Test fun avaliacaoSemEscolhaDeEnergiaNaoEnviaOBloco() = runTest {
+        val p = Porta(); val vm = vm(p); vm.abrir(paciente); advanceUntilIdle()
+        vm.nova(); vm.preencher(); vm.salvar(); advanceUntilIdle()
+        assertNull(assertNotNull(p.criada).energia)
     }
 
     @Test fun repetirMedidasCopiaDaUltimaSemTocarNaComposicao() = runTest {
