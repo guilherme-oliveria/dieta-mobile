@@ -6,6 +6,10 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
@@ -49,6 +53,7 @@ fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, pod
 @Composable
 private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, editavel: Boolean, acoes: AcoesHistorico) {
     val rotuloSelecionar = stringResource(Res.string.avaliacao_selecionar)
+    var detalhes by remember(item.id) { mutableStateOf(false) }
     CardDieta(Modifier.fillMaxWidth().toggleable(selecionada, role = Role.Checkbox, onValueChange = { acoes.aoSelecionar(item.id) })
         .semantics { contentDescription = rotuloSelecionar }) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
@@ -58,6 +63,8 @@ private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, edita
                 Text(stringResource(Res.string.avaliacao_peso_estatura, textoDecimal(item.pesoKg), textoDecimal(item.estaturaM)), style = MaterialTheme.typography.bodyMedium)
                 Text(stringResource(Res.string.avaliacao_imc_valor, textoDecimal(item.imc), stringResource(rotuloClassificacao(item.classificacaoImc))), style = MaterialTheme.typography.bodyMedium)
                 if (!item.compartilhada) ChipStatus(EstiloStatus.INFO, texto = stringResource(Res.string.avaliacao_privada))
+                BotaoTexto(stringResource(if (detalhes) Res.string.avaliacao_ocultar_detalhes else Res.string.avaliacao_ver_detalhes), { detalhes = !detalhes })
+                if (detalhes) DetalhesAvaliacao(item)
                 acoes.pdf(item)
             }
             if (editavel) BotaoTexto(stringResource(Res.string.avaliacao_editar), { acoes.aoEditar(item.id) })
