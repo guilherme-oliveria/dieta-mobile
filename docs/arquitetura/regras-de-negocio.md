@@ -92,6 +92,24 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 - **RN-AVA-04** Avaliação pode ser editada pela nutri por 30 dias; depois só com justificativa registrada no log. `[SUPOSIÇÃO]`
 - **RN-AVA-05** O paciente vê as avaliações que a nutri marcar como "compartilhada" (padrão: sim) e o gráfico de evolução.
 
+- **RN-AVA-06** `[planilhas]` Avaliação ampliada: campos novos (punho, diâmetros, pesos usual e desejado, % desejado, atividade, objetivo) são opcionais, e o contrato antigo continua aceito.
+
+## Cálculos da avaliação (RN-CAL) e resultados (RN-RES)
+
+Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substituem o "só IMC" da RN-AVA-02 à medida que BE-40 e seguintes entram.
+
+- **RN-CAL-01** O backend calcula e grava todos os resultados derivados (composição, classificações, GEB/GET, VET, metas, texto-resumo). O cliente mostra prévia com as mesmas fórmulas; o valor gravado é o do backend (como RN-DIE-05).
+- **RN-CAL-02** A faixa etária da avaliação é decidida pela idade na data: 0–9, 10–17, 18–59, 60+.
+- **RN-CAL-03** Cada avaliação grava o protocolo e a `versaoReferencia` usados. Recalcular só acontece se a nutri pedir. Protocolo desconhecido: `422 PROTOCOLO_INVALIDO`.
+- **RN-CAL-04** Resultado que depende de dado ausente fica nulo, com o motivo (ex.: `FALTA_PUNHO`), nunca zero. `DADO_INSUFICIENTE_CALCULO` só quando a nutri pede um cálculo explícito sem os dados.
+- **RN-CAL-05** Peso para "por kg" na dieta: adulto com IMC ≥ 30 usa o peso ajustado `(P − Pideal) × 0,25 + Pideal`, com `Pideal = E² × 21,7`.
+- **RN-CAL-06** Vetores de teste da planilha (`src/test/resources/contrato/calculos/`) são contrato: mudança de fórmula exige mudar o vetor nos dois repositórios.
+- **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404).
+- **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho.
+- **RN-MOD-03** Restrição do modelo vira restrição do paciente na dieta publicada e filtra a lista dele no snapshot (RN-DIE-03).
+- **RN-RES-01** O paciente vê resultados por seção conforme o compartilhamento da nutri; exames são não compartilhados por padrão.
+- **RN-RES-02** Textos para o paciente não usam siglas clínicas.
+
 ## Anamnese (RN-ANA)
 
 - **RN-ANA-01** A nutri tem modelos de questionário (blocos e perguntas). Toda nutri começa com o modelo padrão (objetivo, histórico de saúde, familiar, alergias, preferências, treino, rotina, recordatório 24 h, frequência alimentar, hábitos, digestão, saúde da mulher).
