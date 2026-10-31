@@ -1,0 +1,998 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores de teste do gasto energético e das metas de macronutrientes de adulto e idoso (BE-43, MOB-52). Mesmo arquivo nos dois repositórios (RN-CAL-06). Valores esperados calculados de forma independente (script separado do código) a partir das fórmulas da seção 3.2 do plano das planilhas. A RDA de proteína do protocolo 2 vem da macro RDI_PTN (71 g gestante e lactante; adulto 56 g homem e 46 g mulher).",
+ "tolerancia": {
+  "kcal": 0.01,
+  "gramas": 0.01,
+  "percentual": 0.01
+ },
+ "arredondamento": "kcal, g e % com 2 casas em HALF_UP; intermediários sem arredondar.",
+ "casos": [
+  {
+   "id": "GEB-FAO85-m29",
+   "descricao": "GEB FAO 1985",
+   "origem": "macronutrientes e calorias, GEB FAO 1985",
+   "funcao": "gebFao1985",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "pesoKg": 102.5
+   },
+   "esperado": 2247.25
+  },
+  {
+   "id": "GEB-FAO04-m29",
+   "descricao": "GEB FAO 2004",
+   "origem": "macronutrientes e calorias, GEB FAO 2004",
+   "funcao": "gebFao2004",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "pesoKg": 102.5
+   },
+   "esperado": 2235.54
+  },
+  {
+   "id": "GEB-FAO85-m45",
+   "descricao": "GEB FAO 1985",
+   "origem": "macronutrientes e calorias, GEB FAO 1985",
+   "funcao": "gebFao1985",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 45,
+    "pesoKg": 80
+   },
+   "esperado": 1807.0
+  },
+  {
+   "id": "GEB-FAO04-m45",
+   "descricao": "GEB FAO 2004",
+   "origem": "macronutrientes e calorias, GEB FAO 2004",
+   "funcao": "gebFao2004",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 45,
+    "pesoKg": 80
+   },
+   "esperado": 1790.86
+  },
+  {
+   "id": "GEB-FAO85-m65",
+   "descricao": "GEB FAO 1985",
+   "origem": "macronutrientes e calorias, GEB FAO 1985",
+   "funcao": "gebFao1985",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 65,
+    "pesoKg": 70
+   },
+   "esperado": 1432.0
+  },
+  {
+   "id": "GEB-FAO04-m65",
+   "descricao": "GEB FAO 2004",
+   "origem": "macronutrientes e calorias, GEB FAO 2004",
+   "funcao": "gebFao2004",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 65,
+    "pesoKg": 70
+   },
+   "esperado": 1407.47
+  },
+  {
+   "id": "GEB-FAO85-f25",
+   "descricao": "GEB FAO 1985",
+   "origem": "macronutrientes e calorias, GEB FAO 1985",
+   "funcao": "gebFao1985",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 25,
+    "pesoKg": 60
+   },
+   "esperado": 1378.0
+  },
+  {
+   "id": "GEB-FAO04-f25",
+   "descricao": "GEB FAO 2004",
+   "origem": "macronutrientes e calorias, GEB FAO 2004",
+   "funcao": "gebFao2004",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 25,
+    "pesoKg": 60
+   },
+   "esperado": 1375.68
+  },
+  {
+   "id": "GEB-FAO85-f40",
+   "descricao": "GEB FAO 1985",
+   "origem": "macronutrientes e calorias, GEB FAO 1985",
+   "funcao": "gebFao1985",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 40,
+    "pesoKg": 65
+   },
+   "esperado": 1394.5
+  },
+  {
+   "id": "GEB-FAO04-f40",
+   "descricao": "GEB FAO 2004",
+   "origem": "macronutrientes e calorias, GEB FAO 2004",
+   "funcao": "gebFao2004",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 40,
+    "pesoKg": 65
+   },
+   "esperado": 1373.79
+  },
+  {
+   "id": "GEB-FAO85-f70",
+   "descricao": "GEB FAO 1985",
+   "origem": "macronutrientes e calorias, GEB FAO 1985",
+   "funcao": "gebFao1985",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 70,
+    "pesoKg": 55
+   },
+   "esperado": 1173.5
+  },
+  {
+   "id": "GEB-FAO04-f70",
+   "descricao": "GEB FAO 2004",
+   "origem": "macronutrientes e calorias, GEB FAO 2004",
+   "funcao": "gebFao2004",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 70,
+    "pesoKg": 55
+   },
+   "esperado": 1158.01
+  },
+  {
+   "id": "GEB-IOM-m29-sob",
+   "descricao": "GEB IOM 2002",
+   "origem": "macronutrientes e calorias, GEB IOM",
+   "funcao": "gebIom2002",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "pesoKg": 102.5,
+    "estaturaM": 1.93,
+    "sobrepesoOuObeso": true
+   },
+   "esperado": 2100.95
+  },
+  {
+   "id": "GEB-IOM-m45-eut",
+   "descricao": "GEB IOM 2002",
+   "origem": "macronutrientes e calorias, GEB IOM",
+   "funcao": "gebIom2002",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 45,
+    "pesoKg": 70,
+    "estaturaM": 1.78,
+    "sobrepesoOuObeso": false
+   },
+   "esperado": 1644.19
+  },
+  {
+   "id": "GEB-IOM-f25-sob",
+   "descricao": "GEB IOM 2002",
+   "origem": "macronutrientes e calorias, GEB IOM",
+   "funcao": "gebIom2002",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 25,
+    "pesoKg": 80,
+    "estaturaM": 1.62,
+    "sobrepesoOuObeso": true
+   },
+   "esperado": 1518.68
+  },
+  {
+   "id": "GEB-IOM-f40-eut",
+   "descricao": "GEB IOM 2002",
+   "origem": "macronutrientes e calorias, GEB IOM",
+   "funcao": "gebIom2002",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 40,
+    "pesoKg": 58,
+    "estaturaM": 1.64,
+    "sobrepesoOuObeso": false
+   },
+   "esperado": 1298.64
+  },
+  {
+   "id": "GEB-CUNNINGHAM-75.4",
+   "descricao": "GEB Cunningham 1991",
+   "origem": "macronutrientes e calorias, GEB Cunningham",
+   "funcao": "gebCunningham",
+   "entrada": {
+    "massaMagraKg": 75.4
+   },
+   "esperado": 1998.64
+  },
+  {
+   "id": "GEB-CUNNINGHAM-48.2",
+   "descricao": "GEB Cunningham 1991",
+   "origem": "macronutrientes e calorias, GEB Cunningham",
+   "funcao": "gebCunningham",
+   "entrada": {
+    "massaMagraKg": 48.2
+   },
+   "esperado": 1411.12
+  },
+  {
+   "id": "GET-FAO85-m-SEDENTARIO",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1800.55,
+    "sexo": "masculino",
+    "nivel": "SEDENTARIO"
+   },
+   "esperado": 2340.72
+  },
+  {
+   "id": "GET-FAO85-m-LEVE",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1800.55,
+    "sexo": "masculino",
+    "nivel": "LEVE"
+   },
+   "esperado": 2790.85
+  },
+  {
+   "id": "GET-FAO85-m-MODERADO",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1800.55,
+    "sexo": "masculino",
+    "nivel": "MODERADO"
+   },
+   "esperado": 3204.98
+  },
+  {
+   "id": "GET-FAO85-m-INTENSO",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1800.55,
+    "sexo": "masculino",
+    "nivel": "INTENSO"
+   },
+   "esperado": 3781.16
+  },
+  {
+   "id": "GET-FAO85-f-SEDENTARIO",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1400.25,
+    "sexo": "feminino",
+    "nivel": "SEDENTARIO"
+   },
+   "esperado": 1820.33
+  },
+  {
+   "id": "GET-FAO85-f-LEVE",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1400.25,
+    "sexo": "feminino",
+    "nivel": "LEVE"
+   },
+   "esperado": 2184.39
+  },
+  {
+   "id": "GET-FAO85-f-MODERADO",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1400.25,
+    "sexo": "feminino",
+    "nivel": "MODERADO"
+   },
+   "esperado": 2296.41
+  },
+  {
+   "id": "GET-FAO85-f-INTENSO",
+   "descricao": "GET FAO 1985",
+   "origem": "GET FAO 1985",
+   "funcao": "getFao1985",
+   "entrada": {
+    "gebKcal": 1400.25,
+    "sexo": "feminino",
+    "nivel": "INTENSO"
+   },
+   "esperado": 2548.46
+  },
+  {
+   "id": "GET-FAO04-SEDENTARIO-nao",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "SEDENTARIO",
+    "lactante": false
+   },
+   "esperado": 2525.11
+  },
+  {
+   "id": "GET-FAO04-SEDENTARIO-lac",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "SEDENTARIO",
+    "lactante": true
+   },
+   "esperado": 3200.11
+  },
+  {
+   "id": "GET-FAO04-LEVE-nao",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "LEVE",
+    "lactante": false
+   },
+   "esperado": 2525.11
+  },
+  {
+   "id": "GET-FAO04-LEVE-lac",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "LEVE",
+    "lactante": true
+   },
+   "esperado": 3200.11
+  },
+  {
+   "id": "GET-FAO04-MODERADO-nao",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "MODERADO",
+    "lactante": false
+   },
+   "esperado": 2904.7
+  },
+  {
+   "id": "GET-FAO04-MODERADO-lac",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "MODERADO",
+    "lactante": true
+   },
+   "esperado": 3579.7
+  },
+  {
+   "id": "GET-FAO04-INTENSO-nao",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "INTENSO",
+    "lactante": false
+   },
+   "esperado": 3713.4
+  },
+  {
+   "id": "GET-FAO04-INTENSO-lac",
+   "descricao": "GET FAO 2004 (lactante soma 675)",
+   "origem": "GET FAO 2004",
+   "funcao": "getFao2004",
+   "entrada": {
+    "gebKcal": 1650.4,
+    "nivel": "INTENSO",
+    "lactante": true
+   },
+   "esperado": 4388.4
+  },
+  {
+   "id": "GET-IOM05-SEDENTARIO",
+   "descricao": "GET IOM 2005",
+   "origem": "GET IOM 2005",
+   "funcao": "getIom2005",
+   "entrada": {
+    "gebIomKcal": 1700.9,
+    "nivel": "SEDENTARIO"
+   },
+   "esperado": 2041.08
+  },
+  {
+   "id": "GET-IOM05-LEVE",
+   "descricao": "GET IOM 2005",
+   "origem": "GET IOM 2005",
+   "funcao": "getIom2005",
+   "entrada": {
+    "gebIomKcal": 1700.9,
+    "nivel": "LEVE"
+   },
+   "esperado": 2551.35
+  },
+  {
+   "id": "GET-IOM05-MODERADO",
+   "descricao": "GET IOM 2005",
+   "origem": "GET IOM 2005",
+   "funcao": "getIom2005",
+   "entrada": {
+    "gebIomKcal": 1700.9,
+    "nivel": "MODERADO"
+   },
+   "esperado": 2976.58
+  },
+  {
+   "id": "GET-IOM05-INTENSO",
+   "descricao": "GET IOM 2005",
+   "origem": "GET IOM 2005",
+   "funcao": "getIom2005",
+   "entrada": {
+    "gebIomKcal": 1700.9,
+    "nivel": "INTENSO"
+   },
+   "esperado": 3741.98
+  },
+  {
+   "id": "GET-RDI05-m29-LEVE-nao",
+   "descricao": "GET RDI 2005 (EER)",
+   "origem": "GET RDI 2005",
+   "funcao": "getRdi2005",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "pesoKg": 102.5,
+    "estaturaM": 1.93,
+    "nivel": "LEVE",
+    "periodoLactacao": null
+   },
+   "esperado": 3351.26
+  },
+  {
+   "id": "GET-RDI05-m50-INTENSO-nao",
+   "descricao": "GET RDI 2005 (EER)",
+   "origem": "GET RDI 2005",
+   "funcao": "getRdi2005",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 50,
+    "pesoKg": 80,
+    "estaturaM": 1.75,
+    "nivel": "INTENSO",
+    "periodoLactacao": null
+   },
+   "esperado": 3466.19
+  },
+  {
+   "id": "GET-RDI05-f30-MODERADO-nao",
+   "descricao": "GET RDI 2005 (EER)",
+   "origem": "GET RDI 2005",
+   "funcao": "getRdi2005",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 30,
+    "pesoKg": 62,
+    "estaturaM": 1.65,
+    "nivel": "MODERADO",
+    "periodoLactacao": null
+   },
+   "esperado": 2407.13
+  },
+  {
+   "id": "GET-RDI05-f28-SEDENTARIO-ATE_6_MESES",
+   "descricao": "GET RDI 2005 (EER)",
+   "origem": "GET RDI 2005",
+   "funcao": "getRdi2005",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 28,
+    "pesoKg": 62,
+    "estaturaM": 1.65,
+    "nivel": "SEDENTARIO",
+    "periodoLactacao": "ATE_6_MESES"
+   },
+   "esperado": 2270.39
+  },
+  {
+   "id": "GET-RDI05-f28-LEVE-DE_7_A_12_MESES",
+   "descricao": "GET RDI 2005 (EER)",
+   "origem": "GET RDI 2005",
+   "funcao": "getRdi2005",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 28,
+    "pesoKg": 62,
+    "estaturaM": 1.65,
+    "nivel": "LEVE",
+    "periodoLactacao": "DE_7_A_12_MESES"
+   },
+   "esperado": 2553.97
+  },
+  {
+   "id": "VET-MANUTENCAO-None",
+   "descricao": "VET",
+   "origem": "macronutrientes e calorias, VET",
+   "funcao": "vet",
+   "entrada": {
+    "getKcal": 2500.45,
+    "objetivo": "MANUTENCAO",
+    "kgPorMes": null
+   },
+   "esperado": 2500.45
+  },
+  {
+   "id": "VET-GANHO-2",
+   "descricao": "VET",
+   "origem": "macronutrientes e calorias, VET",
+   "funcao": "vet",
+   "entrada": {
+    "getKcal": 2500.45,
+    "objetivo": "GANHO",
+    "kgPorMes": 2
+   },
+   "esperado": 3056.01
+  },
+  {
+   "id": "VET-PERDA-1.5",
+   "descricao": "VET",
+   "origem": "macronutrientes e calorias, VET",
+   "funcao": "vet",
+   "entrada": {
+    "getKcal": 2500.45,
+    "objetivo": "PERDA",
+    "kgPorMes": 1.5
+   },
+   "esperado": 2083.78
+  },
+  {
+   "id": "VET-PERDA-0.8",
+   "descricao": "VET",
+   "origem": "macronutrientes e calorias, VET",
+   "funcao": "vet",
+   "entrada": {
+    "getKcal": 2500.45,
+    "objetivo": "PERDA",
+    "kgPorMes": 0.8
+   },
+   "esperado": 2278.23
+  },
+  {
+   "id": "KCAL-KG",
+   "descricao": "kcal por kg",
+   "origem": "VET / P",
+   "funcao": "kcalPorKg",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5
+   },
+   "esperado": 24.48
+  },
+  {
+   "id": "CHO-DRI",
+   "descricao": "Carboidrato 45–65%",
+   "origem": "macronutrientes e calorias, carboidrato",
+   "funcao": "carboidrato",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "FAIXA_DRI"
+   },
+   "esperado": {
+    "percentualMinimo": 45.0,
+    "percentualMaximo": 65.0,
+    "gramasMinimo": 282.26,
+    "gramasMaximo": 407.71
+   }
+  },
+  {
+   "id": "CHO-ESPORTIVO",
+   "descricao": "Carboidrato 50–60%",
+   "origem": "carboidrato protocolo 3",
+   "funcao": "carboidrato",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "FAIXA_ESPORTIVA"
+   },
+   "esperado": {
+    "percentualMinimo": 50.0,
+    "percentualMaximo": 60.0,
+    "gramasMinimo": 313.63,
+    "gramasMaximo": 376.35
+   }
+  },
+  {
+   "id": "CHO-POR-KG",
+   "descricao": "Carboidrato 5–10 g/kg",
+   "origem": "carboidrato protocolo 4",
+   "funcao": "carboidrato",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "POR_KG"
+   },
+   "esperado": {
+    "percentualMinimo": 81.71,
+    "percentualMaximo": 163.41,
+    "gramasMinimo": 512.5,
+    "gramasMaximo": 1025.0
+   }
+  },
+  {
+   "id": "CHO-MINIMO-normal",
+   "descricao": "Carboidrato mínimo 130/210/175 g",
+   "origem": "carboidrato protocolo 2",
+   "funcao": "carboidrato",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "MINIMO_RDA"
+   },
+   "esperado": {
+    "percentualMinimo": 20.73,
+    "percentualMaximo": null,
+    "gramasMinimo": 130.0,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "CHO-MINIMO-lactante",
+   "descricao": "Carboidrato mínimo 130/210/175 g",
+   "origem": "carboidrato protocolo 2",
+   "funcao": "carboidrato",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": true,
+    "protocolo": "MINIMO_RDA"
+   },
+   "esperado": {
+    "percentualMinimo": 33.48,
+    "percentualMaximo": null,
+    "gramasMinimo": 210.0,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "CHO-MINIMO-gestante",
+   "descricao": "Carboidrato mínimo 130/210/175 g",
+   "origem": "carboidrato protocolo 2",
+   "funcao": "carboidrato",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": true,
+    "lactante": false,
+    "protocolo": "MINIMO_RDA"
+   },
+   "esperado": {
+    "percentualMinimo": 27.9,
+    "percentualMaximo": null,
+    "gramasMinimo": 175.0,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "PTN-DRI",
+   "descricao": "Proteína 10–35%",
+   "origem": "proteína protocolo 1",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "FAIXA_DRI"
+   },
+   "esperado": {
+    "percentualMinimo": 10.0,
+    "percentualMaximo": 35.0,
+    "gramasMinimo": 62.73,
+    "gramasMaximo": 219.54
+   }
+  },
+  {
+   "id": "PTN-MINIMO15",
+   "descricao": "Proteína mínimo 15%",
+   "origem": "proteína protocolo 3",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "MINIMO_15"
+   },
+   "esperado": {
+    "percentualMinimo": 15.0,
+    "percentualMaximo": null,
+    "gramasMinimo": 94.09,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "PTN-ENDURANCE",
+   "descricao": "Proteína endurance 1,2–1,6 g/kg",
+   "origem": "proteína protocolo 4",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "ENDURANCE"
+   },
+   "esperado": {
+    "percentualMinimo": 19.61,
+    "percentualMaximo": 26.15,
+    "gramasMinimo": 123.0,
+    "gramasMaximo": 164.0
+   }
+  },
+  {
+   "id": "PTN-HIPERTROFIA",
+   "descricao": "Proteína hipertrofia 1,4–1,8 g/kg",
+   "origem": "proteína protocolo 4",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "HIPERTROFIA"
+   },
+   "esperado": {
+    "percentualMinimo": 22.88,
+    "percentualMaximo": 29.41,
+    "gramasMinimo": 143.5,
+    "gramasMaximo": 184.5
+   }
+  },
+  {
+   "id": "PTN-RDA-homem",
+   "descricao": "Proteína RDA",
+   "origem": "proteína protocolo 2; correção 3.6 item 6",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "RDA"
+   },
+   "esperado": {
+    "percentualMinimo": 8.93,
+    "percentualMaximo": null,
+    "gramasMinimo": 56.0,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "PTN-RDA-mulher",
+   "descricao": "Proteína RDA",
+   "origem": "proteína protocolo 2; correção 3.6 item 6",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "feminino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": false,
+    "protocolo": "RDA"
+   },
+   "esperado": {
+    "percentualMinimo": 7.33,
+    "percentualMaximo": null,
+    "gramasMinimo": 46.0,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "PTN-RDA-lactante",
+   "descricao": "Proteína RDA lactante 71 g",
+   "origem": "proteína protocolo 2",
+   "funcao": "proteina",
+   "entrada": {
+    "vetKcal": 2509,
+    "pesoKg": 102.5,
+    "sexo": "feminino",
+    "idadeAnos": 29,
+    "gestante": false,
+    "lactante": true,
+    "protocolo": "RDA"
+   },
+   "esperado": {
+    "percentualMinimo": 11.32,
+    "percentualMaximo": null,
+    "gramasMinimo": 71.0,
+    "gramasMaximo": null
+   }
+  },
+  {
+   "id": "LIP-20",
+   "descricao": "Lipídio 20–35%",
+   "origem": "lipídio protocolo 1",
+   "funcao": "lipidio",
+   "entrada": {
+    "vetKcal": 2509,
+    "protocolo": "MINIMO_20"
+   },
+   "esperado": {
+    "percentualMinimo": 20.0,
+    "percentualMaximo": 35.0,
+    "gramasMinimo": 55.76,
+    "gramasMaximo": 97.57
+   }
+  },
+  {
+   "id": "LIP-25",
+   "descricao": "Lipídio 25–35%",
+   "origem": "lipídio protocolo 2",
+   "funcao": "lipidio",
+   "entrada": {
+    "vetKcal": 2509,
+    "protocolo": "MINIMO_25"
+   },
+   "esperado": {
+    "percentualMinimo": 25.0,
+    "percentualMaximo": 35.0,
+    "gramasMinimo": 69.69,
+    "gramasMaximo": 97.57
+   }
+  },
+  {
+   "id": "LIP-DISLIPIDEMICO",
+   "descricao": "Frações SBC 2007",
+   "origem": "lipídio dislipidêmico",
+   "funcao": "lipidiosDislipidemico",
+   "entrada": {
+    "vetKcal": 2509
+   },
+   "esperado": {
+    "total": {
+     "percentualMinimo": 20.0,
+     "percentualMaximo": 35.0,
+     "gramasMinimo": 55.76,
+     "gramasMaximo": 97.57
+    },
+    "saturado": {
+     "percentualMinimo": 7.0,
+     "percentualMaximo": 7.0,
+     "gramasMinimo": 19.51,
+     "gramasMaximo": 19.51
+    },
+    "monoinsaturado": {
+     "percentualMinimo": 20.0,
+     "percentualMaximo": 20.0,
+     "gramasMinimo": 55.76,
+     "gramasMaximo": 55.76
+    },
+    "poliinsaturado": {
+     "percentualMinimo": 10.0,
+     "percentualMaximo": 10.0,
+     "gramasMinimo": 27.88,
+     "gramasMaximo": 27.88
+    },
+    "trans": {
+     "percentualMinimo": 1.0,
+     "percentualMaximo": 1.0,
+     "gramasMinimo": 2.79,
+     "gramasMaximo": 2.79
+    }
+   }
+  },
+  {
+   "id": "COLESTEROL-None",
+   "descricao": "Colesterol máximo",
+   "origem": "macronutrientes e calorias, colesterol",
+   "funcao": "colesterolMaximoMg",
+   "entrada": {
+    "colesterolTotal": null
+   },
+   "esperado": 300
+  },
+  {
+   "id": "COLESTEROL-150",
+   "descricao": "Colesterol máximo",
+   "origem": "macronutrientes e calorias, colesterol",
+   "funcao": "colesterolMaximoMg",
+   "entrada": {
+    "colesterolTotal": 150
+   },
+   "esperado": 300
+  },
+  {
+   "id": "COLESTEROL-199.9",
+   "descricao": "Colesterol máximo",
+   "origem": "macronutrientes e calorias, colesterol",
+   "funcao": "colesterolMaximoMg",
+   "entrada": {
+    "colesterolTotal": 199.9
+   },
+   "esperado": 300
+  },
+  {
+   "id": "COLESTEROL-200",
+   "descricao": "Colesterol máximo",
+   "origem": "macronutrientes e calorias, colesterol",
+   "funcao": "colesterolMaximoMg",
+   "entrada": {
+    "colesterolTotal": 200
+   },
+   "esperado": 200
+  },
+  {
+   "id": "COLESTEROL-260",
+   "descricao": "Colesterol máximo",
+   "origem": "macronutrientes e calorias, colesterol",
+   "funcao": "colesterolMaximoMg",
+   "entrada": {
+    "colesterolTotal": 260
+   },
+   "esperado": 200
+  }
+ ]
+}
