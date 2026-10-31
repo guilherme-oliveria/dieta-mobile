@@ -82,7 +82,8 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
             parecer = item.parecer.orEmpty(), compartilhada = item.compartilhada, exigeJustificativa = antiga,
             protocoloDobras = item.protocolo?.dobras?.let { v -> ProtocoloDobras.entries.firstOrNull { it.name == v } } ?: ProtocoloDobras.SETE,
             protocoloMassa = item.protocolo?.massa?.let { v -> ProtocoloMassa.entries.firstOrNull { it.name == v } } ?: ProtocoloMassa.MAGRO,
-            compartilhamento = item.compartilhamento ?: CompartilhamentoAvaliacaoDto()), errosMedidas = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) }
+            compartilhamento = item.compartilhamento ?: CompartilhamentoAvaliacaoDto(),
+            energia = escolhasDe(item.energia, item.complementares?.nivelAtividade, item.complementares?.objetivo, item.complementares?.objetivoKgPorMes)), errosMedidas = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) }
     }
 
     fun fechar() { if (!atual.value.enviando) atual.update { it.copy(formulario = null, errosMedidas = emptyMap(), justificativaFaltando = false) } }
@@ -91,6 +92,7 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
     fun mudarParecer(valor: String) = formulario { it.copy(parecer = valor.take(10000), parecerPreenchidoAuto = false) }
     fun mudarProtocoloDobras(valor: ProtocoloDobras) = formulario { it.copy(protocoloDobras = valor) }
     fun mudarProtocoloMassa(valor: ProtocoloMassa) = formulario { it.copy(protocoloMassa = valor) }
+    fun mudarEnergia(valor: EscolhasEnergia) = formulario { it.copy(energia = valor.copy(tocada = true)) }
     fun mudarCompartilhamento(medidas: Boolean? = null, composicao: Boolean? = null, resumo: Boolean? = null) = formulario {
         it.copy(compartilhamento = it.compartilhamento.copy(medidas = medidas ?: it.compartilhamento.medidas,
             composicao = composicao ?: it.compartilhamento.composicao, resumo = resumo ?: it.compartilhamento.resumo))
@@ -134,7 +136,7 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         if (erros.isNotEmpty() || semJustificativa) { atual.update { it.copy(errosMedidas = erros, justificativaFaltando = semJustificativa) }; return }
         val requisicao = montarRequisicao(form.valores, form.dataHora ?: agora(), form.parecer, form.compartilhada,
             if (form.exigeJustificativa) form.justificativa else null, form.id,
-            ProtocoloAvaliacaoDto(form.protocoloDobras.name, form.protocoloMassa.name), form.compartilhamento)
+            ProtocoloAvaliacaoDto(form.protocoloDobras.name, form.protocoloMassa.name), form.compartilhamento, form.energia)
         atual.update { it.copy(enviando = true, erro = null, aviso = null, errosMedidas = emptyMap()) }
         operacao = viewModelScope.launch(dispatcher) {
             try {

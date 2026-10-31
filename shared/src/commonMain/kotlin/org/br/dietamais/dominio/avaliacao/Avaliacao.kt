@@ -63,12 +63,16 @@ private fun temMaisDeDuasCasas(texto: String): Boolean {
 
 fun montarRequisicao(valores: Map<MedidaAvaliacao, String>, dataHora: Instant, parecer: String, compartilhada: Boolean,
     justificativa: String? = null, id: kotlin.uuid.Uuid? = null, protocolo: ProtocoloAvaliacaoDto? = null,
-    compartilhamento: CompartilhamentoAvaliacaoDto? = null): SalvarAvaliacaoRequisicao {
+    compartilhamento: CompartilhamentoAvaliacaoDto? = null, energia: EscolhasEnergia? = null): SalvarAvaliacaoRequisicao {
     fun v(m: MedidaAvaliacao) = lerDecimal(valores[m].orEmpty())
-    val complementares = listOf(MedidaAvaliacao.PUNHO, MedidaAvaliacao.DIAMETRO_PUNHO, MedidaAvaliacao.DIAMETRO_JOELHO, MedidaAvaliacao.PERCENTUAL_DESEJADO)
-        .takeIf { lista -> lista.any { v(it) != null } }
-        ?.let { MedidasComplementaresDto(punhoCm = v(MedidaAvaliacao.PUNHO), diametroPunhoCm = v(MedidaAvaliacao.DIAMETRO_PUNHO),
-            diametroJoelhoCm = v(MedidaAvaliacao.DIAMETRO_JOELHO), percentualGorduraDesejado = v(MedidaAvaliacao.PERCENTUAL_DESEJADO)) }
+    val medidasComplementares = listOf(MedidaAvaliacao.PUNHO, MedidaAvaliacao.DIAMETRO_PUNHO, MedidaAvaliacao.DIAMETRO_JOELHO, MedidaAvaliacao.PERCENTUAL_DESEJADO)
+    val kgPorMes = energia?.takeIf { it.objetivo != org.br.dietamais.dominio.calculos.ObjetivoPeso.MANUTENCAO }?.let { lerDecimal(it.kgPorMes) }
+    val temEnergia = energia != null && (energia.tocada || energia.nivel != null)
+    val complementares = if (medidasComplementares.any { v(it) != null } || temEnergia)
+        MedidasComplementaresDto(punhoCm = v(MedidaAvaliacao.PUNHO), diametroPunhoCm = v(MedidaAvaliacao.DIAMETRO_PUNHO),
+            diametroJoelhoCm = v(MedidaAvaliacao.DIAMETRO_JOELHO), percentualGorduraDesejado = v(MedidaAvaliacao.PERCENTUAL_DESEJADO),
+            nivelAtividade = energia?.nivel?.name, objetivo = energia?.takeIf { temEnergia }?.objetivo?.name, objetivoKgPorMes = kgPorMes)
+    else null
     return SalvarAvaliacaoRequisicao(
         id = id, dataHora = dataHora, pesoKg = checkNotNull(v(MedidaAvaliacao.PESO)), estaturaM = checkNotNull(v(MedidaAvaliacao.ESTATURA)),
         perimetros = PerimetrosAvaliacao(v(MedidaAvaliacao.PESCOCO), v(MedidaAvaliacao.TORAX), v(MedidaAvaliacao.CINTURA), v(MedidaAvaliacao.ABDOMEN),
@@ -77,7 +81,8 @@ fun montarRequisicao(valores: Map<MedidaAvaliacao, String>, dataHora: Instant, p
             v(MedidaAvaliacao.DOBRA_AXILAR_MEDIA), v(MedidaAvaliacao.DOBRA_SUPRAILIACA), v(MedidaAvaliacao.DOBRA_ABDOMINAL), v(MedidaAvaliacao.DOBRA_COXA)),
         composicao = ComposicaoAvaliacao(v(MedidaAvaliacao.PERCENTUAL_GORDURA), v(MedidaAvaliacao.PESO_GORDO), v(MedidaAvaliacao.PESO_MAGRO)),
         parecer = parecer.trim().ifEmpty { null }, compartilhada = compartilhada, justificativa = justificativa?.trim()?.ifEmpty { null },
-        protocolo = protocolo, complementares = complementares, compartilhamento = compartilhamento)
+        protocolo = protocolo, complementares = complementares, compartilhamento = compartilhamento,
+        energia = energia?.let { energiaParaEnviar(it) })
 }
 
 fun valoresDe(avaliacao: AvaliacaoResposta): Map<MedidaAvaliacao, String> = MedidaAvaliacao.entries.mapNotNull { m ->

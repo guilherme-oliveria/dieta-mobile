@@ -5,6 +5,7 @@ import org.br.dietamais.dominio.avaliacao.ErroMedida
 import kotlinx.datetime.LocalDate
 import org.br.dietamais.data.remoto.dto.CompartilhamentoAvaliacaoDto
 import org.br.dietamais.data.remoto.dto.Sexo
+import org.br.dietamais.dominio.avaliacao.EscolhasEnergia
 import org.br.dietamais.dominio.avaliacao.MedidaAvaliacao
 import org.br.dietamais.dominio.avaliacao.PassoAvaliacao
 import org.br.dietamais.dominio.calculos.ProtocoloDobras
@@ -21,7 +22,7 @@ data class FormularioAvaliacao(val id: Uuid? = null, val versao: Long? = null, v
     val passo: PassoAvaliacao = PassoAvaliacao.MEDIDAS, val protocoloDobras: ProtocoloDobras = ProtocoloDobras.SETE,
     val protocoloMassa: ProtocoloMassa = ProtocoloMassa.MAGRO, val compartilhamento: CompartilhamentoAvaliacaoDto = CompartilhamentoAvaliacaoDto(),
     /** Parecer ainda não mexido pela nutri: ao chegar no resumo, entra o texto gerado, que ela pode editar. */
-    val parecerPreenchidoAuto: Boolean = false)
+    val parecerPreenchidoAuto: Boolean = false, val energia: EscolhasEnergia = EscolhasEnergia())
 
 /** `sexo` e `nascimento` do paciente só alimentam a prévia local; o servidor recalcula ao salvar (RN-CAL-01). */
 data class EstadoAvaliacoes(val pacienteId: Uuid? = null, val sexo: Sexo? = null, val nascimento: LocalDate? = null, val somenteLeitura: Boolean = false, val itens: List<AvaliacaoResposta> = emptyList(), val atualizando: Boolean = false,

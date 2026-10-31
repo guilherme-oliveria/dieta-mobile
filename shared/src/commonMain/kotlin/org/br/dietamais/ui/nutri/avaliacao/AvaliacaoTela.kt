@@ -26,11 +26,12 @@ data class AcoesAvaliacao(val aoMedida: (MedidaAvaliacao, String) -> Unit = { _,
     val aoCompartilhar: (Boolean) -> Unit = {}, val aoJustificativa: (String) -> Unit = {}, val aoSalvar: () -> Unit = {}, val aoFechar: () -> Unit = {},
     val aoProximo: () -> Unit = {}, val aoVoltarPasso: () -> Unit = {}, val aoRepetirMedidas: () -> Unit = {},
     val aoProtocoloDobras: (ProtocoloDobras) -> Unit = {}, val aoProtocoloMassa: (ProtocoloMassa) -> Unit = {},
-    val aoMostrarMedidas: (Boolean) -> Unit = {}, val aoMostrarComposicao: (Boolean) -> Unit = {}, val aoMostrarResumo: (Boolean) -> Unit = {})
+    val aoMostrarMedidas: (Boolean) -> Unit = {}, val aoMostrarComposicao: (Boolean) -> Unit = {}, val aoMostrarResumo: (Boolean) -> Unit = {},
+    val aoEnergia: (EscolhasEnergia) -> Unit = {})
 
 /**
- * Avaliação em passos (MOB-50): Medidas, Composição e Resumo, com os resultados recalculando a cada campo (prévia local, offline).
- * Na janela larga os resultados ficam num painel à direita; no celular, em cartão abaixo do passo. O passo "Necessidades" entra no MOB-52.
+ * Avaliação em passos (MOB-50 e MOB-52): Medidas, Composição, Necessidades e Resumo, com os resultados recalculando a cada campo (prévia local, offline).
+ * Na janela larga os resultados ficam num painel à direita; no celular, em cartão abaixo do passo.
  */
 @Composable
 fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Boolean = true,
@@ -61,9 +62,10 @@ private fun PassoAtual(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoe
     when (form.passo) {
         PassoAvaliacao.MEDIDAS -> PassoMedidas(estado, form, acoes, habilitado)
         PassoAvaliacao.COMPOSICAO -> PassoComposicao(estado, form, acoes, habilitado)
+        PassoAvaliacao.NECESSIDADES -> PassoNecessidades(estado.sexo, form.energia, previaEnergia(form.valores, estado.sexo, previa.idadeAnos, previa, form.energia), acoes.aoEnergia, habilitado)
         PassoAvaliacao.RESUMO -> PassoResumo(estado, form, acoes, habilitado)
     }
-    if (!painelAoLado && form.passo != PassoAvaliacao.RESUMO) PainelResultados(previa, form)
+    if (!painelAoLado && form.passo != PassoAvaliacao.RESUMO && form.passo != PassoAvaliacao.NECESSIDADES) PainelResultados(previa, form)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalAlignment = Alignment.CenterVertically) {
         if (form.passo != PassoAvaliacao.MEDIDAS) BotaoContornado(stringResource(Res.string.avaliacao_voltar_passo), acoes.aoVoltarPasso, habilitado = habilitado)
         if (form.passo == PassoAvaliacao.RESUMO) BotaoPrincipal(stringResource(Res.string.avaliacao_salvar), acoes.aoSalvar, Modifier.weight(1f), habilitado = habilitado, carregando = estado.enviando)

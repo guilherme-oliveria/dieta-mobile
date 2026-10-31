@@ -11,6 +11,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 - MOB-46 Publicação da web na VPS (depende do BE-32b).
 - Conferir com leitor de tela real (NVDA, VoiceOver, TalkBack), Safari e Firefox (G-14).
 
+## [1.3.0] — M9: necessidades e protocolos (em andamento)
+
+- MOB-52 Passo "Necessidades" da avaliação (método do GET, nível de atividade, objetivo, gestante/lactante, protocolos das metas, dislipidêmico) com GEB, GET, VET, rosca e metas ao vivo; avaliações salvas reabrem com as escolhas. Textos antigos com `%%` corrigidos.
+
 ## [1.2.0] — M8: avaliação de adulto completa
 
 - MOB-47 Biblioteca de gráficos (rosca, linhas com faixa, medidor, régua de faixas, "ver como tabela"). MOB-48 `dominio/calculos` com os mesmos vetores do backend (prévia ao vivo, offline).

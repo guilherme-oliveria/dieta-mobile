@@ -13,6 +13,7 @@ Tudo aqui é **aditivo**: campos novos são opcionais, o contrato antigo (fase 4
 | Funções de cálculo (domínio) | vetores em `calculos/adulto.json` | BE-40 |
 | `AvaliacaoResposta` com `resultados`, `protocolo`, `complementares`, `compartilhamento`; gravação e `/sync` | BE-C7 | BE-41 (pronto) |
 | `GET/PUT /eu/nutri/protocolos` | BE-C7 | BE-42 (pronto) |
+| `energia` e `energiaResultado` na avaliação; `GET /referencias/atividades-met` e `/referencias/dri` | BE-C7 | BE-43b (pronto) |
 
 Desde o BE-41 o servidor grava a entrada e calcula `resultados` ao salvar (REST e `POST /sync` usam o mesmo caso de uso). Detalhes:
 
@@ -57,6 +58,19 @@ Limites de sanidade (RN-AVA-03) dos campos novos: pesos 20–400 kg, punho 5–4
 | `PUT /api/v1/eu/nutri/protocolos` | nutri | `SalvarProtocolosNutriRequisicao` + `If-Match` | `200 ProtocolosNutriResposta` |
 
 Valor desconhecido: `422 PROTOCOLO_INVALIDO` (RN-CAL-03). Paciente: `403 PERFIL_INVALIDO`. Vale para as próximas avaliações; as já gravadas guardam o que usaram. Entra no `/sync` na coleção `protocolos` (`mudancas.protocolos`), só para a nutri dona. A escrita é pelo `PUT` (online, com `If-Match`; versão `"0"` na primeira gravação). Valor desconhecido de protocolo também vale como `422 PROTOCOLO_INVALIDO` ao criar ou editar avaliação.
+
+## Energia e metas (BE-43b)
+
+Entrada opcional `energia` em `SalvarAvaliacaoRequisicao`: `{ metodo, gestante, lactacao, carboidrato, proteina, lipidio, dislipidemico, colesterolTotal, rotinaMet }`.
+
+- `metodo`: `FAO_1985`, `FAO_2004` (padrão), `IOM_2005`, `RDI_2005` ou `MET`. `lactacao`: `ATE_6_MESES` ou `DE_7_A_12_MESES` (preenchido = lactante, só vale para mulher). Nível de atividade, `objetivo` e `objetivoKgPorMes` vêm de `complementares`.
+- `carboidrato`: `FAIXA_DRI` (padrão), `MINIMO_RDA`, `FAIXA_ESPORTIVA`, `POR_KG`. `proteina`: `FAIXA_DRI` (padrão), `RDA`, `MINIMO_15`, `ENDURANCE`, `HIPERTROFIA`. `lipidio`: `MINIMO_20` (padrão) ou `MINIMO_25`.
+- `rotinaMet` (só lida com `metodo = MET`): `{ horasSono, horasTrabalho, intensidadeTrabalho: LEVE|MODERADO|INTENSO, atividades: [{ codigo, minutos }] }`, até 5 atividades; o `codigo` vem de `GET /referencias/atividades-met`. Código desconhecido ou dia com mais de 24 h: `400 FORMATO_INVALIDO`. O MET usa a massa magra calculada da avaliação.
+- O servidor só calcula quando vem `energia` ou `complementares.nivelAtividade`; sem isso a avaliação não tem o bloco (contrato antigo). Na resposta: `energia` (a escolha, ecoada) e `energiaResultado`: `{ metodo, gebKcal, getKcal, vetKcal, kcalPorKg, carboidrato, proteina, lipidio, lipidiosDislipidemico, colesterolMaximoMg, motivosNulos }`. Cada macro é `{ percentualMinimo, percentualMaximo, gramasMinimo, gramasMaximo }` (máximos ausentes quando só há mínimo). Sem dado o campo some e o motivo vai em `motivosNulos` (RN-CAL-04): `get = FALTA_NIVEL_ATIVIDADE | FALTA_ROTINA_MET | FALTA_MASSA_MAGRA`, `vet = FALTA_GET`, `energia = FAIXA_ETARIA_NAO_SUPORTADA | FALTA_SEXO | FALTA_NASCIMENTO`. `gebKcal` não existe em `RDI_2005`.
+- `lipidiosDislipidemico` e `colesterolMaximoMg` (300 mg, ou 200 se `colesterolTotal` ≥ 200) só vêm com `dislipidemico = true`.
+- Paciente: `energia` e `energiaResultado` seguem a seção `necessidades` do compartilhamento (RN-RES-01).
+- `GET /referencias/dri` devolve `{ sexo, idadeMeses, gestante, lactante, itens: [{ nutriente, nome, unidade, valor }] }`; lactante tem prioridade sobre gestante; nutriente sem referência para a idade não aparece. Vetores: `calculos/energia.json`, `met.json` e `dri.json`.
+- [SUPOSIÇÃO] Os padrões (FAO 2004, faixas DRI, lipídio mínimo 20%) são os mais usados na planilha; mudar um padrão é só trocar o valor em `CalculoEnergiaAvaliacao`.
 
 ## Vetores de teste (RN-CAL-06)
 
