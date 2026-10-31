@@ -96,7 +96,7 @@ Detalhe em [plano-melhorias-planilhas.md](plano-melhorias-planilhas.md) (cópia 
 
 - [x] **MOB-47 Biblioteca de gráficos** (`ui/comum/graficos`: rosca, linha ampliada, barras, régua de faixas, medidor, curva de crescimento).
 - [x] **MOB-48 `dominio/calculos`.** Porta Kotlin das fórmulas do adulto (`CalculosAdulto`), com os mesmos vetores do backend (`contrato/calculos/adulto.json`, rodados por `CalculosAdultoTest` no `jvmTest`) e as correções da seção 3.6.
-- [x] **MOB-49 Paciente vê a avaliação inteira** (P0 do relatório) · [ ] **MOB-50 a MOB-53** avaliação em passos, Meus resultados, necessidades, protocolos · [ ] **MOB-54 a MOB-57** planejador por porções e modelos · [ ] **MOB-58 a MOB-61** crianças, exames, anamnese
+- [x] **MOB-49 Paciente vê a avaliação inteira** (P0 do relatório) · [x] **MOB-50** avaliação em passos · [ ] **MOB-51 a MOB-53** Meus resultados, necessidades, protocolos · [ ] **MOB-54 a MOB-57** planejador por porções e modelos · [ ] **MOB-58 a MOB-61** crianças, exames, anamnese
 
 ## Pós-MVP (P2)
 

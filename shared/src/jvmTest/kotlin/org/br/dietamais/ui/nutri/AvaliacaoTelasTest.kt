@@ -6,6 +6,8 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.dominio.avaliacao.MedidaAvaliacao
+import org.br.dietamais.dominio.avaliacao.PassoAvaliacao
+import org.br.dietamais.dominio.calculos.ProtocoloDobras
 import org.br.dietamais.ui.nutri.avaliacao.*
 import org.br.dietamais.ui.theme.DietaTheme
 import kotlin.test.*
@@ -24,8 +26,36 @@ class AvaliacaoTelasTest {
     }
 
     @Test fun offlineSalvaNaFila() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
-        setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = FormularioAvaliacao(), semConexao = true), AcoesAvaliacao()) } }
+        // o "Salvar" fica no último passo; offline continua habilitado (grava na fila)
+        val form = FormularioAvaliacao(passo = PassoAvaliacao.RESUMO)
+        setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form, semConexao = true), AcoesAvaliacao()) } }
         onNodeWithText("Salvar avaliação").performScrollTo().assertIsEnabled()
+        onNodeWithText("Passo 3 de 3: Resumo").assertExists()
+    }
+
+    @Test fun passoUmMostraProtocoloDeDobrasEDobrasSoDoProtocolo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val estado = EstadoAvaliacoes(formulario = FormularioAvaliacao(protocoloDobras = ProtocoloDobras.TRES), sexo = Sexo.MASCULINO)
+        setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
+        onNodeWithText("Passo 1 de 3: Medidas").assertExists()
+        onNodeWithText("3 dobras").performScrollTo().assertExists()
+        onNodeWithContentDescription("Peitoral (mm)").assertExists()
+        onNodeWithContentDescription("Tríceps (mm)").assertDoesNotExist() // homem, 3 dobras: peitoral, abdominal e coxa
+        onNodeWithText("Continuar").performScrollTo().assertIsEnabled()
+    }
+
+    @Test fun painelMostraResultadosEAvisoDoQueFalta() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "102,5", MedidaAvaliacao.ESTATURA to "1,93", MedidaAvaliacao.CINTURA to "100"))
+        val estado = EstadoAvaliacoes(formulario = form, sexo = Sexo.MASCULINO, nascimento = kotlinx.datetime.LocalDate(1997, 4, 1))
+        setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
+        onNodeWithText("Resultados ao vivo").performScrollTo().assertExists()
+        onNodeWithText("Informe todas as dobras do protocolo para ver o % de gordura.").performScrollTo().assertExists()
+        onNodeWithText("Informe o punho para ver a compleição.").performScrollTo().assertExists()
+    }
+
+    @Test fun semSexoNaFichaExplicaPorqueNaoCalcula() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
+        setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form, nascimento = kotlinx.datetime.LocalDate(1997, 4, 1)), AcoesAvaliacao()) } }
+        onNodeWithText("Informe o sexo na ficha do paciente para calcular.").performScrollTo().assertExists()
     }
 
     @Test fun historicoDoPacienteNaoOfereceEdicaoEComparaDuasDatas() = runSkikoComposeUiTest(size = Size(390f, 844f)) {

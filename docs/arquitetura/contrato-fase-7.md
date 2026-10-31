@@ -12,12 +12,12 @@ Tudo aqui é **aditivo**: campos novos são opcionais, o contrato antigo (fase 4
 | Referências (tabelas `referencia_faixa`) | — | BE-39 |
 | Funções de cálculo (domínio) | vetores em `calculos/adulto.json` | BE-40 |
 | `AvaliacaoResposta` com `resultados`, `protocolo`, `complementares`, `compartilhamento`; gravação e `/sync` | BE-C7 | BE-41 (pronto) |
-| `GET/PUT /eu/nutri/protocolos` | BE-C7 | BE-42 |
+| `GET/PUT /eu/nutri/protocolos` | BE-C7 | BE-42 (pronto) |
 
 Desde o BE-41 o servidor grava a entrada e calcula `resultados` ao salvar (REST e `POST /sync` usam o mesmo caso de uso). Detalhes:
 
 - A idade vem de `dataNascimento` da ficha na data da avaliação (fuso de São Paulo) e o sexo de `sexo` da ficha. Sem nascimento: `resultados.motivosNulos.resultados = "FALTA_NASCIMENTO"`; sem sexo (ou `OUTRO`/`NAO_INFORMADO`): `"FALTA_SEXO"`; abaixo de 18 anos: `"FAIXA_ETARIA_NAO_SUPORTADA"` até o BE-55. Nesses casos só `idadeAnos` (quando sabida) e o IMC antigo vêm preenchidos; a avaliação é salva normalmente.
-- Protocolo ausente = `SETE`/`MAGRO` (o padrão da nutri entra no BE-42). `versaoReferencia` é sempre a vigente no servidor.
+- Protocolo ausente na criação = padrão da nutri (`GET /eu/nutri/protocolos`; `SETE`/`MAGRO` se nunca salvou). Na edição, ausente = o protocolo que a avaliação já tinha (RN-CAL-03: o resultado não muda sozinho). `versaoReferencia` é sempre a vigente no servidor.
 - O paciente recebe só as seções compartilhadas (RN-RES-01): `medidas` (perímetros, dobras, compleição, cintura, somatório), `composicao` (composição e % de gordura), `resumo` (parecer e `textoResumo`), `necessidades` (`complementares`). Peso, estatura, IMC, classificação do IMC, peso teórico e `faixaEtaria` acompanham a avaliação compartilhada. `motivosNulos` não vai ao paciente.
 - A evolução ganha as séries `SOMATORIO_DOBRAS` e `DOBRA_*` (mm).
 
@@ -56,7 +56,7 @@ Limites de sanidade (RN-AVA-03) dos campos novos: pesos 20–400 kg, punho 5–4
 | `GET /api/v1/eu/nutri/protocolos` | nutri | — | `200 ProtocolosNutriResposta` + `ETag` (padrão `SETE`/`MAGRO` se nunca salvo) |
 | `PUT /api/v1/eu/nutri/protocolos` | nutri | `SalvarProtocolosNutriRequisicao` + `If-Match` | `200 ProtocolosNutriResposta` |
 
-Valor desconhecido: `422 PROTOCOLO_INVALIDO` (RN-CAL-03). Paciente: `403 PERFIL_INVALIDO`. Vale para as próximas avaliações; as já gravadas guardam o que usaram. Entra no `/sync` como fonte da nutri (BE-42).
+Valor desconhecido: `422 PROTOCOLO_INVALIDO` (RN-CAL-03). Paciente: `403 PERFIL_INVALIDO`. Vale para as próximas avaliações; as já gravadas guardam o que usaram. Entra no `/sync` na coleção `protocolos` (`mudancas.protocolos`), só para a nutri dona. A escrita é pelo `PUT` (online, com `If-Match`; versão `"0"` na primeira gravação). Valor desconhecido de protocolo também vale como `422 PROTOCOLO_INVALIDO` ao criar ou editar avaliação.
 
 ## Vetores de teste (RN-CAL-06)
 

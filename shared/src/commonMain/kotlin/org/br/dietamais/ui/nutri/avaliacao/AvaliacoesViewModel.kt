@@ -5,7 +5,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.br.dietamais.data.remoto.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.br.dietamais.data.remoto.dto.ClassificacaoImc
+import org.br.dietamais.data.remoto.dto.CompartilhamentoAvaliacaoDto
+import org.br.dietamais.data.remoto.dto.ProtocoloAvaliacaoDto
+import org.br.dietamais.data.remoto.dto.Sexo
+import org.br.dietamais.dominio.calculos.ProtocoloDobras
+import org.br.dietamais.dominio.calculos.ProtocoloMassa
 import org.br.dietamais.data.repositorio.PortaAvaliacoes
 import org.br.dietamais.dominio.avaliacao.*
 import org.br.dietamais.data.sync.novoIdLocal
@@ -36,6 +44,9 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         }
         recarregar()
     }
+
+    /** Sexo e nascimento da ficha: só para a prévia local dos cálculos. */
+    fun definirPaciente(sexo: Sexo?, nascimento: LocalDate?) = atual.update { if (it.sexo == sexo && it.nascimento == nascimento) it else it.copy(sexo = sexo, nascimento = nascimento) }
 
     /** Perfil paciente: lê só o que o servidor compartilhou, direto do banco local (o sync traz as novas). */
     fun abrirComoPaciente() {
@@ -68,13 +79,47 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         if (ocupado()) return
         val antiga = agora() - item.criadoEm > 30.days
         atual.update { it.copy(formulario = FormularioAvaliacao(id = item.id, versao = item.versao, dataHora = item.dataHora, valores = valoresDe(item),
-            parecer = item.parecer.orEmpty(), compartilhada = item.compartilhada, exigeJustificativa = antiga), errosMedidas = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) }
+            parecer = item.parecer.orEmpty(), compartilhada = item.compartilhada, exigeJustificativa = antiga,
+            protocoloDobras = item.protocolo?.dobras?.let { v -> ProtocoloDobras.entries.firstOrNull { it.name == v } } ?: ProtocoloDobras.SETE,
+            protocoloMassa = item.protocolo?.massa?.let { v -> ProtocoloMassa.entries.firstOrNull { it.name == v } } ?: ProtocoloMassa.MAGRO,
+            compartilhamento = item.compartilhamento ?: CompartilhamentoAvaliacaoDto()), errosMedidas = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) }
     }
 
     fun fechar() { if (!atual.value.enviando) atual.update { it.copy(formulario = null, errosMedidas = emptyMap(), justificativaFaltando = false) } }
     fun mudarMedida(medida: MedidaAvaliacao, valor: String) = formulario { it.copy(valores = it.valores + (medida to valor.take(10))) }
         .also { atual.update { e -> e.copy(errosMedidas = e.errosMedidas - medida) } }
-    fun mudarParecer(valor: String) = formulario { it.copy(parecer = valor.take(10000)) }
+    fun mudarParecer(valor: String) = formulario { it.copy(parecer = valor.take(10000), parecerPreenchidoAuto = false) }
+    fun mudarProtocoloDobras(valor: ProtocoloDobras) = formulario { it.copy(protocoloDobras = valor) }
+    fun mudarProtocoloMassa(valor: ProtocoloMassa) = formulario { it.copy(protocoloMassa = valor) }
+    fun mudarCompartilhamento(medidas: Boolean? = null, composicao: Boolean? = null, resumo: Boolean? = null) = formulario {
+        it.copy(compartilhamento = it.compartilhamento.copy(medidas = medidas ?: it.compartilhamento.medidas,
+            composicao = composicao ?: it.compartilhamento.composicao, resumo = resumo ?: it.compartilhamento.resumo))
+    }
+
+    /** Repete as medidas da avaliação mais recente do paciente (peso, estatura, perímetros, dobras e complementares). */
+    fun repetirMedidasDaUltima() {
+        val ultima = atual.value.itens.firstOrNull() ?: return
+        formulario { it.copy(valores = it.valores + medidasParaRepetir(ultima)) }
+        atual.update { it.copy(errosMedidas = emptyMap()) }
+    }
+
+    /** Só avança se as medidas do passo atual forem válidas; a composição e o resumo nunca bloqueiam (RN-CAL-04: dado faltante só avisa). */
+    fun proximoPasso() {
+        val form = atual.value.formulario ?: return
+        val proximo = PassoAvaliacao.entries.getOrNull(form.passo.ordinal + 1) ?: return
+        val erros = validarMedidas(form.valores).filterKeys { it in medidasDoPasso(form.passo) }
+        if (erros.isNotEmpty()) { atual.update { it.copy(errosMedidas = erros) }; return }
+        formulario { f ->
+            val resumo = if (proximo == PassoAvaliacao.RESUMO && f.parecer.isBlank()) textoGerado(f) else null
+            f.copy(passo = proximo, parecer = resumo ?: f.parecer, parecerPreenchidoAuto = resumo != null || f.parecerPreenchidoAuto)
+        }
+        atual.update { it.copy(errosMedidas = emptyMap()) }
+    }
+    fun passoAnterior() { formulario { f -> PassoAvaliacao.entries.getOrNull(f.passo.ordinal - 1)?.let { f.copy(passo = it) } ?: f } }
+
+    /** Prévia dos resultados com os dados da ficha; nula no perfil paciente. */
+    fun previa(): PreviaAvaliacao? = atual.value.formulario?.let { previaDe(atual.value, it, agora()) }
+    private fun textoGerado(f: FormularioAvaliacao) = previaDe(atual.value, f, agora()).resultado?.textoResumo.orEmpty()
     fun mudarCompartilhada(valor: Boolean) = formulario { it.copy(compartilhada = valor) }
     fun mudarJustificativa(valor: String) { formulario { it.copy(justificativa = valor.take(1000)) }; atual.update { it.copy(justificativaFaltando = false) } }
 
@@ -88,7 +133,8 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         val semJustificativa = form.exigeJustificativa && form.justificativa.isBlank()
         if (erros.isNotEmpty() || semJustificativa) { atual.update { it.copy(errosMedidas = erros, justificativaFaltando = semJustificativa) }; return }
         val requisicao = montarRequisicao(form.valores, form.dataHora ?: agora(), form.parecer, form.compartilhada,
-            if (form.exigeJustificativa) form.justificativa else null, form.id)
+            if (form.exigeJustificativa) form.justificativa else null, form.id,
+            ProtocoloAvaliacaoDto(form.protocoloDobras.name, form.protocoloMassa.name), form.compartilhamento)
         atual.update { it.copy(enviando = true, erro = null, aviso = null, errosMedidas = emptyMap()) }
         operacao = viewModelScope.launch(dispatcher) {
             try {
@@ -171,3 +217,7 @@ fun medidaDoCampo(campo: String): MedidaAvaliacao? = when (campo) {
     "composicao.pesoMagroKg" -> MedidaAvaliacao.PESO_MAGRO
     else -> null
 }
+
+/** Prévia com o dia da avaliação no fuso do aparelho (o servidor usa o de São Paulo; a diferença só aparece no dia exato do aniversário). */
+fun previaDe(estado: EstadoAvaliacoes, form: FormularioAvaliacao, agora: Instant, fuso: TimeZone = TimeZone.currentSystemDefault()): PreviaAvaliacao =
+    previaAvaliacao(form.valores, estado.sexo, estado.nascimento, (form.dataHora ?: agora).toLocalDateTime(fuso).date, form.protocoloDobras, form.protocoloMassa)

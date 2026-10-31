@@ -14,12 +14,15 @@ import kotlin.uuid.Uuid
 
 /** Aba Avaliações da ficha da nutri: histórico ou, com o formulário aberto, a tela de edição. */
 @Composable
-fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid) {
+fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid, sexo: org.br.dietamais.data.remoto.dto.Sexo? = null, nascimento: kotlinx.datetime.LocalDate? = null) {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(pacienteId) { viewModel.abrir(pacienteId) }
+    LaunchedEffect(sexo, nascimento) { viewModel.definirPaciente(sexo, nascimento) }
     val pdf = koinInject<PortaPdf>()
     if (estado.formulario != null) AvaliacaoTela(estado, AcoesAvaliacao(viewModel::mudarMedida, viewModel::mudarParecer, viewModel::mudarCompartilhada,
-        viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar), rolavel = false)
+        viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar, viewModel::proximoPasso, viewModel::passoAnterior, viewModel::repetirMedidasDaUltima,
+        viewModel::mudarProtocoloDobras, viewModel::mudarProtocoloMassa, { viewModel.mudarCompartilhamento(medidas = it) }, { viewModel.mudarCompartilhamento(composicao = it) },
+        { viewModel.mudarCompartilhamento(resumo = it) }), rolavel = false)
     else HistoricoAvaliacoesTela(estado, AcoesHistorico(viewModel::nova, viewModel::editar, viewModel::alternarSelecao, viewModel::comparar,
         viewModel::voltarDaComparacao, viewModel::recarregar,
         pdf = { a -> BotaoPdf(stringResource(Res.string.pdf_avaliacao), !estado.semConexao, { pdf.link(RecursoPdf.AVALIACAO, a.id) }) }), rolavel = false)
