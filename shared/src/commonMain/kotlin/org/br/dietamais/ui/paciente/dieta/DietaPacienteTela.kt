@@ -32,6 +32,8 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                 Text(dieta.titulo, style = MaterialTheme.typography.titleLarge)
                 Text(stringResource(Res.string.pac_dieta_nutri, dieta.nutricionista.nome, dieta.nutricionista.crn), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.pac_dieta_total, formatar(dieta.totais.kcal)), style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(Res.string.pac_dieta_macros, formatar(dieta.totais.carboidratos), formatar(dieta.totais.proteinas), formatar(dieta.totais.gorduras)),
+                    style = MaterialTheme.typography.bodySmall)
                 pdf(estado)
                 if (estado.alternativas.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {
                     Text(stringResource(Res.string.pac_dieta_escolher), style = MaterialTheme.typography.titleMedium)
@@ -46,8 +48,13 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                     CardDieta(Modifier.fillMaxWidth()) {
                         Text(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), style = MaterialTheme.typography.titleMedium)
                         Text(stringResource(Res.string.pac_dieta_kcal_refeicao, formatar(r.totais.kcal)), style = MaterialTheme.typography.labelLarge)
+                        Text(stringResource(Res.string.pac_dieta_macros, formatar(r.totais.carboidratos), formatar(r.totais.proteinas), formatar(r.totais.gorduras)),
+                            style = MaterialTheme.typography.bodySmall)
                         if (aberta) r.itens.forEach { i ->
                             Text(stringResource(Res.string.pac_dieta_item, i.nomeAlimento, i.medidaCaseira, formatar(i.gramas)), style = MaterialTheme.typography.bodyMedium)
+                            i.grupoNome?.takeIf { it.isNotBlank() }?.let { grupo ->
+                                Text(stringResource(if (i.porcoes == 1.0) Res.string.pac_dieta_porcao else Res.string.pac_dieta_porcoes, formatar(i.porcoes), grupo), style = MaterialTheme.typography.bodySmall)
+                            }
                             i.observacao?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
                         }
                         BotaoTexto(stringResource(if (aberta) Res.string.pac_dieta_ocultar else Res.string.pac_dieta_ver), { aoAbrirRefeicao(if (aberta) null else r.id) })

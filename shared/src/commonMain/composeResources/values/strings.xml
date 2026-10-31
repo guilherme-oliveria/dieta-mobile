@@ -280,6 +280,9 @@
     <string name="pac_dieta_nutri">Nutricionista: %1$s · CRN %2$s</string>
     <string name="pac_dieta_total">Total do dia: %1$s kcal</string>
     <string name="pac_dieta_kcal_refeicao">%1$s kcal</string>
+    <string name="pac_dieta_macros">Carboidratos %1$s g · Proteínas %2$s g · Gorduras %3$s g</string>
+    <string name="pac_dieta_porcao">%1$s porção do grupo %2$s</string>
+    <string name="pac_dieta_porcoes">%1$s porções do grupo %2$s</string>
     <string name="pac_dieta_item">%1$s · %2$s (%3$s g)</string>
     <string name="pac_dieta_orientacoes">Orientações</string>
     <string name="pac_dieta_escolher">Dieta em uso</string>
@@ -405,6 +408,12 @@
     <string name="avaliacao_class_outro">Classificação não reconhecida</string>
     <string name="avaliacao_peso_estatura">%1$s kg · %2$s m</string>
     <string name="avaliacao_privada">Só você vê</string>
+    <string name="avaliacao_ver_detalhes">Ver medidas e parecer</string>
+    <string name="avaliacao_ocultar_detalhes">Ocultar detalhes</string>
+    <string name="avaliacao_detalhe_linha">%1$s: %2$s</string>
+    <string name="avaliacao_detalhe_sem_medidas">Nenhuma medida adicional nesta avaliação.</string>
+    <string name="avaliacao_detalhe_gordura">Gordura corporal: %1$s%%</string>
+    <string name="avaliacao_detalhe_dobras_soma">Soma das dobras: %1$s mm</string>
     <string name="avaliacao_comparar">Comparar</string>
     <string name="avaliacao_comparar_dica">Marque duas avaliações para comparar.</string>
     <string name="avaliacao_comparacao_titulo">Comparação</string>

@@ -11,10 +11,15 @@ Tudo aqui é **aditivo**: campos novos são opcionais, o contrato antigo (fase 4
 | Tipos e JSONs desta página | BE-C7 (pronto) | — |
 | Referências (tabelas `referencia_faixa`) | — | BE-39 |
 | Funções de cálculo (domínio) | vetores em `calculos/adulto.json` | BE-40 |
-| `AvaliacaoResposta` com `resultados`, `protocolo`, `complementares`, `compartilhamento`; gravação e `/sync` | BE-C7 | BE-41 |
+| `AvaliacaoResposta` com `resultados`, `protocolo`, `complementares`, `compartilhamento`; gravação e `/sync` | BE-C7 | BE-41 (pronto) |
 | `GET/PUT /eu/nutri/protocolos` | BE-C7 | BE-42 |
 
-Até o BE-41 o servidor devolve os campos novos ausentes e ignora os que o cliente mandar.
+Desde o BE-41 o servidor grava a entrada e calcula `resultados` ao salvar (REST e `POST /sync` usam o mesmo caso de uso). Detalhes:
+
+- A idade vem de `dataNascimento` da ficha na data da avaliação (fuso de São Paulo) e o sexo de `sexo` da ficha. Sem nascimento: `resultados.motivosNulos.resultados = "FALTA_NASCIMENTO"`; sem sexo (ou `OUTRO`/`NAO_INFORMADO`): `"FALTA_SEXO"`; abaixo de 18 anos: `"FAIXA_ETARIA_NAO_SUPORTADA"` até o BE-55. Nesses casos só `idadeAnos` (quando sabida) e o IMC antigo vêm preenchidos; a avaliação é salva normalmente.
+- Protocolo ausente = `SETE`/`MAGRO` (o padrão da nutri entra no BE-42). `versaoReferencia` é sempre a vigente no servidor.
+- O paciente recebe só as seções compartilhadas (RN-RES-01): `medidas` (perímetros, dobras, compleição, cintura, somatório), `composicao` (composição e % de gordura), `resumo` (parecer e `textoResumo`), `necessidades` (`complementares`). Peso, estatura, IMC, classificação do IMC, peso teórico e `faixaEtaria` acompanham a avaliação compartilhada. `motivosNulos` não vai ao paciente.
+- A evolução ganha as séries `SOMATORIO_DOBRAS` e `DOBRA_*` (mm).
 
 ## `AvaliacaoResposta` ampliada
 
