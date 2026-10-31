@@ -94,7 +94,7 @@ Substitui o site em Angular (`dieta-frontend`, que fica arquivado). Nutri e paci
 
 Detalhe em [plano-melhorias-planilhas.md](plano-melhorias-planilhas.md) (cópia do backend; ondas 17 a 23, seção 6.4). Contrato em [contrato-fase-7.md](contrato-fase-7.md).
 
-- [ ] **MOB-47 Biblioteca de gráficos** (`ui/comum/graficos`: rosca, linha ampliada, barras, régua de faixas, medidor, curva de crescimento).
+- [x] **MOB-47 Biblioteca de gráficos** (`ui/comum/graficos`: rosca, linha ampliada, barras, régua de faixas, medidor, curva de crescimento).
 - [x] **MOB-48 `dominio/calculos`.** Porta Kotlin das fórmulas do adulto (`CalculosAdulto`), com os mesmos vetores do backend (`contrato/calculos/adulto.json`, rodados por `CalculosAdultoTest` no `jvmTest`) e as correções da seção 3.6.
 - [ ] **MOB-49 Paciente vê a avaliação inteira** (P0 do relatório) · [ ] **MOB-50 a MOB-53** avaliação em passos, Meus resultados, necessidades, protocolos · [ ] **MOB-54 a MOB-57** planejador por porções e modelos · [ ] **MOB-58 a MOB-61** crianças, exames, anamnese
 

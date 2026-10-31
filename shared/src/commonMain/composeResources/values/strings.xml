@@ -716,4 +716,8 @@
     <string name="conta_logo_removida">Logo removida.</string>
     <string name="conta_logo_invalida">Escolha uma imagem PNG ou JPEG.</string>
     <string name="conta_logo_grande">A imagem passa de 512 KB. Escolha uma menor.</string>
+    <string name="grafico_ver_tabela">Ver como tabela</string>
+    <string name="grafico_ocultar_tabela">Ocultar tabela</string>
+    <string name="grafico_sem_dados">Sem dados para mostrar</string>
+    <string name="grafico_meta">meta</string>
 </resources>
