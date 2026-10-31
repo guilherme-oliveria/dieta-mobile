@@ -33,8 +33,13 @@ fun EvolucaoPacienteRota(viewModel: EvolucaoViewModel, avaliacoes: AvaliacoesVie
         Text(stringResource(Res.string.aba_evolucao), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(vertical = Dimens.espacoMedio).semantics { heading() })
         TabRow(selectedTabIndex = guia) {
             Tab(guia == 0, { guia = 0 }, text = { Text(stringResource(Res.string.evolucao_aba_graficos)) })
-            Tab(guia == 1, { guia = 1 }, text = { Text(stringResource(Res.string.evolucao_aba_avaliacoes)) })
+            Tab(guia == 1, { guia = 1 }, text = { Text(stringResource(Res.string.resultados_aba)) })
+            Tab(guia == 2, { guia = 2 }, text = { Text(stringResource(Res.string.evolucao_aba_avaliacoes)) })
         }
-        if (guia == 0) EvolucaoTela(estado, acoes(viewModel)) else AvaliacoesPacienteRota(avaliacoes)
+        when (guia) {
+            0 -> EvolucaoTela(estado, acoes(viewModel))
+            1 -> MeusResultadosRota(avaliacoes)
+            else -> AvaliacoesPacienteRota(avaliacoes)
+        }
     }
 }
