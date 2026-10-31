@@ -19,10 +19,7 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
     abaConteudo: @Composable (AbaFicha, PacienteResposta) -> Unit = { _, _ -> }) {
     val paciente = estado.selecionado
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        // Avaliações e Evolução já rolam sozinhas: rolagem dentro de rolagem derruba o app (altura infinita no filho)
-        val rolagemPropria = estado.abaFicha == AbaFicha.AVALIACOES || estado.abaFicha == AbaFicha.EVOLUCAO
-        val rolagem = rememberScrollState()
-        Column(Modifier.fillMaxSize().then(if (rolagemPropria) Modifier else Modifier.verticalScroll(rolagem)).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             BotaoTexto(stringResource(Res.string.pacientes_voltar), aoVoltar)
             if (paciente == null) {
                 if (estado.atualizando) EstadoCarregando() else EstadoVazio(mensagem = stringResource(Res.string.pacientes_erro_nao_encontrado))

@@ -23,9 +23,9 @@ data class AcoesHistorico(val aoNova: () -> Unit = {}, val aoEditar: (Uuid) -> U
 
 /** Histórico em ordem cronológica inversa, com seleção de duas datas para comparar (MOB-22). Paciente: somente leitura. */
 @Composable
-fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, podeEditar: Boolean = !estado.somenteLeitura) {
+fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, podeEditar: Boolean = !estado.somenteLeitura, rolavel: Boolean = true) {
     val comparacao = estado.comparacao
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+    Column(Modifier.fillMaxWidth().rolavelSe(rolavel).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
         MensagensAvaliacao(estado)
         if (estado.comparando && comparacao != null) {
