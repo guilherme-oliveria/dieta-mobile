@@ -23,7 +23,9 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-    conectividade: Flow<Boolean>? = null, private val agora: () -> Instant = { Clock.System.now() }) : ViewModel() {
+    conectividade: Flow<Boolean>? = null, private val agora: () -> Instant = { Clock.System.now() },
+    /** "Meus protocolos" da nutri (MOB-53): preenche o formulário novo quando chega a tempo; nulo = fica 7 dobras e peso magro. */
+    private val protocolosPadrao: (suspend () -> Pair<ProtocoloDobras, ProtocoloMassa>?)? = null) : ViewModel() {
     private val atual = MutableStateFlow(EstadoAvaliacoes())
     val estado = atual.asStateFlow()
     private var leitura: Job? = null
@@ -72,7 +74,17 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         }
     }
 
-    fun nova() { if (!ocupado()) atual.update { it.copy(formulario = FormularioAvaliacao(chave = novoIdLocal()), errosMedidas = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) } }
+    fun nova() {
+        if (ocupado()) return
+        val chave = novoIdLocal()
+        atual.update { it.copy(formulario = FormularioAvaliacao(chave = chave), errosMedidas = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) }
+        val buscar = protocolosPadrao ?: return
+        viewModelScope.launch(dispatcher) {
+            val padrao = buscar() ?: return@launch
+            // só vale se a nutri ainda está no mesmo formulário novo e não escolheu nada
+            formulario { f -> if (f.chave == chave && f.id == null && f.protocoloDobras == ProtocoloDobras.SETE && f.protocoloMassa == ProtocoloMassa.MAGRO) f.copy(protocoloDobras = padrao.first, protocoloMassa = padrao.second) else f }
+        }
+    }
 
     fun editar(id: Uuid) {
         val item = atual.value.itens.firstOrNull { it.id == id } ?: return

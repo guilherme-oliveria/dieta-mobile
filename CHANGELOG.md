@@ -14,6 +14,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 ## [1.3.0] — M9: necessidades e protocolos (em andamento)
 
 - MOB-52 Passo "Necessidades" da avaliação (método do GET, nível de atividade, objetivo, gestante/lactante, protocolos das metas, dislipidêmico) com GEB, GET, VET, rosca e metas ao vivo; avaliações salvas reabrem com as escolhas. Textos antigos com `%%` corrigidos.
+- MOB-53 "Meus protocolos" na conta da nutri (dobras e massa, salvo online com `If-Match`); a avaliação nova já vem com o padrão dela.
 
 ## [1.2.0] — M8: avaliação de adulto completa
 
