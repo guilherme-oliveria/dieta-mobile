@@ -11,6 +11,13 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 - MOB-46 Publicação da web na VPS (depende do BE-32b).
 - Conferir com leitor de tela real (NVDA, VoiceOver, TalkBack), Safari e Firefox (G-14).
 
+## [1.2.0] — M8: avaliação de adulto completa
+
+- MOB-47 Biblioteca de gráficos (rosca, linhas com faixa, medidor, régua de faixas, "ver como tabela"). MOB-48 `dominio/calculos` com os mesmos vetores do backend (prévia ao vivo, offline).
+- MOB-49 Paciente vê a avaliação inteira (perímetros, dobras, composição, parecer). MOB-50 Avaliação em passos com resultados ao vivo (nutri).
+- MOB-51 "Meus resultados" do paciente: semáforos com texto, rosca de composição, meta de peso e evolução com faixa saudável.
+- Pendente: crianças e adolescentes mostram só um aviso (onda 22); o app ainda não lê o protocolo padrão da nutri (MOB-53); textos antigos com `%%` aparecem duplicados na tela.
+
 ## [1.1.0] — M7: web no navegador (nutri e paciente)
 
 - MOB-40 Alvo `wasmJs` e build da web no CI. MOB-41 `ApiDieta` sem banco local (`ArmazemSessao`). MOB-42 Sessão no navegador: access em memória, refresh por cookie, `X-Plataforma: WEB`.
