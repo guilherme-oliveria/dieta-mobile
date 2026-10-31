@@ -15,20 +15,20 @@ class ProtocolosNutriCardTest {
         var estado = EstadoProtocolosNutri(carregado = true)
         setContent { DietaTheme { ProtocolosNutriCard(estado, AcoesProtocolosNutri(aoDobras = { dobras = it })) } }
         onNodeWithText("Meus protocolos").assertExists()
-        onNodeWithText("Salvar protocolos").performScrollTo().assertIsNotEnabled()
-        onNodeWithText("3 dobras").performScrollTo().performClick()
+        onNodeWithText("Salvar protocolos").assertIsNotEnabled()
+        onNodeWithText("3 dobras").performClick()
         assertEquals(ProtocoloDobras.TRES, dobras)
     }
 
     @Test fun comAlteracaoHabilitaESemLeituraPedeParaTentarDeNovo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         setContent { DietaTheme { ProtocolosNutriCard(EstadoProtocolosNutri(carregado = true, alterado = true, aviso = MensagemProtocolos.SALVO), AcoesProtocolosNutri()) } }
-        onNodeWithText("Salvar protocolos").performScrollTo().assertIsEnabled()
+        onNodeWithText("Salvar protocolos").assertIsEnabled()
         onNodeWithText("Protocolos salvos.").assertExists()
     }
 
     @Test fun semLeituraMostraTentarDeNovo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         setContent { DietaTheme { ProtocolosNutriCard(EstadoProtocolosNutri(carregado = false, erro = MensagemProtocolos.SEM_CONEXAO), AcoesProtocolosNutri()) } }
-        onNodeWithText("Tentar de novo").performScrollTo().assertExists()
+        onNodeWithText("Tentar de novo").assertExists()
         onNodeWithText("Sem conexão. Os protocolos são salvos só com internet.").assertExists()
     }
 }
