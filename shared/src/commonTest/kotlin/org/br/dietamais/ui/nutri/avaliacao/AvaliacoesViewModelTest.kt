@@ -39,6 +39,7 @@ class AvaliacoesViewModelTest {
     }
     private fun TestScope.vm(p: Porta, online: Boolean = true) = AvaliacoesViewModel(p, StandardTestDispatcher(testScheduler), flowOf(online), { agora })
     private fun AvaliacoesViewModel.preencher() { mudarMedida(MedidaAvaliacao.PESO, "70,5"); mudarMedida(MedidaAvaliacao.ESTATURA, "1,75") }
+    private fun AvaliacoesViewModel.preencherComCintura() { preencher(); mudarMedida(MedidaAvaliacao.CINTURA, "80") }
 
     @Test fun abreCarregaHistoricoDoBancoEAtualizaDoServidor() = runTest {
         val p = Porta(listOf(item(1, 70.0)));val vm = vm(p); vm.abrir(paciente); advanceUntilIdle()
@@ -112,5 +113,40 @@ class AvaliacoesViewModelTest {
     @Test fun pacienteVeSoCompartilhadasSemEditar() = runTest {
         val p = Porta(listOf(item(3, 70.0), item(2, 71.0, compartilhada = false))); val vm = vm(p); vm.abrirComoPaciente(); advanceUntilIdle()
         assertTrue(vm.estado.value.somenteLeitura); assertEquals(1, vm.estado.value.itens.size); assertEquals(0, p.atualizacoes)
+    }
+
+    @Test fun passoUmNaoAvancaSemPesoEEstaturaEOResumoVemPreenchido() = runTest {
+        val p = Porta(); val vm = vm(p); vm.abrir(paciente); advanceUntilIdle()
+        vm.definirPaciente(Sexo.MASCULINO, kotlinx.datetime.LocalDate(1997, 4, 28))
+        vm.nova(); vm.proximoPasso()
+        assertEquals(PassoAvaliacao.MEDIDAS, vm.estado.value.formulario?.passo); assertEquals(ErroMedida.OBRIGATORIA, vm.estado.value.errosMedidas[MedidaAvaliacao.PESO])
+        vm.preencherComCintura(); vm.proximoPasso()
+        assertEquals(PassoAvaliacao.COMPOSICAO, vm.estado.value.formulario?.passo); assertTrue(vm.estado.value.errosMedidas.isEmpty())
+        vm.proximoPasso() // composição nunca bloqueia
+        val form = assertNotNull(vm.estado.value.formulario)
+        assertEquals(PassoAvaliacao.RESUMO, form.passo); assertTrue(form.parecer.startsWith("O avaliado apresenta"), form.parecer)
+        vm.mudarParecer("Meu texto"); vm.passoAnterior(); vm.proximoPasso()
+        assertEquals("Meu texto", vm.estado.value.formulario?.parecer) // não sobrescreve o que a nutri escreveu
+    }
+
+    @Test fun salvaProtocoloComplementaresECompartilhamentoPorSecao() = runTest {
+        val p = Porta(); val vm = vm(p); vm.abrir(paciente); advanceUntilIdle()
+        vm.nova(); vm.preencher(); vm.mudarMedida(MedidaAvaliacao.PUNHO, "17,5")
+        vm.mudarProtocoloDobras(org.br.dietamais.dominio.calculos.ProtocoloDobras.TRES); vm.mudarProtocoloMassa(org.br.dietamais.dominio.calculos.ProtocoloMassa.MUSCULAR)
+        vm.mudarCompartilhamento(composicao = false)
+        vm.salvar(); advanceUntilIdle()
+        val enviado = assertNotNull(p.criada)
+        assertEquals("TRES", enviado.protocolo?.dobras); assertEquals("MUSCULAR", enviado.protocolo?.massa)
+        assertEquals(17.5, enviado.complementares?.punhoCm); assertEquals(false, enviado.compartilhamento?.composicao); assertNull(enviado.compartilhamento?.medidas)
+    }
+
+    @Test fun repetirMedidasCopiaDaUltimaSemTocarNaComposicao() = runTest {
+        val ultima = item(7, 80.0).copy(perimetros = PerimetrosAvaliacao(cintura = 90.0), complementares = MedidasComplementaresDto(punhoCm = 17.0),
+            composicao = ComposicaoAvaliacao(percentualGordura = 20.0))
+        val vm = vm(Porta(listOf(ultima))); vm.abrir(paciente); advanceUntilIdle()
+        vm.nova(); vm.repetirMedidasDaUltima()
+        val v = assertNotNull(vm.estado.value.formulario).valores
+        assertEquals("80", v[MedidaAvaliacao.PESO]); assertEquals("90", v[MedidaAvaliacao.CINTURA]); assertEquals("17", v[MedidaAvaliacao.PUNHO])
+        assertNull(v[MedidaAvaliacao.PERCENTUAL_GORDURA])
     }
 }

@@ -60,4 +60,7 @@ data class AvaliacoesResposta(val itens: List<AvaliacaoResposta> = emptyList())
 data class SalvarAvaliacaoRequisicao(val id: Uuid? = null, val dataHora: Instant, val pesoKg: Double, val estaturaM: Double,
     val perimetros: PerimetrosAvaliacao = PerimetrosAvaliacao(), val dobras: DobrasAvaliacao = DobrasAvaliacao(),
     val composicao: ComposicaoAvaliacao = ComposicaoAvaliacao(), val parecer: String? = null, val compartilhada: Boolean? = null,
-    val justificativa: String? = null)
+    val justificativa: String? = null,
+    // Avaliação ampliada (BE-41): opcionais; sem eles o servidor usa o padrão da nutri e o compartilhamento padrão.
+    val protocolo: ProtocoloAvaliacaoDto? = null, val complementares: MedidasComplementaresDto? = null,
+    val compartilhamento: CompartilhamentoAvaliacaoDto? = null)

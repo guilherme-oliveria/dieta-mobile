@@ -4,7 +4,7 @@ import org.br.dietamais.data.remoto.dto.*
 import kotlin.math.round
 import kotlin.time.Instant
 
-enum class SecaoAvaliacao { BASICAS, PERIMETROS, DOBRAS, COMPOSICAO }
+enum class SecaoAvaliacao { BASICAS, PERIMETROS, DOBRAS, COMPLEMENTARES, COMPOSICAO }
 
 /** Medidas editáveis da avaliação, com os limites de sanidade da RN-AVA-03 (o backend repete a validação). */
 enum class MedidaAvaliacao(val secao: SecaoAvaliacao, val min: Double, val max: Double, val obrigatoria: Boolean = false, val ler: (AvaliacaoResposta) -> Double?) {
@@ -26,6 +26,11 @@ enum class MedidaAvaliacao(val secao: SecaoAvaliacao, val min: Double, val max: 
     DOBRA_SUPRAILIACA(SecaoAvaliacao.DOBRAS, 1.0, 80.0, ler = { it.dobras.suprailiaca }),
     DOBRA_ABDOMINAL(SecaoAvaliacao.DOBRAS, 1.0, 80.0, ler = { it.dobras.abdominal }),
     DOBRA_COXA(SecaoAvaliacao.DOBRAS, 1.0, 80.0, ler = { it.dobras.coxa }),
+    // Limites da RN-AVA-03 para os campos novos (o backend repete a validação)
+    PUNHO(SecaoAvaliacao.COMPLEMENTARES, 5.0, 40.0, ler = { it.complementares?.punhoCm }),
+    DIAMETRO_PUNHO(SecaoAvaliacao.COMPLEMENTARES, 1.0, 30.0, ler = { it.complementares?.diametroPunhoCm }),
+    DIAMETRO_JOELHO(SecaoAvaliacao.COMPLEMENTARES, 1.0, 30.0, ler = { it.complementares?.diametroJoelhoCm }),
+    PERCENTUAL_DESEJADO(SecaoAvaliacao.COMPLEMENTARES, 3.0, 60.0, ler = { it.complementares?.percentualGorduraDesejado }),
     PERCENTUAL_GORDURA(SecaoAvaliacao.COMPOSICAO, 0.0, 100.0, ler = { it.composicao.percentualGordura }),
     PESO_GORDO(SecaoAvaliacao.COMPOSICAO, 0.0, 400.0, ler = { it.composicao.pesoGordoKg }),
     PESO_MAGRO(SecaoAvaliacao.COMPOSICAO, 0.0, 400.0, ler = { it.composicao.pesoMagroKg }),
@@ -57,8 +62,13 @@ private fun temMaisDeDuasCasas(texto: String): Boolean {
 }
 
 fun montarRequisicao(valores: Map<MedidaAvaliacao, String>, dataHora: Instant, parecer: String, compartilhada: Boolean,
-    justificativa: String? = null, id: kotlin.uuid.Uuid? = null): SalvarAvaliacaoRequisicao {
+    justificativa: String? = null, id: kotlin.uuid.Uuid? = null, protocolo: ProtocoloAvaliacaoDto? = null,
+    compartilhamento: CompartilhamentoAvaliacaoDto? = null): SalvarAvaliacaoRequisicao {
     fun v(m: MedidaAvaliacao) = lerDecimal(valores[m].orEmpty())
+    val complementares = listOf(MedidaAvaliacao.PUNHO, MedidaAvaliacao.DIAMETRO_PUNHO, MedidaAvaliacao.DIAMETRO_JOELHO, MedidaAvaliacao.PERCENTUAL_DESEJADO)
+        .takeIf { lista -> lista.any { v(it) != null } }
+        ?.let { MedidasComplementaresDto(punhoCm = v(MedidaAvaliacao.PUNHO), diametroPunhoCm = v(MedidaAvaliacao.DIAMETRO_PUNHO),
+            diametroJoelhoCm = v(MedidaAvaliacao.DIAMETRO_JOELHO), percentualGorduraDesejado = v(MedidaAvaliacao.PERCENTUAL_DESEJADO)) }
     return SalvarAvaliacaoRequisicao(
         id = id, dataHora = dataHora, pesoKg = checkNotNull(v(MedidaAvaliacao.PESO)), estaturaM = checkNotNull(v(MedidaAvaliacao.ESTATURA)),
         perimetros = PerimetrosAvaliacao(v(MedidaAvaliacao.PESCOCO), v(MedidaAvaliacao.TORAX), v(MedidaAvaliacao.CINTURA), v(MedidaAvaliacao.ABDOMEN),
@@ -66,7 +76,8 @@ fun montarRequisicao(valores: Map<MedidaAvaliacao, String>, dataHora: Instant, p
         dobras = DobrasAvaliacao(v(MedidaAvaliacao.DOBRA_TRICEPS), v(MedidaAvaliacao.DOBRA_SUBESCAPULAR), v(MedidaAvaliacao.DOBRA_PEITORAL),
             v(MedidaAvaliacao.DOBRA_AXILAR_MEDIA), v(MedidaAvaliacao.DOBRA_SUPRAILIACA), v(MedidaAvaliacao.DOBRA_ABDOMINAL), v(MedidaAvaliacao.DOBRA_COXA)),
         composicao = ComposicaoAvaliacao(v(MedidaAvaliacao.PERCENTUAL_GORDURA), v(MedidaAvaliacao.PESO_GORDO), v(MedidaAvaliacao.PESO_MAGRO)),
-        parecer = parecer.trim().ifEmpty { null }, compartilhada = compartilhada, justificativa = justificativa?.trim()?.ifEmpty { null })
+        parecer = parecer.trim().ifEmpty { null }, compartilhada = compartilhada, justificativa = justificativa?.trim()?.ifEmpty { null },
+        protocolo = protocolo, complementares = complementares, compartilhamento = compartilhamento)
 }
 
 fun valoresDe(avaliacao: AvaliacaoResposta): Map<MedidaAvaliacao, String> = MedidaAvaliacao.entries.mapNotNull { m ->

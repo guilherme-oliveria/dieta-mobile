@@ -5,6 +5,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.br.dietamais.data.remoto.dto.ClassificacaoImc
 import org.br.dietamais.dominio.avaliacao.*
+import org.br.dietamais.dominio.calculos.ClassePercentualGordura
+import org.br.dietamais.dominio.calculos.RiscoComorbidades
 import org.br.dietamais.recursos.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -29,6 +31,10 @@ fun rotuloMedida(medida: MedidaAvaliacao): StringResource = when (medida) {
     MedidaAvaliacao.DOBRA_SUPRAILIACA -> Res.string.avaliacao_medida_dobra_suprailiaca
     MedidaAvaliacao.DOBRA_ABDOMINAL -> Res.string.avaliacao_medida_dobra_abdominal
     MedidaAvaliacao.DOBRA_COXA -> Res.string.avaliacao_medida_dobra_coxa
+    MedidaAvaliacao.PUNHO -> Res.string.avaliacao_medida_punho
+    MedidaAvaliacao.DIAMETRO_PUNHO -> Res.string.avaliacao_medida_diametro_punho
+    MedidaAvaliacao.DIAMETRO_JOELHO -> Res.string.avaliacao_medida_diametro_joelho
+    MedidaAvaliacao.PERCENTUAL_DESEJADO -> Res.string.avaliacao_medida_percentual_desejado
     MedidaAvaliacao.PERCENTUAL_GORDURA -> Res.string.avaliacao_medida_percentual_gordura
     MedidaAvaliacao.PESO_GORDO -> Res.string.avaliacao_medida_peso_gordo
     MedidaAvaliacao.PESO_MAGRO -> Res.string.avaliacao_medida_peso_magro
@@ -38,6 +44,7 @@ fun rotuloSecao(secao: SecaoAvaliacao): StringResource = when (secao) {
     SecaoAvaliacao.BASICAS -> Res.string.avaliacao_secao_basicas
     SecaoAvaliacao.PERIMETROS -> Res.string.avaliacao_secao_perimetros
     SecaoAvaliacao.DOBRAS -> Res.string.avaliacao_secao_dobras
+    SecaoAvaliacao.COMPLEMENTARES -> Res.string.avaliacao_secao_complementares
     SecaoAvaliacao.COMPOSICAO -> Res.string.avaliacao_secao_composicao
 }
 
@@ -82,4 +89,43 @@ fun textoData(instante: Instant): String {
 fun textoVariacao(delta: Double): String = when {
     delta > 0 -> "+" + textoDecimal(delta)
     else -> textoDecimal(delta)
+}
+
+fun rotuloPasso(passo: PassoAvaliacao): StringResource = when (passo) {
+    PassoAvaliacao.MEDIDAS -> Res.string.avaliacao_passo_medidas
+    PassoAvaliacao.COMPOSICAO -> Res.string.avaliacao_passo_composicao
+    PassoAvaliacao.RESUMO -> Res.string.avaliacao_passo_resumo
+}
+
+fun textoFalta(falta: FaltaDado): StringResource = when (falta) {
+    FaltaDado.SEXO -> Res.string.avaliacao_falta_sexo
+    FaltaDado.NASCIMENTO -> Res.string.avaliacao_falta_nascimento
+    FaltaDado.FAIXA_ETARIA -> Res.string.avaliacao_falta_faixa
+    FaltaDado.PESO_ESTATURA -> Res.string.avaliacao_falta_peso_estatura
+    FaltaDado.PUNHO -> Res.string.avaliacao_falta_punho
+    FaltaDado.CINTURA -> Res.string.avaliacao_falta_cintura
+    FaltaDado.DOBRAS -> Res.string.avaliacao_falta_dobras
+    FaltaDado.DIAMETRO_PUNHO -> Res.string.avaliacao_falta_diametro_punho
+    FaltaDado.DIAMETRO_JOELHO -> Res.string.avaliacao_falta_diametro_joelho
+    FaltaDado.PERCENTUAL_DESEJADO -> Res.string.avaliacao_falta_percentual_desejado
+}
+
+fun rotuloClassePercentual(classe: ClassePercentualGordura): StringResource = when (classe) {
+    ClassePercentualGordura.MT_BXO -> Res.string.avaliacao_pg_mt_bxo
+    ClassePercentualGordura.EXC -> Res.string.avaliacao_pg_exc
+    ClassePercentualGordura.MT_BOM -> Res.string.avaliacao_pg_mt_bom
+    ClassePercentualGordura.BOM -> Res.string.avaliacao_pg_bom
+    ClassePercentualGordura.ADEQ -> Res.string.avaliacao_pg_adeq
+    ClassePercentualGordura.MOD_ALTO -> Res.string.avaliacao_pg_mod_alto
+    ClassePercentualGordura.ALTO -> Res.string.avaliacao_pg_alto
+    ClassePercentualGordura.MT_ALTO -> Res.string.avaliacao_pg_mt_alto
+}
+
+fun rotuloRisco(risco: RiscoComorbidades): StringResource = when (risco) {
+    RiscoComorbidades.B -> Res.string.avaliacao_risco_b
+    RiscoComorbidades.ME -> Res.string.avaliacao_risco_me
+    RiscoComorbidades.A -> Res.string.avaliacao_risco_a
+    RiscoComorbidades.MO -> Res.string.avaliacao_risco_mo
+    RiscoComorbidades.S -> Res.string.avaliacao_risco_s
+    RiscoComorbidades.MS -> Res.string.avaliacao_risco_ms
 }
