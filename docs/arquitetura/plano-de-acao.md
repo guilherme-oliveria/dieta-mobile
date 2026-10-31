@@ -90,6 +90,14 @@ Substitui o site em Angular (`dieta-frontend`, que fica arquivado). Nutri e paci
 - [ ] **MOB-45 Navegador e acessibilidade.** *(Feito: `bindToBrowserNavigation` liga URL e botão voltar à navegação; link direto `/convite/{codigo}` (com `<base href="/">` e fallback para o `index.html`); atalhos Alt+1..5 entre as abas. A6 (29/10/2026): `semantics` e foco medidos com axe-core e corrigidos (`web.md`, "Acessibilidade da web"; checklist em `plataformas.md`). Falta: autofill de senha, árvore de acessibilidade desatualizada depois que folha ou diálogo fecha, e o checklist em Safari, Firefox e leitor de tela real (G-14).)* URL e botão voltar do navegador ligados à navegação (link direto para `convite/{codigo}`); atalhos de teclado da nutri; ordem de foco e `semantics` nas telas críticas (Entrar, Hoje, montador, ficha); campos de e-mail e senha aceitando o gerenciador de senhas; checklist em Chrome, Firefox, Safari no Mac e no iPhone, nos 3 tamanhos. *Depende de:* MOB-43 (e MOB-44 para as telas do paciente).
 - [ ] **MOB-46 Publicação da web.** *(Feito: Caddy serve a web e encaminha `/api` e `/legal`, `no-cache`, proxy de desenvolvimento, `WEB_ORIGEM` em localhost, doc de deploy; CSP em modo só-relatório. Falta: publicar de verdade na VPS, que depende do BE-32b.)* CI gera `wasmJsBrowserDistribution` como artefato; servir estático pelo Caddy da VPS na mesma origem da API (`/` = app, `/api/v1` = backend), `Content-Type: application/wasm`, cache longo dos arquivos versionados e `no-cache` no `index.html`, CSP; `WEB_ORIGEM` e `CORS_ORIGENS` no `.env.prod`. Landing, planos e checkout ficam em HTML estático fora do app. *Depende de:* MOB-45, BE-32b.
 
+## Fase 8 — Melhorias das planilhas da nutri (P1)
+
+Detalhe em [plano-melhorias-planilhas.md](plano-melhorias-planilhas.md) (cópia do backend; ondas 17 a 23, seção 6.4). Contrato em [contrato-fase-7.md](contrato-fase-7.md).
+
+- [ ] **MOB-47 Biblioteca de gráficos** (`ui/comum/graficos`: rosca, linha ampliada, barras, régua de faixas, medidor, curva de crescimento).
+- [x] **MOB-48 `dominio/calculos`.** Porta Kotlin das fórmulas do adulto (`CalculosAdulto`), com os mesmos vetores do backend (`contrato/calculos/adulto.json`, rodados por `CalculosAdultoTest` no `jvmTest`) e as correções da seção 3.6.
+- [ ] **MOB-49 Paciente vê a avaliação inteira** (P0 do relatório) · [ ] **MOB-50 a MOB-53** avaliação em passos, Meus resultados, necessidades, protocolos · [ ] **MOB-54 a MOB-57** planejador por porções e modelos · [ ] **MOB-58 a MOB-61** crianças, exames, anamnese
+
 ## Pós-MVP (P2)
 
 Troca de nutri com cópia do histórico, vitrine de nutris, consultoria online paga, foto do prato, chat, integração Google Fit/Apple Saúde, anúncios.
