@@ -534,10 +534,10 @@
     <string name="resultados_cintura_a">risco aumentado</string>
     <string name="resultados_cintura_ma">risco muito aumentado</string>
     <string name="resultados_cintura_valor">%1$s cm · %2$s</string>
-    <string name="resultados_gordura_valor">%1$s%% · %2$s</string>
+    <string name="resultados_gordura_valor">%1$s% · %2$s</string>
     <string name="resultados_composicao">Do que seu corpo é feito</string>
     <string name="resultados_meta_titulo">Minha meta</string>
-    <string name="resultados_meta_linha">Peso para %1$s%% de gordura: %2$s kg</string>
+    <string name="resultados_meta_linha">Peso para %1$s% de gordura: %2$s kg</string>
     <string name="resultados_meta_faltam">Faltam %1$s kg para chegar lá.</string>
     <string name="resultados_meta_atingida">Você já está no peso dessa meta.</string>
     <string name="resultados_evolucao">Meu peso ao longo do tempo</string>
