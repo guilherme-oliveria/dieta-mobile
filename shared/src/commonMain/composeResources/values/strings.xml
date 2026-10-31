@@ -875,4 +875,13 @@
     <string name="necessidades_falta_faixa">As necessidades de crianças e adolescentes ainda não são calculadas.</string>
     <string name="necessidades_falta_nivel">Escolha o nível de atividade para ver o gasto total.</string>
     <string name="necessidades_falta_met">O gasto pelo MET é calculado ao salvar a avaliação.</string>
+    <string name="protocolos_titulo">Meus protocolos</string>
+    <string name="protocolos_explicacao">Já vêm marcados nas próximas avaliações. As avaliações que você já salvou guardam o que usaram.</string>
+    <string name="protocolos_salvar">Salvar protocolos</string>
+    <string name="protocolos_tentar_de_novo">Tentar de novo</string>
+    <string name="protocolos_msg_sem_conexao">Sem conexão. Os protocolos são salvos só com internet.</string>
+    <string name="protocolos_msg_conflito">Os protocolos foram alterados em outro aparelho. Revise os valores atuais e salve de novo.</string>
+    <string name="protocolos_msg_assinatura">Sua assinatura não está ativa.</string>
+    <string name="protocolos_msg_erro">Não foi possível salvar os protocolos. Tente de novo.</string>
+    <string name="protocolos_msg_salvo">Protocolos salvos.</string>
 </resources>

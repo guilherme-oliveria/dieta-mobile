@@ -84,3 +84,10 @@ data class MetaMacroDto(val percentualMinimo: Double? = null, val percentualMaxi
 data class EnergiaResultadoDto(val metodo: String? = null, val gebKcal: Double? = null, val getKcal: Double? = null, val vetKcal: Double? = null,
     val kcalPorKg: Double? = null, val carboidrato: MetaMacroDto? = null, val proteina: MetaMacroDto? = null, val lipidio: MetaMacroDto? = null,
     val colesterolMaximoMg: Double? = null, val motivosNulos: Map<String, String> = emptyMap())
+
+/** "Meus protocolos" (BE-42): padrões da nutri para as próximas avaliações; valores como texto, valor desconhecido nunca falha. */
+@Serializable
+data class ProtocolosNutriResposta(val dobras: String, val massa: String, val versao: Long, val atualizadoEm: Instant? = null)
+
+@Serializable
+data class SalvarProtocolosNutriRequisicao(val dobras: String, val massa: String)

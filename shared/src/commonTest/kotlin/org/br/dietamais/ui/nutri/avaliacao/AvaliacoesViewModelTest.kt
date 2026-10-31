@@ -163,6 +163,17 @@ class AvaliacoesViewModelTest {
         assertNull(assertNotNull(p.criada).energia)
     }
 
+    @Test fun avaliacaoNovaUsaOsProtocolosPadraoDaNutriSeAindaNaoMexeu() = runTest {
+        val vm = AvaliacoesViewModel(Porta(), StandardTestDispatcher(testScheduler), flowOf(true), { agora },
+            protocolosPadrao = { org.br.dietamais.dominio.calculos.ProtocoloDobras.TRES to org.br.dietamais.dominio.calculos.ProtocoloMassa.MUSCULAR })
+        vm.abrir(paciente); advanceUntilIdle()
+        vm.nova(); advanceUntilIdle()
+        assertEquals(org.br.dietamais.dominio.calculos.ProtocoloDobras.TRES, vm.estado.value.formulario?.protocoloDobras)
+        assertEquals(org.br.dietamais.dominio.calculos.ProtocoloMassa.MUSCULAR, vm.estado.value.formulario?.protocoloMassa)
+        val semPadrao = vm(Porta()); semPadrao.abrir(paciente); advanceUntilIdle(); semPadrao.nova(); advanceUntilIdle()
+        assertEquals(org.br.dietamais.dominio.calculos.ProtocoloDobras.SETE, semPadrao.estado.value.formulario?.protocoloDobras)
+    }
+
     @Test fun repetirMedidasCopiaDaUltimaSemTocarNaComposicao() = runTest {
         val ultima = item(7, 80.0).copy(perimetros = PerimetrosAvaliacao(cintura = 90.0), complementares = MedidasComplementaresDto(punhoCm = 17.0),
             composicao = ComposicaoAvaliacao(percentualGordura = 20.0))
