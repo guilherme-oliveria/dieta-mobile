@@ -19,10 +19,10 @@ fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid) {
     LaunchedEffect(pacienteId) { viewModel.abrir(pacienteId) }
     val pdf = koinInject<PortaPdf>()
     if (estado.formulario != null) AvaliacaoTela(estado, AcoesAvaliacao(viewModel::mudarMedida, viewModel::mudarParecer, viewModel::mudarCompartilhada,
-        viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar))
+        viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar), rolavel = false)
     else HistoricoAvaliacoesTela(estado, AcoesHistorico(viewModel::nova, viewModel::editar, viewModel::alternarSelecao, viewModel::comparar,
         viewModel::voltarDaComparacao, viewModel::recarregar,
-        pdf = { a -> BotaoPdf(stringResource(Res.string.pdf_avaliacao), !estado.semConexao, { pdf.link(RecursoPdf.AVALIACAO, a.id) }) }))
+        pdf = { a -> BotaoPdf(stringResource(Res.string.pdf_avaliacao), !estado.semConexao, { pdf.link(RecursoPdf.AVALIACAO, a.id) }) }), rolavel = false)
 }
 
 /** Lista somente leitura do paciente (avaliações compartilhadas, vindas do sync). */
