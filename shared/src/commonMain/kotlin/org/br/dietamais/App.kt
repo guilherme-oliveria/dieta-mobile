@@ -14,6 +14,7 @@ import org.br.dietamais.app.moduloAmbiente
 import org.br.dietamais.app.moduloAlimentos
 import org.br.dietamais.app.moduloListaPaciente
 import org.br.dietamais.app.moduloDietas
+import org.br.dietamais.app.moduloPorcoes
 import org.br.dietamais.app.moduloDietaPaciente
 import org.br.dietamais.app.moduloLembretes
 import org.br.dietamais.app.moduloPerfilNutri
@@ -65,7 +66,7 @@ fun App(config: Config = Config(), perfil: PerfilNavegacao? = null, fabricaDrive
         if (dadosDisponiveis) modules(moduloPacientes(compartilhamento, ambiente))
         if (dadosDisponiveis) modules(moduloAlimentos(ambiente))
         if (dadosDisponiveis) modules(moduloListaPaciente(ambiente))
-        if (dadosDisponiveis) modules(moduloDietas(ambiente), moduloDietaPaciente(ambiente), moduloLembretes(notificacao), moduloPerfilNutri(ambiente), moduloAvaliacoes(ambiente))
+        if (dadosDisponiveis) modules(moduloDietas(ambiente), moduloPorcoes(ambiente), moduloDietaPaciente(ambiente), moduloLembretes(notificacao), moduloPerfilNutri(ambiente), moduloAvaliacoes(ambiente))
     } }
     DisposableEffect(contexto) { onDispose { contexto.close() } }
     KoinIsolatedContext(contexto) {

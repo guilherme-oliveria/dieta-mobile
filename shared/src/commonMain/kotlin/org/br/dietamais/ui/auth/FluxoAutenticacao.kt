@@ -264,7 +264,7 @@ private fun NavegacaoNutri() {
           if (aba == AbaFicha.EVOLUCAO) EvolucaoRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), paciente.id)
           else if (aba == AbaFicha.AVALIACOES) AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id, paciente.sexo, paciente.dataNascimento)
           else if (aba == AbaFicha.ANAMNESE) AnamneseNutriRota(koinViewModel<AnamneseNutriViewModel>(viewModelStoreOwner = dono), paciente.id)
-          else if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
+          else if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente, koinViewModel<org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel>(viewModelStoreOwner = dono))
           else {
             val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
             val estadoLista by lista.estado.collectAsState()
