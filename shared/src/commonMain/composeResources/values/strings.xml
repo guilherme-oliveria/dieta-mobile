@@ -961,6 +961,13 @@
     <string name="plan_so_no_montador">Esta dieta tem alimentos do catálogo e continua no montador por alimentos.</string>
     <string name="plan_nova">Nova dieta por porções</string>
     <!-- Biblioteca de modelos de dieta (MOB-56) -->
+    <string name="exames_aba">Exames</string>
+    <string name="exames_titulo">Meus exames</string>
+    <string name="exames_subtitulo">Compartilhados pela sua nutri · %1$s</string>
+    <string name="exames_vazio">Sua nutri ainda não compartilhou exames com você.</string>
+    <string name="exames_valor">%1$s %2$s</string>
+    <string name="exames_sem_faixa">Sua nutri precisa completar o seu cadastro para mostrar a faixa deste exame.</string>
+    <string name="exames_aviso">Só a sua nutri interpreta exames. Converse com ela sobre qualquer dúvida.</string>
     <string name="mod_titulo">Modelos de dieta</string>
     <string name="mod_subtitulo">Pontos de partida por condição</string>
     <string name="mod_voltar">Voltar</string>
