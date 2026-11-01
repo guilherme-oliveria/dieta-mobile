@@ -95,9 +95,10 @@ fun previaEnergia(valores: Map<MedidaAvaliacao, String>, sexo: SexoDto?, idadeAn
         else -> CalculosEnergia.getRdi2005(sexoCalculo, idadeAnos, peso, estatura, nivel, e.lactacao.takeIf { lactante })
     }
     val vet = CalculosEnergia.vet(get, e.objetivo, lerDecimal(e.kgPorMes))
-    return PreviaEnergia(gebKcal = geb, getKcal = get, vetKcal = vet, kcalPorKg = CalculosEnergia.kcalPorKg(vet, peso),
-        carboidrato = CalculosEnergia.carboidrato(e.carboidrato, vet, peso, gestante, lactante),
-        proteina = CalculosEnergia.proteina(e.proteina, vet, peso, sexoCalculo, gestante, lactante), lipidio = CalculosEnergia.lipidio(e.lipidio, vet),
+    val pesoRef = CalculosEnergia.pesoParaKg(peso, estatura, idadeAnos) // RN-CAL-05: os "por kg" usam o peso ajustado com IMC 30 ou mais
+    return PreviaEnergia(gebKcal = geb, getKcal = get, vetKcal = vet, kcalPorKg = CalculosEnergia.kcalPorKg(vet, pesoRef),
+        carboidrato = CalculosEnergia.carboidrato(e.carboidrato, vet, pesoRef, gestante, lactante),
+        proteina = CalculosEnergia.proteina(e.proteina, vet, pesoRef, sexoCalculo, gestante, lactante), lipidio = CalculosEnergia.lipidio(e.lipidio, vet),
         lipidios = if (e.dislipidemico) CalculosEnergia.lipidiosDislipidemico(vet) else null,
         colesterolMaximoMg = if (e.dislipidemico) CalculosEnergia.colesterolMaximoMg(e.colesterolTotal) else null)
 }

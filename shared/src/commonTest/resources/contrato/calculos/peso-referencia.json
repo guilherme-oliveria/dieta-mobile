@@ -1,0 +1,14 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores do peso para os 'por kg' (RN-CAL-05, BE-49d). Adulto (18+) com IMC >= 30 usa o peso ajustado (P - Pideal) x 0,25 + Pideal, com Pideal = E^2 x 21,7; os demais usam o peso atual. Resultado com 2 casas, meio para cima. Mesmo arquivo nos dois repositórios (RN-CAL-06).",
+ "casos": [
+  { "id": "PR-eutrofico", "pesoKg": "102.5", "estaturaM": "1.93", "idadeAnos": 35, "esperado": "102.5" },
+  { "id": "PR-obeso-iii", "pesoKg": "120", "estaturaM": "1.70", "idadeAnos": 40, "esperado": "77.03" },
+  { "id": "PR-obeso-i", "pesoKg": "95", "estaturaM": "1.75", "idadeAnos": 30, "esperado": "73.59" },
+  { "id": "PR-imc-exato-30", "pesoKg": "86.7", "estaturaM": "1.70", "idadeAnos": 28, "esperado": "68.71" },
+  { "id": "PR-imc-29-99", "pesoKg": "86.5", "estaturaM": "1.70", "idadeAnos": 28, "esperado": "86.5" },
+  { "id": "PR-adolescente", "pesoKg": "100", "estaturaM": "1.70", "idadeAnos": 17, "esperado": "100" },
+  { "id": "PR-18-anos", "pesoKg": "100", "estaturaM": "1.70", "idadeAnos": 18, "esperado": "72.03" },
+  { "id": "PR-idoso", "pesoKg": "100", "estaturaM": "1.77", "idadeAnos": 70, "esperado": "75.99" }
+ ]
+}

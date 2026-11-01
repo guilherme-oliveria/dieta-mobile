@@ -19,6 +19,18 @@ class CalculosEnergiaTest {
     @Test
     fun todosOsVetoresDeEnergiaBatem() = conferir(ler("energia.json"), minimo = 60)
 
+    /** RN-CAL-05: peso ajustado nos "por kg", mesmo arquivo do backend. */
+    @Test
+    fun pesoParaKgBateComOsVetores() {
+        val casos = ler("peso-referencia.json").getValue("casos").jsonArray.map { it.jsonObject }
+        assertEquals(8, casos.size)
+        for (c in casos) {
+            val real = CalculosEnergia.pesoParaKg(c.getValue("pesoKg").jsonPrimitive.content.toDouble(), c.getValue("estaturaM").jsonPrimitive.content.toDouble(), c.getValue("idadeAnos").jsonPrimitive.int)
+            val esperado = c.getValue("esperado").jsonPrimitive.content.toDouble()
+            assertTrue(abs(real - esperado) < 0.005, "${c.getValue("id").jsonPrimitive.content}: esperado $esperado, veio $real")
+        }
+    }
+
     @Test
     fun todosOsVetoresDeMetBatem() = conferir(ler("met.json"), minimo = 8)
 
