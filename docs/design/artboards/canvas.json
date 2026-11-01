@@ -241,6 +241,73 @@
    "h": 842,
    "title": "PDF · Avaliação nutricional (A4)",
    "paper": "a4"
+  },
+  "P-Dieta-Macros.dc.html": {
+   "x": 0,
+   "y": 7328,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Dieta, rosca de macros do dia"
+  },
+  "P-Refeicao-Macros.dc.html": {
+   "x": 470,
+   "y": 7328,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Refeição com macros e “troque por”"
+  },
+  "P-Lista-Substituicao.dc.html": {
+   "x": 940,
+   "y": 7328,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Lista de substituição (celular)"
+  },
+  "P-Lista-Substituicao-Vazio.dc.html": {
+   "x": 1410,
+   "y": 7328,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Lista de substituição, vazia"
+  },
+  "T-Lista-Substituicao.dc.html": {
+   "x": 1880,
+   "y": 7328,
+   "w": 1180,
+   "h": 820,
+   "title": "Paciente · Lista de substituição (tablet)"
+  },
+  "PDF-Lista-Pequena.dc.html": {
+   "x": 0,
+   "y": 8515,
+   "w": 595,
+   "h": 842,
+   "title": "PDF · Lista de substituição, porção pequena",
+   "paper": "a4"
+  },
+  "PDF-Lista-Media.dc.html": {
+   "x": 675,
+   "y": 8515,
+   "w": 595,
+   "h": 842,
+   "title": "PDF · Lista de substituição, porção média",
+   "paper": "a4"
+  },
+  "PDF-Lista-Grande.dc.html": {
+   "x": 1350,
+   "y": 8515,
+   "w": 595,
+   "h": 842,
+   "title": "PDF · Lista de substituição, porção grande",
+   "paper": "a4"
+  },
+  "PDF-Lista-Carboidratos.dc.html": {
+   "x": 2025,
+   "y": 8515,
+   "w": 595,
+   "h": 842,
+   "title": "PDF · Lista com contagem de carboidratos",
+   "paper": "a4"
   }
  },
  "order": [
@@ -276,7 +343,16 @@
   "T-Avaliacao-Passos.dc.html",
   "T-Planejador-Porcoes.dc.html",
   "G-Graficos.dc.html",
-  "PDF-Avaliacao.dc.html"
+  "PDF-Avaliacao.dc.html",
+  "P-Dieta-Macros.dc.html",
+  "P-Refeicao-Macros.dc.html",
+  "P-Lista-Substituicao.dc.html",
+  "P-Lista-Substituicao-Vazio.dc.html",
+  "T-Lista-Substituicao.dc.html",
+  "PDF-Lista-Pequena.dc.html",
+  "PDF-Lista-Media.dc.html",
+  "PDF-Lista-Grande.dc.html",
+  "PDF-Lista-Carboidratos.dc.html"
  ],
  "notes": {
   "rowPaciente": {
@@ -344,6 +420,20 @@
    "fill": "green",
    "size": "m",
    "text": "Regra do design\n\nTela nova só entra no app com artboard aprovado neste canvas, antes ou junto da implementação. Padrão em docs/design/padrao-ui.md e gráficos em docs/design/graficos.md (dieta-mobile)."
+  },
+  "rowPacienteDieta": {
+   "x": 0,
+   "y": 7105,
+   "text": "Paciente: dieta com macros e lista de substituição (MOB-55)",
+   "kind": "title1",
+   "maxW": 3060
+  },
+  "rowPdfLista": {
+   "x": 0,
+   "y": 8292,
+   "text": "PDF da lista de substituição (BE-50b)",
+   "kind": "title1",
+   "maxW": 2620
   }
  },
  "designSystems": []
