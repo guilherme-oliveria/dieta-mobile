@@ -1,0 +1,725 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores da anamnese estruturada (BE-57a, MOB-60). Mesmo arquivo nos dois repositórios (RN-CAL-06). Esperados por script independente a partir das abas de anamnese da planilha (CLASS_PA com a correção da sistólica isolada).",
+ "tolerancia": {
+  "g": 0.01,
+  "kcal": 0.01,
+  "ml": 0.01
+ },
+ "arredondamento": "ml, g e kcal do álcool com 2 casas em HALF_UP; sal e óleo por pessoa/dia truncados (INT); duração em minutos inteiros.",
+ "casos": [
+  {
+   "id": "PA-110-70",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 110,
+    "diastolica": 70
+   },
+   "esperado": "OTIMA"
+  },
+  {
+   "id": "PA-110-82",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 110,
+    "diastolica": 82
+   },
+   "esperado": "NORMAL"
+  },
+  {
+   "id": "PA-110-87",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 110,
+    "diastolica": 87
+   },
+   "esperado": "LIMITROFE"
+  },
+  {
+   "id": "PA-110-95",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 110,
+    "diastolica": 95
+   },
+   "esperado": "HIPERTENSAO_1"
+  },
+  {
+   "id": "PA-110-105",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 110,
+    "diastolica": 105
+   },
+   "esperado": "HIPERTENSAO_2"
+  },
+  {
+   "id": "PA-110-115",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 110,
+    "diastolica": 115
+   },
+   "esperado": "HIPERTENSAO_3"
+  },
+  {
+   "id": "PA-125-80",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 125,
+    "diastolica": 80
+   },
+   "esperado": "NORMAL"
+  },
+  {
+   "id": "PA-125-87",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 125,
+    "diastolica": 87
+   },
+   "esperado": "LIMITROFE"
+  },
+  {
+   "id": "PA-125-95",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 125,
+    "diastolica": 95
+   },
+   "esperado": "HIPERTENSAO_1"
+  },
+  {
+   "id": "PA-125-105",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 125,
+    "diastolica": 105
+   },
+   "esperado": "HIPERTENSAO_2"
+  },
+  {
+   "id": "PA-125-115",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 125,
+    "diastolica": 115
+   },
+   "esperado": "HIPERTENSAO_3"
+  },
+  {
+   "id": "PA-135-80",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 135,
+    "diastolica": 80
+   },
+   "esperado": "LIMITROFE"
+  },
+  {
+   "id": "PA-135-92",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 135,
+    "diastolica": 92
+   },
+   "esperado": "HIPERTENSAO_1"
+  },
+  {
+   "id": "PA-135-102",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 135,
+    "diastolica": 102
+   },
+   "esperado": "HIPERTENSAO_2"
+  },
+  {
+   "id": "PA-135-112",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 135,
+    "diastolica": 112
+   },
+   "esperado": "HIPERTENSAO_3"
+  },
+  {
+   "id": "PA-145-85",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 145,
+    "diastolica": 85
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-145-95",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 145,
+    "diastolica": 95
+   },
+   "esperado": "HIPERTENSAO_1"
+  },
+  {
+   "id": "PA-145-105",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 145,
+    "diastolica": 105
+   },
+   "esperado": "HIPERTENSAO_2"
+  },
+  {
+   "id": "PA-145-115",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 145,
+    "diastolica": 115
+   },
+   "esperado": "HIPERTENSAO_3"
+  },
+  {
+   "id": "PA-150-89",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 150,
+    "diastolica": 89
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-170-85",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 170,
+    "diastolica": 85
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-170-100",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 170,
+    "diastolica": 100
+   },
+   "esperado": "HIPERTENSAO_2"
+  },
+  {
+   "id": "PA-170-115",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 170,
+    "diastolica": 115
+   },
+   "esperado": "HIPERTENSAO_3"
+  },
+  {
+   "id": "PA-185-70",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 185,
+    "diastolica": 70
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-185-100",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 185,
+    "diastolica": 100
+   },
+   "esperado": "HIPERTENSAO_3"
+  },
+  {
+   "id": "PA-140-89",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 140,
+    "diastolica": 89
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-140-90",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 140,
+    "diastolica": 90
+   },
+   "esperado": "HIPERTENSAO_1"
+  },
+  {
+   "id": "PA-119-79",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 119,
+    "diastolica": 79
+   },
+   "esperado": "OTIMA"
+  },
+  {
+   "id": "PA-120-80",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 120,
+    "diastolica": 80
+   },
+   "esperado": "NORMAL"
+  },
+  {
+   "id": "PA-130-85",
+   "descricao": "classe da pressão",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 130,
+    "diastolica": 85
+   },
+   "esperado": "LIMITROFE"
+  },
+  {
+   "id": "PA-160-89",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 160,
+    "diastolica": 89
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-180-89",
+   "descricao": "classe da pressão (correção: sistólica isolada a partir de 140 com diastólica < 90)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 180,
+    "diastolica": 89
+   },
+   "esperado": "HIPERTENSAO_SISTOLICA_ISOLADA"
+  },
+  {
+   "id": "PA-sem-diastolica",
+   "descricao": "sem dado: nulo, nunca zero (RN-CAL-04)",
+   "origem": "aba anamnese (CLASS_PA)",
+   "funcao": "classificarPressao",
+   "entrada": {
+    "sistolica": 120,
+    "diastolica": null
+   },
+   "esperado": null
+  },
+  {
+   "id": "ALC-1-CERVEJA-LATINHA",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "CERVEJA",
+    "unidade": "LATINHA",
+    "quantidade": "2",
+    "vezesPorSemana": "3"
+   },
+   "esperado": {
+    "mlPorSemana": "2130.00",
+    "gramasEtanolPorSemana": "85.20",
+    "kcalPorSemana": "596.40"
+   }
+  },
+  {
+   "id": "ALC-2-VINHO-TACA_MEDIA",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "VINHO",
+    "unidade": "TACA_MEDIA",
+    "quantidade": "1",
+    "vezesPorSemana": "7"
+   },
+   "esperado": {
+    "mlPorSemana": "840.00",
+    "gramasEtanolPorSemana": "87.36",
+    "kcalPorSemana": "611.52"
+   }
+  },
+  {
+   "id": "ALC-3-CACHACA-DOSE",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "CACHACA",
+    "unidade": "DOSE",
+    "quantidade": "3",
+    "vezesPorSemana": "2"
+   },
+   "esperado": {
+    "mlPorSemana": "300.00",
+    "gramasEtanolPorSemana": "105.60",
+    "kcalPorSemana": "739.20"
+   }
+  },
+  {
+   "id": "ALC-4-UISQUE-DOSE",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "UISQUE",
+    "unidade": "DOSE",
+    "quantidade": "2",
+    "vezesPorSemana": "1"
+   },
+   "esperado": {
+    "mlPorSemana": "100.00",
+    "gramasEtanolPorSemana": "36.00",
+    "kcalPorSemana": "252.00"
+   }
+  },
+  {
+   "id": "ALC-5-VODCA-DOSE",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "VODCA",
+    "unidade": "DOSE",
+    "quantidade": "1.5",
+    "vezesPorSemana": "2"
+   },
+   "esperado": {
+    "mlPorSemana": "150.00",
+    "gramasEtanolPorSemana": "42.00",
+    "kcalPorSemana": "294.00"
+   }
+  },
+  {
+   "id": "ALC-6-ICE-GARRAFA_LONG_NECK",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "ICE",
+    "unidade": "GARRAFA_LONG_NECK",
+    "quantidade": "1",
+    "vezesPorSemana": "1"
+   },
+   "esperado": {
+    "mlPorSemana": "355.00",
+    "gramasEtanolPorSemana": "15.62",
+    "kcalPorSemana": "109.34"
+   }
+  },
+  {
+   "id": "ALC-7-CERVEJA-TULIPA",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "CERVEJA",
+    "unidade": "TULIPA",
+    "quantidade": "4",
+    "vezesPorSemana": "2"
+   },
+   "esperado": {
+    "mlPorSemana": "2240.00",
+    "gramasEtanolPorSemana": "89.60",
+    "kcalPorSemana": "627.20"
+   }
+  },
+  {
+   "id": "ALC-8-ABSINTO-CALICE",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "ABSINTO",
+    "unidade": "CALICE",
+    "quantidade": "1",
+    "vezesPorSemana": "1"
+   },
+   "esperado": {
+    "mlPorSemana": "80.00",
+    "gramasEtanolPorSemana": "34.56",
+    "kcalPorSemana": "241.92"
+   }
+  },
+  {
+   "id": "ALC-9-RUM_GIM-COPO_DUPLO",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "RUM_GIM",
+    "unidade": "COPO_DUPLO",
+    "quantidade": "1",
+    "vezesPorSemana": "3"
+   },
+   "esperado": {
+    "mlPorSemana": "600.00",
+    "gramasEtanolPorSemana": "206.40",
+    "kcalPorSemana": "1444.80"
+   }
+  },
+  {
+   "id": "ALC-10-CERVEJA-GARRAFA_GRANDE",
+   "descricao": "álcool por semana",
+   "origem": "aba anamnese (álcool)",
+   "funcao": "alcool",
+   "entrada": {
+    "bebida": "CERVEJA",
+    "unidade": "GARRAFA_GRANDE",
+    "quantidade": "1",
+    "vezesPorSemana": "0"
+   },
+   "esperado": {
+    "mlPorSemana": "0.00",
+    "gramasEtanolPorSemana": "0.00",
+    "kcalPorSemana": "0.00"
+   }
+  },
+  {
+   "id": "SAL-1",
+   "descricao": "sal em g/pessoa/dia",
+   "origem": "aba anamnese (sal)",
+   "funcao": "salGramasPorPessoaDia",
+   "entrada": {
+    "gramasNoMes": "2000",
+    "pessoas": 4
+   },
+   "esperado": "16"
+  },
+  {
+   "id": "SAL-2",
+   "descricao": "sal em g/pessoa/dia",
+   "origem": "aba anamnese (sal)",
+   "funcao": "salGramasPorPessoaDia",
+   "entrada": {
+    "gramasNoMes": "1000",
+    "pessoas": 2
+   },
+   "esperado": "16"
+  },
+  {
+   "id": "SAL-3",
+   "descricao": "sal em g/pessoa/dia",
+   "origem": "aba anamnese (sal)",
+   "funcao": "salGramasPorPessoaDia",
+   "entrada": {
+    "gramasNoMes": "450",
+    "pessoas": 3
+   },
+   "esperado": "5"
+  },
+  {
+   "id": "SAL-4",
+   "descricao": "sal em g/pessoa/dia",
+   "origem": "aba anamnese (sal)",
+   "funcao": "salGramasPorPessoaDia",
+   "entrada": {
+    "gramasNoMes": "149",
+    "pessoas": 1
+   },
+   "esperado": "4"
+  },
+  {
+   "id": "SAL-5",
+   "descricao": "sal em g/pessoa/dia",
+   "origem": "aba anamnese (sal)",
+   "funcao": "salGramasPorPessoaDia",
+   "entrada": {
+    "gramasNoMes": "4500",
+    "pessoas": 5
+   },
+   "esperado": "30"
+  },
+  {
+   "id": "SAL-6",
+   "descricao": "sal em g/pessoa/dia",
+   "origem": "aba anamnese (sal)",
+   "funcao": "salGramasPorPessoaDia",
+   "entrada": {
+    "gramasNoMes": "0",
+    "pessoas": 2
+   },
+   "esperado": "0"
+  },
+  {
+   "id": "OLEO-1",
+   "descricao": "óleo em ml/pessoa/dia e kcal",
+   "origem": "aba anamnese (óleo)",
+   "funcao": "oleo",
+   "entrada": {
+    "mlNoMes": "3000",
+    "pessoas": 4
+   },
+   "esperado": {
+    "mlPorPessoaDia": "25",
+    "kcalPorPessoaDia": "225"
+   }
+  },
+  {
+   "id": "OLEO-2",
+   "descricao": "óleo em ml/pessoa/dia e kcal",
+   "origem": "aba anamnese (óleo)",
+   "funcao": "oleo",
+   "entrada": {
+    "mlNoMes": "1800",
+    "pessoas": 3
+   },
+   "esperado": {
+    "mlPorPessoaDia": "20",
+    "kcalPorPessoaDia": "180"
+   }
+  },
+  {
+   "id": "OLEO-3",
+   "descricao": "óleo em ml/pessoa/dia e kcal",
+   "origem": "aba anamnese (óleo)",
+   "funcao": "oleo",
+   "entrada": {
+    "mlNoMes": "900",
+    "pessoas": 2
+   },
+   "esperado": {
+    "mlPorPessoaDia": "15",
+    "kcalPorPessoaDia": "135"
+   }
+  },
+  {
+   "id": "OLEO-4",
+   "descricao": "óleo em ml/pessoa/dia e kcal",
+   "origem": "aba anamnese (óleo)",
+   "funcao": "oleo",
+   "entrada": {
+    "mlNoMes": "599",
+    "pessoas": 1
+   },
+   "esperado": {
+    "mlPorPessoaDia": "19",
+    "kcalPorPessoaDia": "171"
+   }
+  },
+  {
+   "id": "OLEO-5",
+   "descricao": "óleo em ml/pessoa/dia e kcal",
+   "origem": "aba anamnese (óleo)",
+   "funcao": "oleo",
+   "entrada": {
+    "mlNoMes": "0",
+    "pessoas": 3
+   },
+   "esperado": {
+    "mlPorPessoaDia": "0",
+    "kcalPorPessoaDia": "0"
+   }
+  },
+  {
+   "id": "DUR-1",
+   "descricao": "duração do exercício em minutos",
+   "origem": "aba anamnese (exercício)",
+   "funcao": "duracaoMinutos",
+   "entrada": {
+    "inicio": "06:00",
+    "fim": "07:00"
+   },
+   "esperado": "60"
+  },
+  {
+   "id": "DUR-2",
+   "descricao": "duração do exercício em minutos",
+   "origem": "aba anamnese (exercício)",
+   "funcao": "duracaoMinutos",
+   "entrada": {
+    "inicio": "18:30",
+    "fim": "19:45"
+   },
+   "esperado": "75"
+  },
+  {
+   "id": "DUR-3",
+   "descricao": "duração do exercício em minutos",
+   "origem": "aba anamnese (exercício)",
+   "funcao": "duracaoMinutos",
+   "entrada": {
+    "inicio": "23:00",
+    "fim": "00:30"
+   },
+   "esperado": "90"
+  },
+  {
+   "id": "DUR-4",
+   "descricao": "duração do exercício em minutos",
+   "origem": "aba anamnese (exercício)",
+   "funcao": "duracaoMinutos",
+   "entrada": {
+    "inicio": "07:15",
+    "fim": "07:15"
+   },
+   "esperado": "0"
+  }
+ ]
+}

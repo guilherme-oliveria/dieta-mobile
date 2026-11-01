@@ -69,6 +69,10 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 - **RN-DIE-07** Paciente com várias nutris escolhe a "dieta em uso"; padrão é a publicada mais recente `[SUPOSIÇÃO S9]`. Lembretes e lista de compras usam a dieta em uso.
 - **RN-DIE-08** Publicar uma dieta gera push "Nova dieta" ao paciente (se o vínculo está `ATIVO`) e atualiza o feed .ics.
 - **RN-DIE-09** Orientação geral (texto padrão da nutri, ex.: hidratação 35 ml/kg) é anexada à dieta na publicação, também congelada.
+- **RN-DIE-10** A porção de cada grupo (Pão 70 ou 150 kcal etc.) é escolhida **uma vez por dieta** e vale para todos os itens por grupo; cada item traz exatamente uma origem (alimento, grupo ou produto). Publicar congela as porções escolhidas junto com a dieta (RN-DIE-03).
+- **RN-DIE-11** Refeições `ALTERNATIVA` (ex.: lanche 2ª opção) mostram o próprio total e a diferença para a refeição que substituem, e **não** entram no total do dia.
+- **RN-DIE-12** Item "à vontade" não tem quantidade nem kcal; o rodapé ("Além das refeições acima…") é texto da nutri, congelado na publicação.
+- **RN-DIE-13** Total de micronutriente soma só os itens que informam o nutriente; os demais ficam listados em `incompleto`. Nunca vira zero por falta de dado (RN-CAL-04). Os valores por porção dos grupos são as médias da planilha da Nut. Luciana e são provisórios; o app e o PDF citam a fonte.
 
 ## Substituição pelo paciente (RN-SUB)
 
@@ -104,6 +108,7 @@ Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substitue
 - **RN-CAL-04** Resultado que depende de dado ausente fica nulo, com o motivo (ex.: `FALTA_PUNHO`), nunca zero. `DADO_INSUFICIENTE_CALCULO` só quando a nutri pede um cálculo explícito sem os dados.
 - **RN-CAL-05** Peso para "por kg" na dieta: adulto com IMC ≥ 30 usa o peso ajustado `(P − Pideal) × 0,25 + Pideal`, com `Pideal = E² × 21,7`.
 - **RN-CAL-06** Vetores de teste da planilha (`src/test/resources/contrato/calculos/`) são contrato: mudança de fórmula exige mudar o vetor nos dois repositórios.
+- **RN-CAL-07** Total da dieta por porções = Σ (porções × perfil da porção do grupo) + Σ (gramas ÷ 100 × perfil do produto); a soma usa os perfis sem arredondar e grava 2 casas em HALF_UP. Os vetores `contrato/calculos/dieta-porcoes.json` são contrato nos dois repositórios.
 - **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404).
 - **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho.
 - **RN-MOD-03** Restrição do modelo vira restrição do paciente na dieta publicada e filtra a lista dele no snapshot (RN-DIE-03).
