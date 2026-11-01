@@ -17,12 +17,22 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Aba Dieta da ficha: lista de dietas do paciente e montador (MOB-12/13). */
 @Composable
-fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResposta) {
+fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResposta, planejador: PlanejadorPorcoesViewModel? = null) {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(paciente.id) { viewModel.abrirPaciente(paciente.id) }
     val pdf = koinInject<PortaPdf>()
-    DietasListaTela(estado, viewModel::nova, viewModel::abrir, viewModel::duplicar, viewModel::recarregar,
+    val plano = planejador?.estado?.collectAsState()?.value
+    if (planejador != null) LaunchedEffect(paciente.id) { planejador.abrirPaciente(paciente.id) }
+    DietasListaTela(estado, viewModel::nova, { d -> if (planejador != null && usaPorcoes(d)) planejador.abrir(d) else viewModel.abrir(d) }, viewModel::duplicar, viewModel::recarregar,
+        aoNovaPorcoes = planejador?.let { { it.nova() } }, porcoesDisponiveis = plano?.referencia != null,
         pdf = { d -> BotaoPdf(stringResource(Res.string.pdf_dieta), !estado.semConexao, { pdf.link(RecursoPdf.DIETA, d.id) }) })
+    if (planejador != null && plano?.rascunho != null) Dialog(onDismissRequest = { planejador.fechar(); viewModel.recarregar() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        PlanejadorPorcoesTela(plano, AcoesPlanejador(
+            { planejador.fechar(); viewModel.recarregar() }, planejador::mudarTitulo, planejador::mudarOrientacao, planejador::mudarRodape, planejador::mudarMetas,
+            planejador::selecionarRefeicao, planejador::adicionarRefeicao, planejador::adicionarAlternativa, planejador::removerRefeicao, planejador::mudarNomeRefeicao,
+            planejador::mudarHorario, planejador::adicionarGrupo, planejador::adicionarAVontade, planejador::adicionarTexto, planejador::escolherPorcao,
+            planejador::ajustarPorcoes, planejador::removerItem, planejador::salvar))
+    }
     // tela cheia em diálogo: a ficha já rola na vertical, então o montador não pode aninhar outra rolagem
     if (estado.rascunho != null) Dialog(onDismissRequest = viewModel::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         MontarDietaTela(estado, AcoesMontador(viewModel::fechar, viewModel::mudarTitulo, viewModel::mudarOrientacao, viewModel::adicionarRefeicao,
@@ -35,13 +45,14 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
 
 @Composable
 fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResposta) -> Unit, aoDuplicar: (DietaResposta) -> Unit, aoRecarregar: () -> Unit,
-    pdf: @Composable (DietaResposta) -> Unit = {}) {
+    pdf: @Composable (DietaResposta) -> Unit = {}, aoNovaPorcoes: (() -> Unit)? = null, porcoesDisponiveis: Boolean = false) {
     val habilitado = !estado.semConexao && !estado.enviando && !estado.carregando
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
         estado.erro?.let { Text(textoMensagemDieta(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer) }
         estado.aviso?.let { Text(textoMensagemDieta(it), style = MaterialTheme.typography.bodySmall) }
         BotaoPrincipal(stringResource(Res.string.dieta_nova), aoNova, habilitado = habilitado && estado.alimentos.isNotEmpty())
+        if (aoNovaPorcoes != null) BotaoContornado(stringResource(Res.string.plan_nova), aoNovaPorcoes, habilitado = habilitado && porcoesDisponiveis)
         if (estado.alimentos.isEmpty()) Text(stringResource(Res.string.dieta_sem_alimentos), style = MaterialTheme.typography.bodySmall)
         if (estado.carregando) EstadoCarregando()
         else if (estado.dietas.isEmpty()) EstadoVazio(mensagem = stringResource(Res.string.dieta_vazia_lista))
@@ -60,3 +71,6 @@ fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResp
         if (estado.erro != null && estado.dietas.isEmpty()) BotaoTexto(stringResource(Res.string.sync_atualizar), aoRecarregar)
     }
 }
+
+/** Dieta montada por porções do grupo, à vontade, texto livre ou alternativas: só o planejador por porções edita sem perder itens (MOB-54b). */
+internal fun usaPorcoes(d: DietaResposta) = d.refeicoes.any { r -> r.ehAlternativa || r.itens.any { it.alimentoId == null } } || !d.porcoes.isNullOrEmpty()

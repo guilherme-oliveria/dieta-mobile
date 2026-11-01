@@ -87,7 +87,7 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
             conteudoPacientes = { classe, vinculo, abrir, voltar ->
                 PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
                     when (aba) {
-                        AbaFicha.DIETA -> DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
+                        AbaFicha.DIETA -> DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente, koinViewModel<org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel>(viewModelStoreOwner = dono))
                         AbaFicha.AVALIACOES -> AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id, paciente.sexo, paciente.dataNascimento)
                         AbaFicha.LISTA -> {
                             val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
