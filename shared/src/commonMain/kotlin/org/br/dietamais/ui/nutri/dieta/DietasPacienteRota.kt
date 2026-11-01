@@ -17,13 +17,23 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Aba Dieta da ficha: lista de dietas do paciente e montador (MOB-12/13). */
 @Composable
-fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResposta, planejador: PlanejadorPorcoesViewModel? = null, modelos: ModelosDietaViewModel? = null) {
+fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResposta, planejador: PlanejadorPorcoesViewModel? = null, modelos: ModelosDietaViewModel? = null,
+    aplicar: AplicarModeloViewModel? = null) {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(paciente.id) { viewModel.abrirPaciente(paciente.id) }
     val pdf = koinInject<PortaPdf>()
     val plano = planejador?.estado?.collectAsState()?.value
     val biblioteca = modelos?.estado?.collectAsState()?.value
     var abrirBiblioteca by remember { mutableStateOf(false) }
+    val aplicando = aplicar?.estado?.collectAsState()?.value
+    // MOB-57: o rascunho criado abre no planejador (dieta por grupos) ou no montador; com avisos a tela espera a leitura deles
+    val abrirCriada = {
+        aplicando?.criada?.let { d ->
+            aplicar.fechar(); abrirBiblioteca = false; viewModel.recarregar()
+            if (planejador != null && usaPorcoes(d)) planejador.abrir(d) else viewModel.abrir(d)
+        }; Unit
+    }
+    LaunchedEffect(aplicando?.criada) { if (aplicando?.criada != null && aplicando.avisos.isEmpty()) abrirCriada() }
     if (planejador != null) LaunchedEffect(paciente.id) { planejador.abrirPaciente(paciente.id) }
     DietasListaTela(estado, viewModel::nova, { d -> if (planejador != null && usaPorcoes(d)) planejador.abrir(d) else viewModel.abrir(d) }, viewModel::duplicar, viewModel::recarregar,
         aoNovaPorcoes = planejador?.let { { it.nova() } }, porcoesDisponiveis = plano?.referencia != null,
@@ -32,7 +42,11 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
         pdf = { d -> BotaoPdf(stringResource(Res.string.pdf_dieta), !estado.semConexao, { pdf.link(RecursoPdf.DIETA, d.id) }) })
     if (modelos != null && biblioteca != null && abrirBiblioteca) Dialog(onDismissRequest = { abrirBiblioteca = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         ModelosDietaTela(biblioteca, AcoesModelos(aoVoltar = { abrirBiblioteca = false }, aoAba = modelos::escolherAba, aoDuplicar = modelos::duplicar,
-            aoApagar = modelos::pedirExclusao, aoConfirmarApagar = modelos::confirmarExclusao, aoCancelarApagar = modelos::cancelarExclusao, aoRecarregar = modelos::recarregar))
+            aoApagar = modelos::pedirExclusao, aoConfirmarApagar = modelos::confirmarExclusao, aoCancelarApagar = modelos::cancelarExclusao, aoRecarregar = modelos::recarregar,
+            aoUsar = aplicar?.let { a -> { m: ModeloDietaResposta -> a.abrir(paciente.id, m) } }))
+    }
+    if (aplicar != null && aplicando?.modelo != null) Dialog(onDismissRequest = aplicar::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        AplicarModeloTela(aplicando, paciente.nome, aplicar::fechar, { if (aplicando.criada != null) abrirCriada() else aplicar.criar() })
     }
     if (planejador != null && plano?.rascunho != null) Dialog(onDismissRequest = { planejador.fechar(); viewModel.recarregar() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         PlanejadorPorcoesTela(plano, AcoesPlanejador(

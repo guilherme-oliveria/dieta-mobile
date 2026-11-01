@@ -16,6 +16,10 @@ interface PortaModelosDieta {
     suspend fun duplicar(id: Uuid, chave: Uuid = novoIdLocal()): ModeloDietaResposta
     suspend fun excluir(id: Uuid, versao: Long)
     suspend fun salvarComoModelo(dietaId: Uuid, requisicao: SalvarComoModeloRequisicao, chave: Uuid = novoIdLocal()): ModeloDietaResposta
+    /** `null` quando o paciente não tem avaliação (404): o modelo se aplica sem escala. */
+    suspend fun referenciaAvaliacao(pacienteId: Uuid): ReferenciaAvaliacaoDietaResposta?
+    /** RN-MOD-02: cria o rascunho (nunca publica). A chave mantém o reenvio idempotente. */
+    suspend fun aplicar(pacienteId: Uuid, modeloId: Uuid, requisicao: AplicarModeloRequisicao, chave: Uuid = novoIdLocal()): DietaDeModeloResposta
 }
 
 class ModelosDietaRepositorio(private val api: ApiDieta, private val conferirArmazem: (OperacaoSessao) -> Unit) : PortaModelosDieta {
@@ -44,6 +48,19 @@ class ModelosDietaRepositorio(private val api: ApiDieta, private val conferirArm
     override suspend fun salvarComoModelo(dietaId: Uuid, requisicao: SalvarComoModeloRequisicao, chave: Uuid): ModeloDietaResposta {
         val contexto = contexto()
         val resposta = api.enviar<ModeloDietaResposta>("eu/nutri/modelos-dieta/de-dieta/$dietaId", JsonContrato.encodeToJsonElement(requisicao), chave)
+        conferir(contexto)
+        return resposta
+    }
+    override suspend fun referenciaAvaliacao(pacienteId: Uuid): ReferenciaAvaliacaoDietaResposta? {
+        val contexto = contexto()
+        val resposta = try { api.obter<ReferenciaAvaliacaoDietaResposta>("pacientes/$pacienteId/dietas/referencia-avaliacao") }
+        catch (e: ErroApi) { if (e.status == 404) null else throw e }
+        conferir(contexto)
+        return resposta
+    }
+    override suspend fun aplicar(pacienteId: Uuid, modeloId: Uuid, requisicao: AplicarModeloRequisicao, chave: Uuid): DietaDeModeloResposta {
+        val contexto = contexto()
+        val resposta = api.enviar<DietaDeModeloResposta>("pacientes/$pacienteId/dietas/de-modelo/$modeloId", JsonContrato.encodeToJsonElement(requisicao), chave)
         conferir(contexto)
         return resposta
     }
