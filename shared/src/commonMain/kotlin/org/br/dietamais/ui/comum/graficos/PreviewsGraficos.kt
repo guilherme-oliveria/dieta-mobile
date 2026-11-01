@@ -27,7 +27,7 @@ internal fun GaleriaGraficos() {
             GraficoComTabela(macros.map { it.rotulo to "${it.valor.toInt()}%" }) { GraficoRosca(macros, centro = "2509 kcal", anelMeta = listOf(ItemGrafico("Carboidrato", 55.0), ItemGrafico("Proteína", 20.0), ItemGrafico("Gordura", 25.0))) }
             GraficoBarras(listOf(ItemGrafico("Desjejum", 420.0), ItemGrafico("Almoço", 800.0), ItemGrafico("Jantar", 650.0)), unidade = "kcal", meta = 700.0)
             ReguaFaixas(
-                listOf(TrechoRegua(SegmentoFaixa("Baixo", 10.0, 18.5), InfoDieta), TrechoRegua(SegmentoFaixa("Normal", 18.5, 25.0), VerdeDieta), TrechoRegua(SegmentoFaixa("Sobrepeso", 25.0, 30.0), AlertaDieta.copy(alpha = 0.6f)), TrechoRegua(SegmentoFaixa("Obesidade", 30.0, 40.0), AlertaDieta)),
+                trechosReguaImc(listOf("Baixo", "Normal", "Sobrepeso", "Obesidade")),
                 27.5, "kg/m²",
             )
             Medidor(26.5, 0.0, 50.0, "% de gordura", "%", faixaIdeal = 14.0..25.0)

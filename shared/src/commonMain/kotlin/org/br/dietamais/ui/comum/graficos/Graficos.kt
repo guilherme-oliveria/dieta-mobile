@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Cores de série, em ordem. O laranja de alerta fica de fora: só vale para avisos (docs/design/componentes.md). */
 object PaletaGraficos {
-    val serie: List<Color> = listOf(VerdeDieta, InfoDieta, Color(0xFFD9A21B), Color(0xFF8A6BB1), Color(0xFF3C9C9A), Color(0xFF7A8B80))
+    val serie: List<Color> = listOf(SerieVerde, SerieAzul, SerieAmbar, SerieRoxo, SerieTurquesa, SerieCinza)
     fun cor(indice: Int): Color = serie[indice.mod(serie.size)]
 }
 
@@ -144,6 +144,12 @@ fun GraficoBarras(itens: List<ItemGrafico>, modifier: Modifier = Modifier, unida
         }
     }
 }
+
+/** Faixas da régua de IMC (OMS) com as cores de faixa do padrão; [rotulos] são, em ordem, abaixo, normal, sobrepeso e obesidade. */
+fun trechosReguaImc(rotulos: List<String>): List<TrechoRegua> = listOf(
+    TrechoRegua(SegmentoFaixa(rotulos[0], 10.0, 18.5), FaixaAbaixo), TrechoRegua(SegmentoFaixa(rotulos[1], 18.5, 25.0), FaixaNormal),
+    TrechoRegua(SegmentoFaixa(rotulos[2], 25.0, 30.0), FaixaSobrepeso), TrechoRegua(SegmentoFaixa(rotulos[3], 30.0, 40.0), FaixaObesidade),
+)
 
 /** Trecho colorido de [ReguaFaixas]. */
 data class TrechoRegua(val segmento: SegmentoFaixa, val cor: Color)

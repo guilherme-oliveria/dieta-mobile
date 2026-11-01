@@ -523,6 +523,11 @@
     <string name="resultados_aba">Meus resultados</string>
     <string name="resultados_data">Avaliação de %1$s</string>
     <string name="resultados_vazio">Sua nutri ainda não compartilhou uma avaliação com você.</string>
+    <string name="resultados_regua_baixo">Abaixo</string>
+    <string name="resultados_regua_normal">Normal</string>
+    <string name="resultados_regua_sobrepeso">Sobrepeso</string>
+    <string name="resultados_regua_obesidade">Obesidade</string>
+    <string name="resultados_medidor_gordura">Gordura do corpo</string>
     <string name="resultados_ind_peso_altura">Peso para a altura</string>
     <string name="resultados_ind_cintura">Cintura</string>
     <string name="resultados_ind_gordura">Gordura corporal</string>

@@ -20,7 +20,9 @@ import org.br.dietamais.ui.comum.ChipStatus
 import org.br.dietamais.ui.comum.EstiloStatus
 import org.br.dietamais.ui.comum.graficos.*
 import org.br.dietamais.ui.nutri.avaliacao.*
+import org.br.dietamais.ui.theme.AlertaDieta
 import org.br.dietamais.ui.theme.Dimens
+import org.br.dietamais.ui.theme.VerdeDieta
 import org.jetbrains.compose.resources.stringResource
 
 /** Aba "Meus resultados" do paciente: só o que a nutri compartilhou, em frases simples (sem siglas) e sempre com texto junto da cor. */
@@ -91,6 +93,20 @@ fun MeusResultadosTela(resultados: MeusResultados?, modifier: Modifier = Modifie
                     ChipStatus(estiloSemaforo(i.semaforo), texto = textoSemaforo(i.semaforo))
                 }
                 Text(valorIndicador(i), style = MaterialTheme.typography.bodyLarge)
+                when (i.tipo) {
+                    TipoIndicador.PESO_ALTURA -> ReguaFaixas(
+                        trechosReguaImc(listOf(
+                            stringResource(Res.string.resultados_regua_baixo), stringResource(Res.string.resultados_regua_normal),
+                            stringResource(Res.string.resultados_regua_sobrepeso), stringResource(Res.string.resultados_regua_obesidade),
+                        )),
+                        resultados.imc, "kg/m²",
+                    )
+                    TipoIndicador.GORDURA -> Medidor(
+                        i.valor, 0.0, 50.0, stringResource(Res.string.resultados_medidor_gordura), "%",
+                        corValor = if (i.semaforo == Semaforo.ALERTA) AlertaDieta else VerdeDieta,
+                    )
+                    else -> Unit
+                }
             }
         }
         if (resultados.composicao.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {
