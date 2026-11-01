@@ -112,6 +112,7 @@ Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substitue
 - **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404). Editar ou apagar um modelo do sistema é `403 ACESSO_NEGADO`; ela o copia para editar.
 - **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho. As porções são escaladas pelo alvo de energia do paciente (arredondando para 0,5, mínimo 0,5).
 - **RN-MOD-03** Restrição do modelo vira restrição do paciente na dieta publicada e filtra a lista dele no snapshot (RN-DIE-03).
+- **RN-EXA-01** A nutri lança exames na avaliação (`exames`: `codigo` e `valor` ou `texto`, `condicao` quando a referência depende de fase). O código precisa existir no catálogo da faixa etária da ficha na data da avaliação (criança, adolescente ou adulto; idoso usa adulto), sem repetir. Numérico leva `valor`, qualitativo leva `texto`; `condicao` é uma das do exame. A classificação (`rotulo` ou `motivo`) é do servidor, gravada no lançamento; sem nascimento da ficha não há exame (`FORMATO_INVALIDO`). Edição sem a lista mantém os exames e os reclassifica; lista vazia limpa.
 - **RN-RES-01** O paciente vê resultados por seção conforme o compartilhamento da nutri; exames são não compartilhados por padrão.
 - **RN-RES-02** Textos para o paciente não usam siglas clínicas.
 
