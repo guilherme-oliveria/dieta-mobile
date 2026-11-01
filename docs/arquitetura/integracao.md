@@ -106,7 +106,7 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | questionarios | `GET/POST /modelos-questionario`, `POST /pacientes/{id}/questionarios` (envia), `GET /eu/questionarios`, `PUT /eu/questionarios/{id}/respostas`, `POST /eu/questionarios/{id}/enviar` | nutri / paciente |
 | notificacoes | `GET /eu/avisos`, `POST /eu/avisos/{id}/lido`, `POST /eu/avisos/lidos` (central de avisos) | nutri / paciente |
 | agenda | `GET/POST /consultas`, `PATCH /consultas/{id}`, `GET /eu/consultas`, `POST /eu/calendario/token` (gera/revoga link .ics) | nutri / paciente |
-| relatorios | `GET /dietas/{id}/pdf`, `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
+| relatorios | `GET /dietas/{id}/pdf`, `GET /dietas/{id}/pdf-lista`, `GET /eu/dietas/{id}/pdf-lista` (BE-50b, `tamanho` opcional; ver `contrato-fase-8.md`), `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
 | sync | `GET /sync`, `POST /sync` | app |
 
 ## Sincronização offline (app ↔ backend)

@@ -23,6 +23,16 @@ Tudo aqui é **aditivo**: campos novos são opcionais, o contrato da fase 3 (die
 
 ## Porções por grupo (pronto, BE-47b)
 
+### PDF da lista de substituição (BE-50b)
+
+`GET /api/v1/dietas/{id}/pdf-lista` (nutri dona) e `GET /api/v1/eu/dietas/{id}/pdf-lista` (paciente destinatário, inclusive vínculo encerrado) devolvem `PdfResposta { url, expiraEm }`, com link assinado por 10 minutos e `Cache-Control: no-store`. Dieta nunca publicada ou de outro usuário: `404 RECURSO_NAO_ENCONTRADO`.
+
+Parâmetro opcional `tamanho`: `PEQUENA`, `MEDIA` (padrão), `GRANDE`, `CARBOIDRATOS`; valor desconhecido: `400 FORMATO_INVALIDO`. As opções do grupo são ordenadas por kcal crescente; pequena usa a menor, grande a maior e média a posição `quantidade / 2` (inteira, central superior se houver número par). Uma opção repete nos três tamanhos. Carboidratos usa a opção média e acrescenta a coluna `Carb. (g)` e exemplo de soma por refeição.
+
+A fonte de alimentos é somente `listaSubstituicao` do snapshot publicado (RN-DIE-03, já filtrada por restrições). Nome, gramas e medida caseira são os congelados. As APIs internas consultam pela nutri do snapshot o nome do grupo e os valores de energia e carboidratos por porção-base, além das opções do catálogo de porções. Fator = kcal da opção / kcal por porção-base. Gramas arredondam para inteiro; a quantidade inicial da medida caseira escala e arredonda para ¼. Aceita frações ¼, ½, ¾ e decimais; sem número inicial, prefixa `N × `. A coluna de carboidratos usa a média do grupo multiplicada pelo fator, nunca o valor individual do alimento, e informa a fonte provisória `PorcoesGrupos.FONTE`.
+
+Sem opção do grupo ou referência válida de energia, omite os alimentos afetados e avisa ao final. Carboidrato ausente aparece como "Não informado", nunca zero (RN-CAL-04). As referências nutricionais são atuais; os dados da lista continuam congelados. Layouts: `PDF-Lista-Pequena`, `PDF-Lista-Media`, `PDF-Lista-Grande` e `PDF-Lista-Carboidratos` no mobile. Medidas também escalam, conforme o índice por tarefa, apesar dos exemplos estáticos dos artboards.
+
 `GET /api/v1/referencias/porcoes` devolve `{ fonte, unidades, grupos: [{ grupoId, nome, opcoes: [{ opcao, kcal, quantidade, unidade, medidaCaseira, guiaAlimentar, nutrientes }] }] }`. `nutrientes` é um mapa código → valor **por porção** (34 códigos, unidades em `unidades`); nutriente que nenhum alimento do grupo informa não aparece (RN-CAL-04). Os valores são as médias da planilha da Nut. Luciana e são **provisórios**; o app e o PDF mostram `fonte`. "Não usar o grupo" e "à vontade" são escolhas do cliente.
 
 ## Mudanças em `SalvarDietaRequisicao` e na resposta da dieta
