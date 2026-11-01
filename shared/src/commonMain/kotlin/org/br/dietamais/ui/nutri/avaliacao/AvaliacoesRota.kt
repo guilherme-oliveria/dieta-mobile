@@ -10,21 +10,29 @@ import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.BotaoPdf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlin.uuid.Uuid
 
 /** Aba Avaliações da ficha da nutri: histórico ou, com o formulário aberto, a tela de edição. */
 @Composable
-fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid, sexo: org.br.dietamais.data.remoto.dto.Sexo? = null, nascimento: kotlinx.datetime.LocalDate? = null) {
+fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid, sexo: org.br.dietamais.data.remoto.dto.Sexo? = null, nascimento: kotlinx.datetime.LocalDate? = null,
+    exames: ExamesNutriViewModel? = null, nomePaciente: String = "") {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(pacienteId) { viewModel.abrir(pacienteId) }
     LaunchedEffect(sexo, nascimento) { viewModel.definirPaciente(sexo, nascimento) }
     val pdf = koinInject<PortaPdf>()
+    val lancando = exames?.estado?.collectAsState()?.value
+    if (exames != null && lancando?.avaliacao != null) Dialog(onDismissRequest = exames::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        ExamesNutriTela(lancando, nomePaciente, AcoesExames(exames::fechar, exames::mudarBusca, exames::escolherSecao, exames::mudarValor, exames::mudarCondicao,
+            exames::mudarMostrarAoPaciente, exames::mudarJustificativa, exames::salvar))
+    }
     if (estado.formulario != null) AvaliacaoTela(estado, AcoesAvaliacao(viewModel::mudarMedida, viewModel::mudarParecer, viewModel::mudarCompartilhada,
         viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar, viewModel::proximoPasso, viewModel::passoAnterior, viewModel::repetirMedidasDaUltima,
         viewModel::mudarProtocoloDobras, viewModel::mudarProtocoloMassa, { viewModel.mudarCompartilhamento(medidas = it) }, { viewModel.mudarCompartilhamento(composicao = it) },
         { viewModel.mudarCompartilhamento(resumo = it) }, viewModel::mudarEnergia), rolavel = false)
     else HistoricoAvaliacoesTela(estado, AcoesHistorico(viewModel::nova, viewModel::editar, viewModel::alternarSelecao, viewModel::comparar,
-        viewModel::voltarDaComparacao, viewModel::recarregar,
+        viewModel::voltarDaComparacao, viewModel::recarregar, aoExames = exames?.let { vm -> { a: org.br.dietamais.data.remoto.dto.AvaliacaoResposta -> vm.abrir(a) } },
         pdf = { a -> BotaoPdf(stringResource(Res.string.pdf_avaliacao), !estado.semConexao, { pdf.link(RecursoPdf.AVALIACAO, a.id) }) }), rolavel = false)
 }
 

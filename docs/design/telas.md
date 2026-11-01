@@ -89,7 +89,7 @@ Desenhadas em 01/11/2026 (DES-08 a DES-10). Os artboards estão no canvas e em [
 | Aplicar modelo ao paciente | `ui/nutri/dieta` · `AplicarModeloTela` | `A-Modelo-Aplicar.dc.html` | **implementada** (MOB-57) | 57 |
 | Avaliação infantil e adolescente | `ui/nutri/avaliacao` (campos por faixa) | `A-Avaliacao-Infantil.dc.html` | **desenhada**, falta implementar | 58 |
 | Curva de crescimento (nutri e responsável) | `ui/comum/graficos` · `CurvaCrescimento` | `P-Curva-Crescimento.dc.html` | **desenhada**, falta implementar | 59 |
-| Exames: lançar (nutri) | `ui/nutri/avaliacao` · `ExamesTela` | `A-Exames-Nutri.dc.html` | **desenhada**, falta implementar | 60 |
+| Exames: lançar (nutri) | `ui/nutri/avaliacao` · `ExamesTela` | `A-Exames-Nutri.dc.html` | **implementada** (MOB-60b; divergência: a classificação de um valor novo só aparece depois de salvar, vem do servidor) | 60 |
 | Meus exames (paciente, barra de faixa) | `ui/paciente/evolucao` · `MeusExamesTela` | `P-Exames.dc.html` | **implementada** (MOB-60a) | 60 |
 | Anamnese estruturada (álcool, sal, óleo) | `ui/paciente/anamnese` e `ui/nutri/anamnese` | `A-Anamnese-Estruturada.dc.html` | **desenhada**, falta implementar | 61 |
 | Catálogo de gráficos | `ui/comum/graficos` | `G-Graficos.dc.html` | referência | 47 |
