@@ -15,8 +15,11 @@ Tudo aqui é **aditivo**: campos novos são opcionais, o contrato da fase 3 (die
 | Totais de micronutrientes, `incompleto`, adequação à DRI | BE-C8 | BE-49b (pronto) |
 | Peso ajustado, metas a partir da avaliação, gestação e lactação na adequação (`GET /pacientes/{id}/dietas/referencia-avaliacao`) | BE-C8 | BE-49d (pronto) |
 | Snapshot e sync com os campos novos | BE-C8 | BE-49c |
+| Marcadores de restrição nos alimentos | BE-C8 | BE-51 (pronto) |
 | PDF da dieta e das listas de substituição | — | BE-50 |
-| Modelos de dieta por condição | BE-C8 | BE-51 a BE-53 |
+| Modelos de dieta: CRUD, duplicar, salvar dieta como modelo, aplicar com escala (sync `modelosDieta`) | BE-C8 | BE-52a (pronto) |
+| Restrição do modelo na dieta publicada e no snapshot (RN-MOD-03) | BE-C8 | BE-52b (pronto) |
+| Modelos iniciais do sistema (seed) | BE-C8 | BE-53 (pronto) |
 
 ## Porções por grupo (pronto, BE-47b)
 
@@ -62,6 +65,13 @@ O total do dia soma só refeições `PRINCIPAL`; cada `ALTERNATIVA` mostra o pr�
 - `micronutrientes` (BE-49b): códigos de `GET /referencias/porcoes` menos `energia`, `gli`, `pro` e `lip` (que têm campo próprio), com 2 casas; ausente quando nenhum item informa micronutriente (dieta só de alimentos do catálogo, que trazem só os 4 macros). `incompleto` lista os códigos de `micronutrientes` em que algum item que conta (não à vontade, não texto livre) não informa o nutriente; um item por alimento do catálogo faz todos os códigos ficarem incompletos.
 - `adequacao` (só no dia): usa sexo e idade em meses da ficha e, para mulher, gestante ou lactante da avaliação mais recente (`energia.gestante` / `energia.lactacao`; lactante tem prioridade, BE-49d); sem sexo ou nascimento a lista não vem. Proteína usa `proteinas` do total; os demais códigos mapeiam assim: `fib`→`fibras`, `na`→`sodio`, `k`→`potassio`, `ca`→`calcio`, `cu`→`cobre`, `i`→`iodo`, `mg`→`magnesio`, `mn`→`manganes`, `p`→`fosforo`, `se`→`selenio`, `zn`→`zinco`, `fe`→`ferro`, `fol`→`vitamina_b9`, `nia`→`vitamina_b3`, `pan`→`vitamina_b5`, `b2`→`vitamina_b2`, `b1`→`vitamina_b1`, `ret`→`vitamina_a`, `b6`→`vitamina_b6`, `b12`→`vitamina_b12`, `c`→`vitamina_c`, `d`→`vitamina_d`, `e`→`vitamina_e`, `agua` (g)→`agua` (l). `percentual` = total ÷ meta × 100; `classe` ABAIXO abaixo de 90, ACIMA acima de 110 (limites provisórios).
 
+## Marcadores de restrição (BE-51)
+
+- `alimento.marcadores`: lista (sem repetição) de `CONTEM_LACTOSE`, `CONTEM_GLUTEN`, `ALTO_SODIO`, `ACUCAR_ADICIONADO`, `ALTO_POTASSIO`. Vem em `GET /alimentos`, nas respostas de criar e editar e no `/sync` da coleção `ALIMENTOS`. Cliente que não conhece o campo ignora (campo novo e opcional); valor de marcador desconhecido numa resposta futura deve ser ignorado pelo app.
+- `POST /alimentos` e `PATCH /alimentos/{id}` aceitam `marcadores`: criar sem o campo grava lista vazia; editar sem o campo **mantém** os atuais; lista vazia limpa. Valor fora do enum dá `400 FORMATO_INVALIDO`.
+- `GET /alimentos?semMarcador=CONTEM_LACTOSE&semMarcador=ALTO_SODIO`: só alimentos que não têm nenhum dos marcadores.
+- A cópia de cada nutri nasce do catálogo com a sugestão inicial; ela ajusta só na própria cópia (outra nutri não vê). A sugestão inicial foi gerada por palavras do nome do alimento (`dados/alimento-marcadores.csv`, 205 pares) e é **[SUPOSIÇÃO G-15]**: uma nutri precisa validar. O marcador não altera a lista do paciente sozinho; o filtro entra com os modelos de dieta (BE-52, RN-MOD-03).
+
 ## Códigos de erro novos
 
 | Código | HTTP | Quando |
@@ -73,9 +83,14 @@ Já estão em [integracao.md](integracao.md) (BE-49a).
 
 ## Modelos de dieta (BE-51 a BE-53)
 
-Um modelo é uma dieta (refeições, porções por grupo, alternativas, "à vontade", rodapé, orientação) mais `restricoes`. Os modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (RN-MOD-01). Aplicar a um paciente cria um rascunho (RN-MOD-02) com as porções escaladas para o VET dele (arredondando para 0,5). Endpoints previstos, detalhados no BE-51:
+Um modelo é uma dieta (refeições, porções por grupo, alternativas, "à vontade", rodapé, orientação) mais `restricoes`. Os modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (RN-MOD-01). Aplicar a um paciente cria um rascunho (RN-MOD-02) com as porções escaladas para o VET dele (arredondando para 0,5). Endpoints (BE-52a):
 
-- `GET /eu/nutri/modelos-dieta` (sistema e dela), `POST` (criar, copiar ou salvar uma dieta como modelo), `PUT/DELETE /eu/nutri/modelos-dieta/{id}` (só as dela), `POST /pacientes/{id}/dietas/de-modelo/{modeloId}` (cria o rascunho).
+- `GET /eu/nutri/modelos-dieta` → `{ itens: [ModeloDietaResposta] }` (os do sistema primeiro, depois os dela); `GET /eu/nutri/modelos-dieta/{id}` (sistema ou dela; de outra nutri = 404).
+- `POST /eu/nutri/modelos-dieta` cria (corpo `SalvarModeloDietaRequisicao`: `titulo`, `descricao`, `condicao`, `orientacao`, `refeicoes`, `porcoes`, `metas`, `rodape`, `restricoes` e `kcalReferencia`, todos validados como numa dieta). `POST /eu/nutri/modelos-dieta/{id}/duplicar` copia um modelo do sistema ou dela. `POST /eu/nutri/modelos-dieta/de-dieta/{dietaId}` salva uma dieta dela como modelo (`titulo`, `descricao`, `condicao`, `restricoes`; a energia total da dieta vira `kcalReferencia`).
+- `PUT /eu/nutri/modelos-dieta/{id}` e `DELETE` com `If-Match`, só nos dela: do sistema = `403 ACESSO_NEGADO` (RN-MOD-01); de outra nutri = `404`; versão velha = `409 CONFLITO_VERSAO` com o atual. Todas devolvem `ETag`.
+- `POST /pacientes/{id}/dietas/de-modelo/{modeloId}` (corpo opcional `{ id?, vetKcal? }`) cria o **rascunho** (RN-MOD-02) e devolve `{ dieta, fatorEscala, avisos }`. Com `vetKcal`, as porções (de grupo e de alimento, menos "à vontade") são multiplicadas por `vetKcal / kcalReferencia` (sem ela, `metas.vetKcal`), arredondadas para 0,5 e nunca abaixo de 0,5, e `metas.vetKcal` da dieta vira o alvo. Fator fora de 0,25 a 4 = `400 FORMATO_INVALIDO`. `avisos` traz `{ codigo, mensagem }`: `ITEM_REMOVIDO_RESTRICAO` (alimento com marcador que o modelo evita, RN-MOD-03), `ITEM_INDISPONIVEL` (alimento que não está mais ativo na lista dela) e `SEM_ESCALA` (modelo sem energia de referência).
+- Sync: os modelos **dela** entram em `GET /sync` na coleção `modelosDieta` (exclusão = tombstone); os do sistema não, vêm só do `GET` (o app guarda quando online). Até 200 modelos por nutri.
+- `restricoes` guarda marcadores de alimento (`CONTEM_LACTOSE`, `CONTEM_GLUTEN`, `ALTO_SODIO`, `ACUCAR_ADICIONADO`, `ALTO_POTASSIO`). Ao aplicar, tiram os alimentos marcados do rascunho (com aviso) e viram `restricoes` da dieta (RN-MOD-03, BE-52b): `DietaResposta` e `DietaSnapshotResposta` ganham `restricoes` (ausente = nenhuma), `SalvarDietaRequisicao` aceita `restricoes` (ausente mantém as atuais, lista vazia limpa) e, na publicação, a `listaSubstituicao` do snapshot sai sem os alimentos que carregam algum desses marcadores. Changeset 044.
 
 ## Regras de negócio
 
