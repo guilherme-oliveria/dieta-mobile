@@ -284,6 +284,8 @@
     <string name="pac_dieta_porcao">%1$s porção do grupo %2$s</string>
     <string name="pac_dieta_porcoes">%1$s porções do grupo %2$s</string>
     <string name="pac_dieta_item">%1$s · %2$s (%3$s g)</string>
+    <string name="pac_dieta_item_a_vontade">%1$s · à vontade</string>
+    <string name="dieta_editar_no_planejador">Esta dieta usa porções por grupo, itens à vontade ou alternativas. Ela será editável no planejador por porções.</string>
     <string name="pac_dieta_orientacoes">Orientações</string>
     <string name="pac_dieta_escolher">Dieta em uso</string>
     <string name="pac_dieta_usar">Usar esta dieta</string>

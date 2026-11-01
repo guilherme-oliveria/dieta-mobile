@@ -33,7 +33,7 @@ fun TrocaTela(estado: EstadoDietaPaciente, aoEscolher: (Uuid, Uuid?) -> Unit, ao
                 refeicao.itens.forEach { item ->
                     val opcoes = substitutosDoItem(item, dieta.listaSubstituicao)
                     val escolhido = troca.escolhas[item.id]
-                    Text(item.nomeAlimento, style = MaterialTheme.typography.bodyLarge)
+                    Text(item.textoLivre ?: item.nomeAlimento.orEmpty(), style = MaterialTheme.typography.bodyLarge)
                     if (opcoes.isEmpty()) Text(stringResource(Res.string.pac_troca_sem_opcao), style = MaterialTheme.typography.bodySmall)
                     else {
                         if (escolhido != null) BotaoTexto(stringResource(Res.string.pac_troca_manter), { aoEscolher(item.id, null) })

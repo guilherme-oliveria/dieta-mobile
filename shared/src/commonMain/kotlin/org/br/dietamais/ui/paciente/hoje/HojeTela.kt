@@ -39,7 +39,7 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
                 val proxima = estado.proxima
                 if (proxima != null) CardProximaRefeicao(proxima.nome, proxima.horario.toString().take(5),
                     stringResource(Res.string.pac_dieta_kcal_refeicao, formatar(proxima.totais.kcal)),
-                    proxima.itens.joinToString(", ") { it.nomeAlimento },
+                    proxima.itens.joinToString(", ") { it.textoLivre ?: it.nomeAlimento.orEmpty() },
                     { acoes.aoMarcar(proxima.id, StatusCheckin.FEITO) }, { acoes.aoTrocar(proxima.id) }, { acoes.aoMarcar(proxima.id, StatusCheckin.PULADO) },
                     Modifier.fillMaxWidth())
                 else if (estado.ehHoje) Text(stringResource(Res.string.pac_hoje_dia_acabou), style = MaterialTheme.typography.bodyMedium)

@@ -51,9 +51,14 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                         Text(stringResource(Res.string.pac_dieta_macros, formatar(r.totais.carboidratos), formatar(r.totais.proteinas), formatar(r.totais.gorduras)),
                             style = MaterialTheme.typography.bodySmall)
                         if (aberta) r.itens.forEach { i ->
-                            Text(stringResource(Res.string.pac_dieta_item, i.nomeAlimento, i.medidaCaseira, formatar(i.gramas)), style = MaterialTheme.typography.bodyMedium)
-                            i.grupoNome?.takeIf { it.isNotBlank() }?.let { grupo ->
-                                Text(stringResource(if (i.porcoes == 1.0) Res.string.pac_dieta_porcao else Res.string.pac_dieta_porcoes, formatar(i.porcoes), grupo), style = MaterialTheme.typography.bodySmall)
+                            val nome = i.textoLivre ?: i.nomeAlimento.orEmpty()
+                            val gramas = i.gramas
+                            if (i.aVontade == true) Text(stringResource(Res.string.pac_dieta_item_a_vontade, nome), style = MaterialTheme.typography.bodyMedium)
+                            else if (gramas != null) Text(stringResource(Res.string.pac_dieta_item, nome, i.medidaCaseira.orEmpty(), formatar(gramas)), style = MaterialTheme.typography.bodyMedium)
+                            else Text(nome, style = MaterialTheme.typography.bodyMedium)
+                            val porcoes = i.porcoes
+                            i.grupoNome?.takeIf { it.isNotBlank() && porcoes != null }?.let { grupo ->
+                                Text(stringResource(if (porcoes == 1.0) Res.string.pac_dieta_porcao else Res.string.pac_dieta_porcoes, formatar(porcoes!!), grupo), style = MaterialTheme.typography.bodySmall)
                             }
                             i.observacao?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
                         }
