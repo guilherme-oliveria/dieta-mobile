@@ -85,7 +85,7 @@ Desenhadas em 01/11/2026 (DES-08 a DES-10). Os artboards estão no canvas e em [
 | Meus protocolos | `ui/nutri/protocolos` · `ProtocolosNutriCard` | `N-Protocolos.dc.html` | desenhada; implementada MOB-53 como cartão | 53 |
 | Planejar dieta por porções (celular, uma refeição por vez) | `ui/nutri/dieta` · `PlanejadorPorcoesTela` | `A-Planejador-Porcoes.dc.html` | **desenhada**, falta implementar | 54 |
 | Planejar dieta por porções (tablet, grade e metas) | idem expandida | `T-Planejador-Porcoes.dc.html` | **desenhada**, falta implementar | 54 |
-| Biblioteca de modelos de dieta | `ui/nutri/dieta` · `ModelosDietaTela` | `A-Modelos-Biblioteca.dc.html` | **desenhada**, falta implementar | 56 |
+| Biblioteca de modelos de dieta | `ui/nutri/dieta` · `ModelosDietaTela` | `A-Modelos-Biblioteca.dc.html` | desenhada; implementada MOB-56a (editar o conteúdo fica na 56b) | 56 |
 | Aplicar modelo ao paciente | `ui/nutri/dieta` · `AplicarModeloTela` | `A-Modelo-Aplicar.dc.html` | **desenhada**, falta implementar | 57 |
 | Avaliação infantil e adolescente | `ui/nutri/avaliacao` (campos por faixa) | `A-Avaliacao-Infantil.dc.html` | **desenhada**, falta implementar | 58 |
 | Curva de crescimento (nutri e responsável) | `ui/comum/graficos` · `CurvaCrescimento` | `P-Curva-Crescimento.dc.html` | **desenhada**, falta implementar | 59 |

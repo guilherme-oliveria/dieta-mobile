@@ -109,8 +109,8 @@ Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substitue
 - **RN-CAL-05** Peso para "por kg" na dieta: adulto com IMC ≥ 30 usa o peso ajustado `(P − Pideal) × 0,25 + Pideal`, com `Pideal = E² × 21,7`.
 - **RN-CAL-06** Vetores de teste da planilha (`src/test/resources/contrato/calculos/`) são contrato: mudança de fórmula exige mudar o vetor nos dois repositórios.
 - **RN-CAL-07** Total da dieta por porções = Σ (porções × perfil da porção do grupo) + Σ (gramas ÷ 100 × perfil do produto); a soma usa os perfis sem arredondar e grava 2 casas em HALF_UP. Os vetores `contrato/calculos/dieta-porcoes.json` são contrato nos dois repositórios.
-- **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404).
-- **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho.
+- **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404). Editar ou apagar um modelo do sistema é `403 ACESSO_NEGADO`; ela o copia para editar.
+- **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho. As porções são escaladas pelo alvo de energia do paciente (arredondando para 0,5, mínimo 0,5).
 - **RN-MOD-03** Restrição do modelo vira restrição do paciente na dieta publicada e filtra a lista dele no snapshot (RN-DIE-03).
 - **RN-RES-01** O paciente vê resultados por seção conforme o compartilhamento da nutri; exames são não compartilhados por padrão.
 - **RN-RES-02** Textos para o paciente não usam siglas clínicas.
