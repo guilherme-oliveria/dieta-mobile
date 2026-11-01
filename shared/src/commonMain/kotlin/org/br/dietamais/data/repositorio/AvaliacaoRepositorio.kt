@@ -72,7 +72,10 @@ class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDi
         val imc = imcDe(requisicao.pesoKg, requisicao.estaturaM)
         val nova = atual.copy(dataHora = requisicao.dataHora, pesoKg = requisicao.pesoKg, estaturaM = requisicao.estaturaM, imc = imc, classificacaoImc = classificarImc(imc),
             perimetros = requisicao.perimetros, dobras = requisicao.dobras, composicao = requisicao.composicao, parecer = requisicao.parecer,
-            compartilhada = requisicao.compartilhada ?: atual.compartilhada, versao = versao + 1, atualizadoEm = agora())
+            compartilhada = requisicao.compartilhada ?: atual.compartilhada, versao = versao + 1, atualizadoEm = agora(),
+            compartilhamento = requisicao.compartilhamento ?: atual.compartilhamento,
+            // a classificação vem do servidor no próximo pull; até lá o app mostra o que a nutri lançou
+            exames = requisicao.exames?.map { ExameResultadoDto(it.codigo, valor = it.valor, texto = it.texto, condicao = it.condicao) }?.takeIf { it.isNotEmpty() } ?: if (requisicao.exames == null) atual.exames else null)
         escrita.atualizar("avaliacoes", id, versao, JsonContrato.encodeToJsonElement(requisicao.copy(id = id)).jsonObject, JsonContrato.encodeToString(nova))
         return nova
     }

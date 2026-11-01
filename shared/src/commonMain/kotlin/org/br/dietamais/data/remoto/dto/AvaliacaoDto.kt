@@ -109,3 +109,11 @@ data class FaixaExameDto(val rotulo: String, val min: Double? = null, val minInc
 data class ExameResultadoDto(val codigo: String, val secao: String? = null, val nome: String? = null, val unidade: String? = null,
     val valor: Double? = null, val texto: String? = null, val condicao: String? = null, val rotulo: String? = null, val motivo: String? = null,
     val faixas: List<FaixaExameDto>? = null)
+
+/** Exame do catálogo da faixa etária (`GET /referencias/exames`, BE-56a). `condicoes` = fases que a nutri escolhe quando a referência depende delas. */
+@Serializable
+data class ExameCatalogoDto(val codigo: String, val secao: String, val nome: String, val unidade: String? = null, val qualitativo: Boolean = false,
+    val condicoes: List<String> = emptyList())
+
+@Serializable
+data class ExamesCatalogoResposta(val faixaEtaria: String, val itens: List<ExameCatalogoDto> = emptyList())

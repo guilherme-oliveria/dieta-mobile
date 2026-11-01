@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 data class AcoesHistorico(val aoNova: () -> Unit = {}, val aoEditar: (Uuid) -> Unit = {}, val aoSelecionar: (Uuid) -> Unit = {}, val aoComparar: () -> Unit = {},
-    val aoVoltarComparacao: () -> Unit = {}, val aoAtualizar: () -> Unit = {},
+    val aoVoltarComparacao: () -> Unit = {}, val aoAtualizar: () -> Unit = {}, val aoExames: ((AvaliacaoResposta) -> Unit)? = null,
     val pdf: @Composable (AvaliacaoResposta) -> Unit = {})
 
 /** Histórico em ordem cronológica inversa, com seleção de duas datas para comparar (MOB-22). Paciente: somente leitura. */
@@ -67,7 +67,10 @@ private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, edita
                 if (detalhes) DetalhesAvaliacao(item)
                 acoes.pdf(item)
             }
-            if (editavel) BotaoTexto(stringResource(Res.string.avaliacao_editar), { acoes.aoEditar(item.id) })
+            Column {
+                if (editavel) BotaoTexto(stringResource(Res.string.avaliacao_editar), { acoes.aoEditar(item.id) })
+                if (editavel) acoes.aoExames?.let { exames -> BotaoTexto(stringResource(Res.string.exn_abrir), { exames(item) }) }
+            }
         }
     }
 }
