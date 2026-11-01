@@ -67,3 +67,32 @@ Navegação da nutri (igual no celular e no trilho): Início · Pacientes · Age
 | Central de avisos (sino) | `ui/notificacoes` · `AvisosScreen` | faltando | 3 |
 | Diálogo de conflito de sincronização | `ui/comum` · `DialogoConflito` | faltando | 4 |
 | Primeira sincronização do desktop | `ui/comum` · `PrimeiraSyncScreen` | faltando | 4 |
+
+## Melhorias com as planilhas da nutri (ondas 17 a 23)
+
+Desenhadas em 01/11/2026 (DES-08 a DES-10). Os artboards estão no canvas e em [artboards/](artboards/README.md); o padrão é [padrao-ui.md](padrao-ui.md) e os gráficos, [graficos.md](graficos.md).
+
+| Tela | Pacote / composable | Artboard | Status | MOB |
+| --- | --- | --- | --- | --- |
+| Avaliação, passo 1 Medidas (celular) | `ui/nutri/avaliacao` · `AvaliacaoTela` | `A-Avaliacao-Medidas.dc.html` | desenhada; implementada MOB-50 | 50 |
+| Avaliação, passo 2 Composição (celular) | idem | `A-Avaliacao-Composicao.dc.html` | desenhada; implementada MOB-50 | 50 |
+| Avaliação, passo 3 Necessidades (rosca das metas) | `ui/nutri/avaliacao` · `PassoNecessidades` | `A-Avaliacao-Necessidades.dc.html` | desenhada; implementada MOB-52b | 52 |
+| Avaliação, passo 4 Resumo (compartilhar por seção, PDF) | idem | `A-Avaliacao-Resumo.dc.html` | desenhada; implementada sem "Gerar PDF" (D-05) | 50 |
+| Avaliação em passos com painel de resultados (tablet e desktop) | `AvaliacaoTela` expandida · `PainelResultados` | `T-Avaliacao-Passos.dc.html` | desenhada; implementada MOB-50 | 50 |
+| Meus resultados (semáforos, composição, meta) | `ui/paciente/evolucao` · `MeusResultadosTela` | `P-Resultados.dc.html` | desenhada; implementada MOB-51 com divergência D-02 | 51 |
+| Meus resultados, evolução com faixa | idem | `P-Resultados-Evolucao.dc.html` | desenhada; implementada MOB-51 (D-03) | 51 |
+| Meus resultados, nada compartilhado | idem | `P-Resultados-Vazio.dc.html` | desenhada; implementada MOB-51 | 51 |
+| Meus protocolos | `ui/nutri/protocolos` · `ProtocolosNutriCard` | `N-Protocolos.dc.html` | desenhada; implementada MOB-53 como cartão | 53 |
+| Planejar dieta por porções (celular, uma refeição por vez) | `ui/nutri/dieta` · `PlanejadorPorcoesTela` | `A-Planejador-Porcoes.dc.html` | **desenhada**, falta implementar | 54 |
+| Planejar dieta por porções (tablet, grade e metas) | idem expandida | `T-Planejador-Porcoes.dc.html` | **desenhada**, falta implementar | 54 |
+| Biblioteca de modelos de dieta | `ui/nutri/dieta` · `ModelosDietaTela` | `A-Modelos-Biblioteca.dc.html` | **desenhada**, falta implementar | 56 |
+| Aplicar modelo ao paciente | `ui/nutri/dieta` · `AplicarModeloTela` | `A-Modelo-Aplicar.dc.html` | **desenhada**, falta implementar | 57 |
+| Avaliação infantil e adolescente | `ui/nutri/avaliacao` (campos por faixa) | `A-Avaliacao-Infantil.dc.html` | **desenhada**, falta implementar | 58 |
+| Curva de crescimento (nutri e responsável) | `ui/comum/graficos` · `CurvaCrescimento` | `P-Curva-Crescimento.dc.html` | **desenhada**, falta implementar | 59 |
+| Exames: lançar (nutri) | `ui/nutri/avaliacao` · `ExamesTela` | `A-Exames-Nutri.dc.html` | **desenhada**, falta implementar | 60 |
+| Meus exames (paciente, barra de faixa) | `ui/paciente/evolucao` · `MeusExamesTela` | `P-Exames.dc.html` | **desenhada**, falta implementar | 60 |
+| Anamnese estruturada (álcool, sal, óleo) | `ui/paciente/anamnese` e `ui/nutri/anamnese` | `A-Anamnese-Estruturada.dc.html` | **desenhada**, falta implementar | 61 |
+| Catálogo de gráficos | `ui/comum/graficos` | `G-Graficos.dc.html` | referência | 47 |
+| PDF da avaliação (A4) | backend (BE-46) | `PDF-Avaliacao.dc.html` | referência de layout | BE-46 |
+
+Ainda **sem artboard** (pedir ao Design antes de implementar): lista de substituição para consulta do paciente (MOB-55) e rosca de macros do dia e da refeição do paciente (MOB-55), micronutrientes e adequação à DRI (aba do planejador, MOB-54), suplementos e produtos no planejador (MOB-54), "salvar dieta como modelo" e editar modelo (MOB-56), PDFs da dieta e das listas de substituição (BE-50).

@@ -294,9 +294,9 @@ Tarefas sem dependência entre si na mesma coluna e onda podem ir em PRs paralel
 
 | Tarefa | Telas |
 | --- | --- |
-| DES-08 | Avaliação em 4 passos (celular e tablet com painel de resultados), "Meus resultados" do paciente, componentes de gráfico (rosca, régua, medidor, linha com faixa) |
-| DES-09 | Planejador por porções (celular uma refeição por vez, tablet grade), barra de metas, biblioteca e aplicação de modelos |
-| DES-10 | Avaliação infantil com curva de crescimento, exames (nutri e paciente), anamnese estruturada |
+| DES-08 (**desenhado em 01/11/2026**, ver `docs/design/telas.md`) | Avaliação em 4 passos (celular e tablet com painel de resultados), "Meus resultados" do paciente, componentes de gráfico (rosca, régua, medidor, linha com faixa) |
+| DES-09 (**desenhado em 01/11/2026**, ver `docs/design/telas.md`) | Planejador por porções (celular uma refeição por vez, tablet grade), barra de metas, biblioteca e aplicação de modelos |
+| DES-10 (**desenhado em 01/11/2026**, ver `docs/design/telas.md`) | Avaliação infantil com curva de crescimento, exames (nutri e paciente), anamnese estruturada |
 
 ### 6.6 Tarefas do Guilherme e da Luciana
 
