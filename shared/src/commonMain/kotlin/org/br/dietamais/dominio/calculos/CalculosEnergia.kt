@@ -107,6 +107,18 @@ object CalculosEnergia {
 
     fun kcalPorKg(vetKcal: Double, pesoKg: Double): Double = esc(vetKcal / pesoKg)
 
+    /**
+     * RN-CAL-05, igual ao servidor: adulto (18+) com IMC de 30 ou mais usa o peso ajustado `(P − Pideal) × 0,25 + Pideal`, com
+     * `Pideal = E² × 21,7`; os demais usam o peso atual. Os vetores `contrato/calculos/peso-referencia.json` valem nos dois lados.
+     */
+    fun pesoParaKg(pesoKg: Double, estaturaM: Double, idadeAnos: Int): Double {
+        if (idadeAnos < 18 || estaturaM <= 0.0) return pesoKg
+        val quadrado = estaturaM * estaturaM
+        if (pesoKg / quadrado < 30.0 - 1e-9) return pesoKg
+        val ideal = quadrado * 21.7
+        return esc((pesoKg - ideal) * 0.25 + ideal)
+    }
+
     // ---------- Metas de macronutrientes ----------
     fun carboidrato(protocolo: ProtocoloCarboidrato, vetKcal: Double, pesoKg: Double, gestante: Boolean, lactante: Boolean): MetaMacro = when (protocolo) {
         ProtocoloCarboidrato.FAIXA_DRI -> porPercentual(vetKcal, 45.0, 65.0, 4.0)

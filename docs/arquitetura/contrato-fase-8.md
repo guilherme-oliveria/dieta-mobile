@@ -12,7 +12,8 @@ Tudo aqui é **aditivo**: campos novos são opcionais, o contrato da fase 3 (die
 | Porções por grupo: `GET /referencias/porcoes` | BE-C8 | BE-47b (pronto) |
 | Produtos e suplementos | BE-C8 | BE-48 |
 | Dieta ligada às metas, alternativas, "à vontade", rodapé (salvar, totais de macros, saldo das metas) | BE-C8 | BE-49a (pronto) |
-| Totais de micronutrientes, `incompleto`, adequação à DRI, peso ajustado | BE-C8 | BE-49b |
+| Totais de micronutrientes, `incompleto`, adequação à DRI | BE-C8 | BE-49b (pronto) |
+| Peso ajustado, metas a partir da avaliação, gestação e lactação na adequação (`GET /pacientes/{id}/dietas/referencia-avaliacao`) | BE-C8 | BE-49d (pronto) |
 | Snapshot e sync com os campos novos | BE-C8 | BE-49c |
 | PDF da dieta e das listas de substituição | — | BE-50 |
 | Modelos de dieta por condição | BE-C8 | BE-51 a BE-53 |
@@ -56,7 +57,10 @@ O total do dia soma só refeições `PRINCIPAL`; cada `ALTERNATIVA` mostra o pr�
 - `totais` do dia: `saldoMetas { kcal, carboidrato, proteina, lipidio }` = meta menos total, com carboidrato e proteína a 4 kcal/g e lipídio a 9 kcal/g sobre o VET.
 - Cálculo: item por grupo soma o perfil da opção sem arredondar; a refeição e o dia arredondam o total a 2 casas (RN-CAL-07). Item por alimento continua arredondando por item (RN-DIE-05).
 - `refeicao.alternativaDe` precisa ser o `id`, informado na mesma requisição, de uma refeição `PRINCIPAL`; senão `400 FORMATO_INVALIDO` (RN-DIE-11). Item à vontade não aceita `porcoes`; item com origem e `textoLivre` juntos dá `ITEM_INVALIDO`.
-- `pesoReferenciaKg` é só leitura e fica `null` até a BE-49b.
+- `pesoReferenciaKg` é só leitura (BE-49d): o servidor devolve o peso de referência da avaliação mais recente da nutri para o paciente (RN-CAL-05, peso ajustado com IMC 30 ou mais em adulto) e o congela no snapshot ao publicar; sem avaliação fica ausente. `avaliacao.energiaResultado` ganha o campo opcional `pesoReferenciaKg`, o peso que os "por kg" usaram. Vetores em `contrato/calculos/peso-referencia.json`.
+- `GET /pacientes/{id}/dietas/referencia-avaliacao` → `{ avaliacaoId, dataHora, pesoKg, pesoReferenciaKg, metas?, gestante, lactante }`. `metas` (`vetKcal`, `carboidratoPct`, `proteinaPct`, `lipidioPct`) vem do VET da avaliação e do meio da faixa de gramas de carboidrato e proteína; o lipídio fecha 100% (planilha: 100 − %gli − %ptn). É sugestão para o planejador: a nutri confirma e o servidor só grava o que ela enviar. `404 RECURSO_NAO_ENCONTRADO` sem avaliação dela (ou ficha de outra nutri).
+- `micronutrientes` (BE-49b): códigos de `GET /referencias/porcoes` menos `energia`, `gli`, `pro` e `lip` (que têm campo próprio), com 2 casas; ausente quando nenhum item informa micronutriente (dieta só de alimentos do catálogo, que trazem só os 4 macros). `incompleto` lista os códigos de `micronutrientes` em que algum item que conta (não à vontade, não texto livre) não informa o nutriente; um item por alimento do catálogo faz todos os códigos ficarem incompletos.
+- `adequacao` (só no dia): usa sexo e idade em meses da ficha e, para mulher, gestante ou lactante da avaliação mais recente (`energia.gestante` / `energia.lactacao`; lactante tem prioridade, BE-49d); sem sexo ou nascimento a lista não vem. Proteína usa `proteinas` do total; os demais códigos mapeiam assim: `fib`→`fibras`, `na`→`sodio`, `k`→`potassio`, `ca`→`calcio`, `cu`→`cobre`, `i`→`iodo`, `mg`→`magnesio`, `mn`→`manganes`, `p`→`fosforo`, `se`→`selenio`, `zn`→`zinco`, `fe`→`ferro`, `fol`→`vitamina_b9`, `nia`→`vitamina_b3`, `pan`→`vitamina_b5`, `b2`→`vitamina_b2`, `b1`→`vitamina_b1`, `ret`→`vitamina_a`, `b6`→`vitamina_b6`, `b12`→`vitamina_b12`, `c`→`vitamina_c`, `d`→`vitamina_d`, `e`→`vitamina_e`, `agua` (g)→`agua` (l). `percentual` = total ÷ meta × 100; `classe` ABAIXO abaixo de 90, ACIMA acima de 110 (limites provisórios).
 
 ## Códigos de erro novos
 
