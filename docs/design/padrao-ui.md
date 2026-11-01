@@ -99,9 +99,16 @@ Número calculado da nutri tem um botão "i" de 48 dp com a fórmula, a referên
 - Ordem de foco segue a ordem visual; foco visível; alvo de toque de 48 dp.
 - Movimento: animações de entrada curtas (600 ms) e desligadas quando o sistema pede menos movimento.
 
+## 8b. Dieta do paciente e lista de substituição
+
+- **Macros do paciente** só com rosca de 3 fatias (carboidrato, proteína, lipídio), legenda em gramas e %, "Ver como tabela" e a frase "o que está planejado". Sem anel de meta (o paciente não vê a meta, só a dieta). Dia: rosca de 128 dp com o kcal no centro; refeição: rosca de 96 dp sem texto no centro, o kcal vai no título.
+- **Item da refeição** em duas linhas: nome; "{n} porções · {medida caseira}" e "Troque por 1 porção do grupo {X}". Botão "Trocar" (48 dp) abre a troca. Item "à vontade" mostra "À vontade · sem kcal" e 0 kcal.
+- **Lista de substituição:** grupos recolhíveis (um aberto por vez), cabeçalho com "1 porção = N kcal" e número de itens; item com nome, medida caseira e gramas; busca e chips de grupo; só lista os grupos e itens que a nutri liberou para o paciente (restrições já aplicadas). Funciona offline. Tablet: grupos à esquerda e itens do grupo à direita.
+- **Sem lista:** estado vazio com "Sua nutri ainda não montou sua lista".
+
 ## 9. PDF
 
-O PDF da avaliação, da dieta e das listas é gerado no backend (BE-46, BE-50) com a **mesma paleta e os mesmos gráficos** destes padrões, em A4 retrato, margem de 30 pt, texto de corpo a partir de 10,5 pt, cabeçalho com a marca "D+", nome da nutri e CRN, e rodapé com CRN, "Gerado pelo Dieta+" e página. O artboard `PDF-Avaliacao` é a referência do layout; o app só abre o PDF (link no navegador, MOB-33).
+O PDF da avaliação, da dieta e das listas é gerado no backend (BE-46, BE-50) com a **mesma paleta e os mesmos gráficos** destes padrões, em A4 retrato, margem de 30 pt, texto de corpo a partir de 10,5 pt, cabeçalho com a marca "D+", nome da nutri e CRN, e rodapé com CRN, "Gerado pelo Dieta+" e página. Os artboards `PDF-Avaliacao` e `PDF-Lista-*` são a referência do layout (a lista tem 4 versões: porção pequena, média, grande e com contagem de carboidratos, que acrescenta a coluna "Carb. (g)" e um exemplo de soma por refeição); o app só abre o PDF (link no navegador, MOB-33).
 
 ## 10. Checklist do PR de tela
 

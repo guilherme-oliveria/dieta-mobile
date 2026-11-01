@@ -39,3 +39,5 @@ Cópia dos artboards do canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC
 | `PDF-Avaliacao.dc.html` | PDF da avaliação (A4) |
 
 Fotos (PNG) dos artboards novos em [../evidencias/DES-08-10/](../evidencias/DES-08-10/). Os dados dos artboards novos são de exemplo (paciente Guilherme do PDF da nutri; criança fictícia).
+
+Rodada DES-11 (01/11/2026): `P-Dieta-Macros`, `P-Refeicao-Macros`, `P-Lista-Substituicao`, `P-Lista-Substituicao-Vazio`, `T-Lista-Substituicao` (MOB-55) e `PDF-Lista-Pequena`, `PDF-Lista-Media`, `PDF-Lista-Grande`, `PDF-Lista-Carboidratos` (BE-50b). Fotos em [../evidencias/DES-11/](../evidencias/DES-11/). Alimentos, medidas e gramas são ilustrativos; no PDF o desenho varia só as gramas, mas o backend deve escalar também a medida caseira (arredondando para ¼).

@@ -95,4 +95,16 @@ Desenhadas em 01/11/2026 (DES-08 a DES-10). Os artboards estão no canvas e em [
 | Catálogo de gráficos | `ui/comum/graficos` | `G-Graficos.dc.html` | referência | 47 |
 | PDF da avaliação (A4) | backend (BE-46) | `PDF-Avaliacao.dc.html` | referência de layout | BE-46 |
 
-Ainda **sem artboard** (pedir ao Design antes de implementar): lista de substituição para consulta do paciente (MOB-55) e rosca de macros do dia e da refeição do paciente (MOB-55), micronutrientes e adequação à DRI (aba do planejador, MOB-54), suplementos e produtos no planejador (MOB-54), "salvar dieta como modelo" e editar modelo (MOB-56), PDFs da dieta e das listas de substituição (BE-50).
+Ainda **sem artboard** (pedir ao Design antes de implementar): micronutrientes e adequação à DRI (aba do planejador, MOB-54), suplementos e produtos no planejador (MOB-54), "salvar dieta como modelo" e editar modelo (MOB-56), PDF da dieta (BE-50).
+
+### Paciente: dieta com macros e lista de substituição (DES-11, 01/11/2026)
+
+| Tela | Pacote / composable | Artboard | Status | MOB |
+| --- | --- | --- | --- | --- |
+| Dieta com rosca de macros do dia | `ui/paciente/dieta` · `DietaPacienteTela` | `P-Dieta-Macros.dc.html` | **desenhada**, falta implementar | 55 |
+| Refeição com rosca de macros, "1 porção" e "Trocar" | `ui/paciente/dieta` · refeição | `P-Refeicao-Macros.dc.html` | **desenhada**, falta implementar | 55 |
+| Lista de substituição para consulta (celular) | `ui/paciente/dieta` · `ListaSubstituicaoTela` | `P-Lista-Substituicao.dc.html` | **desenhada**, falta implementar | 55 |
+| Lista de substituição, sem lista publicada | idem (estado vazio) | `P-Lista-Substituicao-Vazio.dc.html` | **desenhada**, falta implementar | 55 |
+| Lista de substituição (tablet, lista-detalhe) | idem expandida | `T-Lista-Substituicao.dc.html` | **desenhada**, falta implementar | 55 |
+| PDF da lista: porção pequena, média, grande | backend (BE-50b) | `PDF-Lista-Pequena`, `PDF-Lista-Media`, `PDF-Lista-Grande` | referência de layout | BE-50b |
+| PDF da lista com contagem de carboidratos | backend (BE-50b) | `PDF-Lista-Carboidratos.dc.html` | referência de layout | BE-50b |
