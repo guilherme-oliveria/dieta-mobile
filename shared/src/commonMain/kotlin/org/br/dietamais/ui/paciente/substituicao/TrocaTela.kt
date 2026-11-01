@@ -30,17 +30,19 @@ fun TrocaTela(estado: EstadoDietaPaciente, aoEscolher: (Uuid, Uuid?) -> Unit, ao
             Column(Modifier.verticalScroll(rememberScrollState()).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                 Text(stringResource(Res.string.pac_troca_titulo), style = MaterialTheme.typography.titleLarge)
                 Text(refeicao.nome, style = MaterialTheme.typography.titleMedium)
-                refeicao.itens.forEach { item ->
+                refeicao.itens.filter { troca.itemId == null || it.id == troca.itemId }.forEach { item ->
                     val opcoes = substitutosDoItem(item, dieta.listaSubstituicao)
                     val escolhido = troca.escolhas[item.id]
                     Text(item.textoLivre ?: item.nomeAlimento.orEmpty(), style = MaterialTheme.typography.bodyLarge)
+                    if (item.alimentoId == null && opcoes.isNotEmpty()) Text(stringResource(Res.string.pac_troca_medida_grupo), style = MaterialTheme.typography.bodySmall)
                     if (opcoes.isEmpty()) Text(stringResource(Res.string.pac_troca_sem_opcao), style = MaterialTheme.typography.bodySmall)
                     else {
                         if (escolhido != null) BotaoTexto(stringResource(Res.string.pac_troca_manter), { aoEscolher(item.id, null) })
                         opcoes.forEach { o ->
                             val marcado = o.alimento.id == escolhido
                             BotaoTexto(
-                                (if (marcado) "✓ " else "") + stringResource(Res.string.pac_troca_opcao, o.alimento.nome, o.alimento.medidaCaseira, formatar(o.gramas)),
+                                (if (marcado) "✓ " else "") + if (item.alimentoId == null) stringResource(Res.string.pac_troca_opcao_grupo, o.alimento.nome)
+                                else stringResource(Res.string.pac_troca_opcao, o.alimento.nome, o.alimento.medidaCaseira, formatar(o.gramas)),
                                 { aoEscolher(item.id, o.alimento.id) })
                         }
                     }

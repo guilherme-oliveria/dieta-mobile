@@ -7,7 +7,7 @@ Referência: artboard `G-Graficos` (catálogo) e o código em `shared/src/common
 | Quero mostrar | Gráfico | Composable | Onde aparece |
 | --- | --- | --- | --- |
 | Partes de um todo (composição corporal, macros) | **Rosca** (pizza com furo), 2 a 4 fatias | `GraficoRosca` | Avaliação passos 2 e 3, Meus resultados, planejador, dieta do paciente |
-| O que está montado contra a meta | **Rosca com anel de meta** | `GraficoRosca(anelMeta = …)` | Planejador (tablet e celular), dieta do paciente |
+| O que está montado contra a meta | **Rosca com anel de meta** | `GraficoRosca(anelMeta = …)` | Planejador (tablet e celular) |
 | Um valor em faixas (IMC, exame, escore Z) | **Régua de faixas** com marcador | `ReguaFaixas` | Meus resultados, exames, avaliação infantil |
 | Um valor numa escala com faixa ideal (% de gordura, água) | **Medidor** (meia-lua) | `Medidor` | Meus resultados, Hoje (água) |
 | Evolução no tempo | **Linha**, com faixa de referência sombreada | `GraficoLinhas` | Evolução, Meus resultados, PDF |
@@ -21,7 +21,7 @@ Pizza cheia **não** é usada: a rosca é a pizza do Dieta+. Mais de 4 fatias vi
 1. **Rótulo e valor em texto** ao lado de cada fatia, ponto ou barra (legenda com bolinha, rótulo e valor). A cor sozinha nunca basta.
 2. **Cores** da série na ordem fixa da paleta (verde, azul, âmbar, roxo, turquesa, cinza); laranja só em alerta. Cores e contraste em [padrao-ui.md](padrao-ui.md#3-cores).
 3. **Fatias da rosca** com 2 dp de espaço entre elas; espessura de 16% do diâmetro (20% no celular pequeno); o centro mostra o número principal (`26,5%` com "gordura"; `1.920` com "de 2.889").
-4. **Anel de meta:** anel de dentro = montado; anel de fora, a 35% de opacidade = meta. A legenda mostra "55% · meta 57%".
+4. **Anel de meta:** no paciente não aparece anel de meta (padrao-ui.md seção 8b); ele vê somente o planejado. No planejador da nutri: anel de dentro = montado; anel de fora, a 35% de opacidade = meta. A legenda mostra "55% · meta 57%".
 5. **Régua:** segmentos com rótulo embaixo e marcador (triângulo) com o valor em cima; o valor também vem por extenso no cartão ("27,5 · sobrepeso"). Faixas de IMC: abaixo, normal, sobrepeso, obesidade.
 6. **Linha:** eixo Y com 4 marcas, rótulos do eixo X abreviados (Ago, Set), pontos de 5 dp com miolo branco, faixa de referência sombreada com borda tracejada e legenda ("Faixa saudável (68,9 a 92,8 kg)"). Mínimo 2 pontos; com menos, mostra a frase "Ainda não há medidas suficientes".
 7. **Curva:** mediana (P50) em verde contínuo, demais percentis em cinza tracejado, rótulos P3, P50 e P97 na ponta; ponto da criança em azul com borda branca. A frase em palavras fica logo abaixo ("percentil 62: pesa mais que 62 de cada 100 crianças").

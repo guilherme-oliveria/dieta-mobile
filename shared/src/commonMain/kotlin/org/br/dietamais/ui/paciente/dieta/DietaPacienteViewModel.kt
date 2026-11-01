@@ -27,15 +27,23 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     private var dados = DadosDietaPaciente()
     private var registros = DadosRotina()
     private var diaEscolhido: LocalDate? = null
+    private var observacao: Job? = null
 
     init {
-        viewModelScope.launch(dispatcher) {
+        observarDados()
+        conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
+    }
+
+    private fun observarDados() {
+        observacao?.cancel()
+        observacao = viewModelScope.launch(dispatcher) {
             combine(repositorio.observar().catch { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO, carregado = true) } },
                 rotina.observar().catch { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO, carregado = true) } }, tique) { d, r, _ -> d to r }
                 .collect { (d, r) -> dados = d; registros = r; recalcular() }
         }
-        conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
     }
+
+    fun tentarNovamente() { atual.update { it.copy(erro = null) }; observarDados() }
 
     private fun agoraLocal() = relogio.now().toLocalDateTime(fuso)
 
@@ -49,13 +57,32 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
             .mapValues { (_, lista) -> lista.maxBy { it.registradoEm }.status }
         val peso = registros.pesos.maxByOrNull { it.registradoEm }?.pesoKg
         val aguaDoDia = registros.agua.filter { it.registradoEm.toLocalDateTime(fuso).date == dia }.sumOf { it.ml }
+        val mudou = dieta?.id != e.dieta?.id
+        val grupos = dieta?.let { gruposListaPaciente(it.listaSubstituicao, it.refeicoes) }.orEmpty()
         e.copy(carregado = true, dieta = dieta, refeicoes = dieta?.let { refeicoesOrdenadas(it.refeicoes) }.orEmpty(),
             proxima = if (dia == hoje) dieta?.let { proximaRefeicao(it.refeicoes.filter { r -> r.id !in doDia }, agora.time) } else null,
             alternativas = if (porNutri.size > 1) porNutri else emptyList(), versaoSelecao = dados.emUso?.versao ?: 0,
-            hoje = hoje, dia = dia, dias = dias, checkins = doDia, aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso))
+            hoje = hoje, dia = dia, dias = dias, checkins = doDia, aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso),
+            gruposLista = grupos, buscaLista = if (mudou) "" else e.buscaLista,
+            grupoListaFiltro = e.grupoListaFiltro.takeIf { !mudou && grupos.any { g -> g.id == it } },
+            grupoListaAberto = if (mudou) grupos.firstOrNull()?.id else e.grupoListaAberto.takeIf { id -> grupos.any { it.id == id } },
+            troca = e.troca.takeUnless { mudou })
     }
 
     fun abrirRefeicao(id: Uuid?) = atual.update { it.copy(refeicaoAberta = id) }
+    fun abrirLista() = atual.update { it.copy(listaAberta = true) }
+    fun fecharLista() = atual.update { it.copy(listaAberta = false) }
+    fun buscarNaLista(busca: String) = atual.update { e ->
+        val termo = busca.take(200)
+        val visiveis = filtrarListaPaciente(e.gruposLista, termo, e.grupoListaFiltro)
+        e.copy(buscaLista = termo, grupoListaAberto = e.grupoListaAberto.takeIf { id -> visiveis.any { it.id == id } } ?: visiveis.firstOrNull()?.id)
+    }
+    fun filtrarGrupoLista(id: Uuid?) = atual.update { e ->
+        if (id != null && e.gruposLista.none { it.id == id }) e else e.copy(grupoListaFiltro = id, grupoListaAberto = id ?: e.grupoListaAberto)
+    }
+    fun expandirGrupoLista(id: Uuid) = atual.update { e ->
+        if (e.gruposLista.none { it.id == id }) e else e.copy(grupoListaAberto = if (e.grupoListaAberto == id) null else id)
+    }
 
     fun mudarDia(dia: LocalDate) { diaEscolhido = dia; recalcular() }
 
@@ -72,10 +99,17 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     }
 
     // ---- troca de alimento (MOB-15)
-    fun abrirTroca(refeicaoId: Uuid) = atual.update { it.copy(troca = EstadoTroca(refeicaoId)) }
+    fun abrirTroca(refeicaoId: Uuid) = abrirTroca(refeicaoId, null)
+    fun abrirTroca(refeicaoId: Uuid, itemId: Uuid?) = atual.update { e ->
+        val dieta = e.dieta ?: return@update e
+        val refeicao = dieta.refeicoes.firstOrNull { it.id == refeicaoId } ?: return@update e
+        if (itemId != null && refeicao.itens.none { it.id == itemId && substitutosDoItem(it, dieta.listaSubstituicao).isNotEmpty() }) e
+        else e.copy(troca = EstadoTroca(refeicaoId, itemId = itemId))
+    }
     fun cancelarTroca() = atual.update { it.copy(troca = null) }
     fun escolherSubstituto(itemId: Uuid, alimentoId: Uuid?) = atual.update { e ->
         val t = e.troca ?: return@update e
+        if (t.itemId != null && t.itemId != itemId) return@update e
         e.copy(troca = t.copy(escolhas = if (alimentoId == null) t.escolhas - itemId else t.escolhas + (itemId to alimentoId)))
     }
     fun confirmarTroca() {
