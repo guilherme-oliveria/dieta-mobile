@@ -64,6 +64,7 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
     // um ViewModel compartilhado: Hoje e Dieta leem os mesmos dados
     val vm = koinViewModel<DietaPacienteViewModel>(viewModelStoreOwner = dono)
     val estado by vm.estado.collectAsState()
+    org.br.dietamais.ui.paciente.dieta.RetornoDietaPaciente(estado, vm::fecharLista, { vm.abrirRefeicao(null) })
     val atalhos = remember { AtalhosWeb(PerfilNavegacao.PACIENTE) }
     Column(Modifier.fillMaxSize().then(atalhos.modificador)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -84,8 +85,11 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
             },
             conteudoDieta = {
                 val pdf = koinInject<PortaPdf>()
-                DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, pdf = { e -> e.dieta?.let { d ->
+                DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, aoAbrirLista = vm::abrirLista,
+                    acoesLista = org.br.dietamais.ui.paciente.substituicao.AcoesListaPaciente(vm::fecharLista, vm::buscarNaLista, vm::filtrarGrupoLista, vm::expandirGrupoLista, vm::tentarNovamente),
+                    aoTrocar = vm::abrirTroca, aoMarcar = vm::marcar, aoTrocarRefeicao = vm::abrirTroca, pdf = { e -> e.dieta?.let { d ->
                     BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(RecursoPdf.DIETA, d.dietaId) }) } })
+                TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
             },
             conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
             conteudoCompras = {

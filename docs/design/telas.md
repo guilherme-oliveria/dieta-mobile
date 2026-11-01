@@ -101,10 +101,10 @@ Ainda **sem artboard** (pedir ao Design antes de implementar): micronutrientes e
 
 | Tela | Pacote / composable | Artboard | Status | MOB |
 | --- | --- | --- | --- | --- |
-| Dieta com rosca de macros do dia | `ui/paciente/dieta` · `DietaPacienteTela` | `P-Dieta-Macros.dc.html` | **desenhada**, falta implementar | 55 |
-| Refeição com rosca de macros, "1 porção" e "Trocar" | `ui/paciente/dieta` · refeição | `P-Refeicao-Macros.dc.html` | **desenhada**, falta implementar | 55 |
-| Lista de substituição para consulta (celular) | `ui/paciente/dieta` · `ListaSubstituicaoTela` | `P-Lista-Substituicao.dc.html` | **desenhada**, falta implementar | 55 |
-| Lista de substituição, sem lista publicada | idem (estado vazio) | `P-Lista-Substituicao-Vazio.dc.html` | **desenhada**, falta implementar | 55 |
-| Lista de substituição (tablet, lista-detalhe) | idem expandida | `T-Lista-Substituicao.dc.html` | **desenhada**, falta implementar | 55 |
+| Dieta com rosca de macros do dia | `ui/paciente/dieta` · `DietaPacienteTela` | `P-Dieta-Macros.dc.html` | **implementada** (MOB-55; ressalvas em divergencias.md) | 55 |
+| Refeição com rosca de macros, "1 porção" e "Trocar" | `ui/paciente/dieta` · refeição | `P-Refeicao-Macros.dc.html` | **implementada** (MOB-55; ressalvas em divergencias.md) | 55 |
+| Lista de substituição para consulta (celular) | `ui/paciente/substituicao` · `ListaSubstituicaoTela` | `P-Lista-Substituicao.dc.html` | **implementada** (MOB-55; ressalvas em divergencias.md) | 55 |
+| Lista de substituição, sem lista publicada | idem (estado vazio) | `P-Lista-Substituicao-Vazio.dc.html` | **implementada** (MOB-55; ressalvas em divergencias.md) | 55 |
+| Lista de substituição (tablet, lista-detalhe) | idem expandida | `T-Lista-Substituicao.dc.html` | **implementada** (MOB-55; ressalvas em divergencias.md) | 55 |
 | PDF da lista: porção pequena, média, grande | backend (BE-50b) | `PDF-Lista-Pequena`, `PDF-Lista-Media`, `PDF-Lista-Grande` | referência de layout | BE-50b |
 | PDF da lista com contagem de carboidratos | backend (BE-50b) | `PDF-Lista-Carboidratos.dc.html` | referência de layout | BE-50b |
