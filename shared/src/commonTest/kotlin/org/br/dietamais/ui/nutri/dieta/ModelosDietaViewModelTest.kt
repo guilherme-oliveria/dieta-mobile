@@ -22,6 +22,8 @@ class ModelosDietaViewModelTest {
         override suspend fun listar(): List<ModeloDietaResposta> { falha?.let { throw it }; return lista }
         override suspend fun duplicar(id: Uuid, chave: Uuid): ModeloDietaResposta { falha?.let { throw it }; return modelo(lista.first { it.id == id }.titulo + " (cópia)", "NUTRI") }
         override suspend fun excluir(id: Uuid, versao: Long) { falha?.let { throw it }; excluidos += id to versao }
+        override suspend fun referenciaAvaliacao(pacienteId: Uuid): ReferenciaAvaliacaoDietaResposta? = null
+        override suspend fun aplicar(pacienteId: Uuid, modeloId: Uuid, requisicao: AplicarModeloRequisicao, chave: Uuid): DietaDeModeloResposta = error("não usado")
         override suspend fun salvarComoModelo(dietaId: Uuid, requisicao: SalvarComoModeloRequisicao, chave: Uuid): ModeloDietaResposta { falha?.let { throw it }; salvosDe += dietaId; return modelo(requisicao.titulo, "NUTRI") }
     }
     private fun TestScope.vm(m: Modelos) = ModelosDietaViewModel(m, StandardTestDispatcher(testScheduler))

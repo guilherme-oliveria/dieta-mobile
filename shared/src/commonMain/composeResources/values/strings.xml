@@ -995,5 +995,21 @@
     <string name="mod_erro_limite">Limite de modelos atingido ou conteúdo inválido.</string>
     <string name="mod_erro_assinatura">Assinatura inativa. Regularize para continuar.</string>
     <string name="mod_erro_taxa">Muitas tentativas. Aguarde um instante.</string>
+    <string name="mod_aplicar_titulo">Aplicar modelo</string>
+    <string name="mod_aplicar_vet">VET do paciente</string>
+    <string name="mod_aplicar_modelo">Modelo</string>
+    <string name="mod_aplicar_escala">Escala</string>
+    <string name="mod_aplicar_paciente">Para o paciente</string>
+    <string name="mod_aplicar_grupo">Grupo</string>
+    <string name="mod_aplicar_kcal">%1$s kcal</string>
+    <string name="mod_aplicar_porcoes_dia">Porções por dia</string>
+    <string name="mod_aplicar_arredondadas">Arredondadas para 0,5. Revise no planejador.</string>
+    <string name="mod_aplicar_sem_avaliacao">O paciente não tem avaliação com VET: as porções ficam como no modelo. Ajuste no planejador.</string>
+    <string name="mod_aplicar_sem_base">O modelo não tem energia de referência: as porções ficam como no modelo. Ajuste no planejador.</string>
+    <string name="mod_aplicar_fora_faixa">O VET do paciente está longe da energia do modelo (escala fora de 0,25 a 4): as porções ficam como no modelo. Ajuste no planejador.</string>
+    <string name="mod_aplicar_restricoes">Restrições do modelo</string>
+    <string name="mod_aplicar_restricoes_texto">Alimentos com a restrição saem da lista de troca do paciente. Itens da dieta que não respeitam avisam aqui.</string>
+    <string name="mod_aplicar_rascunho">Isto cria um rascunho. Nada é publicado nem enviado ao paciente agora.</string>
+    <string name="mod_aplicar_criar">Criar rascunho e revisar</string>
     <string name="mod_erro_generico">Não foi possível concluir. Tente de novo.</string>
 </resources>

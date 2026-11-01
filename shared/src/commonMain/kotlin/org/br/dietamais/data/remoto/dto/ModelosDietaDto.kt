@@ -25,3 +25,18 @@ data class ModelosDietaResposta(val itens: List<ModeloDietaResposta>)
 @Serializable
 data class SalvarComoModeloRequisicao(val id: Uuid? = null, val titulo: String, val descricao: String? = null, val condicao: String? = null,
     val restricoes: List<String>? = null)
+
+/** Aplicar modelo a um paciente (RN-MOD-02): `vetKcal` é o alvo do paciente; sem ele as porções ficam como no modelo. */
+@Serializable
+data class AplicarModeloRequisicao(val id: Uuid? = null, val vetKcal: Double? = null)
+
+@Serializable
+data class AvisoModelo(val codigo: String, val mensagem: String)
+
+@Serializable
+data class DietaDeModeloResposta(val dieta: DietaResposta, val fatorEscala: Double, val avisos: List<AvisoModelo> = emptyList())
+
+/** Avaliação mais recente do paciente para a dieta (BE-49d); `metas` falta quando a avaliação não calculou o VET. */
+@Serializable
+data class ReferenciaAvaliacaoDietaResposta(val avaliacaoId: Uuid? = null, val dataHora: Instant? = null, val pesoKg: Double? = null,
+    val pesoReferenciaKg: Double? = null, val metas: MetasDieta? = null, val gestante: Boolean = false, val lactante: Boolean = false)
