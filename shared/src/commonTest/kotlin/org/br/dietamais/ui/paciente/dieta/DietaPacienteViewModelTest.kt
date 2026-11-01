@@ -57,6 +57,36 @@ class DietaPacienteViewModelTest {
         assertTrue(vm.estado.value.carregado); assertNull(vm.estado.value.dieta)
     }
 
+    @Test fun listaFuncionaOfflineEReiniciaFiltrosQuandoOSnapshotMuda() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z")
+        val porta = Porta(MutableStateFlow(DadosDietaPaciente(listOf(s))))
+        val vm = vm(porta, conectividade = flowOf(false)); advanceUntilIdle()
+        vm.abrirLista(); vm.buscarNaLista("macarrao"); vm.filtrarGrupoLista(grupo)
+        vm.expandirGrupoLista(grupo); assertNull(vm.estado.value.grupoListaAberto); vm.expandirGrupoLista(grupo)
+        assertTrue(vm.estado.value.listaAberta)
+        assertEquals(listOf(macarrao), vm.estado.value.gruposListaVisiveis.single().alimentos)
+        assertEquals(grupo, vm.estado.value.grupoListaAberto)
+        assertEquals(0, porta.chamadas)
+        porta.dados.value = DadosDietaPaciente(listOf(s.copy(id = Uuid.random(), listaSubstituicao = s.listaSubstituicao.copy(alimentos = emptyList()))))
+        advanceUntilIdle()
+        assertEquals("", vm.estado.value.buscaLista)
+        assertNull(vm.estado.value.grupoListaFiltro)
+        assertNull(vm.estado.value.grupoListaAberto)
+        assertTrue(vm.estado.value.gruposListaVisiveis.isEmpty())
+        vm.fecharLista(); assertFalse(vm.estado.value.listaAberta)
+    }
+
+    @Test fun botaoDoItemAbreSomenteATrocaDaqueleItem() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z")
+        val rotina = Rotina(); val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina)
+        advanceUntilIdle()
+        val r = s.refeicoes.first(); val item = r.itens.single()
+        vm.abrirTroca(r.id, Uuid.random()); assertNull(vm.estado.value.troca)
+        vm.abrirTroca(r.id, item.id); assertEquals(item.id, vm.estado.value.troca?.itemId)
+        vm.escolherSubstituto(item.id, macarrao.id); vm.confirmarTroca(); advanceUntilIdle()
+        assertEquals(listOf(TrocaCheckin(item.id, macarrao.id)), rotina.checkins.single().trocas)
+    }
+
     @Test fun destacaAProximaERespeitaAEscolha() = runTest {
         val a = snap("Ana", "2026-01-01T10:00:00Z"); val b = snap("Bia", "2026-02-01T10:00:00Z")
         val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(a, b))))); advanceUntilIdle()
