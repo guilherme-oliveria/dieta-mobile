@@ -74,3 +74,15 @@ Nutri (em paralelo ao paciente):
 ## Próximo no canvas de design
 
 Desenhar no canvas, nesta ordem, as telas que estão "faltando" e não são só variação de outra: cadastro do paciente + consentimento, cadastro da nutri, perfil do paciente, convidar paciente + limite do plano, conta e assinatura, agenda, alimentos, montar dieta no celular, indicador de sync e conflito no desktop.
+
+## Fase 5 · Avaliação ampliada, dieta por porções e clínica (ondas 17 a 23)
+
+Desenhos: DES-08, DES-09 e DES-10, feitos em 01/11/2026 (ver [telas.md](telas.md), seção "Melhorias com as planilhas"). Padrão: [padrao-ui.md](padrao-ui.md) e [graficos.md](graficos.md). Cada tarefa abaixo só começa com o artboard na lista; o PR cita o artboard e as divergências.
+
+1. **MOB-54** planejador por porções: `A-Planejador-Porcoes` e `T-Planejador-Porcoes`; usa `GraficoRosca` com `anelMeta`, `GraficoBarras` e a barra de metas. Antes, corrigir D-01 (paleta).
+2. **MOB-55** paciente: rosca de macros e lista de substituição para consulta. **Sem artboard ainda:** pedir ao Design antes.
+3. **MOB-56 e MOB-57** modelos: `A-Modelos-Biblioteca` e `A-Modelo-Aplicar`.
+4. **MOB-58 e MOB-59** criança: `A-Avaliacao-Infantil` e `P-Curva-Crescimento` (`CurvaCrescimento`).
+5. **MOB-60** exames: `A-Exames-Nutri` e `P-Exames` (`ReguaFaixas`).
+6. **MOB-61** anamnese estruturada: `A-Anamnese-Estruturada`.
+7. Correções D-02 a D-06 de [divergencias.md](divergencias.md) nas telas já entregues (MOB-50 a MOB-53).
