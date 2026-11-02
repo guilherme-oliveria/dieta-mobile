@@ -23,6 +23,7 @@ data class MeusResultados(
     val percentualGordura: Double?, val meta: MetaPeso?, val pesoSaudavel: ClosedFloatingPointRange<Double>?, val textoResumo: String?,
     /** (dias desde a primeira avaliação, peso) das avaliações compartilhadas. */
     val seriePeso: List<Pair<Double, Double>>,
+    val pediatrico: Boolean = false, val infantil: org.br.dietamais.data.remoto.dto.ResultadosInfantisAvaliacaoDto? = null,
 )
 
 private inline fun <reified E : Enum<E>> reconhecer(codigo: String?): E? = codigo?.let { c -> enumValues<E>().firstOrNull { it.name == c } }
@@ -59,6 +60,7 @@ private fun imcDto(c: ClasseImc) = when (c) {
 fun meusResultados(avaliacoes: List<AvaliacaoResposta>): MeusResultados? {
     val compartilhadas = avaliacoes.filter { it.compartilhada }.sortedBy { it.dataHora }
     val a = compartilhadas.lastOrNull() ?: return null
+    if (a.ehPediatrica()) return MeusResultados(a.dataHora, a.pesoKg, a.imc, emptyList(), emptyList(), null, null, null, a.parecer, emptyList(), true, a.resultadosInfantis)
     val r = a.resultados
     val indicadores = ArrayList<Indicador>()
     val imcClasse = reconhecer<ClasseImc>(r?.classificacaoImc)

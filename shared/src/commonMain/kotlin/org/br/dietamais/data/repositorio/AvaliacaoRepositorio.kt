@@ -56,8 +56,9 @@ class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDi
         val corpo = requisicao.copy(id = id)
         val agoraLocal = agora()
         val imc = imcDe(corpo.pesoKg, corpo.estaturaM)
-        val otimista = AvaliacaoResposta(id, pacienteId, pacienteId, corpo.dataHora, corpo.pesoKg, corpo.estaturaM, imc, classificarImc(imc), corpo.perimetros, corpo.dobras,
-            corpo.composicao, corpo.parecer, corpo.compartilhada ?: true, 1, agoraLocal, agoraLocal)
+        val otimista = AvaliacaoResposta(id, pacienteId, pacienteId, corpo.dataHora, corpo.pesoKg, corpo.estaturaM, imc,
+            if (corpo.infantil != null) ClassificacaoImc.OUTRO else classificarImc(imc), corpo.perimetros, corpo.dobras,
+            corpo.composicao, corpo.parecer, corpo.compartilhada ?: true, 1, agoraLocal, agoraLocal, infantil = corpo.infantil)
         // RN-SYN-04: no CRIAR a ficha vai dentro de `dados`
         val dados = JsonObject(JsonContrato.encodeToJsonElement(corpo).jsonObject + ("pacienteId" to kotlinx.serialization.json.JsonPrimitive(pacienteId.toString())))
         escrita.criar("avaliacoes", id, dados, JsonContrato.encodeToString(otimista))
@@ -70,10 +71,14 @@ class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDi
         val atual = banco.registroSyncQueries.dadosDe(sessao.usuario_id, sessao.perfil, "avaliacoes", id.toString()).executeAsOneOrNull()?.dados_json
             ?.let { JsonContrato.decodeFromString<AvaliacaoResposta>(it) } ?: throw ErroApi("RECURSO_NAO_ENCONTRADO", null, emptyList(), 404, null, null)
         val imc = imcDe(requisicao.pesoKg, requisicao.estaturaM)
-        val nova = atual.copy(dataHora = requisicao.dataHora, pesoKg = requisicao.pesoKg, estaturaM = requisicao.estaturaM, imc = imc, classificacaoImc = classificarImc(imc),
+        val pediatrica = requisicao.infantil != null || atual.infantil != null || atual.resultadosInfantis != null || atual.faixaEtaria in listOf(FaixaEtariaAvaliacao.CRIANCA, FaixaEtariaAvaliacao.ADOLESCENTE)
+        val nova = atual.copy(dataHora = requisicao.dataHora, pesoKg = requisicao.pesoKg, estaturaM = requisicao.estaturaM, imc = imc,
+            classificacaoImc = if (pediatrica) ClassificacaoImc.OUTRO else classificarImc(imc),
             perimetros = requisicao.perimetros, dobras = requisicao.dobras, composicao = requisicao.composicao, parecer = requisicao.parecer,
             compartilhada = requisicao.compartilhada ?: atual.compartilhada, versao = versao + 1, atualizadoEm = agora(),
             compartilhamento = requisicao.compartilhamento ?: atual.compartilhamento,
+            infantil = requisicao.infantil ?: atual.infantil, resultadosInfantis = null,
+            resultados = if (pediatrica) null else atual.resultados, energiaResultado = if (pediatrica) null else atual.energiaResultado,
             // a classificação vem do servidor no próximo pull; até lá o app mostra o que a nutri lançou
             exames = requisicao.exames?.map { ExameResultadoDto(it.codigo, valor = it.valor, texto = it.texto, condicao = it.condicao) }?.takeIf { it.isNotEmpty() } ?: if (requisicao.exames == null) atual.exames else null)
         escrita.atualizar("avaliacoes", id, versao, JsonContrato.encodeToJsonElement(requisicao.copy(id = id)).jsonObject, JsonContrato.encodeToString(nova))
@@ -81,10 +86,12 @@ class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDi
     }
 
     /** Só substitui o que o banco já tem se a versão for igual ou mais nova (o sync pode ter chegado antes). */
-    private fun guardar(avaliacao: AvaliacaoResposta) {
-        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull() ?: return
+    private fun guardar(avaliacao: AvaliacaoResposta) = banco.transaction {
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull() ?: return@transaction
+        // O refresh REST respeita a mesma proteção do pull de sync, inclusive em conflito.
+        if (banco.mutacaoPendenteQueries.abertaDoRegistro(sessao.usuario_id, sessao.perfil, "avaliacoes", avaliacao.id.toString()).executeAsOne() > 0) return@transaction
         val atual = banco.registroSyncQueries.revisao(sessao.usuario_id, sessao.perfil, "avaliacoes", avaliacao.id.toString()).executeAsOneOrNull()
-        if (atual != null && atual > avaliacao.versao) return
+        if (atual != null && atual > avaliacao.versao) return@transaction
         banco.registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, "avaliacoes", avaliacao.id.toString(), avaliacao.versao, 0, JsonContrato.encodeToString(avaliacao))
     }
 
