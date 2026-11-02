@@ -29,7 +29,8 @@ data class AvaliacaoResposta(val id: Uuid, val pacienteId: Uuid, val vinculoId: 
     // Energia e metas (BE-43b): a escolha da nutri e o que o servidor calculou.
     val energia: EnergiaAvaliacaoDto? = null, val energiaResultado: EnergiaResultadoDto? = null,
     // Exames (BE-56b): o paciente só os recebe se a nutri compartilhou.
-    val exames: List<ExameResultadoDto>? = null)
+    val exames: List<ExameResultadoDto>? = null,
+    val infantil: DadosInfantisAvaliacaoDto? = null, val resultadosInfantis: ResultadosInfantisAvaliacaoDto? = null)
 
 @Serializable(with = FaixaEtariaAvaliacaoSerializer::class)
 enum class FaixaEtariaAvaliacao { CRIANCA, ADOLESCENTE, ADULTO, IDOSO, OUTRO }
@@ -69,7 +70,8 @@ data class SalvarAvaliacaoRequisicao(val id: Uuid? = null, val dataHora: Instant
     val protocolo: ProtocoloAvaliacaoDto? = null, val complementares: MedidasComplementaresDto? = null,
     val compartilhamento: CompartilhamentoAvaliacaoDto? = null, val energia: EnergiaAvaliacaoDto? = null,
     /** Ausente mantém os exames; `[]` limpa (RN-EXA-01). */
-    val exames: List<ExameLancadoDto>? = null)
+    val exames: List<ExameLancadoDto>? = null,
+    val infantil: DadosInfantisAvaliacaoDto? = null)
 
 /**
  * Escolhas da nutri para o gasto energético e as metas (BE-43b). Valores como texto (método, protocolos, lactação): valor desconhecido nunca falha.

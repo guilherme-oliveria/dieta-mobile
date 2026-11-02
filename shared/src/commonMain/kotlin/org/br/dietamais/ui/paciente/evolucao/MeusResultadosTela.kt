@@ -78,6 +78,18 @@ fun MeusResultadosTela(resultados: MeusResultados?, modifier: Modifier = Modifie
         return
     }
     val data = formatarData(resultados.data.toLocalDateTime(TimeZone.currentSystemDefault()).date)
+    if (resultados.pediatrico) {
+        Box(modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState())
+            .padding(horizontal = Dimens.margemCompacta, vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+            Text(stringResource(Res.string.resultados_data, data), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            Text(stringResource(Res.string.inf_linha_valor, stringResource(Res.string.inf_peso_idade), textoDecimal(resultados.pesoKg), stringResource(Res.string.inf_unidade_kg)))
+            PainelResultadosInfantis(resultados.infantil, paciente = true)
+            resultados.textoResumo?.let { Text(it) }
+        }
+        }
+        return
+    }
     Column(modifier.verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.resultados_data, data), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         resultados.textoResumo?.let {

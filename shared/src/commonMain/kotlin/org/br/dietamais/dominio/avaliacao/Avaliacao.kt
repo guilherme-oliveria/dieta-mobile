@@ -41,24 +41,33 @@ enum class ErroMedida { OBRIGATORIA, INVALIDA, FORA_DO_INTERVALO, CASAS_DECIMAIS
 /** Aceita vírgula ou ponto como separador decimal; vazio vira nulo. */
 fun lerDecimal(texto: String): Double? = texto.trim().replace(',', '.').takeIf { it.isNotEmpty() }?.toDoubleOrNull()?.takeIf { it.isFinite() }
 
-fun validarMedidas(valores: Map<MedidaAvaliacao, String>): Map<MedidaAvaliacao, ErroMedida> {
+fun validarMedidas(valores: Map<MedidaAvaliacao, String>, infantil: Boolean = false): Map<MedidaAvaliacao, ErroMedida> {
     val erros = LinkedHashMap<MedidaAvaliacao, ErroMedida>()
     for (medida in MedidaAvaliacao.entries) {
         val texto = valores[medida].orEmpty().trim()
         if (texto.isEmpty()) { if (medida.obrigatoria) erros[medida] = ErroMedida.OBRIGATORIA; continue }
         val numero = lerDecimal(texto)
+        val minimo = if (!infantil) medida.min else when {
+            medida == MedidaAvaliacao.PESO -> 0.1
+            medida == MedidaAvaliacao.ESTATURA -> 20.0
+            medida.secao == SecaoAvaliacao.PERIMETROS -> 1.0
+            medida.secao == SecaoAvaliacao.DOBRAS -> 0.1
+            else -> medida.min
+        }
+        val maximo = if (infantil && medida == MedidaAvaliacao.ESTATURA) 250.0 else medida.max
+        val casas = if (infantil && medida == MedidaAvaliacao.ESTATURA) 1 else 2
         when {
             numero == null -> erros[medida] = ErroMedida.INVALIDA
-            temMaisDeDuasCasas(texto) -> erros[medida] = ErroMedida.CASAS_DECIMAIS
-            numero < medida.min || numero > medida.max -> erros[medida] = ErroMedida.FORA_DO_INTERVALO
+            temMaisCasas(texto, casas) -> erros[medida] = ErroMedida.CASAS_DECIMAIS
+            numero < minimo || numero > maximo -> erros[medida] = ErroMedida.FORA_DO_INTERVALO
         }
     }
     return erros
 }
 
-private fun temMaisDeDuasCasas(texto: String): Boolean {
+private fun temMaisCasas(texto: String, casas: Int): Boolean {
     val fracao = texto.trim().replace(',', '.').substringAfter('.', "").trimEnd('0')
-    return fracao.length > 2
+    return fracao.length > casas
 }
 
 fun montarRequisicao(valores: Map<MedidaAvaliacao, String>, dataHora: Instant, parecer: String, compartilhada: Boolean,
@@ -125,7 +134,11 @@ fun compararAvaliacoes(a: AvaliacaoResposta, b: AvaliacaoResposta): List<Variaca
     lista += VariacaoAvaliacao(null, antes.imc, depois.imc)
     for (m in MedidaAvaliacao.entries) {
         val x = m.ler(antes); val y = m.ler(depois)
-        if (x != null && y != null) lista += VariacaoAvaliacao(m, x, y)
+        if (x != null && y != null) {
+            if (m == MedidaAvaliacao.ESTATURA && (antes.ehPediatrica() || depois.ehPediatrica()))
+                lista += VariacaoAvaliacao(m, round(x * 1000) / 10, round(y * 1000) / 10)
+            else lista += VariacaoAvaliacao(m, x, y)
+        }
     }
     return lista
 }

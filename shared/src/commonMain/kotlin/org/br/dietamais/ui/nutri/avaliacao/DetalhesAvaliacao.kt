@@ -12,6 +12,7 @@ import org.br.dietamais.data.remoto.dto.AvaliacaoResposta
 import org.br.dietamais.dominio.avaliacao.MedidaAvaliacao
 import org.br.dietamais.dominio.avaliacao.SecaoAvaliacao
 import org.br.dietamais.dominio.avaliacao.textoDecimal
+import org.br.dietamais.dominio.avaliacao.ehPediatrica
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
@@ -25,10 +26,11 @@ fun secoesComMedidas(avaliacao: AvaliacaoResposta): List<Pair<SecaoAvaliacao, Li
 
 /** Perímetros, dobras, composição e parecer (P0 do relatório): o paciente vê tudo o que a nutri compartilhou; o backend já filtra o resto. */
 @Composable
-fun DetalhesAvaliacao(avaliacao: AvaliacaoResposta, modifier: Modifier = Modifier) {
+fun DetalhesAvaliacao(avaliacao: AvaliacaoResposta, modifier: Modifier = Modifier, paciente: Boolean = false) {
     val secoes = secoesComMedidas(avaliacao)
     val resultados = avaliacao.resultados
     Column(modifier, verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Dimens.espacoPequeno)) {
+        if (avaliacao.ehPediatrica()) PainelResultadosInfantis(avaliacao.resultadosInfantis, paciente = paciente, edicao = false)
         if (secoes.isEmpty() && avaliacao.parecer.isNullOrBlank() && resultados?.somatorioDobrasMm == null) {
             Text(stringResource(Res.string.avaliacao_detalhe_sem_medidas), style = MaterialTheme.typography.bodySmall)
         }

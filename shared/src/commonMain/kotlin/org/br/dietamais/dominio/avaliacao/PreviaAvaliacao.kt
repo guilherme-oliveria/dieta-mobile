@@ -17,7 +17,7 @@ fun previaAvaliacao(valores: Map<MedidaAvaliacao, String>, sexo: SexoDto?, nasci
     fun v(m: MedidaAvaliacao) = lerDecimal(valores[m].orEmpty())?.takeIf { it in m.min..m.max }
     val peso = v(MedidaAvaliacao.PESO); val estatura = v(MedidaAvaliacao.ESTATURA)
     if (peso == null || estatura == null) return PreviaAvaliacao(null, null, listOf(FaltaDado.PESO_ESTATURA))
-    val idade = nascimento?.let { CalculosAdulto.idadeEmAnos(dia.toEpochDays() - it.toEpochDays()) }?.takeIf { it >= 0 }
+    val idade = idadeMesesCompletos(nascimento, dia)?.div(12)
     if (idade == null) faltas += FaltaDado.NASCIMENTO
     val sexoCalculo = when (sexo) { SexoDto.MASCULINO -> Sexo.MASCULINO; SexoDto.FEMININO -> Sexo.FEMININO; else -> null }
     if (sexoCalculo == null) faltas += FaltaDado.SEXO

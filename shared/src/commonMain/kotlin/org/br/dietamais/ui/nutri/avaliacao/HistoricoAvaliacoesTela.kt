@@ -45,13 +45,13 @@ fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, pod
         when {
             estado.atualizando && estado.itens.isEmpty() -> EstadoCarregando()
             estado.itens.isEmpty() -> EstadoVazio(mensagem = stringResource(if (estado.somenteLeitura) Res.string.avaliacao_paciente_vazia else Res.string.avaliacao_vazia))
-            else -> estado.itens.forEach { CartaoAvaliacao(it, it.id in estado.selecionadas, podeEditar, acoes) }
+            else -> estado.itens.forEach { CartaoAvaliacao(it, it.id in estado.selecionadas, podeEditar, acoes, estado.somenteLeitura) }
         }
     }
 }
 
 @Composable
-private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, editavel: Boolean, acoes: AcoesHistorico) {
+private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, editavel: Boolean, acoes: AcoesHistorico, paciente: Boolean) {
     val rotuloSelecionar = stringResource(Res.string.avaliacao_selecionar)
     var detalhes by remember(item.id) { mutableStateOf(false) }
     CardDieta(Modifier.fillMaxWidth().toggleable(selecionada, role = Role.Checkbox, onValueChange = { acoes.aoSelecionar(item.id) })
@@ -60,11 +60,16 @@ private fun CartaoAvaliacao(item: AvaliacaoResposta, selecionada: Boolean, edita
             Checkbox(selecionada, onCheckedChange = null)
             Column(Modifier.weight(1f)) {
                 Text(textoData(item.dataHora), style = MaterialTheme.typography.titleMedium)
-                Text(stringResource(Res.string.avaliacao_peso_estatura, textoDecimal(item.pesoKg), textoDecimal(item.estaturaM)), style = MaterialTheme.typography.bodyMedium)
-                Text(stringResource(Res.string.avaliacao_imc_valor, textoDecimal(item.imc), stringResource(rotuloClassificacao(item.classificacaoImc))), style = MaterialTheme.typography.bodyMedium)
+                if (item.ehPediatrica()) {
+                    Text(stringResource(Res.string.inf_linha_valor, stringResource(Res.string.inf_peso_idade), textoDecimal(item.pesoKg), stringResource(Res.string.inf_unidade_kg)), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(Res.string.inf_linha_valor, stringResource(Res.string.inf_estatura_idade), textoDecimal(item.estaturaM * 100), stringResource(Res.string.inf_unidade_cm)), style = MaterialTheme.typography.bodyMedium)
+                } else {
+                    Text(stringResource(Res.string.avaliacao_peso_estatura, textoDecimal(item.pesoKg), textoDecimal(item.estaturaM)), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(Res.string.avaliacao_imc_valor, textoDecimal(item.imc), stringResource(rotuloClassificacao(item.classificacaoImc))), style = MaterialTheme.typography.bodyMedium)
+                }
                 if (!item.compartilhada) ChipStatus(EstiloStatus.INFO, texto = stringResource(Res.string.avaliacao_privada))
                 BotaoTexto(stringResource(if (detalhes) Res.string.avaliacao_ocultar_detalhes else Res.string.avaliacao_ver_detalhes), { detalhes = !detalhes })
-                if (detalhes) DetalhesAvaliacao(item)
+                if (detalhes) DetalhesAvaliacao(item, paciente = paciente)
                 acoes.pdf(item)
             }
             Column {
@@ -81,7 +86,11 @@ private fun ComparacaoAvaliacoes(antes: AvaliacaoResposta, depois: AvaliacaoResp
         style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
     CardDieta(Modifier.fillMaxWidth()) {
         compararAvaliacoes(antes, depois).forEach { v ->
-            val rotulo = if (v.medida == null) stringResource(Res.string.avaliacao_imc) else stringResource(rotuloMedida(v.medida))
+            val rotulo = when {
+                v.medida == null -> stringResource(Res.string.avaliacao_imc)
+                v.medida == MedidaAvaliacao.ESTATURA && (antes.ehPediatrica() || depois.ehPediatrica()) -> stringResource(Res.string.inf_altura)
+                else -> stringResource(rotuloMedida(v.medida))
+            }
             Row(Modifier.fillMaxWidth().padding(vertical = Dimens.espacoMinimo), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(rotulo, Modifier.weight(1f))
                 Text(stringResource(Res.string.avaliacao_comparacao_linha, textoDecimal(v.antes), textoDecimal(v.depois), textoVariacao(v.delta)))
