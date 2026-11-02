@@ -1053,6 +1053,7 @@
     <string name="pac_item_livre">À vontade · sem kcal</string>
     <string name="pac_item_substituicao">Troque por 1 porção do grupo %1$s</string>
     <string name="pac_item_trocar">Trocar</string>
+    <string name="pac_registro_status">Registro salvo: %1$s</string>
     <string name="pac_troca_medida_grupo">A quantidade equivalente deste grupo não veio na dieta. Confirme a medida com a sua nutri.</string>
     <string name="pac_troca_opcao_grupo">%1$s · confirmar medida com a nutri</string>
     <string name="pac_lista_ver">Ver lista de substituição</string>

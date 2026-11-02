@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.nutri.dieta.formatar
@@ -80,6 +82,16 @@ private fun RefeicaoDietaPaciente(estado: EstadoDietaPaciente, r: RefeicaoRespos
         Text(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
         Text(stringResource(Res.string.pac_kcal, numeroPaciente(r.totais.kcal)), style = MaterialTheme.typography.labelLarge)
         if (estado.semConexao) FaixaOffline()
+        estado.erro?.let { Text(stringResource(textoErro(it)), color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
+        val status = when (estado.checkins[r.id]) {
+            StatusCheckin.FEITO -> Res.string.status_feita
+            StatusCheckin.TROCADO -> Res.string.status_trocada
+            StatusCheckin.PULADO -> Res.string.pac_status_pulada
+            else -> null
+        }
+        status?.let { Text(stringResource(Res.string.pac_registro_status, stringResource(it)),
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             MacrosPaciente(r.totais, dia = false)
             r.itens.forEach { i ->

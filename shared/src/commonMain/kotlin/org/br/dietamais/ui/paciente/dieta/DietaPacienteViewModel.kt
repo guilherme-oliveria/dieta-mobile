@@ -121,15 +121,16 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
             if (substitutosDoItem(item, dieta.listaSubstituicao).none { it.alimento.id == alimentoId }) null else TrocaCheckin(itemId, alimentoId)
         }
         if (trocas.isEmpty()) return
-        gravar { rotina.registrarCheckin(dieta.dietaId, t.refeicaoId, dia, StatusCheckin.TROCADO, trocas, relogio.now()) }
-        atual.update { it.copy(troca = null) }
+        if (gravar { rotina.registrarCheckin(dieta.dietaId, t.refeicaoId, dia, StatusCheckin.TROCADO, trocas, relogio.now()) }) {
+            atual.update { it.copy(troca = null) }
+        }
     }
 
-    private fun gravar(bloco: () -> Unit) {
-        try { bloco(); atual.update { it.copy(erro = null) }; aoGravar() }
+    private fun gravar(bloco: () -> Unit): Boolean {
+        return try { bloco(); atual.update { it.copy(erro = null) }; aoGravar(); true }
         catch (c: CancellationException) { throw c }
-        catch (_: SessaoAlterada) { }
-        catch (_: Exception) { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO) } }
+        catch (_: SessaoAlterada) { false }
+        catch (_: Exception) { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO) }; false }
     }
 
     fun escolher(dietaId: Uuid) {

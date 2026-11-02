@@ -38,10 +38,12 @@ class DietaPacienteViewModelTest {
     }
 
     private class Rotina : PortaRotina {
+        var falha = false
         val dados = MutableStateFlow(DadosRotina())
         val checkins = mutableListOf<CheckinResposta>()
         override fun observar() = dados
         override fun registrarCheckin(dietaId: Uuid, refeicaoId: Uuid, data: LocalDate, status: StatusCheckin, trocas: List<TrocaCheckin>, agora: Instant) {
+            if (falha) throw IllegalStateException("falha simulada")
             val c = CheckinResposta(Uuid.random(), Uuid.random(), dietaId, refeicaoId, data, status, trocas, agora)
             checkins += c; dados.value = dados.value.copy(checkins = dados.value.checkins + c)
         }
@@ -85,6 +87,18 @@ class DietaPacienteViewModelTest {
         vm.abrirTroca(r.id, item.id); assertEquals(item.id, vm.estado.value.troca?.itemId)
         vm.escolherSubstituto(item.id, macarrao.id); vm.confirmarTroca(); advanceUntilIdle()
         assertEquals(listOf(TrocaCheckin(item.id, macarrao.id)), rotina.checkins.single().trocas)
+    }
+
+    @Test fun falhaAoConfirmarTrocaMantemEscolhasParaTentarNovamente() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina().apply { falha = true }
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val r = s.refeicoes.first(); val item = r.itens.single()
+        vm.abrirRefeicao(r.id); vm.abrirTroca(r.id, item.id); vm.escolherSubstituto(item.id, macarrao.id); vm.confirmarTroca()
+        assertEquals(MensagemDietaPaciente.ERRO, vm.estado.value.erro)
+        assertEquals(macarrao.id, vm.estado.value.troca?.escolhas?.get(item.id)); assertTrue(rotina.checkins.isEmpty())
+        rotina.falha = false; vm.confirmarTroca(); advanceUntilIdle()
+        assertNull(vm.estado.value.erro); assertNull(vm.estado.value.troca)
+        assertEquals(StatusCheckin.TROCADO, vm.estado.value.checkins[r.id])
     }
 
     @Test fun destacaAProximaERespeitaAEscolha() = runTest {

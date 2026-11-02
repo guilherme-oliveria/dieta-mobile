@@ -29,7 +29,6 @@ import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
 import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
-import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.data.sync.AgendadorLembretes
 import org.koin.compose.getKoin
@@ -217,7 +216,6 @@ private fun NavegacaoPaciente(aoContaExcluida: () -> Unit) {
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
     val vm = koinViewModel<DietaPacienteViewModel>(viewModelStoreOwner = dono)
     val estado by vm.estado.collectAsState()
-    org.br.dietamais.ui.paciente.dieta.RetornoDietaPaciente(estado, vm::fecharLista, { vm.abrirRefeicao(null) })
     val koin = getKoin()
     val agendador = remember(koin) { koin.getOrNull<AgendadorLembretes>() }
     LaunchedEffect(agendador) { agendador?.executar() }
@@ -233,11 +231,8 @@ private fun NavegacaoPaciente(aoContaExcluida: () -> Unit) {
         },
         conteudoDieta = {
             val pdf = koinInject<org.br.dietamais.data.repositorio.PortaPdf>()
-            DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, aoAbrirLista = vm::abrirLista,
-                acoesLista = org.br.dietamais.ui.paciente.substituicao.AcoesListaPaciente(vm::fecharLista, vm::buscarNaLista, vm::filtrarGrupoLista, vm::expandirGrupoLista, vm::tentarNovamente),
-                aoTrocar = vm::abrirTroca, aoMarcar = vm::marcar, aoTrocarRefeicao = vm::abrirTroca, pdf = { e -> e.dieta?.let { d ->
+            org.br.dietamais.ui.paciente.dieta.DietaPacienteRota(vm, pdf = { e -> e.dieta?.let { d ->
                 BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(org.br.dietamais.data.repositorio.RecursoPdf.DIETA, d.dietaId) }) } })
-            TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },
         conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
         conteudoCompras = {

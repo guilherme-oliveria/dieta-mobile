@@ -6,8 +6,14 @@ import androidx.compose.ui.backhandler.BackHandler
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun RetornoDietaPaciente(estado: EstadoDietaPaciente, aoFecharLista: () -> Unit, aoFecharRefeicao: () -> Unit) {
-    BackHandler(enabled = estado.listaAberta || estado.refeicaoAberta != null) {
-        if (estado.listaAberta) aoFecharLista() else aoFecharRefeicao()
+fun RetornoDietaPaciente(estado: EstadoDietaPaciente, aoFecharLista: () -> Unit, aoFecharRefeicao: () -> Unit,
+    aoFecharTroca: () -> Unit, ativo: Boolean) {
+    BackHandler(enabled = ativo && (estado.troca != null || estado.listaAberta || estado.refeicaoAberta != null)) {
+        // O diálogo sempre tem prioridade; nunca fecha o detalhe que está atrás dele.
+        when {
+            estado.troca != null -> aoFecharTroca()
+            estado.listaAberta -> aoFecharLista()
+            else -> aoFecharRefeicao()
+        }
     }
 }
