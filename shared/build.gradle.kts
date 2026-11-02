@@ -74,6 +74,8 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.compose.uiTest)
             implementation(compose.desktop.currentOs)
+            implementation(libs.navigation.event)
+            implementation(libs.navigation.event.compose)
         }
         getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.testExt.junit)

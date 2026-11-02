@@ -8,7 +8,7 @@ Estado conferido na `develop` em 01/11/2026 (plano de ação, linha de MOB-49 em
 
 | Tarefa | O que falta | Artboards (nesta pasta) | Ver também |
 | --- | --- | --- | --- |
-| **MOB-55** Paciente: rosca de macros e lista de substituição | Tudo | `P-Dieta-Macros`, `P-Refeicao-Macros`, `P-Lista-Substituicao`, `P-Lista-Substituicao-Vazio`, `T-Lista-Substituicao` | `padrao-ui.md` seção 8b; `graficos.md` (rosca sem anel de meta para o paciente) |
+| **MOB-55** Paciente: rosca de macros e lista de substituição | Implementado; limitações de metadados em divergencias.md | `P-Dieta-Macros`, `P-Refeicao-Macros`, `P-Lista-Substituicao`, `P-Lista-Substituicao-Vazio`, `T-Lista-Substituicao` | `padrao-ui.md` seção 8b; `graficos.md` (rosca sem anel de meta para o paciente) |
 | **MOB-56b** Editar o conteúdo do modelo e leitura offline | Edição do modelo reaproveita o planejador | `A-Planejador-Porcoes`, `T-Planejador-Porcoes` (edição); biblioteca em `A-Modelos-Biblioteca` (já feita, 56a) | Sem artboard próprio da edição: use o planejador com o título "Editar modelo" e sem paciente |
 | **MOB-58** Avaliação infantil e adolescente | Tudo | `A-Avaliacao-Infantil` | `plano-melhorias-planilhas.md` 3.3 (campos por faixa) |
 | **MOB-59** Curva de crescimento (nutri e responsável) | Tudo | `P-Curva-Crescimento` (usa `CurvaCrescimento`, já existe em `ui/comum/graficos`) | `graficos.md` item "Curva" |

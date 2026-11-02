@@ -34,7 +34,6 @@ import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel
 import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
-import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoPacienteRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
@@ -84,7 +83,7 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
             },
             conteudoDieta = {
                 val pdf = koinInject<PortaPdf>()
-                DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, pdf = { e -> e.dieta?.let { d ->
+                org.br.dietamais.ui.paciente.dieta.DietaPacienteRota(vm, pdf = { e -> e.dieta?.let { d ->
                     BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(RecursoPdf.DIETA, d.dietaId) }) } })
             },
             conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },

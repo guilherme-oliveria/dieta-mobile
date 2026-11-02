@@ -24,6 +24,9 @@ object Dimens {
     val alturaTermos = 360.dp
     val alturaCabecalhoAutenticado = 200.dp
     val larguraListaPacientes = 360.dp
+    val roscaPacienteDia = 128.dp
+    val roscaPacienteRefeicao = 96.dp
+    val larguraGruposSubstituicao = 340.dp
     val larguraTrilho = 96.dp
     val alturaBarraNavegacao = 80.dp
     val alturaItemTrilho = 64.dp
