@@ -123,6 +123,7 @@ Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substitue
 - **RN-ANA-03** A nutri envia um questionário ao paciente; o paciente responde no app (pode salvar parcial). Ao enviar, as respostas ficam imutáveis e a nutri é notificada.
 - **RN-ANA-04** As perguntas são congeladas no envio (mudar o modelo não muda questionários já enviados).
 - **RN-ANA-05** Horários de rotina das respostas podem pré-preencher os horários das refeições de um novo rascunho de dieta.
+- **RN-ANA-06** Códigos opcionais estáveis identificam as entradas de PA, álcool, sal, óleo e duração. O servidor valida tipo/unidade e calcula resultados apenas com todas as entradas visíveis, inclusive na gravação parcial por sync. Resultado ausente não vale zero. Na conclusão, os derivados são congelados com as respostas; os modelos antigos/editados são preservados ao disponibilizar “Anamnese completa”. Contrato em `contrato-anamnese.md`.
 
 ## Agenda de consultas (RN-AGE)
 
