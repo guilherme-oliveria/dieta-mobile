@@ -22,12 +22,14 @@ class PortaAnamneseFalsa(modelos: List<ModeloQuestionarioResposta> = emptyList()
     val modelos = MutableStateFlow(modelos)
     val questionarios = MutableStateFlow(questionarios)
     var falha: Exception? = null
+    var falhaGravacao: Exception? = null
     var atualizacoes = 0
     val gravacoes = mutableListOf<Map<Uuid, JsonElement?>>()
     var modeloCriado: SalvarModeloRequisicao? = null
     var modeloSalvo: Pair<Long, SalvarModeloRequisicao>? = null
     var enviado: EnviarQuestionarioRequisicao? = null
     var concluidos = 0
+    var consultasRespostas = 0
 
     override fun observarModelos() = modelos
     override suspend fun atualizarModelos() { atualizacoes++; falha?.let { throw it } }
@@ -48,6 +50,7 @@ class PortaAnamneseFalsa(modelos: List<ModeloQuestionarioResposta> = emptyList()
             .also { questionarios.value = questionarios.value + it }
     }
     override fun salvarRespostas(id: Uuid, respostas: Map<Uuid, JsonElement?>) {
+        falhaGravacao?.let { throw it }
         gravacoes += respostas
         questionarios.value = questionarios.value.map { q ->
             if (q.id != id) q else q.copy(respostas = q.respostas.toMutableMap().also { m -> respostas.forEach { (k, v) -> if (v == null) m.remove(k) else m[k] = v } })
@@ -59,6 +62,7 @@ class PortaAnamneseFalsa(modelos: List<ModeloQuestionarioResposta> = emptyList()
         questionarios.value = questionarios.value.map { if (it.id == id) fechado else it }
         return fechado
     }
+    override suspend fun atualizarRespostas() { falha?.let { throw it }; consultasRespostas++ }
 }
 
 fun texto(valor: String): JsonElement = JsonPrimitive(valor)

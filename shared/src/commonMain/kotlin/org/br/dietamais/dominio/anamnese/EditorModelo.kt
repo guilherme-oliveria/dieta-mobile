@@ -7,7 +7,7 @@ enum class ErroModelo { NOME_VAZIO, SEM_PERGUNTAS, BLOCO_SEM_TITULO, PERGUNTA_SE
 
 /** `opcoes` é o texto do campo, uma opção por linha. Sem `condicaoPergunta` a pergunta aparece sempre. */
 data class PerguntaEditavel(val id: Uuid, val texto: String = "", val tipo: TipoPergunta = TipoPergunta.TEXTO, val opcoes: String = "", val obrigatoria: Boolean = false,
-    val condicaoPergunta: Uuid? = null, val condicaoOperador: OperadorCondicao = OperadorCondicao.IGUAL, val condicaoValor: String = "")
+    val condicaoPergunta: Uuid? = null, val condicaoOperador: OperadorCondicao = OperadorCondicao.IGUAL, val condicaoValor: String = "", val codigo: String? = null)
 
 data class BlocoEditavel(val titulo: String = "", val perguntas: List<PerguntaEditavel> = emptyList())
 
@@ -29,7 +29,7 @@ fun editorNovo(chave: Uuid) = EditorModelo(chave, blocos = listOf(BlocoEditavel(
 
 fun editorDe(modelo: ModeloQuestionarioResposta): EditorModelo = EditorModelo(modelo.id, modelo.id, modelo.versao, modelo.nome, modelo.blocos.map { b ->
     BlocoEditavel(b.titulo, b.perguntas.map { p ->
-        PerguntaEditavel(p.chave, p.texto, p.tipo, p.opcoes.orEmpty().joinToString("\n"), p.obrigatoria, p.condicao?.perguntaId, p.condicao?.operador ?: OperadorCondicao.IGUAL, p.condicao?.valor.orEmpty())
+        PerguntaEditavel(p.chave, p.texto, p.tipo, p.opcoes.orEmpty().joinToString("\n"), p.obrigatoria, p.condicao?.perguntaId, p.condicao?.operador ?: OperadorCondicao.IGUAL, p.condicao?.valor.orEmpty(), p.codigo)
     })
 })
 
@@ -113,6 +113,6 @@ fun EditorModelo.validar(): ValidacaoModelo {
 fun EditorModelo.paraRequisicao(): SalvarModeloRequisicao = SalvarModeloRequisicao(id ?: chave, nome.trim(), blocos.map { b ->
     BlocoQuestionario(b.titulo.trim(), b.perguntas.map { p ->
         PerguntaQuestionario(p.id, p.texto.trim(), p.tipo, opcoesDe(p).ifEmpty { null }, p.obrigatoria,
-            p.condicaoPergunta?.let { CondicaoPergunta(it, p.condicaoOperador, p.condicaoValor.trim()) })
+            p.condicaoPergunta?.let { CondicaoPergunta(it, p.condicaoOperador, p.condicaoValor.trim()) }, p.codigo)
     })
 })

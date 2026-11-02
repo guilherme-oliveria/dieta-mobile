@@ -22,7 +22,7 @@ data class CondicaoPergunta(val perguntaId: Uuid, val operador: OperadorCondicao
 
 @Serializable
 data class PerguntaQuestionario(val id: Uuid? = null, val texto: String, val tipo: TipoPergunta, val opcoes: List<String>? = null,
-    val obrigatoria: Boolean = false, val condicao: CondicaoPergunta? = null)
+    val obrigatoria: Boolean = false, val condicao: CondicaoPergunta? = null, val codigo: String? = null)
 
 @Serializable
 data class BlocoQuestionario(val titulo: String, val perguntas: List<PerguntaQuestionario> = emptyList())
@@ -41,7 +41,17 @@ data class EnviarQuestionarioRequisicao(val id: Uuid? = null, val modeloId: Uuid
 @Serializable
 data class QuestionarioResposta(val id: Uuid, val pacienteId: Uuid, val vinculoId: Uuid, val modeloId: Uuid? = null, val nome: String,
     val blocos: List<BlocoQuestionario> = emptyList(), val respostas: Map<Uuid, JsonElement> = emptyMap(), val status: StatusQuestionario,
-    val enviadoEm: Instant, val respondidoEm: Instant? = null, val versao: Long, val criadoEm: Instant, val atualizadoEm: Instant)
+    val enviadoEm: Instant, val respondidoEm: Instant? = null, val versao: Long, val criadoEm: Instant, val atualizadoEm: Instant,
+    val derivados: AnamneseDerivada? = null)
+
+/** Somente resultados recebidos do servidor. Texto da classificação admite valores futuros. */
+@Serializable
+data class AnamneseDerivada(val pressaoArterial: String? = null, val alcool: AlcoolAnamnese? = null, val salGramasPorPessoaDia: Int? = null,
+    val oleoMlPorPessoaDia: Int? = null, val oleoKcalPorPessoaDia: Int? = null, val atividadeDuracaoMinutos: Int? = null,
+    val atividadesDuracaoMinutos: Map<String, Int>? = null)
+
+@Serializable
+data class AlcoolAnamnese(val mlPorSemana: Double? = null, val gramasEtanolPorSemana: Double? = null, val kcalPorSemana: Double? = null)
 @Serializable
 data class QuestionariosResposta(val itens: List<QuestionarioResposta> = emptyList())
 
