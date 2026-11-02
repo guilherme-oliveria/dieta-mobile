@@ -130,7 +130,7 @@ Seletores da aba: `O1` lactante (1 sim, 2 não), `O2` período da lactação (1 
 | av. clínica | Classificação da pressão arterial `CLASS_PA(sistólica, diastólica)`: ótima, normal, limítrofe/pré-hipertensão, hipertensão estágio I, II, III, sistólica isolada (tabela completa no anexo). Demais campos são de anamnese (queixas, intestino, urina, edema, estresse, sono, exames, cirurgias, medicamentos, doenças na família) |
 | av. bioquímica | ~150 exames em 12 blocos (rotina, complementares, hemograma vermelho e branco, perfil lipídico, EAS, proteínas, minerais, vitaminas, hormônios, imunológicos, leptina…). Cada exame: valor por data e resultado (`baixo`, `limite inferior`, `normal`, `limite superior`, `alto`, ou rótulos próprios como "int. à glicose"/"diabetes", "ótimo/limítrofe/alto", "presente/ausente") por faixa, que pode depender de sexo, idade (< 60), fase do ciclo, menopausa ou IMC |
 | av. comportamental | Álcool: `doses × dias × ml da medida` e `g de etanol/semana = ml × 0,8 × 7 × teor`; tabagismo; atividade física com `duração = fim − início` |
-| av. alimentar | Sal `g/pessoa/dia = g no mês / pessoas / 30` (referência OMS ≤ 5 g); óleo `ml/pessoa/dia` e `× 9 kcal`; registro alimentar por refeição; frequência alimentar de 30 grupos |
+| av. alimentar | Sal `g/pessoa/dia = g no mês / pessoas / 30` (referência OMS ≤ 5 g); óleo `ml/pessoa/dia` e `× 9 kcal`; registro alimentar por refeição; frequência alimentar de 20 grupos com sete frequências (conferidos em `A92:H112` das três planilhas fornecidas; a estimativa anterior era 30) |
 
 ### 3.6 Inconsistências achadas (correção aprovada pelo Guilherme em 31/10/2026)
 
@@ -294,9 +294,9 @@ Tarefas sem dependência entre si na mesma coluna e onda podem ir em PRs paralel
 
 | Tarefa | Telas |
 | --- | --- |
-| DES-08 (**desenhado em 01/11/2026**, ver `docs/design/telas.md`) | Avaliação em 4 passos (celular e tablet com painel de resultados), "Meus resultados" do paciente, componentes de gráfico (rosca, régua, medidor, linha com faixa) |
-| DES-09 (**desenhado em 01/11/2026**, ver `docs/design/telas.md`) | Planejador por porções (celular uma refeição por vez, tablet grade), barra de metas, biblioteca e aplicação de modelos |
-| DES-10 (**desenhado em 01/11/2026**, ver `docs/design/telas.md`) | Avaliação infantil com curva de crescimento, exames (nutri e paciente), anamnese estruturada |
+| DES-08 | Avaliação em 4 passos (celular e tablet com painel de resultados), "Meus resultados" do paciente, componentes de gráfico (rosca, régua, medidor, linha com faixa) |
+| DES-09 | Planejador por porções (celular uma refeição por vez, tablet grade), barra de metas, biblioteca e aplicação de modelos |
+| DES-10 | Avaliação infantil com curva de crescimento, exames (nutri e paciente), anamnese estruturada |
 
 ### 6.6 Tarefas do Guilherme e da Luciana
 

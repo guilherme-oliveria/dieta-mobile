@@ -104,6 +104,8 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | avaliacoes | `GET/PUT /eu/nutri/protocolos` (Meus protocolos, com `ETag` e `If-Match`) | nutri |
 | referencias | `GET /referencias/atividades-met` (tabela de MET), `GET /referencias/dri?sexo&idadeMeses&gestante&lactante` (ingestões de referência) | nutri e paciente |
 | questionarios | `GET/POST /modelos-questionario`, `POST /pacientes/{id}/questionarios` (envia), `GET /eu/questionarios`, `PUT /eu/questionarios/{id}/respostas`, `POST /eu/questionarios/{id}/enviar` | nutri / paciente |
+
+Anamnese estruturada (BE-57b): `codigo` opcional por pergunta e `derivados` opcionais, calculados pelo servidor e congelados na conclusão. Tipos, unidades, campos ausentes, compatibilidade e exemplo em [contrato-anamnese.md](contrato-anamnese.md). As mesmas regras valem para respostas parciais no `/sync`.
 | notificacoes | `GET /eu/avisos`, `POST /eu/avisos/{id}/lido`, `POST /eu/avisos/lidos` (central de avisos) | nutri / paciente |
 | agenda | `GET/POST /consultas`, `PATCH /consultas/{id}`, `GET /eu/consultas`, `POST /eu/calendario/token` (gera/revoga link .ics) | nutri / paciente |
 | relatorios | `GET /dietas/{id}/pdf`, `GET /dietas/{id}/pdf-lista`, `GET /eu/dietas/{id}/pdf-lista` (BE-50b, `tamanho` opcional; ver `contrato-fase-8.md`), `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
