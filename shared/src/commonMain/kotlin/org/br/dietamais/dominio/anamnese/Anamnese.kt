@@ -45,7 +45,7 @@ private val HORA = Regex("([01][0-9]|2[0-3]):[0-5][0-9]")
 /** Feedback imediato; a validação que vale é a do backend. */
 fun respostaValida(pergunta: PerguntaQuestionario, valor: JsonElement): Boolean = when (pergunta.tipo) {
     TipoPergunta.TEXTO -> valor is JsonPrimitive && valor.isString && valor.content.isNotBlank() && valor.content.length <= 2000
-    TipoPergunta.NUMERO -> valor is JsonPrimitive && !valor.isString && valor.doubleOrNull?.isFinite() == true
+    TipoPergunta.NUMERO -> valor is JsonPrimitive && !valor.isString && valor.doubleOrNull?.let { numeroAnamneseValido(pergunta.codigo, it) } == true
     TipoPergunta.ESCOLHA_UNICA -> valor is JsonPrimitive && valor.isString && pergunta.opcoes.orEmpty().contains(valor.content)
     TipoPergunta.MULTIPLA_ESCOLHA -> valor is JsonArray && valor.isNotEmpty() && valor.all { it is JsonPrimitive && it.isString && pergunta.opcoes.orEmpty().contains(it.content) } &&
         valor.map { (it as JsonPrimitive).content }.toSet().size == valor.size

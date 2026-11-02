@@ -34,9 +34,9 @@ fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
         aoNavegar = org.br.dietamais.app.SolicitacoesNavegacao::pedir) }
     single<org.br.dietamais.data.repositorio.PortaPendencias> { org.br.dietamais.data.repositorio.PendenciasRepositorio(get(), aoMudar = { ambiente?.solicitarLeitura() }) }
     viewModel { org.br.dietamais.ui.pendencias.PendenciasViewModel(get()) }
-    single<org.br.dietamais.data.repositorio.PortaAnamnese> { org.br.dietamais.data.repositorio.AnamneseRepositorio(get(), get()) }
+    single<org.br.dietamais.data.repositorio.PortaAnamnese> { org.br.dietamais.data.repositorio.AnamneseRepositorio(get(), get(), aoEnfileirar = { ambiente?.solicitarLeitura() }) }
     viewModel { org.br.dietamais.ui.nutri.anamnese.AnamneseNutriViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
-    viewModel { org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel(get(), sincronizar = { ambiente?.sincronizarAgora(); Unit },
+    viewModel { org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel(get(), sincronizar = { ambiente?.sincronizarEscritasAgora(); Unit },
         conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }
 

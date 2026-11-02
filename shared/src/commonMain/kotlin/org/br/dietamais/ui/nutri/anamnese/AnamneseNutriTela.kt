@@ -5,11 +5,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import org.br.dietamais.data.remoto.dto.ModeloQuestionarioResposta
@@ -18,6 +21,7 @@ import org.br.dietamais.data.remoto.dto.StatusQuestionario
 import org.br.dietamais.dominio.anamnese.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
+import org.br.dietamais.ui.comum.anamnese.ResultadosAnamnese
 import org.br.dietamais.ui.nutri.avaliacao.textoData
 import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
@@ -78,12 +82,23 @@ private fun CartaoQuestionario(q: QuestionarioResposta, aoLer: () -> Unit) {
 
 /** Respostas do paciente em leitura; perguntas condicionais que não apareceram para ele ficam de fora. */
 @Composable
-fun RespostasAnamneseTela(questionario: QuestionarioResposta, aoVoltar: () -> Unit) {
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+fun RespostasAnamneseTela(questionario: QuestionarioResposta, aoVoltar: () -> Unit, classe: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass) {
+    val ampla = classe.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && LocalDensity.current.fontScale <= 1.3f
+    val assuntos = questionario.blocos.flatMap { it.perguntas }.mapNotNull { assuntoAnamnese(it.codigo) }.toSet()
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.paddingCard)) {
+        ConteudoRespostasAnamnese(questionario, aoVoltar, !ampla, Modifier.weight(1f))
+        if (ampla && assuntos.isNotEmpty()) Column(Modifier.width(Dimens.larguraResultadosAnamnese).verticalScroll(rememberScrollState())) { ResultadosAnamnese(questionario.derivados, assuntos) }
+    }
+}
+
+@Composable
+private fun ConteudoRespostasAnamnese(questionario: QuestionarioResposta, aoVoltar: () -> Unit, mostrarResultados: Boolean, modifier: Modifier) {
+    Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         BotaoTexto(stringResource(Res.string.anamnese_voltar), aoVoltar)
         Text(questionario.nome, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
         ChipStatus(if (questionario.status == StatusQuestionario.RESPONDIDO) EstiloStatus.FEITA else EstiloStatus.INFO,
             texto = stringResource(if (questionario.status == StatusQuestionario.RESPONDIDO) Res.string.anamnese_status_respondido else Res.string.anamnese_status_pendente))
+        if (mostrarResultados) ResultadosAnamnese(questionario.derivados, questionario.blocos.flatMap { it.perguntas }.mapNotNull { assuntoAnamnese(it.codigo) }.toSet())
         passos(questionario.blocos, questionario.respostas).forEach { passo ->
             Text(passo.titulo, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             passo.perguntas.forEach { p ->

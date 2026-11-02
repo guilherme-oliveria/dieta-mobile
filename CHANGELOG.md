@@ -11,6 +11,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 - MOB-46 Publicação da web na VPS (depende do BE-32b).
 - Conferir com leitor de tela real (NVDA, VoiceOver, TalkBack), Safari e Firefox (G-14).
 
+## [1.4.0] — M10: crianças, exames e anamnese (em andamento)
+
+- MOB-61 Anamnese estruturada: campos agrupados, medidas de bebida em seletor, resultados de pressão arterial, álcool, sal, óleo e duração recebidos do servidor. Digitação válida salva parcial, resultados antigos desaparecem após edição e podem ser atualizados sem concluir. Editor preserva códigos; web incorpora o PUT sem sobrescrever novas entradas. Falhas de gravação mantêm o formulário e permitem nova tentativa. Layout amplo com resultados laterais e fonte 200% em uma coluna.
+
 ## [1.3.0] — M9: necessidades e protocolos (em andamento)
 
 - MOB-52 Passo "Necessidades" da avaliação (método do GET, nível de atividade, objetivo, gestante/lactante, protocolos das metas, dislipidêmico) com GEB, GET, VET, rosca e metas ao vivo; avaliações salvas reabrem com as escolhas. Textos antigos com `%%` corrigidos.

@@ -12,7 +12,7 @@ Estado conferido na `develop` em 01/11/2026 (plano de ação, linha de MOB-49 em
 | **MOB-56b** Editar o conteúdo do modelo e leitura offline | Edição do modelo reaproveita o planejador | `A-Planejador-Porcoes`, `T-Planejador-Porcoes` (edição); biblioteca em `A-Modelos-Biblioteca` (já feita, 56a) | Sem artboard próprio da edição: use o planejador com o título "Editar modelo" e sem paciente |
 | **MOB-58** Avaliação infantil e adolescente | Tudo | `A-Avaliacao-Infantil` | `plano-melhorias-planilhas.md` 3.3 (campos por faixa) |
 | **MOB-59** Curva de crescimento (nutri e responsável) | Tudo | `P-Curva-Crescimento` (usa `CurvaCrescimento`, já existe em `ui/comum/graficos`) | `graficos.md` item "Curva" |
-| **MOB-61** Anamnese estruturada (álcool, sal, óleo) | Tudo | `A-Anamnese-Estruturada` | `plano-melhorias-planilhas.md` 3.5 (fórmulas) |
+| **MOB-61** Anamnese estruturada (álcool, sal, óleo) | Implementado; resultados confirmados do servidor, adaptações documentadas | `A-Anamnese-Estruturada`, `P-Anamnese` | `../mob-61-anamnese.md`; contrato-anamnese.md |
 | Divergências D-03, D-05, D-06 | Série de gordura em Meus resultados, "Gerar PDF" no Resumo, botão "i" de explicação | `P-Resultados-Evolucao`, `A-Avaliacao-Resumo` | `divergencias.md` |
 
 ## Mobile já entregue (a tela conferida com o artboard)
