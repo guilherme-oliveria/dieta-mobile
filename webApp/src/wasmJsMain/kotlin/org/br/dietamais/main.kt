@@ -18,7 +18,7 @@ import org.br.dietamais.plataforma.IdentidadeDispositivo
 import org.br.dietamais.plataforma.receberLinkConvite
 
 /** Versão enviada em `X-App-Versao`; o `APP_VERSAO_MINIMA_WEB` do backend (vazio = sem bloqueio) compara com ela. */
-private const val VERSAO_WEB = "1.1.0"
+private const val VERSAO_WEB = "1.2.0"
 
 @OptIn(ExperimentalComposeUiApi::class, androidx.navigation.ExperimentalBrowserHistoryApi::class)
 fun main() {

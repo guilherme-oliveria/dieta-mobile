@@ -29,8 +29,8 @@ android {
         applicationId = "org.br.dietamais"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 10200
+        versionName = "1.2.0"
         val conviteHost = providers.gradleProperty("conviteHost").orElse("nao-configurado.invalid").get()
         require(conviteHost.matches(Regex("[a-zA-Z0-9.-]+"))) { "conviteHost deve conter apenas um domínio, sem esquema ou caminho" }
         manifestPlaceholders["conviteHost"] = conviteHost
