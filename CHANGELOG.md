@@ -2,7 +2,7 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [SemVer](https://semver.org/lang/pt-BR/). Cada versão é um marco de `docs/arquitetura/plano-de-execucao.md` (seção 3). Comum ao `dieta-backend` (mesmos números de versão).
 
-> **Estado em 29/10/2026:** ainda não existe tag nem `release/`; tudo abaixo está na `develop`. Veja "Para o Guilherme" no `CHANGELOG.md` do backend sobre como cortar as releases.
+> **M8 1.2.0 integrado à main em 03/11/2026.** A develop preserva as entregas posteriores de M9/M10 e recebe por PR o retorno das versões da release. Nenhuma tag manual; publicação nas lojas e implantação continuam pendentes.
 
 ## [Não lançado] — pendente
 
