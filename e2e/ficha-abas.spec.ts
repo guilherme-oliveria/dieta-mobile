@@ -3,7 +3,7 @@
 import { expect, test } from "@playwright/test";
 import { botao, clicar, entrar, NUTRI_EXEMPLO, tocar, veTexto } from "./apoio.ts";
 
-test("nutri abre Avaliações e Evolução na ficha e vê o conteúdo das abas", async ({ page }) => {
+test("nutri abre Avaliações, Evolução e uma nova avaliação sem erro de fuso", async ({ page }) => {
   await entrar(page, NUTRI_EXEMPLO);
   await expect(page.getByRole("heading", { name: "Início" })).toBeAttached({ timeout: 30_000 });
   await tocar(page, "Pacientes");
@@ -18,4 +18,10 @@ test("nutri abre Avaliações e Evolução na ficha e vê o conteúdo das abas",
 
   await tocar(page, "Avaliações");
   await expect(botao(page, "Nova avaliação")).toBeAttached();
+
+  const erros: string[] = [];
+  page.on("pageerror", (erro) => erros.push(erro.message));
+  await tocar(page, "Nova avaliação");
+  await expect(page.getByRole("heading", { name: "Nova avaliação", exact: true })).toBeAttached();
+  expect(erros).toEqual([]);
 });

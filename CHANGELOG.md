@@ -6,6 +6,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 
 ## [Não lançado] — pendente
 
+- MOB-58: carrega a base IANA de fusos no Wasm para abrir e calcular avaliações na web sem `IllegalTimeZoneException` em `America/Sao_Paulo`. Preserva o dia local, a virada do aniversário e o horário de verão histórico; inclui regressão no Chromium para a idade infantil e a prévia adulta.
 - **Web:** cadastro de nutri bloqueado (termos de uso não configurados no `main.kt`); árvore de acessibilidade desatualizada depois que folha ou diálogo fecha; autofill de senha não funciona (campos do Compose não são `<input>`). Detalhes e medições em `docs/arquitetura/web.md`.
 - MOB-18b Ações Comi/Troquei/Pulei na notificação, MOB-27b push no iOS, MOB-29b escrita offline de dietas, listas e modelos, MOB-31b pacotes do desktop no CI, MOB-33b envio da logo, MOB-35a beta interno (assinatura de release, Play Console, TestFlight).
 - MOB-46 Publicação da web na VPS (depende do BE-32b).
