@@ -1215,4 +1215,19 @@
     <string name="inf_erro_altura">Informe de 20 a 250 cm, com no máximo uma casa decimal.</string>
     <string name="inf_erro_nascer">Informe de 0,001 a 20 kg, com no máximo três casas decimais.</string>
     <string name="inf_erro_fator">Informe um fator positivo menor que 10, com no máximo três casas decimais.</string>
+    <string name="crescimento_titulo">Crescimento</string>
+    <string name="crescimento_escolher">Escolher avaliação</string>
+    <string name="crescimento_abrir">Ver crescimento</string>
+    <string name="crescimento_voltar">Voltar às avaliações</string>
+    <string name="crescimento_vazio">Ainda não há resultados de crescimento confirmados.</string>
+    <string name="crescimento_data">Avaliação de %1$s · escolher data</string>
+    <string name="crescimento_meses">meses</string>
+    <string name="crescimento_medida">Medida confirmada</string>
+    <string name="crescimento_ponto">%1$d meses · %2$s %3$s</string>
+    <string name="crescimento_legenda">Verde contínuo: P50 · Cinza tracejado: demais cortes · Azul: medidas confirmadas; círculo maior: avaliação selecionada.</string>
+    <string name="crescimento_sem_cortes">Referência ausente ou inconsistente. A medida é exibida sem faixa de referência.</string>
+    <string name="crescimento_limites">São mostrados apenas os cortes congelados nas avaliações disponíveis. Meses sem referência não são preenchidos. A idade da referência anual pode diferir da idade da medida.</string>
+    <string name="crescimento_palavras">Em palavras</string>
+    <string name="crescimento_intervalo">O intervalo é o confirmado na avaliação. Não estimamos um percentil exato entre os cortes. Converse com sua nutri sobre o acompanhamento.</string>
+    <string name="crescimento_versao">Versão da referência: %1$s</string>
 </resources>

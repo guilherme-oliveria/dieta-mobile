@@ -82,7 +82,7 @@ Desenhos: DES-08, DES-09 e DES-10, feitos em 01/11/2026 (ver [telas.md](telas.md
 1. **MOB-54** planejador por porções: `A-Planejador-Porcoes` e `T-Planejador-Porcoes`; usa `GraficoRosca` com `anelMeta`, `GraficoBarras` e a barra de metas. Antes, corrigir D-01 (paleta).
 2. **MOB-55** paciente: rosca de macros e lista de substituição para consulta. **Sem artboard ainda:** pedir ao Design antes.
 3. **MOB-56 e MOB-57** modelos: `A-Modelos-Biblioteca` e `A-Modelo-Aplicar`.
-4. **MOB-58** criança e adolescente: `A-Avaliacao-Infantil` implementado com entradas por idade e resultados confirmados do servidor; divergências registradas em `divergencias.md`. **MOB-59** continua pendente: `P-Curva-Crescimento` (`CurvaCrescimento`).
+4. **MOB-58** criança e adolescente: `A-Avaliacao-Infantil` implementado com entradas por idade e resultados confirmados do servidor; divergências registradas em `divergencias.md`. **MOB-59** implementado com snapshots congelados e cobertura explícita em `divergencias.md`: `P-Curva-Crescimento` (`CurvaCrescimento`).
 5. **MOB-60** exames: `A-Exames-Nutri` e `P-Exames` (`ReguaFaixas`).
 6. **MOB-61** anamnese estruturada: `A-Anamnese-Estruturada`.
 7. Correções D-02 a D-06 de [divergencias.md](divergencias.md) nas telas já entregues (MOB-50 a MOB-53).
