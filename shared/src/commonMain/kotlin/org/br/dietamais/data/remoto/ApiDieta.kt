@@ -162,6 +162,11 @@ class ApiDieta(config: Config, versaoApp: String, plataforma: Plataforma, cofre:
         verificarErro(requisitar(HttpMethod.Delete, caminho))
     }
 
+    /** Apaga com `If-Match`: o servidor recusa com 409 se o registro mudou (ex.: modelo de dieta, BE-52). */
+    suspend fun excluirComVersao(caminho: String, versao: Long) {
+        verificarErro(requisitar(HttpMethod.Delete, caminho, versao = versao))
+    }
+
     suspend fun sair() = controle.encerrar { tokens ->
         if (web && tokens != null) {
             verificarErro(requisitar(HttpMethod.Post, "auth/logout", null, novoIdLocal(), publica = true))

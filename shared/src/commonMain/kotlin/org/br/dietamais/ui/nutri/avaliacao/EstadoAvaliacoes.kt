@@ -5,6 +5,7 @@ import org.br.dietamais.dominio.avaliacao.ErroMedida
 import kotlinx.datetime.LocalDate
 import org.br.dietamais.data.remoto.dto.CompartilhamentoAvaliacaoDto
 import org.br.dietamais.data.remoto.dto.Sexo
+import org.br.dietamais.dominio.avaliacao.EscolhasEnergia
 import org.br.dietamais.dominio.avaliacao.MedidaAvaliacao
 import org.br.dietamais.dominio.avaliacao.PassoAvaliacao
 import org.br.dietamais.dominio.calculos.ProtocoloDobras
@@ -21,14 +22,17 @@ data class FormularioAvaliacao(val id: Uuid? = null, val versao: Long? = null, v
     val passo: PassoAvaliacao = PassoAvaliacao.MEDIDAS, val protocoloDobras: ProtocoloDobras = ProtocoloDobras.SETE,
     val protocoloMassa: ProtocoloMassa = ProtocoloMassa.MAGRO, val compartilhamento: CompartilhamentoAvaliacaoDto = CompartilhamentoAvaliacaoDto(),
     /** Parecer ainda não mexido pela nutri: ao chegar no resumo, entra o texto gerado, que ela pode editar. */
-    val parecerPreenchidoAuto: Boolean = false)
+    val parecerPreenchidoAuto: Boolean = false, val energia: EscolhasEnergia = EscolhasEnergia(),
+    val infantilAtiva: Boolean = false, val infantil: org.br.dietamais.dominio.avaliacao.FormularioInfantil = org.br.dietamais.dominio.avaliacao.FormularioInfantil(),
+    val resultadosInfantis: org.br.dietamais.data.remoto.dto.ResultadosInfantisAvaliacaoDto? = null, val fichaAlterada: Boolean = false, val idadeMeses: Int? = null)
 
 /** `sexo` e `nascimento` do paciente só alimentam a prévia local; o servidor recalcula ao salvar (RN-CAL-01). */
 data class EstadoAvaliacoes(val pacienteId: Uuid? = null, val sexo: Sexo? = null, val nascimento: LocalDate? = null, val somenteLeitura: Boolean = false, val itens: List<AvaliacaoResposta> = emptyList(), val atualizando: Boolean = false,
     val enviando: Boolean = false, val semConexao: Boolean = false, val formulario: FormularioAvaliacao? = null,
     val errosMedidas: Map<MedidaAvaliacao, ErroMedida> = emptyMap(), val justificativaFaltando: Boolean = false,
     val selecionadas: List<Uuid> = emptyList(), val comparando: Boolean = false, val erro: MensagemAvaliacao? = null,
-    val aviso: MensagemAvaliacao? = null) {
+    val aviso: MensagemAvaliacao? = null,
+    val errosInfantis: Map<org.br.dietamais.dominio.avaliacao.CampoInfantil, ErroMedida> = emptyMap()) {
     val comparacao: Pair<AvaliacaoResposta, AvaliacaoResposta>? get() {
         val a = itens.firstOrNull { it.id == selecionadas.getOrNull(0) } ?: return null
         val b = itens.firstOrNull { it.id == selecionadas.getOrNull(1) } ?: return null

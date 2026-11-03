@@ -155,4 +155,5 @@ fun textoMensagemDieta(mensagem: MensagemDieta): String = stringResource(when (m
     MensagemDieta.SALVA -> Res.string.dieta_salva
     MensagemDieta.PUBLICADA -> Res.string.dieta_publicada
     MensagemDieta.DUPLICADA -> Res.string.dieta_duplicada
+    MensagemDieta.EDITAR_NO_PLANEJADOR -> Res.string.dieta_editar_no_planejador
 })

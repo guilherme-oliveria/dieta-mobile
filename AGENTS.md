@@ -23,6 +23,8 @@ Os arquivos `visao-geral`, `regras-de-negocio`, `integracao` e `funcionalidades-
 
 Telas e componentes seguem `docs/design/`: tokens e componentes em `docs/design/componentes.md`, mapa tela→pacote em `docs/design/telas.md`, ordem de implementação em `docs/design/plano-de-acao-ui.md`. Antes de criar uma tela, confira o canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC; sem acesso ao claude.ai (Codex e outros), leia a cópia dos artboards em `docs/design/artboards/`.
 
+**Regra do design:** tela nova só entra com artboard aprovado no canvas (antes ou junto). Siga `docs/design/padrao-ui.md` (padrão visual e de usabilidade) e `docs/design/graficos.md`; no PR cite o artboard e liste as divergências. Se a tela não tem artboard (veja `telas.md`), peça ao agente de Design e Usabilidade pelo coordenador e siga a descrição e os componentes enquanto isso. Divergências conhecidas do app: `docs/design/divergencias.md`.
+
 Cores do tema já estão em `ui/theme` (verde `#2E7D4F`, fundo `#F5F6F1`, laranja `#C2551F` só para alertas; fonte Plus Jakarta Sans).
 
 ## Stack

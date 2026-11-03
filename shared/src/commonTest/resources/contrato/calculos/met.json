@@ -1,0 +1,217 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores do GET por MET (BE-44, MOB-52). Mesmo arquivo nos dois repositórios (RN-CAL-06). Esperados calculados por script independente do código a partir da aba MET da planilha (seção 3.2 do plano). A tabela de 113 atividades fica em referencia-met.csv (backend); o mobile recebe a lista pela API.",
+ "tolerancia": {
+  "kcal": 0.01,
+  "met": 0.0001
+ },
+ "arredondamento": "kcal e horas com 2 casas em HALF_UP; intermediários sem arredondar.",
+ "casos": [
+  {
+   "id": "MET-alpinismo",
+   "descricao": "MET da atividade (VLOOKUP na tabela M4:N116)",
+   "origem": "aba MET",
+   "funcao": "metDaAtividade",
+   "entrada": {
+    "codigo": "alpinismo"
+   },
+   "esperado": 6.9
+  },
+  {
+   "id": "MET-waterpolo",
+   "descricao": "MET da atividade (VLOOKUP na tabela M4:N116)",
+   "origem": "aba MET",
+   "funcao": "metDaAtividade",
+   "entrada": {
+    "codigo": "waterpolo"
+   },
+   "esperado": 10.0
+  },
+  {
+   "id": "MET-caminhada_3_2_km_h",
+   "descricao": "MET da atividade (VLOOKUP na tabela M4:N116)",
+   "origem": "aba MET",
+   "funcao": "metDaAtividade",
+   "entrada": {
+    "codigo": "caminhada_3_2_km_h"
+   },
+   "esperado": 2.5
+  },
+  {
+   "id": "MET-caminhada_3_2_km_h_2",
+   "descricao": "MET da atividade (VLOOKUP na tabela M4:N116)",
+   "origem": "aba MET",
+   "funcao": "metDaAtividade",
+   "entrada": {
+    "codigo": "caminhada_3_2_km_h_2"
+   },
+   "esperado": 2.5
+  },
+  {
+   "id": "MET-bicicleta_carga_moderada",
+   "descricao": "MET da atividade (VLOOKUP na tabela M4:N116)",
+   "origem": "aba MET",
+   "funcao": "metDaAtividade",
+   "entrada": {
+    "codigo": "bicicleta_carga_moderada"
+   },
+   "esperado": 5.5
+  },
+  {
+   "id": "MET-trilha",
+   "descricao": "MET da atividade (VLOOKUP na tabela M4:N116)",
+   "origem": "aba MET",
+   "funcao": "metDaAtividade",
+   "entrada": {
+    "codigo": "trilha"
+   },
+   "esperado": 6.0
+  },
+  {
+   "id": "GET-MET-homem-2-ativ",
+   "descricao": "GET por MET",
+   "origem": "aba MET",
+   "funcao": "getPorMet",
+   "entrada": {
+    "sexo": "masculino",
+    "pesoKg": 102.5,
+    "massaMagraKg": 75.34,
+    "horasSono": 8,
+    "horasTrabalho": 8,
+    "intensidadeTrabalho": "MODERADO",
+    "atividades": [
+     {
+      "codigo": "alpinismo",
+      "minutos": 60
+     },
+     {
+      "codigo": "waterpolo",
+      "minutos": 30
+     }
+    ]
+   },
+   "esperado": {
+    "gebDia": 1997.34,
+    "gebHora": 83.22,
+    "gastoSono": 599.2,
+    "gastoTrabalho": 1185.09,
+    "gastoAtividades": [
+     707.25,
+     512.5
+    ],
+    "horasRotina": 6.5,
+    "gastoRotina": 703.23,
+    "get": 3707.28
+   }
+  },
+  {
+   "id": "GET-MET-mulher-1-ativ",
+   "descricao": "GET por MET",
+   "origem": "aba MET",
+   "funcao": "getPorMet",
+   "entrada": {
+    "sexo": "feminino",
+    "pesoKg": 62,
+    "massaMagraKg": 45.2,
+    "horasSono": 7,
+    "horasTrabalho": 6,
+    "intensidadeTrabalho": "LEVE",
+    "atividades": [
+     {
+      "codigo": "caminhada_5_63_km_h_media",
+      "minutos": 45
+     }
+    ]
+   },
+   "esperado": {
+    "gebDia": 1346.32,
+    "gebHora": 56.1,
+    "gastoSono": 353.41,
+    "gastoTrabalho": 525.06,
+    "gastoAtividades": [
+     176.7
+    ],
+    "horasRotina": 10.25,
+    "gastoRotina": 747.49,
+    "get": 1802.66
+   }
+  },
+  {
+   "id": "GET-MET-mulher-5-ativ",
+   "descricao": "GET por MET",
+   "origem": "aba MET",
+   "funcao": "getPorMet",
+   "entrada": {
+    "sexo": "feminino",
+    "pesoKg": 70.4,
+    "massaMagraKg": 50.1,
+    "horasSono": 7.5,
+    "horasTrabalho": 4,
+    "intensidadeTrabalho": "INTENSO",
+    "atividades": [
+     {
+      "codigo": "alpinismo",
+      "minutos": 30
+     },
+     {
+      "codigo": "trilha",
+      "minutos": 40
+     },
+     {
+      "codigo": "waterpolo",
+      "minutos": 20
+     },
+     {
+      "codigo": "bicicleta_carga_moderada",
+      "minutos": 50
+     },
+     {
+      "codigo": "caminhada_3_2_km_h",
+      "minutos": 25
+     }
+    ]
+   },
+   "esperado": {
+    "gebDia": 1452.16,
+    "gebHora": 60.51,
+    "gastoSono": 408.42,
+    "gastoTrabalho": 440.49,
+    "gastoAtividades": [
+     242.88,
+     281.6,
+     234.67,
+     322.67,
+     73.33
+    ],
+    "horasRotina": 9.75,
+    "gastoRotina": 766.92,
+    "get": 2770.98
+   }
+  },
+  {
+   "id": "GET-MET-homem-sem-ativ",
+   "descricao": "GET por MET",
+   "origem": "aba MET",
+   "funcao": "getPorMet",
+   "entrada": {
+    "sexo": "masculino",
+    "pesoKg": 80,
+    "massaMagraKg": 62.5,
+    "horasSono": 8,
+    "horasTrabalho": 9,
+    "intensidadeTrabalho": "INTENSO",
+    "atividades": []
+   },
+   "esperado": {
+    "gebDia": 1720.0,
+    "gebHora": 71.67,
+    "gastoSono": 516.0,
+    "gastoTrabalho": 1354.5,
+    "gastoAtividades": [],
+    "horasRotina": 7.0,
+    "gastoRotina": 652.17,
+    "get": 2522.67
+   }
+  }
+ ]
+}

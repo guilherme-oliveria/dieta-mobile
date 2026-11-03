@@ -2,7 +2,7 @@
 
 Esta pasta é a fonte de verdade de UI do app `dieta-mobile` (Android, iOS e desktop, um único app com perfis nutri e paciente). Vale para pessoas, para o Claude e para o Codex.
 
-Canvas de referência (13 telas, celular 390×844 e tablet 1180×820): https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC
+Canvas de referência (33 artboards, celular 390×844, tablet 1180×820 e PDF A4): https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC
 
 | Arquivo | Para que serve |
 | --- | --- |
@@ -11,6 +11,9 @@ Canvas de referência (13 telas, celular 390×844 e tablet 1180×820): https://c
 | [base-visual.md](base-visual.md) | Base implementada em MOB-02: uso, previews, testes, evidências e limites de validação |
 | [shell-adaptativo.md](shell-adaptativo.md) | Navegação tipada e shell de MOB-03: perfis, adaptação, placeholders e evidências |
 | [plataformas.md](plataformas.md) | Layout adaptativo (WindowSizeClass) e diferenças de Android, iOS e desktop |
+| [padrao-ui.md](padrao-ui.md) | **Padrão visual e de usabilidade**: regra "artboard antes da tela", cores de semáforo e gráficos, passos, estados, textos, acessibilidade, PDF e checklist do PR de tela |
+| [graficos.md](graficos.md) | Qual gráfico usar (rosca, régua, medidor, linha, barras, curva), regras de cor, rótulo e tabela alternativa |
+| [divergencias.md](divergencias.md) | O que o app faz diferente do padrão e quem corrige |
 | [telas.md](telas.md) | Mapa tela → pacote Kotlin → artboard do canvas, com status (desenhada ou faltando) |
 | [artboards/](artboards/README.md) | Cópia do HTML de cada artboard do canvas, para quem não acessa o claude.ai |
 | [plano-de-acao-ui.md](plano-de-acao-ui.md) | Ordem de implementação das telas em fases, com critério de pronto de cada tarefa |
@@ -19,6 +22,7 @@ Arquitetura, regras de negócio e contrato com a API ficam em `docs/arquitetura/
 
 ## Regras rápidas para quem implementa
 
+0. **Tela nova só entra com artboard aprovado** (antes ou junto). Veja [padrao-ui.md](padrao-ui.md#1-regra-de-ouro-artboard-antes-da-tela).
 1. Toda tela usa `DietaTheme` e os tokens de [componentes.md](componentes.md). Nada de cor ou tamanho solto no código.
 2. Antes de criar uma tela, ache-a em [telas.md](telas.md). Se ela está "desenhada", siga o artboard; se está "faltando", siga a descrição de lá e os componentes existentes.
 3. Toda tela tem os quatro estados: carregando, vazio, erro e conteúdo. E, quando lê dados locais, o estado "sem internet".

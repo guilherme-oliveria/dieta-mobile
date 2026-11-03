@@ -94,6 +94,7 @@ fun textoVariacao(delta: Double): String = when {
 fun rotuloPasso(passo: PassoAvaliacao): StringResource = when (passo) {
     PassoAvaliacao.MEDIDAS -> Res.string.avaliacao_passo_medidas
     PassoAvaliacao.COMPOSICAO -> Res.string.avaliacao_passo_composicao
+    PassoAvaliacao.NECESSIDADES -> Res.string.avaliacao_passo_necessidades
     PassoAvaliacao.RESUMO -> Res.string.avaliacao_passo_resumo
 }
 

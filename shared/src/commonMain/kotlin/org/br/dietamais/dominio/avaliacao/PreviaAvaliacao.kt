@@ -17,7 +17,7 @@ fun previaAvaliacao(valores: Map<MedidaAvaliacao, String>, sexo: SexoDto?, nasci
     fun v(m: MedidaAvaliacao) = lerDecimal(valores[m].orEmpty())?.takeIf { it in m.min..m.max }
     val peso = v(MedidaAvaliacao.PESO); val estatura = v(MedidaAvaliacao.ESTATURA)
     if (peso == null || estatura == null) return PreviaAvaliacao(null, null, listOf(FaltaDado.PESO_ESTATURA))
-    val idade = nascimento?.let { CalculosAdulto.idadeEmAnos(dia.toEpochDays() - it.toEpochDays()) }?.takeIf { it >= 0 }
+    val idade = idadeMesesCompletos(nascimento, dia)?.div(12)
     if (idade == null) faltas += FaltaDado.NASCIMENTO
     val sexoCalculo = when (sexo) { SexoDto.MASCULINO -> Sexo.MASCULINO; SexoDto.FEMININO -> Sexo.FEMININO; else -> null }
     if (sexoCalculo == null) faltas += FaltaDado.SEXO
@@ -41,14 +41,14 @@ fun previaAvaliacao(valores: Map<MedidaAvaliacao, String>, sexo: SexoDto?, nasci
 fun medidasParaRepetir(ultima: org.br.dietamais.data.remoto.dto.AvaliacaoResposta): Map<MedidaAvaliacao, String> =
     valoresDe(ultima).filterKeys { it.secao != SecaoAvaliacao.COMPOSICAO }
 
-/** Passos do formulário (a "Necessidades" entra entre o 2 e o 3 no MOB-52). */
-enum class PassoAvaliacao { MEDIDAS, COMPOSICAO, RESUMO }
+/** Passos do formulário: Medidas, Composição, Necessidades (energia e metas, MOB-52) e Resumo. */
+enum class PassoAvaliacao { MEDIDAS, COMPOSICAO, NECESSIDADES, RESUMO }
 
 /** Medidas que o passo exige antes de avançar: só peso e estatura, no passo 1. */
 fun medidasDoPasso(passo: PassoAvaliacao): List<MedidaAvaliacao> = when (passo) {
     PassoAvaliacao.MEDIDAS -> MedidaAvaliacao.entries.filter { it.secao != SecaoAvaliacao.COMPOSICAO }
     PassoAvaliacao.COMPOSICAO -> MedidaAvaliacao.entries.filter { it.secao == SecaoAvaliacao.COMPOSICAO }
-    PassoAvaliacao.RESUMO -> emptyList()
+    PassoAvaliacao.NECESSIDADES, PassoAvaliacao.RESUMO -> emptyList()
 }
 
 /** Dobras que o protocolo usa: 7 dobras todas; 3 dobras por sexo (Jackson e Pollock). Sem sexo, mostra as 7 para a nutri não perder campo. */

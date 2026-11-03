@@ -41,9 +41,13 @@ class MontadorDietaViewModel(private val dietas: PortaDietas, private val alimen
         atual.update { it.copy(rascunho = RascunhoDieta(), erro = null, aviso = null, errosCampos = emptyMap()) }; recalcular()
     }
     fun abrir(dieta: DietaResposta) {
+        // Dieta por porções do grupo, à vontade ou texto livre só se edita no planejador por porções (MOB-54); aqui salvar apagaria esses itens.
+        if (dieta.refeicoes.any { r -> r.ehAlternativa || r.itens.any { it.alimentoId == null } }) {
+            atual.update { it.copy(erro = MensagemDieta.EDITAR_NO_PLANEJADOR) }; return
+        }
         val rascunho = RascunhoDieta(dieta.id, dieta.versao, dieta.status, dieta.titulo, dieta.orientacao.orEmpty(),
             dieta.refeicoes.sortedBy { it.ordem }.map { r -> RefeicaoEdicao(nome = r.nome, horario = r.horario.paraTexto(),
-                itens = r.itens.map { ItemEdicao(alimentoId = it.alimentoId, porcoes = it.porcoes.paraTexto()) }) })
+                itens = r.itens.map { ItemEdicao(alimentoId = it.alimentoId!!, porcoes = it.porcoes!!.paraTexto()) }) })
         atual.update { it.copy(rascunho = rascunho, erro = null, aviso = null, errosCampos = emptyMap(), seletorRefeicao = null) }; recalcular()
     }
     fun fechar() { atual.update { it.copy(rascunho = null, seletorRefeicao = null, confirmarPublicar = false, erro = null, errosCampos = emptyMap()) }; if (atual.value.pacienteId != null) recarregar() }

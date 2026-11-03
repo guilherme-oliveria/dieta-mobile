@@ -21,7 +21,10 @@ fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaAvaliacoes> { org.br.dietamais.data.repositorio.AvaliacaoRepositorio(get(), get(), get()) }
     single<org.br.dietamais.data.repositorio.PortaEvolucao> { org.br.dietamais.data.repositorio.EvolucaoRepositorio(get()) }
     viewModel { org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel(get(), getOrNull<org.br.dietamais.data.repositorio.PortaRotina>()) }
-    viewModel { org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    viewModel { org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL },
+        protocolosPadrao = getOrNull<org.br.dietamais.data.repositorio.PortaProtocolosNutri>()?.let { org.br.dietamais.ui.nutri.protocolos.protocolosPadraoDe(it) }) }
+    single<org.br.dietamais.data.repositorio.PortaExames> { org.br.dietamais.data.repositorio.ExamesRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.avaliacao.ExamesNutriViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     single<org.br.dietamais.data.repositorio.PortaConsultas> { org.br.dietamais.data.repositorio.ConsultaRepositorio(get(), get(), get()) }
     viewModel { org.br.dietamais.ui.nutri.agenda.AgendaViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     viewModel { org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel(get()) }
@@ -31,9 +34,9 @@ fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
         aoNavegar = org.br.dietamais.app.SolicitacoesNavegacao::pedir) }
     single<org.br.dietamais.data.repositorio.PortaPendencias> { org.br.dietamais.data.repositorio.PendenciasRepositorio(get(), aoMudar = { ambiente?.solicitarLeitura() }) }
     viewModel { org.br.dietamais.ui.pendencias.PendenciasViewModel(get()) }
-    single<org.br.dietamais.data.repositorio.PortaAnamnese> { org.br.dietamais.data.repositorio.AnamneseRepositorio(get(), get()) }
+    single<org.br.dietamais.data.repositorio.PortaAnamnese> { org.br.dietamais.data.repositorio.AnamneseRepositorio(get(), get(), aoEnfileirar = { ambiente?.solicitarLeitura() }) }
     viewModel { org.br.dietamais.ui.nutri.anamnese.AnamneseNutriViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
-    viewModel { org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel(get(), sincronizar = { ambiente?.sincronizarAgora(); Unit },
+    viewModel { org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel(get(), sincronizar = { ambiente?.sincronizarEscritasAgora(); Unit },
         conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }
 
@@ -45,6 +48,14 @@ fun moduloListaPaciente(ambiente: AmbienteDieta?) = module {
 fun moduloDietas(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaDietas> { org.br.dietamais.data.repositorio.DietasRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>(), get<org.br.dietamais.data.local.BancoDieta>()) }
     viewModel { org.br.dietamais.ui.nutri.dieta.MontadorDietaViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+}
+
+fun moduloPorcoes(ambiente: AmbienteDieta?) = module {
+    single<org.br.dietamais.data.repositorio.PortaPorcoes> { org.br.dietamais.data.repositorio.PorcoesRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    single<org.br.dietamais.data.repositorio.PortaModelosDieta> { org.br.dietamais.data.repositorio.ModelosDietaRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>(), get<org.br.dietamais.data.local.BancoDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.ModelosDietaViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.AplicarModeloViewModel(get(), get()) }
 }
 
 fun moduloDietaPaciente(ambiente: AmbienteDieta?) = module {
@@ -76,6 +87,8 @@ fun moduloLembretes(notificacao: org.br.dietamais.plataforma.NotificacaoLocal?) 
 fun moduloPerfilNutri(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaPerfilNutri> { org.br.dietamais.data.repositorio.PerfilNutriRepositorio(get()) }
     viewModel { org.br.dietamais.ui.nutri.assinatura.PerfilNutriViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    single<org.br.dietamais.data.repositorio.PortaProtocolosNutri> { org.br.dietamais.data.repositorio.ProtocolosNutriRepositorio(get()) }
+    viewModel { org.br.dietamais.ui.nutri.protocolos.ProtocolosNutriViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     single<org.br.dietamais.data.repositorio.PortaPrivacidade> { org.br.dietamais.data.repositorio.PrivacidadeRepositorio(get()) }
     viewModel { p -> org.br.dietamais.ui.privacidade.PrivacidadeViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }, exportacaoDisponivel = p.get()) }
     single<org.br.dietamais.data.repositorio.PortaPdf> { org.br.dietamais.data.repositorio.PdfRepositorio(get()) }

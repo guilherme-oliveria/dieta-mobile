@@ -69,6 +69,10 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 - **RN-DIE-07** Paciente com várias nutris escolhe a "dieta em uso"; padrão é a publicada mais recente `[SUPOSIÇÃO S9]`. Lembretes e lista de compras usam a dieta em uso.
 - **RN-DIE-08** Publicar uma dieta gera push "Nova dieta" ao paciente (se o vínculo está `ATIVO`) e atualiza o feed .ics.
 - **RN-DIE-09** Orientação geral (texto padrão da nutri, ex.: hidratação 35 ml/kg) é anexada à dieta na publicação, também congelada.
+- **RN-DIE-10** A porção de cada grupo (Pão 70 ou 150 kcal etc.) é escolhida **uma vez por dieta** e vale para todos os itens por grupo; cada item traz exatamente uma origem (alimento, grupo ou produto). Publicar congela as porções escolhidas junto com a dieta (RN-DIE-03).
+- **RN-DIE-11** Refeições `ALTERNATIVA` (ex.: lanche 2ª opção) mostram o próprio total e a diferença para a refeição que substituem, e **não** entram no total do dia.
+- **RN-DIE-12** Item "à vontade" não tem quantidade nem kcal; o rodapé ("Além das refeições acima…") é texto da nutri, congelado na publicação.
+- **RN-DIE-13** Total de micronutriente soma só os itens que informam o nutriente; os demais ficam listados em `incompleto`. Nunca vira zero por falta de dado (RN-CAL-04). Os valores por porção dos grupos são as médias da planilha da Nut. Luciana e são provisórios; o app e o PDF citam a fonte.
 
 ## Substituição pelo paciente (RN-SUB)
 
@@ -88,7 +92,7 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 
 - **RN-AVA-01** Avaliação = data/hora + peso, estatura, 9 perímetros, 7 dobras, resultados de composição (% gordura, peso gordo, peso magro) e parecer em texto. Campos de medida são opcionais, exceto peso e estatura.
 - **RN-AVA-02** No MVP o backend **calcula só o IMC** (`peso / estatura²`, 2 casas) e a classificação OMS. % gordura e afins são digitados pela nutri. Fórmulas da planilha (7 dobras, Pollock e Wilmore) são P2 e devem bater com a planilha em testes.
-- **RN-AVA-03** Limites de sanidade: peso 20–400 kg, estatura 0,5–2,5 m, dobras 1–80 mm, perímetros 10–250 cm. Fora disso: `VALOR_FORA_DO_INTERVALO`.
+- **RN-AVA-03** Limites de sanidade: para adultos e fichas sem nascimento válido, peso 20–400 kg, estatura 0,5–2,5 m, dobras 1–80 mm, perímetros 10–250 cm. Para menores de 18 anos, pela ficha e data da avaliação: peso 0,1–400 kg, estatura 0,2–2,5 m, dobras 0,1–80 mm, perímetros 1–250 cm. Estatura pediátrica aceita três casas decimais, as demais medidas duas. São limites técnicos, não faixas de normalidade. Fora disso: `VALOR_FORA_DO_INTERVALO`.
 - **RN-AVA-04** Avaliação pode ser editada pela nutri por 30 dias; depois só com justificativa registrada no log. `[SUPOSIÇÃO]`
 - **RN-AVA-05** O paciente vê as avaliações que a nutri marcar como "compartilhada" (padrão: sim) e o gráfico de evolução.
 
@@ -99,14 +103,17 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substituem o "só IMC" da RN-AVA-02 à medida que BE-40 e seguintes entram.
 
 - **RN-CAL-01** O backend calcula e grava todos os resultados derivados (composição, classificações, GEB/GET, VET, metas, texto-resumo). O cliente mostra prévia com as mesmas fórmulas; o valor gravado é o do backend (como RN-DIE-05).
-- **RN-CAL-02** A faixa etária da avaliação é decidida pela idade na data: 0–9, 10–17, 18–59, 60+.
+- **RN-CAL-02** A faixa etária da avaliação é decidida pela idade completa na data local (America/Sao_Paulo): 0–9, 10–17, 18–59, 60+. As curvas infantis usam meses completos; aniversários mudam de faixa na própria data.
 - **RN-CAL-03** Cada avaliação grava o protocolo e a `versaoReferencia` usados. Recalcular só acontece se a nutri pedir. Protocolo desconhecido: `422 PROTOCOLO_INVALIDO`.
 - **RN-CAL-04** Resultado que depende de dado ausente fica nulo, com o motivo (ex.: `FALTA_PUNHO`), nunca zero. `DADO_INSUFICIENTE_CALCULO` só quando a nutri pede um cálculo explícito sem os dados.
 - **RN-CAL-05** Peso para "por kg" na dieta: adulto com IMC ≥ 30 usa o peso ajustado `(P − Pideal) × 0,25 + Pideal`, com `Pideal = E² × 21,7`.
 - **RN-CAL-06** Vetores de teste da planilha (`src/test/resources/contrato/calculos/`) são contrato: mudança de fórmula exige mudar o vetor nos dois repositórios.
-- **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404).
-- **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho.
+- **RN-CAL-07** Total da dieta por porções = Σ (porções × perfil da porção do grupo) + Σ (gramas ÷ 100 × perfil do produto); a soma usa os perfis sem arredondar e grava 2 casas em HALF_UP. Os vetores `contrato/calculos/dieta-porcoes.json` são contrato nos dois repositórios.
+- **RN-CAL-08** Avaliação infantil/adolescente congela os cortes OMS/Frisancho e os resultados BE-55a no servidor. Percentil e Z são intervalos entre cortes, sem interpolação ou extrapolação. Referência ausente ou inconsistente não gera classificação; G-16 preserva AMBc masculino de quatro anos sem classificá-lo. Entradas opcionais ausentes não impedem outros cálculos. Leitura não recalcula histórico. Contrato e compartilhamento em [contrato-avaliacao-infantil.md](contrato-avaliacao-infantil.md).
+- **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404). Editar ou apagar um modelo do sistema é `403 ACESSO_NEGADO`; ela o copia para editar.
+- **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho. As porções são escaladas pelo alvo de energia do paciente (arredondando para 0,5, mínimo 0,5).
 - **RN-MOD-03** Restrição do modelo vira restrição do paciente na dieta publicada e filtra a lista dele no snapshot (RN-DIE-03).
+- **RN-EXA-01** A nutri lança exames na avaliação (`exames`: `codigo` e `valor` ou `texto`, `condicao` quando a referência depende de fase). O código precisa existir no catálogo da faixa etária da ficha na data da avaliação (criança, adolescente ou adulto; idoso usa adulto), sem repetir. Numérico leva `valor`, qualitativo leva `texto`; `condicao` é uma das do exame. A classificação (`rotulo` ou `motivo`) é do servidor, gravada no lançamento; sem nascimento da ficha não há exame (`FORMATO_INVALIDO`). Edição sem a lista mantém os exames e os reclassifica; lista vazia limpa.
 - **RN-RES-01** O paciente vê resultados por seção conforme o compartilhamento da nutri; exames são não compartilhados por padrão.
 - **RN-RES-02** Textos para o paciente não usam siglas clínicas.
 
@@ -117,6 +124,7 @@ Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substitue
 - **RN-ANA-03** A nutri envia um questionário ao paciente; o paciente responde no app (pode salvar parcial). Ao enviar, as respostas ficam imutáveis e a nutri é notificada.
 - **RN-ANA-04** As perguntas são congeladas no envio (mudar o modelo não muda questionários já enviados).
 - **RN-ANA-05** Horários de rotina das respostas podem pré-preencher os horários das refeições de um novo rascunho de dieta.
+- **RN-ANA-06** Códigos opcionais estáveis identificam as entradas de PA, álcool, sal, óleo e duração. O servidor valida tipo/unidade e calcula resultados apenas com todas as entradas visíveis, inclusive na gravação parcial por sync. Resultado ausente não vale zero. Na conclusão, os derivados são congelados com as respostas; os modelos antigos/editados são preservados ao disponibilizar “Anamnese completa”. Contrato em `contrato-anamnese.md`.
 
 ## Agenda de consultas (RN-AGE)
 

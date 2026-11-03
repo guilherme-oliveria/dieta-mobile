@@ -61,7 +61,7 @@ Formato **RFC 9457 Problem Details** (`application/problem+json`), já nativo no
 - Os clientes decidem o que mostrar **pelo `codigo`**, nunca pelo texto.
 - `400` JSON inválido · `401` sem token/expirado (cliente tenta refresh uma vez) · `403` sem permissão · `404` não existe **ou não é seu** (não revelar existência) · `409` conflito de versão/duplicado · `422` regra de negócio · `429` limite de taxa · `5xx` erro do servidor (cliente pode repetir com a mesma `Idempotency-Key`).
 
-Códigos já definidos: `LOGIN_BLOQUEADO`, `CREDENCIAIS_INVALIDAS`, `EMAIL_NAO_CONFIRMADO`, `EMAIL_JA_CADASTRADO`, `TOKEN_INVALIDO`, `LIMITE_PACIENTES_ATINGIDO`, `ASSINATURA_INATIVA`, `CONVITE_INVALIDO`, `CONVITE_EXPIRADO`, `VINCULO_JA_EXISTE`, `DIETA_VAZIA`, `DIETA_NAO_EDITAVEL`, `VALOR_FORA_DO_INTERVALO`, `DADO_INSUFICIENTE_CALCULO`, `PROTOCOLO_INVALIDO`, `JUSTIFICATIVA_OBRIGATORIA`, `QUESTIONARIO_FECHADO`, `CONSULTA_CANCELADA`, `ASSINATURA_JA_ATIVA`, `PAGAMENTO_INDISPONIVEL`, `EXPORTACAO_EM_ANDAMENTO`, `VINCULO_ATIVO`, `VERSAO_APP_OBSOLETA`, `CONFLITO_VERSAO`, `OBRIGATORIO`, `FORMATO_INVALIDO`, `CONSENTIMENTO_OBRIGATORIO`, `PERFIL_INVALIDO`, `RECURSO_NAO_ENCONTRADO`, `NAO_AUTENTICADO`, `ACESSO_NEGADO`, `TAXA_EXCEDIDA`, `NAO_IMPLEMENTADO`, `ERRO_INTERNO`, `METODO_NAO_PERMITIDO`, `TIPO_CONTEUDO_NAO_SUPORTADO`, `CHAVE_IDEMPOTENCIA_REUTILIZADA`. Novo código: adicione aqui e na classe `CodigoErro` do backend.
+Códigos já definidos: `LOGIN_BLOQUEADO`, `CREDENCIAIS_INVALIDAS`, `EMAIL_NAO_CONFIRMADO`, `EMAIL_JA_CADASTRADO`, `TOKEN_INVALIDO`, `LIMITE_PACIENTES_ATINGIDO`, `ASSINATURA_INATIVA`, `CONVITE_INVALIDO`, `CONVITE_EXPIRADO`, `VINCULO_JA_EXISTE`, `DIETA_VAZIA`, `DIETA_NAO_EDITAVEL`, `ITEM_INVALIDO`, `PORCAO_INVALIDA`, `VALOR_FORA_DO_INTERVALO`, `DADO_INSUFICIENTE_CALCULO`, `PROTOCOLO_INVALIDO`, `JUSTIFICATIVA_OBRIGATORIA`, `QUESTIONARIO_FECHADO`, `CONSULTA_CANCELADA`, `ASSINATURA_JA_ATIVA`, `PAGAMENTO_INDISPONIVEL`, `EXPORTACAO_EM_ANDAMENTO`, `VINCULO_ATIVO`, `VERSAO_APP_OBSOLETA`, `CONFLITO_VERSAO`, `OBRIGATORIO`, `FORMATO_INVALIDO`, `CONSENTIMENTO_OBRIGATORIO`, `PERFIL_INVALIDO`, `RECURSO_NAO_ENCONTRADO`, `NAO_AUTENTICADO`, `ACESSO_NEGADO`, `TAXA_EXCEDIDA`, `NAO_IMPLEMENTADO`, `ERRO_INTERNO`, `METODO_NAO_PERMITIDO`, `TIPO_CONTEUDO_NAO_SUPORTADO`, `CHAVE_IDEMPOTENCIA_REUTILIZADA`. Novo código: adicione aqui e na classe `CodigoErro` do backend.
 
 Códigos acrescentados em BE-C1: `CONSENTIMENTO_OBRIGATORIO` (422, RN-VIN-04), `PERFIL_INVALIDO` (403), `RECURSO_NAO_ENCONTRADO` (404, inclusive recurso de outro dono), `NAO_AUTENTICADO` (401), `ACESSO_NEGADO` (403), `TAXA_EXCEDIDA` (429) e `NAO_IMPLEMENTADO` (501). `campos` é sempre lista; `regra`, `traceId` e `atual` podem ser nulos. Conflito de versão traz o registro vigente em `atual`. O ID de regra de `TOKEN_INVALIDO` depende da operação (confirmação ou recuperação); erros técnicos sem RN usam `regra: null`.
 
@@ -100,12 +100,18 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | dietas | `GET/POST /pacientes/{id}/dietas`, `GET/PUT /dietas/{id}`, `POST /dietas/{id}/publicar`, `POST /dietas/{id}/duplicar`, `GET /eu/dietas`, `PUT /eu/dieta-em-uso` | nutri / paciente |
 | rotina | `POST /eu/checkins`, `POST /eu/agua`, `POST /eu/pesos`, `GET /eu/rotina?de=&ate=` (BE-38: registros do período, até 366 dias, no formato do `/sync`; usado pela web), `GET /pacientes/{id}/adesao` | paciente / nutri |
 | avaliacoes | `GET/POST /pacientes/{id}/avaliacoes`, `PUT /avaliacoes/{id}`, `GET /eu/avaliacoes`, `GET /eu/evolucao` | nutri / paciente |
+| dietas | `GET/POST /eu/nutri/modelos-dieta`, `GET/PUT/DELETE /eu/nutri/modelos-dieta/{id}`, `POST /eu/nutri/modelos-dieta/{id}/duplicar`, `POST /eu/nutri/modelos-dieta/de-dieta/{dietaId}`, `POST /pacientes/{id}/dietas/de-modelo/{modeloId}` (modelos de dieta, BE-52; detalhes em [contrato-fase-8.md](contrato-fase-8.md)) | nutri |
 | avaliacoes | `GET/PUT /eu/nutri/protocolos` (Meus protocolos, com `ETag` e `If-Match`) | nutri |
+| referencias | `GET /referencias/atividades-met` (tabela de MET), `GET /referencias/dri?sexo&idadeMeses&gestante&lactante` (ingestões de referência) | nutri e paciente |
 | questionarios | `GET/POST /modelos-questionario`, `POST /pacientes/{id}/questionarios` (envia), `GET /eu/questionarios`, `PUT /eu/questionarios/{id}/respostas`, `POST /eu/questionarios/{id}/enviar` | nutri / paciente |
 | notificacoes | `GET /eu/avisos`, `POST /eu/avisos/{id}/lido`, `POST /eu/avisos/lidos` (central de avisos) | nutri / paciente |
 | agenda | `GET/POST /consultas`, `PATCH /consultas/{id}`, `GET /eu/consultas`, `POST /eu/calendario/token` (gera/revoga link .ics) | nutri / paciente |
-| relatorios | `GET /dietas/{id}/pdf`, `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
+| relatorios | `GET /dietas/{id}/pdf`, `GET /dietas/{id}/pdf-lista`, `GET /eu/dietas/{id}/pdf-lista` (BE-50b, `tamanho` opcional; ver `contrato-fase-8.md`), `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
 | sync | `GET /sync`, `POST /sync` | app |
+
+Anamnese estruturada (BE-57b): `codigo` opcional por pergunta e `derivados` opcionais, calculados pelo servidor e congelados na conclusão. Tipos, unidades, campos ausentes, compatibilidade e exemplo em [contrato-anamnese.md](contrato-anamnese.md). As mesmas regras valem para respostas parciais no `/sync`.
+
+Avaliação infantil/adolescente (BE-55b): entradas `infantil` e resultados `resultadosInfantis` opcionais, calculados e congelados na escrita. Curvas OMS, Frisancho, intervalos de percentil/Z, G-16, precisão, edição legada e compartilhamento em [contrato-avaliacao-infantil.md](contrato-avaliacao-infantil.md). REST e `/sync` usam as mesmas regras.
 
 ## Sincronização offline (app ↔ backend)
 
@@ -170,7 +176,7 @@ Resposta, um resultado por mutação, na mesma ordem:
 | Perfil | Puxa | Envia |
 | --- | --- | --- |
 | Paciente | Seus vínculos, nutris, dietas publicadas (com snapshot da lista de substituição e orientação), avaliações compartilhadas, questionários, consultas, avisos, preferências | Check-ins, água, peso, respostas de questionário, dieta em uso, preferências |
-| Nutri | Seus pacientes, fichas, lista de alimentos, listas por paciente, dietas (rascunhos e publicadas), avaliações, protocolos (Meus protocolos), modelos e respostas de questionário, consultas, avisos, adesão (check-ins dos últimos 30 dias) | Tudo que ela edita, exceto publicar dieta, convidar paciente e ações de assinatura, que exigem estar online |
+| Nutri | Seus pacientes, fichas, lista de alimentos, listas por paciente, dietas (rascunhos e publicadas), avaliações, protocolos (Meus protocolos), modelos de dieta dela (`modelosDieta`), modelos e respostas de questionário, consultas, avisos, adesão (check-ins dos últimos 30 dias) | Tudo que ela edita, exceto publicar dieta, convidar paciente e ações de assinatura, que exigem estar online |
 
 Ações que **exigem online** (o app desabilita o botão sem conexão): login/cadastro, convidar paciente, aceitar convite, publicar dieta, enviar questionário, gerar PDF, tudo de assinatura.
 

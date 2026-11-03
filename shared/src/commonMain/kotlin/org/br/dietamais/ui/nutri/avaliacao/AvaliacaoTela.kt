@@ -7,6 +7,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -26,23 +27,24 @@ data class AcoesAvaliacao(val aoMedida: (MedidaAvaliacao, String) -> Unit = { _,
     val aoCompartilhar: (Boolean) -> Unit = {}, val aoJustificativa: (String) -> Unit = {}, val aoSalvar: () -> Unit = {}, val aoFechar: () -> Unit = {},
     val aoProximo: () -> Unit = {}, val aoVoltarPasso: () -> Unit = {}, val aoRepetirMedidas: () -> Unit = {},
     val aoProtocoloDobras: (ProtocoloDobras) -> Unit = {}, val aoProtocoloMassa: (ProtocoloMassa) -> Unit = {},
-    val aoMostrarMedidas: (Boolean) -> Unit = {}, val aoMostrarComposicao: (Boolean) -> Unit = {}, val aoMostrarResumo: (Boolean) -> Unit = {})
+    val aoMostrarMedidas: (Boolean) -> Unit = {}, val aoMostrarComposicao: (Boolean) -> Unit = {}, val aoMostrarResumo: (Boolean) -> Unit = {},
+    val aoEnergia: (EscolhasEnergia) -> Unit = {}, val aoInfantil: (FormularioInfantil) -> Unit = {}, val aoMostrarNecessidades: (Boolean) -> Unit = {})
 
 /**
- * Avaliação em passos (MOB-50): Medidas, Composição e Resumo, com os resultados recalculando a cada campo (prévia local, offline).
- * Na janela larga os resultados ficam num painel à direita; no celular, em cartão abaixo do passo. O passo "Necessidades" entra no MOB-52.
+ * Avaliação em passos (MOB-50 e MOB-52): Medidas, Composição, Necessidades e Resumo, com os resultados recalculando a cada campo (prévia local, offline).
+ * Na janela larga os resultados ficam num painel à direita; no celular, em cartão abaixo do passo.
  */
 @Composable
 fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Boolean = true,
     classeJanela: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass, previa: PreviaAvaliacao? = null) {
     val form = estado.formulario ?: return
     val resultados = previa ?: previaDe(estado, form, Clock.System.now())
-    val largo = classeJanela.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+    val largo = classeJanela.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && LocalDensity.current.fontScale <= 1.3f
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             if (largo) Row(Modifier.widthIn(max = 1100.dp).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = true) }
-                Column(Modifier.width(360.dp)) { PainelResultados(resultados, form) }
+                Column(Modifier.width(360.dp)) { if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis) else PainelResultados(resultados, form) }
             } else Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta),
                 verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = false) }
         }
@@ -58,12 +60,18 @@ private fun PassoAtual(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoe
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
     LinearProgressIndicator(progress = { (form.passo.ordinal + 1f) / passos.size }, Modifier.fillMaxWidth())
     MensagensAvaliacao(estado)
+    if (form.fichaAlterada) Text(stringResource(Res.string.inf_ficha_alterada), style = MaterialTheme.typography.bodySmall)
     when (form.passo) {
         PassoAvaliacao.MEDIDAS -> PassoMedidas(estado, form, acoes, habilitado)
         PassoAvaliacao.COMPOSICAO -> PassoComposicao(estado, form, acoes, habilitado)
+        PassoAvaliacao.NECESSIDADES -> if (form.infantilAtiva) NecessidadesInfantis(estado, form, acoes, habilitado)
+            else PassoNecessidades(estado.sexo, form.energia, previaEnergia(form.valores, estado.sexo, previa.idadeAnos, previa, form.energia), acoes.aoEnergia, habilitado)
         PassoAvaliacao.RESUMO -> PassoResumo(estado, form, acoes, habilitado)
     }
-    if (!painelAoLado && form.passo != PassoAvaliacao.RESUMO) PainelResultados(previa, form)
+    if (!painelAoLado && form.passo != PassoAvaliacao.RESUMO) {
+        if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis)
+        else if (form.passo != PassoAvaliacao.NECESSIDADES) PainelResultados(previa, form)
+    }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalAlignment = Alignment.CenterVertically) {
         if (form.passo != PassoAvaliacao.MEDIDAS) BotaoContornado(stringResource(Res.string.avaliacao_voltar_passo), acoes.aoVoltarPasso, habilitado = habilitado)
         if (form.passo == PassoAvaliacao.RESUMO) BotaoPrincipal(stringResource(Res.string.avaliacao_salvar), acoes.aoSalvar, Modifier.weight(1f), habilitado = habilitado, carregando = estado.enviando)
@@ -83,6 +91,7 @@ private fun Campos(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoes: A
 @Composable
 private fun PassoMedidas(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoes: AcoesAvaliacao, habilitado: Boolean) {
     if (form.id == null && estado.itens.isNotEmpty()) BotaoContornado(stringResource(Res.string.avaliacao_repetir_medidas), acoes.aoRepetirMedidas, Modifier.fillMaxWidth(), habilitado = habilitado)
+    if (form.infantilAtiva) { MedidasInfantis(estado, form, acoes, habilitado); return }
     val dobras = dobrasDoProtocolo(form.protocoloDobras, estado.sexo)
     val previaImc = previaImc(form.valores)
     listOf(SecaoAvaliacao.BASICAS, SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS, SecaoAvaliacao.COMPLEMENTARES).forEach { secao ->
@@ -100,6 +109,7 @@ private fun PassoMedidas(estado: EstadoAvaliacoes, form: FormularioAvaliacao, ac
 
 @Composable
 private fun PassoComposicao(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoes: AcoesAvaliacao, habilitado: Boolean) {
+    if (form.infantilAtiva) { ComposicaoInfantil(estado, form, acoes, habilitado); return }
     EscolhaProtocolo(stringResource(Res.string.avaliacao_protocolo_massa),
         listOf(ProtocoloMassa.MAGRO to stringResource(Res.string.avaliacao_protocolo_magro), ProtocoloMassa.MUSCULAR to stringResource(Res.string.avaliacao_protocolo_muscular)),
         form.protocoloMassa, acoes.aoProtocoloMassa, habilitado)
@@ -116,6 +126,7 @@ private fun PassoResumo(estado: EstadoAvaliacoes, form: FormularioAvaliacao, aco
     if (form.compartilhada) {
         Interruptor(stringResource(Res.string.avaliacao_mostrar_medidas), form.compartilhamento.medidas != false, acoes.aoMostrarMedidas, habilitado)
         Interruptor(stringResource(Res.string.avaliacao_mostrar_composicao), form.compartilhamento.composicao != false, acoes.aoMostrarComposicao, habilitado)
+        if (form.infantilAtiva) Interruptor(stringResource(Res.string.inf_mostrar_necessidades), form.compartilhamento.necessidades != false, acoes.aoMostrarNecessidades, habilitado)
         Interruptor(stringResource(Res.string.avaliacao_mostrar_resumo), form.compartilhamento.resumo != false, acoes.aoMostrarResumo, habilitado)
     }
     if (form.exigeJustificativa) CampoTexto(stringResource(Res.string.avaliacao_justificativa), form.justificativa, acoes.aoJustificativa, singleLine = false,

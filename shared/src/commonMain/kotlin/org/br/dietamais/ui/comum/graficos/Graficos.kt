@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Cores de série, em ordem. O laranja de alerta fica de fora: só vale para avisos (docs/design/componentes.md). */
 object PaletaGraficos {
-    val serie: List<Color> = listOf(VerdeDieta, InfoDieta, Color(0xFFD9A21B), Color(0xFF8A6BB1), Color(0xFF3C9C9A), Color(0xFF7A8B80))
+    val serie: List<Color> = listOf(SerieVerde, SerieAzul, SerieAmbar, SerieRoxo, SerieTurquesa, SerieCinza)
     fun cor(indice: Int): Color = serie[indice.mod(serie.size)]
 }
 
@@ -51,13 +51,18 @@ private fun progressoEntrada(): Float {
 
 /** Legenda com bolinha de cor, rótulo e valor. */
 @Composable
-private fun Legenda(itens: List<Triple<String, String, Color>>) {
-    Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
+private fun Legenda(itens: List<Triple<String, String, Color>>, modifier: Modifier = Modifier, empilhada: Boolean = false) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
         itens.forEach { (rotulo, valor, cor) ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                 Canvas(Modifier.size(10.dp)) { drawCircle(cor) }
-                Text(rotulo, style = MaterialTheme.typography.bodyMedium)
-                Text(valor, style = MaterialTheme.typography.labelLarge)
+                if (empilhada) Column(Modifier.weight(1f)) {
+                    Text(rotulo, style = MaterialTheme.typography.bodySmall)
+                    Text(valor, style = MaterialTheme.typography.labelLarge)
+                } else {
+                    Text(rotulo, style = MaterialTheme.typography.bodyMedium)
+                    Text(valor, style = MaterialTheme.typography.labelLarge)
+                }
             }
         }
     }
@@ -71,7 +76,7 @@ fun GraficoComTabela(linhas: List<Pair<String, String>>, modifier: Modifier = Mo
         if (tabela) Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
             linhas.forEach { (rotulo, valor) ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(rotulo, style = MaterialTheme.typography.bodyMedium); Text(valor, style = MaterialTheme.typography.labelLarge)
+                    Text(rotulo, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium); Text(valor, Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
                 }
             }
         } else grafico()
@@ -86,9 +91,10 @@ fun GraficoComTabela(linhas: List<Pair<String, String>>, modifier: Modifier = Mo
  * A descrição de acessibilidade lista cada fatia com o percentual.
  */
 @Composable
-fun GraficoRosca(itens: List<ItemGrafico>, modifier: Modifier = Modifier, centro: String? = null, anelMeta: List<ItemGrafico>? = null, tamanho: androidx.compose.ui.unit.Dp = 180.dp) {
+fun GraficoRosca(itens: List<ItemGrafico>, modifier: Modifier = Modifier, centro: String? = null, anelMeta: List<ItemGrafico>? = null, tamanho: androidx.compose.ui.unit.Dp = 180.dp,
+    valoresLegenda: List<String>? = null, descricaoAcessivel: String? = null) {
     val fatias = fatiasRosca(itens.map { it.rotulo to it.valor })
-    val descricao = if (fatias.isEmpty()) stringResource(Res.string.grafico_sem_dados)
+    val descricao = descricaoAcessivel ?: if (fatias.isEmpty()) stringResource(Res.string.grafico_sem_dados)
     else fatias.joinToString("; ") { "${it.rotulo}: ${it.percentual.texto()}%" }
     val metaFatias = anelMeta?.let { fatiasRosca(it.map { i -> i.rotulo to i.valor }) }.orEmpty()
     val progresso = progressoEntrada()
@@ -115,7 +121,7 @@ fun GraficoRosca(itens: List<ItemGrafico>, modifier: Modifier = Modifier, centro
             }
             if (centro != null) Text(centro, style = corTexto)
         }
-        Legenda(fatias.map { Triple(itens[it.indice].rotulo, "${it.percentual.texto()}%", itens[it.indice].cor ?: PaletaGraficos.cor(it.indice)) })
+        Legenda(itens.mapIndexed { i, item -> Triple(item.rotulo, valoresLegenda?.getOrNull(i) ?: "${fatias.firstOrNull { it.indice == i }?.percentual?.texto() ?: "0"}%", item.cor ?: PaletaGraficos.cor(i)) }, Modifier.weight(1f), empilhada = valoresLegenda != null)
     }
 }
 
@@ -144,6 +150,12 @@ fun GraficoBarras(itens: List<ItemGrafico>, modifier: Modifier = Modifier, unida
         }
     }
 }
+
+/** Faixas da régua de IMC (OMS) com as cores de faixa do padrão; [rotulos] são, em ordem, abaixo, normal, sobrepeso e obesidade. */
+fun trechosReguaImc(rotulos: List<String>): List<TrechoRegua> = listOf(
+    TrechoRegua(SegmentoFaixa(rotulos[0], 10.0, 18.5), FaixaAbaixo), TrechoRegua(SegmentoFaixa(rotulos[1], 18.5, 25.0), FaixaNormal),
+    TrechoRegua(SegmentoFaixa(rotulos[2], 25.0, 30.0), FaixaSobrepeso), TrechoRegua(SegmentoFaixa(rotulos[3], 30.0, 40.0), FaixaObesidade),
+)
 
 /** Trecho colorido de [ReguaFaixas]. */
 data class TrechoRegua(val segmento: SegmentoFaixa, val cor: Color)

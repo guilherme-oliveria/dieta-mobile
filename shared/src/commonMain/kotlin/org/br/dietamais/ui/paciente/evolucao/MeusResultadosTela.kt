@@ -20,7 +20,9 @@ import org.br.dietamais.ui.comum.ChipStatus
 import org.br.dietamais.ui.comum.EstiloStatus
 import org.br.dietamais.ui.comum.graficos.*
 import org.br.dietamais.ui.nutri.avaliacao.*
+import org.br.dietamais.ui.theme.AlertaDieta
 import org.br.dietamais.ui.theme.Dimens
+import org.br.dietamais.ui.theme.VerdeDieta
 import org.jetbrains.compose.resources.stringResource
 
 /** Aba "Meus resultados" do paciente: só o que a nutri compartilhou, em frases simples (sem siglas) e sempre com texto junto da cor. */
@@ -28,7 +30,13 @@ import org.jetbrains.compose.resources.stringResource
 fun MeusResultadosRota(avaliacoes: AvaliacoesViewModel) {
     val estado by avaliacoes.estado.collectAsState()
     LaunchedEffect(Unit) { avaliacoes.abrirComoPaciente() }
-    MeusResultadosTela(meusResultados(estado.itens))
+    var crescimentoAberto by remember(estado.pacienteId) { mutableStateOf(false) }
+    Column {
+        if (estado.itens.any { it.resultadosInfantis != null }) androidx.compose.material3.TextButton({ crescimentoAberto = !crescimentoAberto }) {
+            Text(stringResource(if(crescimentoAberto) Res.string.crescimento_voltar else Res.string.crescimento_abrir))
+        }
+        if (crescimentoAberto) CrescimentoTela(estado.itens) else MeusResultadosTela(meusResultados(estado.itens))
+    }
 }
 
 private fun estiloSemaforo(s: Semaforo) = when (s) { Semaforo.BOM -> EstiloStatus.FEITA; Semaforo.ATENCAO -> EstiloStatus.INFO; Semaforo.ALERTA -> EstiloStatus.ALERTA }
@@ -76,6 +84,18 @@ fun MeusResultadosTela(resultados: MeusResultados?, modifier: Modifier = Modifie
         return
     }
     val data = formatarData(resultados.data.toLocalDateTime(TimeZone.currentSystemDefault()).date)
+    if (resultados.pediatrico) {
+        Box(modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState())
+            .padding(horizontal = Dimens.margemCompacta, vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+            Text(stringResource(Res.string.resultados_data, data), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            Text(stringResource(Res.string.inf_linha_valor, stringResource(Res.string.inf_peso_idade), textoDecimal(resultados.pesoKg), stringResource(Res.string.inf_unidade_kg)))
+            PainelResultadosInfantis(resultados.infantil, paciente = true)
+            resultados.textoResumo?.let { Text(it) }
+        }
+        }
+        return
+    }
     Column(modifier.verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.resultados_data, data), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         resultados.textoResumo?.let {
@@ -91,6 +111,20 @@ fun MeusResultadosTela(resultados: MeusResultados?, modifier: Modifier = Modifie
                     ChipStatus(estiloSemaforo(i.semaforo), texto = textoSemaforo(i.semaforo))
                 }
                 Text(valorIndicador(i), style = MaterialTheme.typography.bodyLarge)
+                when (i.tipo) {
+                    TipoIndicador.PESO_ALTURA -> ReguaFaixas(
+                        trechosReguaImc(listOf(
+                            stringResource(Res.string.resultados_regua_baixo), stringResource(Res.string.resultados_regua_normal),
+                            stringResource(Res.string.resultados_regua_sobrepeso), stringResource(Res.string.resultados_regua_obesidade),
+                        )),
+                        resultados.imc, "kg/m²",
+                    )
+                    TipoIndicador.GORDURA -> Medidor(
+                        i.valor, 0.0, 50.0, stringResource(Res.string.resultados_medidor_gordura), "%",
+                        corValor = if (i.semaforo == Semaforo.ALERTA) AlertaDieta else VerdeDieta,
+                    )
+                    else -> Unit
+                }
             }
         }
         if (resultados.composicao.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {

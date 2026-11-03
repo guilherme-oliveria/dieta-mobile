@@ -5,7 +5,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import org.br.dietamais.data.remoto.dto.*
+import org.br.dietamais.dominio.avaliacao.EscolhasEnergia
 import org.br.dietamais.dominio.avaliacao.MedidaAvaliacao
+import org.br.dietamais.dominio.calculos.NivelAtividade
 import org.br.dietamais.dominio.avaliacao.PassoAvaliacao
 import org.br.dietamais.dominio.calculos.ProtocoloDobras
 import org.br.dietamais.ui.nutri.avaliacao.*
@@ -30,13 +32,13 @@ class AvaliacaoTelasTest {
         val form = FormularioAvaliacao(passo = PassoAvaliacao.RESUMO)
         setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form, semConexao = true), AcoesAvaliacao()) } }
         onNodeWithText("Salvar avaliação").performScrollTo().assertIsEnabled()
-        onNodeWithText("Passo 3 de 3: Resumo").assertExists()
+        onNodeWithText("Passo 4 de 4: Resumo").assertExists()
     }
 
     @Test fun passoUmMostraProtocoloDeDobrasEDobrasSoDoProtocolo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         val estado = EstadoAvaliacoes(formulario = FormularioAvaliacao(protocoloDobras = ProtocoloDobras.TRES), sexo = Sexo.MASCULINO)
         setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
-        onNodeWithText("Passo 1 de 3: Medidas").assertExists()
+        onNodeWithText("Passo 1 de 4: Medidas").assertExists()
         onNodeWithText("3 dobras").performScrollTo().assertExists()
         onNodeWithContentDescription("Peitoral (mm)").assertExists()
         onNodeWithContentDescription("Tríceps (mm)").assertDoesNotExist() // homem, 3 dobras: peitoral, abdominal e coxa
@@ -66,5 +68,26 @@ class AvaliacaoTelasTest {
         onNodeWithText("Nova avaliação").assertDoesNotExist()
         estado = estado.copy(comparando = false)
         onNodeWithText("Editar avaliação").assertDoesNotExist()
+    }
+
+    @Test fun passoNecessidadesMostraEscolhasEOResultadoAoVivo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val form = FormularioAvaliacao(passo = PassoAvaliacao.NECESSIDADES, valores = mapOf(MedidaAvaliacao.PESO to "102,5", MedidaAvaliacao.ESTATURA to "1,93"),
+            energia = EscolhasEnergia(nivel = NivelAtividade.MODERADO))
+        val estado = EstadoAvaliacoes(formulario = form, sexo = Sexo.MASCULINO, nascimento = kotlinx.datetime.LocalDate(1997, 4, 1))
+        setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
+        onNodeWithText("Passo 3 de 4: Necessidades").assertExists()
+        onNodeWithText("FAO 2004").performScrollTo().assertExists()
+        onNodeWithText("Faixa esportiva").performScrollTo().assertExists()
+        onNodeWithText("Gasto basal (GEB): 2235,54 kcal").performScrollTo().assertExists()
+        onNodeWithText("Valor energético total (VET): 3934,55 kcal").performScrollTo().assertExists()
+        onNodeWithText("Carboidrato: 45 a 65% do VET · 442,64 a 639,36 g").performScrollTo().assertExists()
+    }
+
+    @Test fun passoNecessidadesSemNivelPedeONivelENaoMostraZero() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val form = FormularioAvaliacao(passo = PassoAvaliacao.NECESSIDADES, valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
+        val estado = EstadoAvaliacoes(formulario = form, sexo = Sexo.FEMININO, nascimento = kotlinx.datetime.LocalDate(1990, 1, 1))
+        setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
+        onNodeWithText("Escolha o nível de atividade para ver o gasto total.").performScrollTo().assertExists()
+        onNodeWithText("Lactante até 6 meses").performScrollTo().assertExists()
     }
 }
