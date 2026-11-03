@@ -3,27 +3,46 @@ package org.br.dietamais.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val CoresClaras = lightColorScheme(
+internal val CoresClaras = lightColorScheme(
     primary = VerdeDieta,
-    onPrimary = Color.White,
+    onPrimary = SuperficieDieta,
     primaryContainer = VerdeDietaClaro,
-    onPrimaryContainer = TextoDieta,
+    onPrimaryContainer = VerdeDietaEscuro,
+    secondary = VerdeDietaEscuro,
+    onSecondary = SuperficieDieta,
+    secondaryContainer = SuperficieSuave,
+    onSecondaryContainer = TextoDieta,
+    tertiary = InfoDieta,
+    onTertiary = SuperficieDieta,
+    tertiaryContainer = InfoClaro,
+    onTertiaryContainer = InfoDieta,
     background = FundoDieta,
     onBackground = TextoDieta,
     surface = SuperficieDieta,
     onSurface = TextoDieta,
     onSurfaceVariant = TextoSecundarioDieta,
+    surfaceVariant = SuperficieSuave,
+    surfaceContainer = SuperficieSuave,
+    surfaceContainerLow = SuperficieDieta,
+    surfaceContainerHigh = SuperficieSuave,
+    surfaceContainerHighest = SuperficieSuave,
+    surfaceContainerLowest = SuperficieDieta,
+    outline = BordaCampo,
+    outlineVariant = BordaDieta,
     error = AlertaDieta,
-    onError = Color.White,
+    onError = SuperficieDieta,
+    errorContainer = AlertaClaro,
+    onErrorContainer = AlertaTexto,
 )
 
-// Tema único do app (Android, iOS e desktop). A fonte Plus Jakarta Sans entra quando as telas forem montadas.
+// Tema claro do MVP, compartilhado entre Android, iOS e desktop.
 @Composable
 fun DietaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = CoresClaras,
+        typography = tipografiaDieta(),
+        shapes = FormasDieta.material,
         content = content,
     )
 }

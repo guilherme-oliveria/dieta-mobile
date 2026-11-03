@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/credenciais-invalidas",
+  "title": "Erro de exemplo",
+  "status": 401,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "CREDENCIAIS_INVALIDAS",
+  "regra": "RN-CON-03",
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

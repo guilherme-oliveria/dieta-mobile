@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Nutri · Painel no tablet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex">
+  <nav aria-label="Navegação da nutri" style="width: 96px; flex-shrink: 0; background: #FFFFFF; border-right: 1px solid #E2E6DE; display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 6px">
+    <div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 14px; background: #2E7D4F; display: flex; align-items: center; justify-content: center; margin-bottom: 18px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"></path><path d="M2 21c0-3 1.9-5.4 5.1-6"></path></svg>
+    </div>
+    <sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+      <a href="{{n.href}}" style="{{n.style}}">
+        <span style="{{n.pill}}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d1}}"></path><path d="{{n.d2}}"></path></svg>
+        </span>{{n.label}}</a>
+    </sc-for>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 14px; color: #5B6B61; font-weight: 500">Sábado, 24 de outubro</span>
+        <h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em">Bom dia, Luciana</h1>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <label style="display: flex; align-items: center; gap: 10px; height: 48px; width: 280px; padding: 0 14px; background: #FFFFFF; border: 1px solid #D5DBD0; border-radius: 14px; box-sizing: border-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B6B61" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar paciente</span>
+          <input type="search" placeholder="Buscar paciente" style="flex: 1; border: 0; outline: none; font-size: 15px; background: transparent; color: #17251D">
+        </label>
+        <button style="height: 48px; padding: 0 18px; border-radius: 14px; border: 0; background: #2E7D4F; color: #FFFFFF; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Convidar paciente</button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px">
+      <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+        <div style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-size: 13px; color: #5B6B61; font-weight: 600">{{s.label}}</span>
+          <span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em">{{s.value}}</span>
+          <span style="{{s.noteStyle}}">{{s.note}}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px">
+      <section style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px">
+          <h2 style="margin: 0; font-size: 18px; font-weight: 800">Consultas de hoje</h2>
+          <a href="#" style="font-size: 14px; font-weight: 700; text-decoration: none">Agenda completa</a>
+        </div>
+        <sc-for list="{{agenda}}" as="c" hint-placeholder-count="4">
+          <a href="N-Paciente.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid #EEF1EA; text-decoration: none; color: #17251D">
+            <span style="width: 64px; font-size: 16px; font-weight: 800">{{c.time}}</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 700">{{c.name}}</span>
+              <span style="font-size: 13px; color: #5B6B61">{{c.type}}</span>
+            </span>
+            <span style="{{c.chipStyle}}">{{c.chip}}</span>
+          </a>
+        </sc-for>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px">
+          <h2 style="margin: 0; font-size: 18px; font-weight: 800">Precisam de atenção</h2>
+          <span style="font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #FBEDE3; color: #8A3810">3</span>
+        </div>
+        <sc-for list="{{alerts}}" as="a" hint-placeholder-count="5">
+          <a href="N-Paciente.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid #EEF1EA; text-decoration: none; color: #17251D">
+            <span style="{{a.dot}}"></span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 700">{{a.name}}</span>
+              <span style="font-size: 13px; color: #5B6B61">{{a.what}}</span>
+            </span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B6B61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+          </a>
+        </sc-for>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const navItems = [
+      { label: 'Início', href: 'T-Painel.dc.html', d1: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z', d2: '', on: true },
+      { label: 'Pacientes', href: 'N-Pacientes.dc.html', d1: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', d2: 'M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z' },
+      { label: 'Agenda', href: '#', d1: 'M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', d2: 'M3 10h18M8 2v4M16 2v4' },
+      { label: 'Alimentos', href: 'T-Dieta.dc.html', d1: 'M8 6h13M8 12h13M8 18h13', d2: 'M3 6h.01M3 12h.01M3 18h.01' },
+      { label: 'Conta', href: '#', d1: 'M4 21a8 8 0 0 1 16 0', d2: 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8z' }
+    ];
+    const nav = navItems.map((n) => ({
+      ...n,
+      style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; width: 80px; padding: 6px 0; text-decoration: none; font-size: 12px; font-weight: ' + (n.on ? '700; color: #1F5C39;' : '600; color: #5B6B61;'),
+      pill: 'width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; ' + (n.on ? 'background: #E6F2EA;' : '')
+    }));
+    const muted = 'font-size: 13px; color: #5B6B61;';
+    const warn = 'font-size: 13px; color: #9A3F14; font-weight: 600;';
+    const stats = [
+      { label: 'Pacientes ativos', value: '16', note: 'de 20 no seu plano', noteStyle: muted },
+      { label: 'Consultas hoje', value: '4', note: 'próxima às 09:00', noteStyle: muted },
+      { label: 'Adesão média', value: '78%', note: 'últimos 7 dias', noteStyle: muted },
+      { label: 'Precisam de atenção', value: '3', note: 'sem marcar há 3+ dias', noteStyle: warn }
+    ];
+    const chip = (bg, fg) => 'font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + ';';
+    const agenda = [
+      { time: '09:00', name: 'Diego Santos', type: 'Retorno · 45 min', chip: 'Anamnese ok', chipStyle: chip('#E6F2EA', '#1F5C39') },
+      { time: '10:30', name: 'Carla Menezes', type: 'Primeira consulta · 1h', chip: 'Anamnese ok', chipStyle: chip('#E6F2EA', '#1F5C39') },
+      { time: '14:00', name: 'Felipe Araújo', type: 'Retorno · 45 min', chip: 'Sem anamnese', chipStyle: chip('#FBEDE3', '#8A3810') },
+      { time: '16:00', name: 'Bruno Carvalho', type: 'Avaliação · 45 min', chip: 'Anamnese ok', chipStyle: chip('#E6F2EA', '#1F5C39') }
+    ];
+    const dot = (c) => 'width: 10px; height: 10px; border-radius: 5px; flex-shrink: 0; background: ' + c + ';';
+    const alerts = [
+      { name: 'Elisa Moura', what: 'Sem marcar refeições há 4 dias', dot: dot('#C2551F') },
+      { name: 'Ana Ribeiro', what: 'Sem marcar refeições há 3 dias', dot: dot('#C2551F') },
+      { name: 'Hugo Prado', what: 'Pulou o jantar 5 vezes na semana', dot: dot('#C2551F') },
+      { name: 'Bruno Carvalho', what: 'Enviou foto do prato', dot: dot('#2F6FA8') },
+      { name: 'Diego Santos', what: 'Respondeu a anamnese', dot: dot('#2F6FA8') }
+    ];
+    return { nav, stats, agenda, alerts };
+  }
+}
+</script>
+</body>
+</html>

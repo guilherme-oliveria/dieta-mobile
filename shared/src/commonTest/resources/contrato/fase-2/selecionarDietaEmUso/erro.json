@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/recurso-nao-encontrado",
+  "title": "Operação recusada",
+  "status": 404,
+  "detail": "Recurso inexistente ou fora da visibilidade.",
+  "codigo": "RECURSO_NAO_ENCONTRADO",
+  "regra": null,
+  "campos": [],
+  "traceId": null,
+  "atual": null
+}

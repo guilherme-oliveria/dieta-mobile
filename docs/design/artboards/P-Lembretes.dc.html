@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Paciente · Lembretes e agenda</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
+  <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 12px; height: 52px">
+      <a href="Main.dc.html" aria-label="Voltar" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E2E6DE; display: flex; align-items: center; justify-content: center; color: #17251D">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+      </a>
+      <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em">Lembretes</h1>
+    </div>
+
+    <div style="background: #EAF1F8; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; gap: 10px; align-items: flex-start">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px; font-weight: 700; color: #17324D">Refeições na sua agenda</span>
+          <span style="font-size: 13px; line-height: 1.4; color: #2D4A66">Assine uma vez. Quando a nutri mudar a dieta, a agenda atualiza sozinha.</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button style="flex: 1; height: 44px; border-radius: 12px; border: 0; background: #2F6FA8; color: #FFFFFF; font-size: 14px; font-weight: 700">Google Agenda</button>
+        <button style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid #2F6FA8; background: #FFFFFF; color: #1F4F7A; font-size: 14px; font-weight: 700">Apple Calendário</button>
+      </div>
+    </div>
+
+    <h2 style="margin: 4px 0 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6B61">No celular, funciona sem internet</h2>
+    <div style="display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 18px; overflow: hidden">
+      <sc-for list="{{local}}" as="r" hint-placeholder-count="5">
+        <label style="display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 8px 16px; border-bottom: 1px solid #EEF1EA; box-sizing: border-box; cursor: pointer">
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 700">{{r.title}}</span>
+            <span style="font-size: 13px; color: #5B6B61">{{r.detail}}</span>
+          </span>
+          <input type="checkbox" role="switch" checked="{{r.on}}" style="width: 22px; height: 22px; margin: 0; accent-color: #2E7D4F">
+        </label>
+      </sc-for>
+    </div>
+
+    <h2 style="margin: 4px 0 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6B61">Avisos da nutri</h2>
+    <div style="display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 18px; overflow: hidden">
+      <sc-for list="{{push}}" as="r" hint-placeholder-count="2">
+        <label style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 16px; border-bottom: 1px solid #EEF1EA; box-sizing: border-box; cursor: pointer">
+          <span style="flex: 1; font-size: 15px; font-weight: 600">{{r.title}}</span>
+          <input type="checkbox" role="switch" checked="{{r.on}}" style="width: 22px; height: 22px; margin: 0; accent-color: #2E7D4F">
+        </label>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px">
+      <span style="font-size: 14px; color: #5B6B61">Silêncio das 22:30 às 07:00</span>
+      <button style="height: 44px; padding: 0 4px; border: 0; background: transparent; color: #2E7D4F; font-size: 14px; font-weight: 700">Alterar</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      local: [
+        { title: 'Hora das refeições', detail: '6 por dia · 5 min antes · Comi, troquei, pulei', on: true },
+        { title: 'Beber água', detail: 'Meta de 3,6 L · a cada 1h30', on: true },
+        { title: 'Pesagem semanal', detail: 'Segunda, 07:30, em jejum', on: true },
+        { title: 'Lista de compras', detail: 'Sábado, 09:00', on: false },
+        { title: 'Preparar a marmita', detail: 'Na véspera, 21:00', on: false }
+      ],
+      push: [
+        { title: 'Nova dieta publicada', on: true },
+        { title: 'Retorno de consulta', on: true }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

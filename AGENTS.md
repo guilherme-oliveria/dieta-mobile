@@ -5,7 +5,7 @@ Instruções para agentes de código (Codex, Claude Code e outros). O `CLAUDE.md
 ## O projeto
 
 Dieta+: app para nutricionistas e pacientes (multi-nutri, com assinatura). Este repositório é o **app**: Kotlin Multiplatform + Compose Multiplatform, um código só para **Android, iOS e Desktop**, com perfil nutri e perfil paciente, **offline-first**.
-Repositórios irmãos: `guilherme-oliveria/dieta-backend` (API Java/Spring, fonte de verdade das regras) e `guilherme-oliveria/dieta-frontend` (Angular, pós-MVP).
+Repositório irmão: `guilherme-oliveria/dieta-backend` (API Java/Spring, fonte de verdade das regras). O `guilherme-oliveria/dieta-frontend` (Angular) foi arquivado: a web sai daqui, como alvo `wasmJs`.
 Idioma: **português** em docs, commits, PRs, textos da UI e nomes de domínio. Termos técnicos (ViewModel, repository) ficam em inglês.
 
 ## Leia antes de começar
@@ -21,13 +21,13 @@ Os arquivos `visao-geral`, `regras-de-negocio`, `integracao` e `funcionalidades-
 
 ## Design e telas
 
-Telas e componentes seguem `docs/design/`: tokens e componentes em `docs/design/componentes.md`, mapa tela→pacote em `docs/design/telas.md`, ordem de implementação em `docs/design/plano-de-acao-ui.md`. Antes de criar uma tela, confira o canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC.
+Telas e componentes seguem `docs/design/`: tokens e componentes em `docs/design/componentes.md`, mapa tela→pacote em `docs/design/telas.md`, ordem de implementação em `docs/design/plano-de-acao-ui.md`. Antes de criar uma tela, confira o canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC; sem acesso ao claude.ai (Codex e outros), leia a cópia dos artboards em `docs/design/artboards/`.
 
 Cores do tema já estão em `ui/theme` (verde `#2E7D4F`, fundo `#F5F6F1`, laranja `#C2551F` só para alertas; fonte Plus Jakarta Sans).
 
 ## Stack
 
-Kotlin 2.4 · Compose Multiplatform 1.12 · Material 3 · AGP 9 · alvos `android`, `iosArm64`, `iosSimulatorArm64`, `jvm` (desktop). Pacote `org.br.dietamais` (o backend usa `com.br.dietamais`; não renomeie).
+Kotlin 2.4 · Compose Multiplatform 1.12 · Material 3 · AGP 9 · alvos `android`, `iosArm64`, `iosSimulatorArm64`, `jvm` (desktop) e `wasmJs` (web, online-only; ver `docs/arquitetura/web.md`). Pacote `org.br.dietamais` (o backend usa `com.br.dietamais`; não renomeie).
 Bibliotecas planejadas (MOB-01): Ktor, kotlinx.serialization, SQLDelight, Koin, Navigation Compose, kotlinx-datetime, multiplatform-settings, Kermit. Versões só pelo `gradle/libs.versions.toml`.
 
 ## Comandos
@@ -38,8 +38,12 @@ Bibliotecas planejadas (MOB-01): Ktor, kotlinx.serialization, SQLDelight, Koin, 
 | Testes Android (host) | `./gradlew :shared:testAndroidHostTest` |
 | Testes iOS (só no Mac) | `./gradlew :shared:iosSimulatorArm64Test` |
 | App Android | `./gradlew :androidApp:assembleDebug` |
+| Web (navegador) | `./gradlew :webApp:wasmJsBrowserDevelopmentRun` |
+| Build da web | `./gradlew :webApp:wasmJsBrowserDistribution` |
 | App desktop | `./gradlew :desktopApp:run` (hot reload: `:desktopApp:hotRun --auto`) |
 | iOS | abrir `iosApp/` no Xcode |
+| Validar no WSL (igual ao CI, sem iOS) | `ops/validar-wsl.sh` |
+| Teste de ponta a ponta da web (Playwright + backend real) | `ops/e2e-wsl.sh` (ver `e2e/README.md`) |
 
 ## Estrutura
 
@@ -53,7 +57,7 @@ shared/src/commonMain/kotlin/org/br/dietamais/
   dominio/<area>   regras puras e modelos
   data/{local,remoto,sync,repositorio}
   plataforma/      expect (actual em androidMain, iosMain, jvmMain)
-androidApp/  iosApp/  desktopApp/   só pontos de entrada e config de plataforma
+androidApp/  iosApp/  desktopApp/  webApp/   só pontos de entrada e config de plataforma
 ```
 
 ## Regras inegociáveis
@@ -76,11 +80,22 @@ androidApp/  iosApp/  desktopApp/   só pontos de entrada e config de plataforma
 
 ## Fluxo de trabalho
 
-1. Branch a partir da `main`: `feature/MOB-NN-descricao-curta`. Se o ambiente já definiu uma branch, use a dele.
+1. Branch a partir da `develop` (Gitflow; ver `docs/arquitetura/plano-de-execucao.md`), com PR de volta para `develop`: `feature/MOB-NN-descricao-curta`. Se o ambiente já definiu uma branch, use a dele.
 2. Commits em português no imperativo (`Adiciona tela Hoje do paciente`).
 3. Rode `./gradlew :shared:jvmTest` (e `:shared:testAndroidHostTest` se mexeu em Android).
 4. PR com `.github/pull_request_template.md`; marque `[x]` em `docs/arquitetura/plano-de-acao.md` no mesmo PR.
 5. Se o endpoint do backend ainda não existe, use `MockEngine` com o JSON do contrato e diga no PR.
+
+## Revisão por QA (vale para Codex, Claude e qualquer agente)
+
+Quem escreve o código nunca aprova o próprio trabalho. O fluxo de todo PR de tarefa é:
+
+1. **Agente de código** (Codex ou outro) abre o PR para a `develop` com o ID da tarefa no título (`BE-NN …`, `MOB-NN …`). Ele **nunca** aprova, faz merge, fecha PR alheio ou resolve comentário do QA.
+2. **Agente QA** (Claude, um por repositório) revisa o PR contra a tarefa do `plano-de-acao.md`, a definição de pronto deste arquivo, as regras `RN-xxx` citadas, o contrato (`integracao.md` e os JSONs de `contrato/`) e, no mobile, `docs/design/`. Confere também o CI verde. E publica o veredito:
+   - **Aprovado:** review "Approve" ou, se o GitHub não deixar (mesma conta), comentário que começa com `QA: APROVADO`. Depois o QA faz o merge na `develop`. Merge na `main` é só do Guilherme.
+   - **Corrigir:** review "Request changes" ou comentário que começa com `QA: CORRIGIR`, com a lista do que falta.
+3. **Agente de código**, ao receber `QA: CORRIGIR`: corrige na **mesma branch**, faz push, responde cada apontamento dizendo o que mudou e comenta `QA: PRONTO PARA REVISAR`. Discordou de um apontamento? Responde explicando, sem ignorar.
+4. **Próxima tarefa só depois do veredito.** Antes de começar qualquer tarefa nova, o agente de código confere os PRs que abriu: com `QA: CORRIGIR` pendente, corrige primeiro; sem veredito ainda, para e avisa "aguardando QA" (pode adiantar só tarefas que não dependem daquele PR, saindo da branch dele).
 
 ## Definição de pronto
 

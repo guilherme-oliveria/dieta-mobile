@@ -1,0 +1,12 @@
+{
+  "itens": [
+    {
+      "id": "019a0f32-5000-7000-8000-000000000001",
+      "nome": "Grupo fictício",
+      "kcalPorPorcao": 150,
+      "carboidratosPorPorcao": 25,
+      "proteinasPorPorcao": 5,
+      "gordurasPorPorcao": 3
+    }
+  ]
+}

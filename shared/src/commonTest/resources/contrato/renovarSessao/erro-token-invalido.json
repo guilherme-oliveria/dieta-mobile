@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/token-invalido",
+  "title": "Erro de exemplo",
+  "status": 401,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "TOKEN_INVALIDO",
+  "regra": null,
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

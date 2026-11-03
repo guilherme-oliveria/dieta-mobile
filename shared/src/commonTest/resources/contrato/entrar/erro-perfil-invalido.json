@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/perfil-invalido",
+  "title": "Erro de exemplo",
+  "status": 403,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "PERFIL_INVALIDO",
+  "regra": null,
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

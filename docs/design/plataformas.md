@@ -55,3 +55,18 @@ Regras:
 - `contentDescription` em todo botão só com ícone; `semantics { heading() }` nos títulos de seção.
 - Status nunca só por cor: chip tem texto, gráfico tem valor.
 - TalkBack e VoiceOver: ordem de leitura igual à ordem visual.
+
+### Checklist de acessibilidade da web (A6, 29/10/2026)
+
+Medido com axe-core no Chromium (`e2e/acessibilidade.spec.ts`, roda em `ops/e2e-wsl.sh`) e conferido em capturas. O que sobra depende de pessoa e aparelho (G-14: NVDA, VoiceOver, TalkBack, Safari, Firefox).
+
+- [x] `contentDescription`/nome em todo botão de ícone e campo: nenhum controle sem nome nas 20 telas varridas (Entrar, convite, cadastro, nutri, ficha, montador, paciente). Corrigidos `Checkbox` da lista de compras e `Switch` do perfil, que saíam sem nome.
+- [x] `heading()` nos títulos: todas as telas têm título. Faltava na aba Evolução do paciente. Página com `<h1>` e landmark `<main>` no `index.html`.
+- [x] Ordem de foco (Tab) em Entrar: e-mail, senha, mostrar senha, esqueci a senha (conferido em capturas); os demais botões seguem a ordem visual do layout, mas não foram capturados um a um. Ficha, Hoje e montador: não conferidos por Tab (G-14).
+- [x] Foco visível: campos já tinham borda verde; botões tinham só um véu fraco, agora têm contorno de 2 dp (`anelDeFoco` em `Botoes.kt`).
+- [x] Contraste de texto 4,5:1: todos os pares usados passam (`ContrasteTest`). O dia escolhido em Hoje e Compras parecia desabilitado (cinza claro); agora é fundo verde claro (`BotaoTexto(selecionado = true)`).
+- [ ] Contraste de componentes (WCAG 1.4.11, 3:1): `BordaCampo` `#D5DBD0` dá 1,41:1 sobre branco e a borda do card 1,26:1. Decisão de design: escurecer a borda do campo (algo como `#8A9A8F`).
+- [x] Fonte a 200%: janela de 640×450 px CSS (zoom de 200%) mantém o layout sem cortar texto em Entrar, Hoje, Compras, Início e Pacientes (capturas). O Android/iOS segue a escala do sistema.
+- [~] Alvo de toque mínimo (48 dp): botões e campos têm 48 dp ou mais de área efetiva (`minimumInteractiveComponentSize`), mas os nós de acessibilidade de chips e do `Sair` medem 32 a 40 px. Linhas do Compras e do Perfil agora são o alvo inteiro (antes só o controle de 24 px).
+- [ ] Estado "selecionado" (aba atual, chip escolhido) e título de nível (`aria-level`): o Compose para web não os expõe no DOM. Leitor de tela real precisa confirmar o efeito (G-14).
+- [ ] Árvore de acessibilidade desatualizada depois que folha ou diálogo fecha: ver `web.md`. Bloqueia a revisão com leitor de tela.

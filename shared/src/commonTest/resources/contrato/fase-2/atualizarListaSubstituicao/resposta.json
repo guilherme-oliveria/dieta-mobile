@@ -1,0 +1,21 @@
+{
+  "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+  "versao": 1,
+  "alimentos": [
+    {
+      "id": "019a0f32-5000-7000-8000-000000000002",
+      "catalogoId": null,
+      "grupoId": "019a0f32-5000-7000-8000-000000000001",
+      "nome": "Alimento fictício",
+      "medidaCaseira": "1 unidade fictícia",
+      "gramasPorPorcao": 50,
+      "ativo": true,
+      "versao": 1,
+      "atualizadoEm": "2026-10-26T12:00:00Z"
+    }
+  ],
+  "adicionados": [
+    "019a0f32-5000-7000-8000-000000000002"
+  ],
+  "removidos": []
+}

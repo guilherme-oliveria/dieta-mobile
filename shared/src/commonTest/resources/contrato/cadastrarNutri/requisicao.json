@@ -1,0 +1,9 @@
+{
+  "nome": "Nutricionista de Exemplo",
+  "email": "nutri@example.invalid",
+  "senha": "SENHA_FICTICIA_SEM_VALIDADE",
+  "crn": "CRN-1 99999999",
+  "aceitouTermos": true,
+  "versaoTermos": "2026-10",
+  "fuso": "America/Sao_Paulo"
+}

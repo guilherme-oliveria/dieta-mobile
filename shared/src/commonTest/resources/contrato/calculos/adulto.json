@@ -1,0 +1,1244 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores de teste do cálculo antropométrico de adulto e idoso (BE-C7/BE-39/BE-40, MOB-48). Mesmo arquivo nos dois repositórios (RN-CAL-06). Valores esperados gerados de forma independente a partir das fórmulas da planilha da Nut. Luciana (seção 3.1 do plano) e das macros VBA; casos com diferenteDaPlanilha usam a versão corrigida (seção 3.6).",
+ "tolerancia": {
+  "kg": 0.01,
+  "percentual": 0.1,
+  "imc": 0.01,
+  "densidade": 0.0001,
+  "mm": 0.01
+ },
+ "arredondamento": "Resultados guardados com 2 casas (densidade 4) em HALF_UP; classificações do IMC e do % de gordura usam o valor já arredondado em 2 casas. Intermediários sem arredondar.",
+ "codigos": {
+  "imc": [
+   "MG_III",
+   "MG_II",
+   "MG_I",
+   "MG",
+   "NO",
+   "SP",
+   "OB_I",
+   "OB_II",
+   "OB_III"
+  ],
+  "risco": [
+   "B",
+   "ME",
+   "A",
+   "MO",
+   "S",
+   "MS"
+  ],
+  "cintura": [
+   "B",
+   "A",
+   "MA"
+  ],
+  "compleicao": [
+   "PEQUENA",
+   "MEDIA",
+   "GRANDE"
+  ],
+  "percentualGordura": [
+   "MT_BXO",
+   "EXC",
+   "MT_BOM",
+   "BOM",
+   "ADEQ",
+   "MOD_ALTO",
+   "ALTO",
+   "MT_ALTO"
+  ]
+ },
+ "casos": [
+  {
+   "id": "V01-homem-29-sete-dobras",
+   "descricao": "Dados do PDF do Guilherme: 29 anos, 102,5 kg, 1,93 m, soma das 7 dobras 199; dobras individuais, cintura e punho são sintéticos e a soma bate com o PDF",
+   "origem": "aba av.antropométrica E14:E75; macro POL_7DC_MASC",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "pesoKg": 102.5,
+    "estaturaM": 1.93,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "percentualDesejado": 18,
+    "dobras": {
+     "triceps": 20,
+     "peitoral": 25,
+     "axilarMedia": 28,
+     "subescapular": 30,
+     "abdominal": 40,
+     "suprailiaca": 32,
+     "coxa": 24
+    },
+    "cinturaCm": 100,
+    "punhoCm": 18
+   },
+   "esperado": {
+    "imc": 27.52,
+    "classificacaoImc": "SP",
+    "riscoComorbidades": "A",
+    "pesoTeoricoMinKg": 68.91,
+    "pesoTeoricoMaxKg": 92.75,
+    "compleicao": "PEQUENA",
+    "classificacaoCintura": "A",
+    "somatorioDobrasMm": 199.0,
+    "densidadeCorporal": 1.0389,
+    "percentualGordura": 26.48,
+    "classificacaoPercentualGordura": "ALTO",
+    "percentualMagro": 73.52,
+    "pesoGordoKg": 27.15,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 24.7,
+    "pesoMagroKg": 75.35,
+    "pesoParaPercentualDesejadoKg": 91.9,
+    "textoResumo": "O avaliado apresenta sobrepeso e risco aumentado de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e risco aumentado de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura. Seu percentual de gordura é considerado alto para sua idade.",
+    "motivosNulos": {
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO"
+    }
+   }
+  },
+  {
+   "id": "V02-mulher-35-tres-dobras-muscular",
+   "descricao": "Mulher de 35 anos, 3 dobras (tricipital, suprailíaca, coxa), protocolo de peso muscular com ósseo e residual",
+   "origem": "E67 POL_3DC_FEM; E70 (protocolo 2); E71; E72; E75",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 35,
+    "pesoKg": 62.0,
+    "estaturaM": 1.65,
+    "protocoloDobras": "TRES",
+    "protocoloMassa": "MUSCULAR",
+    "percentualDesejado": 25,
+    "dobras": {
+     "triceps": 18,
+     "suprailiaca": 22,
+     "coxa": 26
+    },
+    "cinturaCm": 76,
+    "punhoCm": 15.5,
+    "diametroPunhoCm": 5.2,
+    "diametroJoelhoCm": 9.0
+   },
+   "esperado": {
+    "imc": 22.77,
+    "classificacaoImc": "NO",
+    "riscoComorbidades": "ME",
+    "pesoTeoricoMinKg": 50.37,
+    "pesoTeoricoMaxKg": 67.79,
+    "compleicao": "MEDIA",
+    "classificacaoCintura": "B",
+    "somatorioDobrasMm": 66.0,
+    "densidadeCorporal": 1.0391,
+    "percentualGordura": 26.37,
+    "classificacaoPercentualGordura": "MOD_ALTO",
+    "percentualMagro": 73.63,
+    "pesoGordoKg": 16.35,
+    "pesoOsseoKg": 9.63,
+    "pesoResidualKg": 12.96,
+    "pesoMagroKg": 23.06,
+    "pesoParaPercentualDesejadoKg": 60.87,
+    "textoResumo": "O avaliado apresenta normalidade e risco médio de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e baixo risco de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura. Seu percentual de gordura é considerado moderadamente alto para sua idade.",
+    "motivosNulos": {}
+   }
+  },
+  {
+   "id": "V03-homem-22-tres-dobras",
+   "descricao": "Homem de 22 anos, 3 dobras (peitoral, abdominal, coxa), faixa 18 a 25",
+   "origem": "E67 POL_3DC_MASC",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 22,
+    "pesoKg": 75.0,
+    "estaturaM": 1.78,
+    "protocoloDobras": "TRES",
+    "protocoloMassa": "MAGRO",
+    "percentualDesejado": 15,
+    "dobras": {
+     "peitoral": 10,
+     "abdominal": 18,
+     "coxa": 14
+    },
+    "cinturaCm": 84,
+    "punhoCm": 17.2
+   },
+   "esperado": {
+    "imc": 23.67,
+    "classificacaoImc": "NO",
+    "riscoComorbidades": "ME",
+    "pesoTeoricoMinKg": 58.62,
+    "pesoTeoricoMaxKg": 78.89,
+    "compleicao": "MEDIA",
+    "classificacaoCintura": "B",
+    "somatorioDobrasMm": 42.0,
+    "densidadeCorporal": 1.0718,
+    "percentualGordura": 11.83,
+    "classificacaoPercentualGordura": "BOM",
+    "percentualMagro": 88.17,
+    "pesoGordoKg": 8.87,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 18.08,
+    "pesoMagroKg": 66.13,
+    "pesoParaPercentualDesejadoKg": 77.8,
+    "textoResumo": "O avaliado apresenta normalidade e risco médio de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e baixo risco de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura. Seu percentual de gordura é considerado bom para sua idade.",
+    "motivosNulos": {
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO"
+    }
+   }
+  },
+  {
+   "id": "V04-mulher-58-sete-dobras",
+   "descricao": "Mulher de 58 anos, 7 dobras, faixa 56+ e peso teórico de adulto (abaixo de 60)",
+   "origem": "E67 POL_7DC_FEM; CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 58,
+    "pesoKg": 71.4,
+    "estaturaM": 1.58,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "percentualDesejado": 28,
+    "dobras": {
+     "triceps": 24,
+     "peitoral": 18,
+     "axilarMedia": 20,
+     "subescapular": 26,
+     "abdominal": 34,
+     "suprailiaca": 30,
+     "coxa": 32
+    },
+    "cinturaCm": 92,
+    "punhoCm": 15.0
+   },
+   "esperado": {
+    "imc": 28.6,
+    "classificacaoImc": "SP",
+    "riscoComorbidades": "A",
+    "pesoTeoricoMinKg": 46.18,
+    "pesoTeoricoMaxKg": 62.16,
+    "compleicao": "MEDIA",
+    "classificacaoCintura": "MA",
+    "somatorioDobrasMm": 184.0,
+    "densidadeCorporal": 1.0221,
+    "percentualGordura": 34.3,
+    "classificacaoPercentualGordura": "MOD_ALTO",
+    "percentualMagro": 65.7,
+    "pesoGordoKg": 24.49,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 14.92,
+    "pesoMagroKg": 46.91,
+    "pesoParaPercentualDesejadoKg": 65.15,
+    "textoResumo": "O avaliado apresenta sobrepeso e risco aumentado de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e risco muito aumentado de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura. Seu percentual de gordura é considerado moderadamente alto para sua idade.",
+    "motivosNulos": {
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO"
+    }
+   }
+  },
+  {
+   "id": "V05-idoso-62-peso-adequado",
+   "descricao": "Idoso de 62 anos com IMC 23,5: normal (faixa 60 a 64) e peso teórico 22 a 27",
+   "origem": "macro IMC_IDOSO; E15 e E16 (60+)",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 62,
+    "pesoKg": 68.0,
+    "estaturaM": 1.7,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "dobras": {
+     "triceps": 10,
+     "peitoral": 12,
+     "axilarMedia": 12,
+     "subescapular": 18,
+     "abdominal": 22,
+     "suprailiaca": 16,
+     "coxa": 14
+    },
+    "cinturaCm": 93,
+    "punhoCm": 17.5
+   },
+   "esperado": {
+    "imc": 23.53,
+    "classificacaoImc": "NO",
+    "riscoComorbidades": "ME",
+    "pesoTeoricoMinKg": 63.58,
+    "pesoTeoricoMaxKg": 78.03,
+    "compleicao": "MEDIA",
+    "classificacaoCintura": "B",
+    "somatorioDobrasMm": 104.0,
+    "densidadeCorporal": 1.0548,
+    "percentualGordura": 19.26,
+    "classificacaoPercentualGordura": "MT_BOM",
+    "percentualMagro": 80.74,
+    "pesoGordoKg": 13.1,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 16.39,
+    "pesoMagroKg": 54.9,
+    "pesoParaPercentualDesejadoKg": null,
+    "textoResumo": "O avaliado apresenta normalidade e risco médio de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e baixo risco de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura. Seu percentual de gordura é considerado muito bom para sua idade.",
+    "motivosNulos": {
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoParaPercentualDesejadoKg": "FALTA_PERCENTUAL_DESEJADO"
+    }
+   }
+  },
+  {
+   "id": "V06-idosa-66-sobrepeso",
+   "descricao": "Idosa de 66 anos com IMC 29,5: sobrepeso (faixa 65+)",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 66,
+    "pesoKg": 72.0,
+    "estaturaM": 1.5622,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "cinturaCm": 90,
+    "punhoCm": 14.5
+   },
+   "esperado": {
+    "imc": 29.5,
+    "classificacaoImc": "SP",
+    "riscoComorbidades": "A",
+    "pesoTeoricoMinKg": 53.69,
+    "pesoTeoricoMaxKg": 65.89,
+    "compleicao": "MEDIA",
+    "classificacaoCintura": "MA",
+    "somatorioDobrasMm": null,
+    "densidadeCorporal": null,
+    "percentualGordura": null,
+    "classificacaoPercentualGordura": null,
+    "percentualMagro": null,
+    "pesoGordoKg": null,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 15.05,
+    "pesoMagroKg": null,
+    "pesoParaPercentualDesejadoKg": null,
+    "textoResumo": "O avaliado apresenta sobrepeso e risco aumentado de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e risco muito aumentado de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura.",
+    "motivosNulos": {
+     "percentualGordura": "FALTA_DOBRAS",
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoMagroKg": "FALTA_DOBRAS",
+     "pesoParaPercentualDesejadoKg": "FALTA_PERCENTUAL_DESEJADO"
+    }
+   }
+  },
+  {
+   "id": "V07-obesidade-II-limite-40",
+   "descricao": "IMC 39,5: OMS classifica OB II (a planilha usava < 39 e dava OB III)",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 40,
+    "pesoKg": 120.0,
+    "estaturaM": 1.743,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "cinturaCm": 120,
+    "punhoCm": 20
+   },
+   "esperado": {
+    "imc": 39.5,
+    "classificacaoImc": "OB_II",
+    "riscoComorbidades": "S",
+    "pesoTeoricoMinKg": 56.2,
+    "pesoTeoricoMaxKg": 75.65,
+    "compleicao": "GRANDE",
+    "classificacaoCintura": "MA",
+    "somatorioDobrasMm": null,
+    "densidadeCorporal": null,
+    "percentualGordura": null,
+    "classificacaoPercentualGordura": null,
+    "percentualMagro": null,
+    "pesoGordoKg": null,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 28.92,
+    "pesoMagroKg": null,
+    "pesoParaPercentualDesejadoKg": null,
+    "textoResumo": "O avaliado apresenta obesidade grau II (moderada) e risco severo de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e risco muito aumentado de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura.",
+    "motivosNulos": {
+     "percentualGordura": "FALTA_DOBRAS",
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoMagroKg": "FALTA_DOBRAS",
+     "pesoParaPercentualDesejadoKg": "FALTA_PERCENTUAL_DESEJADO"
+    }
+   },
+   "diferenteDaPlanilha": true,
+   "nota": "Correção 2 da seção 3.6 (IMC 39 a 39,99 é OB II)."
+  },
+  {
+   "id": "V08-obesidade-III-texto",
+   "descricao": "IMC 42: obesidade III, risco MS e frase completa (a macro comparava com \"MS I\" e deixava a frase vazia)",
+   "origem": "macro DIAG_COMP_IMC_ADULTO_IDOSO",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 45,
+    "pesoKg": 115.0,
+    "estaturaM": 1.6546,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "cinturaCm": 112,
+    "punhoCm": 17
+   },
+   "esperado": {
+    "imc": 42.01,
+    "classificacaoImc": "OB_III",
+    "riscoComorbidades": "MS",
+    "pesoTeoricoMinKg": 50.65,
+    "pesoTeoricoMaxKg": 68.17,
+    "compleicao": "GRANDE",
+    "classificacaoCintura": "MA",
+    "somatorioDobrasMm": null,
+    "densidadeCorporal": null,
+    "percentualGordura": null,
+    "classificacaoPercentualGordura": null,
+    "percentualMagro": null,
+    "pesoGordoKg": null,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 24.04,
+    "pesoMagroKg": null,
+    "pesoParaPercentualDesejadoKg": null,
+    "textoResumo": "O avaliado apresenta obesidade grau III (grave) e risco muito severo de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e risco muito aumentado de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura.",
+    "motivosNulos": {
+     "percentualGordura": "FALTA_DOBRAS",
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoMagroKg": "FALTA_DOBRAS",
+     "pesoParaPercentualDesejadoKg": "FALTA_PERCENTUAL_DESEJADO"
+    }
+   },
+   "diferenteDaPlanilha": true,
+   "nota": "Correção 3 da seção 3.6 (risco MS gera a frase \"risco muito severo\")."
+  },
+  {
+   "id": "V09-sem-dobras-resultados-nulos",
+   "descricao": "Sem dobras nem punho: composição fica nula com o motivo, nunca zero (RN-CAL-04)",
+   "origem": "RN-CAL-04",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 30,
+    "pesoKg": 80.0,
+    "estaturaM": 1.8,
+    "protocoloDobras": "SETE",
+    "protocoloMassa": "MAGRO",
+    "percentualDesejado": 15,
+    "cinturaCm": 88
+   },
+   "esperado": {
+    "imc": 24.69,
+    "classificacaoImc": "NO",
+    "riscoComorbidades": "ME",
+    "pesoTeoricoMinKg": 59.94,
+    "pesoTeoricoMaxKg": 80.68,
+    "compleicao": null,
+    "classificacaoCintura": "B",
+    "somatorioDobrasMm": null,
+    "densidadeCorporal": null,
+    "percentualGordura": null,
+    "classificacaoPercentualGordura": null,
+    "percentualMagro": null,
+    "pesoGordoKg": null,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 19.28,
+    "pesoMagroKg": null,
+    "pesoParaPercentualDesejadoKg": null,
+    "textoResumo": "O avaliado apresenta normalidade e risco médio de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e baixo risco de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura.",
+    "motivosNulos": {
+     "compleicao": "FALTA_PUNHO",
+     "percentualGordura": "FALTA_DOBRAS",
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoMagroKg": "FALTA_DOBRAS",
+     "pesoParaPercentualDesejadoKg": "FALTA_DOBRAS"
+    }
+   }
+  },
+  {
+   "id": "V10-muscular-sem-diametros",
+   "descricao": "Protocolo muscular sem diâmetros: peso magro e peso para o % ficam nulos",
+   "origem": "E70 protocolo 2",
+   "funcao": "avaliacaoAdulto",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 33,
+    "pesoKg": 90.0,
+    "estaturaM": 1.82,
+    "protocoloDobras": "TRES",
+    "protocoloMassa": "MUSCULAR",
+    "percentualDesejado": 15,
+    "dobras": {
+     "peitoral": 12,
+     "abdominal": 25,
+     "coxa": 20
+    },
+    "cinturaCm": 95,
+    "punhoCm": 18
+   },
+   "esperado": {
+    "imc": 27.17,
+    "classificacaoImc": "SP",
+    "riscoComorbidades": "A",
+    "pesoTeoricoMinKg": 61.28,
+    "pesoTeoricoMaxKg": 82.48,
+    "compleicao": "MEDIA",
+    "classificacaoCintura": "A",
+    "somatorioDobrasMm": 57.0,
+    "densidadeCorporal": 1.059,
+    "percentualGordura": 17.44,
+    "classificacaoPercentualGordura": "BOM",
+    "percentualMagro": 82.56,
+    "pesoGordoKg": 15.69,
+    "pesoOsseoKg": null,
+    "pesoResidualKg": 21.69,
+    "pesoMagroKg": null,
+    "pesoParaPercentualDesejadoKg": null,
+    "textoResumo": "O avaliado apresenta sobrepeso e risco aumentado de desenvolver comorbidades relacionadas ao excesso de peso, segundo o IMC e risco aumentado de complicações ligadas ao excesso de gordura abdominal, segundo a circunferência da cintura. Seu percentual de gordura é considerado bom para sua idade.",
+    "motivosNulos": {
+     "pesoOsseoKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoMagroKg": "FALTA_DIAMETRO_PUNHO",
+     "pesoParaPercentualDesejadoKg": "FALTA_DIAMETRO_PUNHO"
+    }
+   }
+  },
+  {
+   "id": "IMC-adulto-15.99",
+   "descricao": "IMC 15.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 15.99
+   },
+   "esperado": "MG_III"
+  },
+  {
+   "id": "IMC-adulto-16.0",
+   "descricao": "IMC 16.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 16.0
+   },
+   "esperado": "MG_II"
+  },
+  {
+   "id": "IMC-adulto-16.99",
+   "descricao": "IMC 16.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 16.99
+   },
+   "esperado": "MG_II"
+  },
+  {
+   "id": "IMC-adulto-17.0",
+   "descricao": "IMC 17.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 17.0
+   },
+   "esperado": "MG_I"
+  },
+  {
+   "id": "IMC-adulto-18.49",
+   "descricao": "IMC 18.49 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 18.49
+   },
+   "esperado": "MG_I"
+  },
+  {
+   "id": "IMC-adulto-18.5",
+   "descricao": "IMC 18.5 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 18.5
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IMC-adulto-24.99",
+   "descricao": "IMC 24.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 24.99
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IMC-adulto-25.0",
+   "descricao": "IMC 25.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 25.0
+   },
+   "esperado": "SP"
+  },
+  {
+   "id": "IMC-adulto-29.99",
+   "descricao": "IMC 29.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 29.99
+   },
+   "esperado": "SP"
+  },
+  {
+   "id": "IMC-adulto-30.0",
+   "descricao": "IMC 30.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 30.0
+   },
+   "esperado": "OB_I"
+  },
+  {
+   "id": "IMC-adulto-34.99",
+   "descricao": "IMC 34.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 34.99
+   },
+   "esperado": "OB_I"
+  },
+  {
+   "id": "IMC-adulto-35.0",
+   "descricao": "IMC 35.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 35.0
+   },
+   "esperado": "OB_II"
+  },
+  {
+   "id": "IMC-adulto-38.99",
+   "descricao": "IMC 38.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 38.99
+   },
+   "esperado": "OB_II"
+  },
+  {
+   "id": "IMC-adulto-39.0",
+   "descricao": "IMC 39.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 39.0
+   },
+   "esperado": "OB_II",
+   "diferenteDaPlanilha": true,
+   "nota": "Correção 2 da seção 3.6."
+  },
+  {
+   "id": "IMC-adulto-39.99",
+   "descricao": "IMC 39.99 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 39.99
+   },
+   "esperado": "OB_II",
+   "diferenteDaPlanilha": true,
+   "nota": "Correção 2 da seção 3.6."
+  },
+  {
+   "id": "IMC-adulto-40.0",
+   "descricao": "IMC 40.0 no adulto",
+   "origem": "macro IMC_ADULTO",
+   "funcao": "classificarImcAdulto",
+   "entrada": {
+    "imc": 40.0
+   },
+   "esperado": "OB_III"
+  },
+  {
+   "id": "IMC-idoso-60-22.99",
+   "descricao": "IMC 22.99 aos 60 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 60,
+    "imc": 22.99
+   },
+   "esperado": "MG"
+  },
+  {
+   "id": "IMC-idoso-60-23.0",
+   "descricao": "IMC 23.0 aos 60 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 60,
+    "imc": 23.0
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IMC-idoso-64-28.0",
+   "descricao": "IMC 28.0 aos 64 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 64,
+    "imc": 28.0
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IMC-idoso-64-28.01",
+   "descricao": "IMC 28.01 aos 64 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 64,
+    "imc": 28.01
+   },
+   "esperado": "SP"
+  },
+  {
+   "id": "IMC-idoso-65-23.99",
+   "descricao": "IMC 23.99 aos 65 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 65,
+    "imc": 23.99
+   },
+   "esperado": "MG"
+  },
+  {
+   "id": "IMC-idoso-65-24.0",
+   "descricao": "IMC 24.0 aos 65 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 65,
+    "imc": 24.0
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IMC-idoso-70-29.0",
+   "descricao": "IMC 29.0 aos 70 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 70,
+    "imc": 29.0
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IMC-idoso-70-29.01",
+   "descricao": "IMC 29.01 aos 70 anos",
+   "origem": "macro IMC_IDOSO",
+   "funcao": "classificarImcIdoso",
+   "entrada": {
+    "idadeAnos": 70,
+    "imc": 29.01
+   },
+   "esperado": "SP"
+  },
+  {
+   "id": "cintura-feminino-79.9",
+   "descricao": "Cintura 79.9 cm, feminino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "feminino",
+    "cinturaCm": 79.9
+   },
+   "esperado": "B"
+  },
+  {
+   "id": "cintura-feminino-80.0",
+   "descricao": "Cintura 80.0 cm, feminino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "feminino",
+    "cinturaCm": 80.0
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "cintura-feminino-87.9",
+   "descricao": "Cintura 87.9 cm, feminino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "feminino",
+    "cinturaCm": 87.9
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "cintura-feminino-88.0",
+   "descricao": "Cintura 88.0 cm, feminino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "feminino",
+    "cinturaCm": 88.0
+   },
+   "esperado": "MA"
+  },
+  {
+   "id": "cintura-masculino-93.9",
+   "descricao": "Cintura 93.9 cm, masculino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "masculino",
+    "cinturaCm": 93.9
+   },
+   "esperado": "B"
+  },
+  {
+   "id": "cintura-masculino-94.0",
+   "descricao": "Cintura 94.0 cm, masculino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "masculino",
+    "cinturaCm": 94.0
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "cintura-masculino-101.9",
+   "descricao": "Cintura 101.9 cm, masculino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "masculino",
+    "cinturaCm": 101.9
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "cintura-masculino-102.0",
+   "descricao": "Cintura 102.0 cm, masculino",
+   "origem": "aba av.antropométrica E34",
+   "funcao": "classificarCintura",
+   "entrada": {
+    "sexo": "masculino",
+    "cinturaCm": 102.0
+   },
+   "esperado": "MA"
+  },
+  {
+   "id": "compleicao-feminino-1.65-14.0",
+   "descricao": "Compleição feminino, 1.65 m, punho 14.0 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "feminino",
+    "estaturaM": 1.65,
+    "punhoCm": 14.0
+   },
+   "esperado": "PEQUENA"
+  },
+  {
+   "id": "compleicao-feminino-1.65-15.0",
+   "descricao": "Compleição feminino, 1.65 m, punho 15.0 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "feminino",
+    "estaturaM": 1.65,
+    "punhoCm": 15.0
+   },
+   "esperado": "MEDIA"
+  },
+  {
+   "id": "compleicao-feminino-1.65-16.3",
+   "descricao": "Compleição feminino, 1.65 m, punho 16.3 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "feminino",
+    "estaturaM": 1.65,
+    "punhoCm": 16.3
+   },
+   "esperado": "MEDIA"
+  },
+  {
+   "id": "compleicao-feminino-1.65-16.5",
+   "descricao": "Compleição feminino, 1.65 m, punho 16.5 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "feminino",
+    "estaturaM": 1.65,
+    "punhoCm": 16.5
+   },
+   "esperado": "GRANDE"
+  },
+  {
+   "id": "compleicao-masculino-1.8-17.0",
+   "descricao": "Compleição masculino, 1.8 m, punho 17.0 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "masculino",
+    "estaturaM": 1.8,
+    "punhoCm": 17.0
+   },
+   "esperado": "PEQUENA"
+  },
+  {
+   "id": "compleicao-masculino-1.8-18.0",
+   "descricao": "Compleição masculino, 1.8 m, punho 18.0 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "masculino",
+    "estaturaM": 1.8,
+    "punhoCm": 18.0
+   },
+   "esperado": "MEDIA"
+  },
+  {
+   "id": "compleicao-masculino-1.8-19.0",
+   "descricao": "Compleição masculino, 1.8 m, punho 19.0 cm",
+   "origem": "aba av.antropométrica H5",
+   "funcao": "classificarCompleicao",
+   "entrada": {
+    "sexo": "masculino",
+    "estaturaM": 1.8,
+    "punhoCm": 19.0
+   },
+   "esperado": "GRANDE"
+  },
+  {
+   "id": "pg-masculino-20-3.99",
+   "descricao": "3.99% de gordura, masculino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 20,
+    "percentualGordura": 3.99
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "pg-masculino-20-4.0",
+   "descricao": "4.0% de gordura, masculino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 20,
+    "percentualGordura": 4.0
+   },
+   "esperado": "EXC"
+  },
+  {
+   "id": "pg-masculino-20-7.0",
+   "descricao": "7.0% de gordura, masculino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 20,
+    "percentualGordura": 7.0
+   },
+   "esperado": "MT_BOM"
+  },
+  {
+   "id": "pg-masculino-20-10.99",
+   "descricao": "10.99% de gordura, masculino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 20,
+    "percentualGordura": 10.99
+   },
+   "esperado": "MT_BOM"
+  },
+  {
+   "id": "pg-masculino-20-24.0",
+   "descricao": "24.0% de gordura, masculino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 20,
+    "percentualGordura": 24.0
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "pg-masculino-20-24.01",
+   "descricao": "24.01% de gordura, masculino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 20,
+    "percentualGordura": 24.01
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "pg-masculino-29-26.48",
+   "descricao": "26.48% de gordura, masculino, 29 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 29,
+    "percentualGordura": 26.48
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "pg-masculino-40-29.0",
+   "descricao": "29.0% de gordura, masculino, 40 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 40,
+    "percentualGordura": 29.0
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "pg-masculino-40-29.01",
+   "descricao": "29.01% de gordura, masculino, 40 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 40,
+    "percentualGordura": 29.01
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "pg-masculino-60-12.99",
+   "descricao": "12.99% de gordura, masculino, 60 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 60,
+    "percentualGordura": 12.99
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "pg-masculino-60-30.0",
+   "descricao": "30.0% de gordura, masculino, 60 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 60,
+    "percentualGordura": 30.0
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "pg-masculino-60-30.01",
+   "descricao": "30.01% de gordura, masculino, 60 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "masculino",
+    "idadeAnos": 60,
+    "percentualGordura": 30.01
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "pg-feminino-20-12.99",
+   "descricao": "12.99% de gordura, feminino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 20,
+    "percentualGordura": 12.99
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "pg-feminino-20-13.0",
+   "descricao": "13.0% de gordura, feminino, 20 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 20,
+    "percentualGordura": 13.0
+   },
+   "esperado": "EXC"
+  },
+  {
+   "id": "pg-feminino-30-23.99",
+   "descricao": "23.99% de gordura, feminino, 30 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 30,
+    "percentualGordura": 23.99
+   },
+   "esperado": "BOM"
+  },
+  {
+   "id": "pg-feminino-30-24.0",
+   "descricao": "24.0% de gordura, feminino, 30 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 30,
+    "percentualGordura": 24.0
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "pg-feminino-40-32.99",
+   "descricao": "32.99% de gordura, feminino, 40 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 40,
+    "percentualGordura": 32.99
+   },
+   "esperado": "MOD_ALTO"
+  },
+  {
+   "id": "pg-feminino-50-38.0",
+   "descricao": "38.0% de gordura, feminino, 50 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 50,
+    "percentualGordura": 38.0
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "pg-feminino-50-38.01",
+   "descricao": "38.01% de gordura, feminino, 50 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 50,
+    "percentualGordura": 38.01
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "pg-feminino-60-23.0",
+   "descricao": "23.0% de gordura, feminino, 60 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 60,
+    "percentualGordura": 23.0
+   },
+   "esperado": "MT_BOM"
+  },
+  {
+   "id": "pg-feminino-17-20.0",
+   "descricao": "20.0% de gordura, feminino, 17 anos",
+   "origem": "macro CLASS_PERC_GORD_ADULTO_IDOSO",
+   "funcao": "classificarPercentualGordura",
+   "entrada": {
+    "sexo": "feminino",
+    "idadeAnos": 17,
+    "percentualGordura": 20.0
+   },
+   "esperado": null
+  },
+  {
+   "id": "idade-2026-10-31-1997-10-30",
+   "descricao": "Idade em 2026-10-31 para nascimento em 1997-10-30",
+   "origem": "aba av.antropométrica E11",
+   "funcao": "calcularIdade",
+   "entrada": {
+    "dataAvaliacao": "2026-10-31",
+    "nascimento": "1997-10-30"
+   },
+   "esperado": 29
+  },
+  {
+   "id": "idade-2026-10-31-1997-10-31",
+   "descricao": "Idade em 2026-10-31 para nascimento em 1997-10-31",
+   "origem": "aba av.antropométrica E11",
+   "funcao": "calcularIdade",
+   "entrada": {
+    "dataAvaliacao": "2026-10-31",
+    "nascimento": "1997-10-31"
+   },
+   "esperado": 28,
+   "nota": "INT((data - nascimento)/365,25) como na planilha: no dia exato do aniversário pode dar 1 ano a menos (365,25 dias por ano)."
+  },
+  {
+   "id": "idade-2026-03-01-1996-02-29",
+   "descricao": "Idade em 2026-03-01 para nascimento em 1996-02-29",
+   "origem": "aba av.antropométrica E11",
+   "funcao": "calcularIdade",
+   "entrada": {
+    "dataAvaliacao": "2026-03-01",
+    "nascimento": "1996-02-29"
+   },
+   "esperado": 30
+  },
+  {
+   "id": "idade-2026-10-31-1966-04-12",
+   "descricao": "Idade em 2026-10-31 para nascimento em 1966-04-12",
+   "origem": "aba av.antropométrica E11",
+   "funcao": "calcularIdade",
+   "entrada": {
+    "dataAvaliacao": "2026-10-31",
+    "nascimento": "1966-04-12"
+   },
+   "esperado": 60
+  },
+  {
+   "id": "idade-2026-01-01-2025-01-01",
+   "descricao": "Idade em 2026-01-01 para nascimento em 2025-01-01",
+   "origem": "aba av.antropométrica E11",
+   "funcao": "calcularIdade",
+   "entrada": {
+    "dataAvaliacao": "2026-01-01",
+    "nascimento": "2025-01-01"
+   },
+   "esperado": 0
+  }
+ ]
+}

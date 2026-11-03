@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/dieta-nao-editavel",
+  "title": "Operação recusada",
+  "status": 422,
+  "detail": "Dieta publicada não é editável.",
+  "codigo": "DIETA_NAO_EDITAVEL",
+  "regra": "RN-DIE-04",
+  "campos": [],
+  "traceId": null,
+  "atual": null
+}

@@ -1,0 +1,47 @@
+name: E2E web
+
+# Playwright (Chromium) contra o backend real e a web de produção. Manual e em PR que mexe na web ou no e2e.
+# Se o dieta-backend for privado, crie o secret BACKEND_REPO_TOKEN (token com leitura nesse repositório).
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['e2e/**', 'shared/**', 'webApp/**', 'ops/e2e-wsl.sh', '.github/workflows/e2e-web.yml']
+
+jobs:
+  e2e:
+    name: Fluxo completo no Chromium
+    # ubuntu-latest já aponta para o 26.04, que o Playwright 1.56 ainda não suporta
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: guilherme-oliveria/dieta-backend
+          ref: develop
+          path: dieta-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '25'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Dependências do Playwright
+        working-directory: e2e
+        run: npm ci --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: E2E
+        env:
+          DIETA_BACKEND_DIR: ${{ github.workspace }}/dieta-backend
+        run: ops/e2e-wsl.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-relatorio
+          path: |
+            e2e/relatorio/
+            e2e/test-results/
+            build/e2e-*.log
+            build/e2e-wsl.txt

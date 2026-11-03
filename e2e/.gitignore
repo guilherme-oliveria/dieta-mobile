@@ -1,0 +1,7 @@
+node_modules/
+relatorio/
+test-results/
+playwright-report/
+# sonda de exploração local
+sonda*
+passo*.json

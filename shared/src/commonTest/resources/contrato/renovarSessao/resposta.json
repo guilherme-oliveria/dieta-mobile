@@ -1,0 +1,18 @@
+{
+  "accessToken": "ACCESS_TOKEN_FICTICIO_SEM_VALIDADE",
+  "refreshToken": "REFRESH_TOKEN_FICTICIO_SEM_VALIDADE",
+  "expiraEm": "2026-10-24T12:15:00Z",
+  "usuario": {
+    "id": "019a0f32-5000-7000-8000-000000000001",
+    "nome": "Nutricionista de Exemplo",
+    "email": "nutri@example.invalid",
+    "emailConfirmado": false,
+    "perfis": [
+      "NUTRICIONISTA"
+    ],
+    "perfil": "NUTRICIONISTA",
+    "nutricionistaId": "019a0f32-5000-7000-8000-000000000002",
+    "pacienteId": null,
+    "fuso": "America/Sao_Paulo"
+  }
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme LastUpgradeVersion="1620" version="1.3">
+    <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES">
+        <BuildActionEntries>
+            <BuildActionEntry buildForTesting="YES" buildForRunning="NO" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="NO">
+                <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="F660E7AACD2D1890639EE7E1" BuildableName="dieta-mobile.app" BlueprintName="iosApp" ReferencedContainer="container:iosApp.xcodeproj" />
+            </BuildActionEntry>
+            <BuildActionEntry buildForTesting="YES" buildForRunning="NO" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="NO">
+                <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="D10500000000000000000008" BuildableName="TestesCofre.xctest" BlueprintName="TestesCofre" ReferencedContainer="container:iosApp.xcodeproj" />
+            </BuildActionEntry>
+        </BuildActionEntries>
+    </BuildAction>
+    <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES">
+        <Testables>
+            <TestableReference skipped="NO">
+                <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="D10500000000000000000008" BuildableName="TestesCofre.xctest" BlueprintName="TestesCofre" ReferencedContainer="container:iosApp.xcodeproj" />
+            </TestableReference>
+        </Testables>
+        <MacroExpansion>
+            <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="F660E7AACD2D1890639EE7E1" BuildableName="dieta-mobile.app" BlueprintName="iosApp" ReferencedContainer="container:iosApp.xcodeproj" />
+        </MacroExpansion>
+    </TestAction>
+</Scheme>

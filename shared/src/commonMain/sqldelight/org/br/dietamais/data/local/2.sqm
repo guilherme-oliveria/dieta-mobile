@@ -1,0 +1,15 @@
+ALTER TABLE paciente_cache ADD COLUMN bootstrap_pendente INTEGER NOT NULL DEFAULT 0;
+
+DELETE FROM cursor_sync;
+
+CREATE TABLE registro_sync (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    colecao TEXT NOT NULL,
+    id TEXT NOT NULL,
+    revisao INTEGER NOT NULL CHECK (revisao >= 0),
+    excluido INTEGER NOT NULL CHECK (excluido IN (0, 1)),
+    dados_json TEXT,
+    PRIMARY KEY (usuario_id, perfil, colecao, id),
+    CHECK ((excluido = 1 AND dados_json IS NULL) OR (excluido = 0 AND dados_json IS NOT NULL))
+);

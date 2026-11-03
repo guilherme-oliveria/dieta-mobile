@@ -1,0 +1,10 @@
+{
+  "nome": "Paciente de Exemplo",
+  "email": "paciente@example.invalid",
+  "dataNascimento": null,
+  "sexo": "NAO_INFORMADO",
+  "telefone": null,
+  "estaturaReferencia": null,
+  "objetivo": "Objetivo fictício",
+  "observacoes": null
+}

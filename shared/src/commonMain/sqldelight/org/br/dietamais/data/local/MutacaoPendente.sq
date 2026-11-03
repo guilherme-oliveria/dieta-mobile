@@ -1,0 +1,61 @@
+CREATE TABLE mutacao_pendente (
+    id_mutacao TEXT NOT NULL PRIMARY KEY,
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    entidade TEXT NOT NULL,
+    operacao TEXT NOT NULL CHECK (operacao IN ('CRIAR', 'ATUALIZAR', 'EXCLUIR')),
+    id TEXT NOT NULL,
+    versao_base INTEGER,
+    dados_json TEXT NOT NULL,
+    tentativas INTEGER NOT NULL DEFAULT 0 CHECK (tentativas >= 0),
+    status TEXT NOT NULL DEFAULT 'PENDENTE'
+);
+
+CREATE INDEX mutacao_pendente_escopo_status ON mutacao_pendente (usuario_id, perfil, status, id_mutacao);
+
+enfileirar:
+INSERT INTO mutacao_pendente (id_mutacao, usuario_id, perfil, entidade, operacao, id, versao_base, dados_json)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+pendentes:
+SELECT * FROM mutacao_pendente
+WHERE usuario_id = ? AND perfil = ? AND status = 'PENDENTE'
+ORDER BY id_mutacao;
+
+limpar:
+DELETE FROM mutacao_pendente;
+
+concluir:
+DELETE FROM mutacao_pendente WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+marcar:
+UPDATE mutacao_pendente SET status = ? WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+registrarTentativa:
+UPDATE mutacao_pendente SET tentativas = tentativas + 1 WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+doEscopo:
+SELECT * FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? ORDER BY id_mutacao;
+
+buscar:
+SELECT * FROM mutacao_pendente WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ?;
+
+abertaDoRegistro:
+SELECT COUNT(*) FROM mutacao_pendente
+WHERE usuario_id = ? AND perfil = ? AND entidade = ? AND id = ? AND status IN ('PENDENTE', 'CONFLITO');
+
+doRegistro:
+SELECT * FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? AND entidade = ? AND id = ? ORDER BY id_mutacao;
+
+reabrirComNovaIdentidade:
+UPDATE mutacao_pendente SET id_mutacao = ?, versao_base = ?, status = 'PENDENTE', tentativas = 0
+WHERE id_mutacao = ? AND usuario_id = ? AND perfil = ? AND status = 'CONFLITO';
+
+daSessaoAtual:
+SELECT m.* FROM mutacao_pendente AS m
+JOIN sessao AS s ON s.usuario_id = m.usuario_id AND s.perfil = m.perfil
+WHERE s.id = 1
+ORDER BY m.id_mutacao;
+
+removerDoRegistro:
+DELETE FROM mutacao_pendente WHERE usuario_id = ? AND perfil = ? AND entidade = ? AND id = ?;

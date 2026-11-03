@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Paciente · Lista de compras</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E7D4F}a:hover{color:#1F5C39}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #F5F6F1; color: #17251D; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
+  <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 52px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Lista de compras</h1>
+        <span style="font-size: 13px; color: #5B6B61">Da dieta de 13/10 · 3 de 10 itens</span>
+      </div>
+      <button aria-label="Compartilhar lista" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #E2E6DE; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #17251D">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="m16 6-4-4-4 4"></path><path d="M12 2v13"></path></svg>
+      </button>
+    </div>
+
+    <div role="group" aria-label="Período" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E9ECE4; border-radius: 14px">
+      <button style="height: 36px; border: 0; border-radius: 10px; background: transparent; color: #3F4D44; font-size: 13px; font-weight: 600">3 dias</button>
+      <button aria-pressed="true" style="height: 36px; border: 0; border-radius: 10px; background: #FFFFFF; color: #17251D; font-size: 13px; font-weight: 700; box-shadow: 0 1px 2px rgba(23,37,29,0.12)">7 dias</button>
+      <button style="height: 36px; border: 0; border-radius: 10px; background: transparent; color: #3F4D44; font-size: 13px; font-weight: 600">15 dias</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{sections}}" as="s" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <h2 style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6B61">{{s.title}}</h2>
+          <div style="display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E2E6DE; border-radius: 16px; overflow: hidden">
+            <sc-for list="{{s.items}}" as="i" hint-placeholder-count="2">
+              <label style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 14px; border-bottom: 1px solid #EEF1EA; cursor: pointer">
+                <input type="checkbox" checked="{{i.done}}" style="width: 20px; height: 20px; margin: 0; accent-color: #2E7D4F">
+                <span style="{{i.nameStyle}}">{{i.name}}</span>
+                <span style="font-size: 13px; font-weight: 600; color: #5B6B61">{{i.qty}}</span>
+              </label>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <nav aria-label="Navegação principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; background: #FFFFFF; border-top: 1px solid #E2E6DE; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 6px 4px 10px; box-sizing: border-box">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Hoje</a>
+    <a href="P-Refeicao.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2v20"></path><path d="M4 2v6a3 3 0 0 0 6 0V2"></path><path d="M17 22V2c-2 0-4 2-4 6v5h4"></path></svg>Dieta</a>
+    <a href="P-Compras.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #2E7D4F; font-size: 11px; font-weight: 700">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"></circle><circle cx="18" cy="20" r="1.5"></circle><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6"></path></svg>Compras</a>
+    <a href="P-Progresso.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m7 15 4-4 3 3 6-6"></path></svg>Evolução</a>
+    <a href="P-Lembretes.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B6B61; font-size: 11px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Perfil</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const on = 'flex: 1; font-size: 15px; font-weight: 500; color: #7A877E; text-decoration: line-through;';
+    const off = 'flex: 1; font-size: 15px; font-weight: 600; color: #17251D;';
+    const mk = (name, qty, done) => ({ name, qty, done: !!done, nameStyle: done ? on : off });
+    return {
+      sections: [
+        { title: 'Hortifrúti', items: [mk('Banana prata', '7 unidades', true), mk('Laranja', '7 unidades', true), mk('Folhas para salada', '3 maços'), mk('Legumes variados', '1,5 kg')] },
+        { title: 'Carnes e ovos', items: [mk('Filé de frango', '1 kg'), mk('Ovos', '14 unidades', true)] },
+        { title: 'Mercearia', items: [mk('Arroz branco', '1,1 kg'), mk('Feijão carioca', '700 g')] },
+        { title: 'Padaria e laticínios', items: [mk('Pão francês', '14 unidades'), mk('Leite desnatado', '1,4 L')] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

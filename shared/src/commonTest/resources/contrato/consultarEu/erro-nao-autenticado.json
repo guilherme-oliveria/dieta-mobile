@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/nao-autenticado",
+  "title": "Erro de exemplo",
+  "status": 401,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "NAO_AUTENTICADO",
+  "regra": null,
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

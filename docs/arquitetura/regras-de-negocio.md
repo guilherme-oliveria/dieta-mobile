@@ -13,7 +13,7 @@
 | `NUTRICIONISTA` | Nutri que assina | Os próprios pacientes vinculados e tudo que criou |
 | `PACIENTE` | Pessoa atendida | Só os próprios dados, as dietas publicadas para ele e suas nutris |
 
-Um usuário tem um perfil. Uma nutri que também quer ser paciente usa outro e-mail (simplifica o MVP).
+Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (decisão de BE-05 no plano de execução). Cada sessão usa um perfil ativo, escolhido no login; `GET /eu` informa `perfis` disponíveis e `perfil` ativo. A abreviação "NUTRI" no plano é descritiva: o valor no JSON e no JWT é sempre `NUTRICIONISTA`. O perfil `ADMIN` continua restrito à equipe da plataforma.
 
 ## Contas e acesso (RN-CON)
 
@@ -25,6 +25,7 @@ Um usuário tem um perfil. Uma nutri que também quer ser paciente usa outro e-m
 - **RN-CON-06** Paciente só cria conta a partir de um convite (no MVP). Cadastro avulso de paciente é P2 (vitrine).
 - **RN-CON-07** Recuperação de senha por link de uso único, validade 1 h. Trocar a senha revoga todos os refresh tokens do usuário.
 - **RN-CON-08** CRN não é validado automaticamente no MVP; o admin pode marcar `crn_verificado`. `[SUPOSIÇÃO]`
+- **RN-CON-09** Cadastro de conta (nutri ou paciente convidado) exige aceite explícito da versão de termos de uso aprovada **e** publicada. A fonte interna é `docs/legal/terms-of-use.md`, inicialmente versão `1.0.0`, `RASCUNHO`, sem aprovação/publicação presumidas. Sem ambas, o cadastro fica indisponível (`TERMOS_INDISPONIVEIS`); aceite ausente/negado ou versão divergente retorna `TERMOS_NAO_ACEITOS`. O backend registra userId, versão e instante do Clock na mesma transação da conta. Consentimento clínico do vínculo é independente. Login, refresh, recuperação e operações de contas existentes continuam normais.
 
 ## Assinatura e plano (RN-ASS)
 
@@ -91,6 +92,24 @@ Um usuário tem um perfil. Uma nutri que também quer ser paciente usa outro e-m
 - **RN-AVA-04** Avaliação pode ser editada pela nutri por 30 dias; depois só com justificativa registrada no log. `[SUPOSIÇÃO]`
 - **RN-AVA-05** O paciente vê as avaliações que a nutri marcar como "compartilhada" (padrão: sim) e o gráfico de evolução.
 
+- **RN-AVA-06** `[planilhas]` Avaliação ampliada: campos novos (punho, diâmetros, pesos usual e desejado, % desejado, atividade, objetivo) são opcionais, e o contrato antigo continua aceito.
+
+## Cálculos da avaliação (RN-CAL) e resultados (RN-RES)
+
+Origem: plano das planilhas da nutri (`plano-melhorias-planilhas.md`). Substituem o "só IMC" da RN-AVA-02 à medida que BE-40 e seguintes entram.
+
+- **RN-CAL-01** O backend calcula e grava todos os resultados derivados (composição, classificações, GEB/GET, VET, metas, texto-resumo). O cliente mostra prévia com as mesmas fórmulas; o valor gravado é o do backend (como RN-DIE-05).
+- **RN-CAL-02** A faixa etária da avaliação é decidida pela idade na data: 0–9, 10–17, 18–59, 60+.
+- **RN-CAL-03** Cada avaliação grava o protocolo e a `versaoReferencia` usados. Recalcular só acontece se a nutri pedir. Protocolo desconhecido: `422 PROTOCOLO_INVALIDO`.
+- **RN-CAL-04** Resultado que depende de dado ausente fica nulo, com o motivo (ex.: `FALTA_PUNHO`), nunca zero. `DADO_INSUFICIENTE_CALCULO` só quando a nutri pede um cálculo explícito sem os dados.
+- **RN-CAL-05** Peso para "por kg" na dieta: adulto com IMC ≥ 30 usa o peso ajustado `(P − Pideal) × 0,25 + Pideal`, com `Pideal = E² × 21,7`.
+- **RN-CAL-06** Vetores de teste da planilha (`src/test/resources/contrato/calculos/`) são contrato: mudança de fórmula exige mudar o vetor nos dois repositórios.
+- **RN-MOD-01** Modelos do sistema são somente leitura; a nutri trabalha com cópias dela, isoladas por `nutricionista_id` (de outra nutri = 404).
+- **RN-MOD-02** Aplicar modelo cria rascunho (RN-DIE-02); nunca publica sozinho.
+- **RN-MOD-03** Restrição do modelo vira restrição do paciente na dieta publicada e filtra a lista dele no snapshot (RN-DIE-03).
+- **RN-RES-01** O paciente vê resultados por seção conforme o compartilhamento da nutri; exames são não compartilhados por padrão.
+- **RN-RES-02** Textos para o paciente não usam siglas clínicas.
+
 ## Anamnese (RN-ANA)
 
 - **RN-ANA-01** A nutri tem modelos de questionário (blocos e perguntas). Toda nutri começa com o modelo padrão (objetivo, histórico de saúde, familiar, alergias, preferências, treino, rotina, recordatório 24 h, frequência alimentar, hábitos, digestão, saúde da mulher).
@@ -124,6 +143,8 @@ Detalhes técnicos em `integracao.md`. Regras:
 
 - **RN-SYN-01** Todo registro sincronizável tem `id` UUID gerado pelo cliente (UUIDv7), `versao` (inteiro, incrementado pelo backend a cada escrita), `atualizado_em` e `excluido_em` (exclusão lógica).
 - **RN-SYN-02** Escrita offline leva a `versao` em que foi baseada. Se a versão no servidor for outra, o backend **não sobrescreve**: devolve `CONFLITO_VERSAO` com o registro atual, e o app pergunta à nutri qual manter.
+
+  Na leitura, `versao` do envelope é revisão monotônica da projeção no diário; a versão da entidade está em `dados.versao`, usada em `If-Match`. ENCERRADO conserva histórico autorizado por RN-VIN-05; tombstone representa perda real de visibilidade, não mero encerramento.
 - **RN-SYN-03** Registros só de inclusão (check-in, água, peso em casa, log) nunca conflitam.
 - **RN-SYN-04** Regras de negócio valem igual no sync: uma mutação offline que viole uma regra (ex.: limite de pacientes) é rejeitada naquele item com o código da regra, sem derrubar o lote.
 - **RN-SYN-05** O paciente não edita nada da nutri, então só sincroniza escrita dos próprios registros de rotina e respostas de anamnese.

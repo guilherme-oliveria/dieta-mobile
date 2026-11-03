@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/assinatura-inativa",
+  "title": "Erro de exemplo",
+  "status": 422,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "ASSINATURA_INATIVA",
+  "regra": "RN-ASS-04",
+  "campos": [],
+  "traceId": "0000000000000001",
+  "atual": null
+}

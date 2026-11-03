@@ -2,6 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array><string>org.br.dietamais.sync-leitura</string></array>
+    <key>UIBackgroundModes</key>
+    <array><string>fetch</string></array>
+
+    <key>DietaApiHost</key>
+    <string>$(API_HOST)</string>
+    <key>ConviteHost</key>
+    <string>$(CONVITE_HOST)</string>
+    <key>CFBundleURLTypes</key>
+    <array><dict>
+        <key>CFBundleURLName</key><string>org.br.dietamais.convite</string>
+        <key>CFBundleURLSchemes</key><array><string>dietamais</string></array>
+    </dict></array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 </dict>

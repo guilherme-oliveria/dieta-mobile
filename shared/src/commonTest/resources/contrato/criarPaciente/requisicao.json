@@ -1,0 +1,11 @@
+{
+  "id": "019a0f32-5000-7000-8000-000000000003",
+  "nome": "Paciente de Exemplo",
+  "email": "paciente@example.invalid",
+  "dataNascimento": null,
+  "sexo": "NAO_INFORMADO",
+  "telefone": null,
+  "estaturaReferencia": null,
+  "objetivo": null,
+  "observacoes": null
+}

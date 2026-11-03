@@ -1,0 +1,14 @@
+{
+  "id": "019a0f32-5000-7000-8000-000000000004",
+  "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+  "nutricionista": {
+    "id": "019a0f32-5000-7000-8000-000000000002",
+    "nome": "Nutricionista de Exemplo",
+    "crn": "CRN-1 99999999"
+  },
+  "status": "ENCERRADO",
+  "consentimentoEm": "2026-10-24T12:00:00Z",
+  "encerradoEm": "2026-10-24T12:00:00Z",
+  "versao": 3,
+  "atualizadoEm": "2026-10-24T12:00:00Z"
+}

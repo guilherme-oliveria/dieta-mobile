@@ -1,0 +1,12 @@
+{
+  "nutricionista": {
+    "id": "019a0f32-5000-7000-8000-000000000002",
+    "nome": "Nutricionista de Exemplo",
+    "crn": "CRN-1 99999999"
+  },
+  "termo": {
+    "versao": "2026-10",
+    "texto": "Termo fictício: autorizo a nutricionista identificada a acessar os dados do meu acompanhamento nutricional para prestar o atendimento."
+  },
+  "expiraEm": "2026-10-31T12:00:00Z"
+}

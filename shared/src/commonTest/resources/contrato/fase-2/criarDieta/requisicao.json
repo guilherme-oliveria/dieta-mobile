@@ -1,0 +1,21 @@
+{
+  "id": null,
+  "titulo": "Dieta fictícia sem validade clínica",
+  "orientacao": null,
+  "refeicoes": [
+    {
+      "id": null,
+      "nome": "Refeição fictícia",
+      "horario": "08:00:00",
+      "ordem": 0,
+      "itens": [
+        {
+          "id": null,
+          "alimentoId": "019a0f32-5000-7000-8000-000000000002",
+          "porcoes": 1,
+          "observacao": null
+        }
+      ]
+    }
+  ]
+}

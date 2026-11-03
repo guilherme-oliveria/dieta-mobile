@@ -1,0 +1,11 @@
+{
+  "type": "https://dietamais.com.br/erros/dieta-vazia",
+  "title": "Operação recusada",
+  "status": 422,
+  "detail": "Nenhuma refeição com itens.",
+  "codigo": "DIETA_VAZIA",
+  "regra": "RN-DIE-06",
+  "campos": [],
+  "traceId": null,
+  "atual": null
+}

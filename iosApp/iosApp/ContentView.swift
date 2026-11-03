@@ -14,5 +14,13 @@ struct ContentView: View {
     var body: some View {
         ComposeView()
             .ignoresSafeArea()
+            .onOpenURL { url in
+                LinksConviteKt.receberLinkConvite(link: url.absoluteString)
+            }
+            .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                if let url = activity.webpageURL {
+                    LinksConviteKt.receberLinkConvite(link: url.absoluteString)
+                }
+            }
     }
 }

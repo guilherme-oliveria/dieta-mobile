@@ -1,0 +1,15 @@
+CREATE TABLE cursor_sync (
+    usuario_id TEXT NOT NULL,
+    perfil TEXT NOT NULL,
+    cursor TEXT NOT NULL,
+    PRIMARY KEY (usuario_id, perfil)
+);
+
+buscar:
+SELECT cursor FROM cursor_sync WHERE usuario_id = ? AND perfil = ?;
+
+salvar:
+INSERT OR REPLACE INTO cursor_sync (usuario_id, perfil, cursor) VALUES (?, ?, ?);
+
+limpar:
+DELETE FROM cursor_sync;

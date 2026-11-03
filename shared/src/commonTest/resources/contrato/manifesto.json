@@ -1,0 +1,317 @@
+[
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/cadastro-nutri",
+    "status": 201,
+    "exemplos": [
+      {
+        "arquivo": "cadastrarNutri/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.CadastroNutriRequisicao"
+      },
+      {
+        "arquivo": "cadastrarNutri/resposta.json",
+        "tipo": "com.br.dietamais.contas.api.CadastroNutriResposta"
+      },
+      {
+        "arquivo": "cadastrarNutri/erro-email-ja-cadastrado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "cadastrarNutri/erro-obrigatorio.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "cadastrarNutri/erro-formato-invalido.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "nao-implementado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/login",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "entrar/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.LoginRequisicao"
+      },
+      {
+        "arquivo": "entrar/resposta.json",
+        "tipo": "com.br.dietamais.comum.api.SessaoResposta"
+      },
+      {
+        "arquivo": "entrar/resposta-escolher-perfil.json",
+        "tipo": "com.br.dietamais.comum.api.SessaoResposta"
+      },
+      {
+        "arquivo": "entrar/requisicao-escolher-perfil.json",
+        "tipo": "com.br.dietamais.contas.api.LoginRequisicao"
+      },
+      {
+        "arquivo": "entrar/erro-credenciais-invalidas.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "entrar/erro-login-bloqueado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "entrar/erro-perfil-invalido.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/refresh",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "renovarSessao/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.RefreshRequisicao"
+      },
+      {
+        "arquivo": "renovarSessao/resposta.json",
+        "tipo": "com.br.dietamais.comum.api.SessaoResposta"
+      },
+      {
+        "arquivo": "renovarSessao/erro-token-invalido.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/logout",
+    "status": 204,
+    "exemplos": [
+      {
+        "arquivo": "sair/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.LogoutRequisicao"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/confirmar-email",
+    "status": 204,
+    "exemplos": [
+      {
+        "arquivo": "confirmarEmail/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.ConfirmarEmailRequisicao"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/esqueci-senha",
+    "status": 202,
+    "exemplos": [
+      {
+        "arquivo": "recuperarSenha/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.EsqueciSenhaRequisicao"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/auth/redefinir-senha",
+    "status": 204,
+    "exemplos": [
+      {
+        "arquivo": "redefinirSenha/requisicao.json",
+        "tipo": "com.br.dietamais.contas.api.RedefinirSenhaRequisicao"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/eu",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "consultarEu/resposta.json",
+        "tipo": "com.br.dietamais.contas.api.EuResposta"
+      },
+      {
+        "arquivo": "consultarEu/resposta-paciente.json",
+        "tipo": "com.br.dietamais.contas.api.EuResposta"
+      },
+      {
+        "arquivo": "consultarEu/erro-nao-autenticado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/pacientes",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "listarPacientes/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.PaginaPacientesResposta"
+      },
+      {
+        "arquivo": "criarPaciente/erro-assinatura-inativa.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "listarPacientes/erro-acesso-negado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/pacientes",
+    "status": 201,
+    "exemplos": [
+      {
+        "arquivo": "criarPaciente/requisicao.json",
+        "tipo": "com.br.dietamais.pacientes.api.CriarPacienteRequisicao"
+      },
+      {
+        "arquivo": "criarPaciente/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.PacienteResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/pacientes/{id}",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "consultarPaciente/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.PacienteResposta"
+      },
+      {
+        "arquivo": "consultarPaciente/erro-recurso-nao-encontrado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "atualizarPaciente/erro-conflito-versao.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "PATCH",
+    "caminho": "/api/v1/pacientes/{id}",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "atualizarPaciente/requisicao.json",
+        "tipo": "com.br.dietamais.pacientes.api.AtualizarPacienteRequisicao"
+      },
+      {
+        "arquivo": "atualizarPaciente/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.PacienteResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/pacientes/{id}/convite",
+    "status": 201,
+    "exemplos": [
+      {
+        "arquivo": "convidarPaciente/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.ConviteCriadoResposta"
+      },
+      {
+        "arquivo": "convidarPaciente/erro-email-nao-confirmado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "convidarPaciente/erro-limite-pacientes-atingido.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/convites/{codigo}",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "consultarConvite/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.ConviteResposta"
+      },
+      {
+        "arquivo": "consultarConvite/erro-convite-invalido.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "consultarConvite/erro-convite-expirado.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "consultarConvite/erro-taxa-excedida.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/convites/{codigo}/aceitar",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "aceitarConvite/requisicao.json",
+        "tipo": "com.br.dietamais.pacientes.api.AceitarConviteRequisicao"
+      },
+      {
+        "arquivo": "aceitarConvite/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.AceiteConviteResposta"
+      },
+      {
+        "arquivo": "aceitarConvite/requisicao-conta-existente.json",
+        "tipo": "com.br.dietamais.pacientes.api.AceitarConviteRequisicao"
+      },
+      {
+        "arquivo": "aceitarConvite/erro-vinculo-ja-existe.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      },
+      {
+        "arquivo": "aceitarConvite/erro-consentimento-obrigatorio.json",
+        "tipo": "com.br.dietamais.comum.api.ProblemaResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "POST",
+    "caminho": "/api/v1/pacientes/{id}/encerrar-vinculo",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "encerrarVinculo/resposta.json",
+        "tipo": "com.br.dietamais.pacientes.api.VinculoResposta"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "caminho": "/api/v1/sync",
+    "status": 200,
+    "exemplos": [
+      {
+        "arquivo": "puxarMudancas/resposta.json",
+        "tipo": "com.br.dietamais.sync.api.SyncResposta"
+      },
+      {
+        "arquivo": "puxarMudancas/resposta-exclusao.json",
+        "tipo": "com.br.dietamais.sync.api.SyncResposta"
+      },
+      {
+        "arquivo": "puxarMudancas/resposta-paginada.json",
+        "tipo": "com.br.dietamais.sync.api.SyncResposta"
+      }
+    ]
+  }
+]

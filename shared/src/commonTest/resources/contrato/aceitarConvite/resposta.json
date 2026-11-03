@@ -1,0 +1,34 @@
+{
+  "sessao": {
+    "accessToken": "ACCESS_TOKEN_FICTICIO_SEM_VALIDADE",
+    "refreshToken": "REFRESH_TOKEN_FICTICIO_SEM_VALIDADE",
+    "expiraEm": "2026-10-24T12:15:00Z",
+    "usuario": {
+      "id": "019a0f32-5000-7000-8000-000000000007",
+      "nome": "Paciente de Exemplo",
+      "email": "paciente@example.invalid",
+      "emailConfirmado": true,
+      "perfis": [
+        "PACIENTE"
+      ],
+      "perfil": "PACIENTE",
+      "nutricionistaId": null,
+      "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+      "fuso": "America/Sao_Paulo"
+    }
+  },
+  "vinculo": {
+    "id": "019a0f32-5000-7000-8000-000000000004",
+    "pacienteId": "019a0f32-5000-7000-8000-000000000003",
+    "nutricionista": {
+      "id": "019a0f32-5000-7000-8000-000000000002",
+      "nome": "Nutricionista de Exemplo",
+      "crn": "CRN-1 99999999"
+    },
+    "status": "ATIVO",
+    "consentimentoEm": "2026-10-24T12:00:00Z",
+    "encerradoEm": null,
+    "versao": 2,
+    "atualizadoEm": "2026-10-24T12:00:00Z"
+  }
+}

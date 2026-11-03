@@ -1,0 +1,17 @@
+{
+  "type": "https://dietamais.com.br/erros/obrigatorio",
+  "title": "Erro de exemplo",
+  "status": 400,
+  "detail": "Mensagem fictícia; o cliente decide pelo codigo.",
+  "codigo": "OBRIGATORIO",
+  "regra": null,
+  "campos": [
+    {
+      "campo": "email",
+      "codigo": "OBRIGATORIO",
+      "mensagem": "Informe o e-mail"
+    }
+  ],
+  "traceId": "0000000000000001",
+  "atual": null
+}
