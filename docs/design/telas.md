@@ -88,7 +88,7 @@ Desenhadas em 01/11/2026 (DES-08 a DES-10). Os artboards estão no canvas e em [
 | Biblioteca de modelos de dieta | `ui/nutri/dieta` · `ModelosDietaTela` | `A-Modelos-Biblioteca.dc.html` | desenhada; implementada MOB-56a (editar o conteúdo fica na 56b) | 56 |
 | Aplicar modelo ao paciente | `ui/nutri/dieta` · `AplicarModeloTela` | `A-Modelo-Aplicar.dc.html` | **implementada** (MOB-57) | 57 |
 | Avaliação infantil e adolescente | `ui/nutri/avaliacao` (campos por faixa) | `A-Avaliacao-Infantil.dc.html` | **implementada** (MOB-58; intervalos confirmados pelo servidor) | 58 |
-| Curva de crescimento (nutri e responsável) | `ui/comum/graficos` · `CurvaCrescimento` | `P-Curva-Crescimento.dc.html` | **desenhada**, falta implementar | 59 |
+| Curva de crescimento (nutri e responsável) | `ui/comum/graficos` · `CurvaCrescimentoConfirmada` | `P-Curva-Crescimento.dc.html` | **implementada** com snapshots disponíveis (MOB-59; limites em divergencias.md) | 59 |
 | Exames: lançar (nutri) | `ui/nutri/avaliacao` · `ExamesTela` | `A-Exames-Nutri.dc.html` | **implementada** (MOB-60b; divergência: a classificação de um valor novo só aparece depois de salvar, vem do servidor) | 60 |
 | Meus exames (paciente, barra de faixa) | `ui/paciente/evolucao` · `MeusExamesTela` | `P-Exames.dc.html` | **implementada** (MOB-60a) | 60 |
 | Anamnese estruturada (álcool, sal, óleo) | `ui/paciente/anamnese` e `ui/nutri/anamnese` | `A-Anamnese-Estruturada.dc.html`, `P-Anamnese.dc.html` | **implementada**; adaptações em [mob-61-anamnese.md](mob-61-anamnese.md) | 61 |

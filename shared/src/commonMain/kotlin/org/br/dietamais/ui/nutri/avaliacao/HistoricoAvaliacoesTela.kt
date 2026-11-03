@@ -29,9 +29,16 @@ data class AcoesHistorico(val aoNova: () -> Unit = {}, val aoEditar: (Uuid) -> U
 @Composable
 fun HistoricoAvaliacoesTela(estado: EstadoAvaliacoes, acoes: AcoesHistorico, podeEditar: Boolean = !estado.somenteLeitura, rolavel: Boolean = true) {
     val comparacao = estado.comparacao
+    var crescimentoAberto by remember(estado.pacienteId) { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().rolavelSe(rolavel).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
         MensagensAvaliacao(estado)
+        if (crescimentoAberto) {
+            BotaoTexto(stringResource(Res.string.crescimento_voltar), { crescimentoAberto = false })
+            CrescimentoTela(estado.itens, rolavel = false)
+            return@Column
+        }
+        if (estado.itens.any { it.resultadosInfantis != null }) BotaoTexto(stringResource(Res.string.crescimento_abrir), { crescimentoAberto = true })
         if (estado.comparando && comparacao != null) {
             ComparacaoAvaliacoes(comparacao.first, comparacao.second, acoes.aoVoltarComparacao)
             return@Column

@@ -13,6 +13,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 
 ## [1.4.0] — M10: crianças, exames e anamnese (em andamento)
 
+- MOB-59 Crescimento para nutri e paciente: seleção de avaliação/indicador, medidas e referências OMS congeladas, intervalos confirmados, fonte/versão e alternativa em tabela. Histórico offline sem classificação adulta para menores, sem misturar pacientes, vínculos, sexos ou versões. Referências ligadas somente em meses consecutivos disponíveis; lacunas permanecem explícitas.
+
 - MOB-58 Avaliação infantil e adolescente: campos por idade, comprimento/estatura em cm com precisão de milímetros, peso ao nascer em kg convertido para gramas e escolhas opcionais de referência, Slaughter e atividade. Resultados confirmados pelo servidor (OMS/Frisancho, composição e energia), com intervalos sem interpolação e G-16 explícita. Escrita offline preserva entradas e remove derivados antigos; refresh respeita mutações pendentes. Histórico e paciente não usam classificação de IMC adulto para menores. A curva histórica de MOB-59 continua pendente.
 - MOB-61 Anamnese estruturada: campos agrupados, medidas de bebida em seletor, resultados de pressão arterial, álcool, sal, óleo e duração recebidos do servidor. Digitação válida salva parcial, resultados antigos desaparecem após edição e podem ser atualizados sem concluir. Editor preserva códigos; web incorpora o PUT sem sobrescrever novas entradas. Falhas de gravação mantêm o formulário e permitem nova tentativa. Layout amplo com resultados laterais e fonte 200% em uma coluna.
 

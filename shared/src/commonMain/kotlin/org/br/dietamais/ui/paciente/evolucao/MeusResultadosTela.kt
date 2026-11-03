@@ -30,7 +30,13 @@ import org.jetbrains.compose.resources.stringResource
 fun MeusResultadosRota(avaliacoes: AvaliacoesViewModel) {
     val estado by avaliacoes.estado.collectAsState()
     LaunchedEffect(Unit) { avaliacoes.abrirComoPaciente() }
-    MeusResultadosTela(meusResultados(estado.itens))
+    var crescimentoAberto by remember(estado.pacienteId) { mutableStateOf(false) }
+    Column {
+        if (estado.itens.any { it.resultadosInfantis != null }) androidx.compose.material3.TextButton({ crescimentoAberto = !crescimentoAberto }) {
+            Text(stringResource(if(crescimentoAberto) Res.string.crescimento_voltar else Res.string.crescimento_abrir))
+        }
+        if (crescimentoAberto) CrescimentoTela(estado.itens) else MeusResultadosTela(meusResultados(estado.itens))
+    }
 }
 
 private fun estiloSemaforo(s: Semaforo) = when (s) { Semaforo.BOM -> EstiloStatus.FEITA; Semaforo.ATENCAO -> EstiloStatus.INFO; Semaforo.ALERTA -> EstiloStatus.ALERTA }
