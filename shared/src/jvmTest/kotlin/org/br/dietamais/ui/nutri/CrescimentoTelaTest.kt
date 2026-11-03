@@ -48,4 +48,12 @@ class CrescimentoTelaTest {
         onNodeWithText("Voltar às avaliações").performScrollTo().performClick()
         onNodeWithText("Ver crescimento").assertExists()
     }
+
+    @Test fun umaReferenciaIdentificaP3P50P97NoGrafico() = runSkikoComposeUiTest(size=Size(390f,844f)) {
+        val a=avaliacao()
+        setContent { DietaTheme { CrescimentoTela(listOf(a)) } }
+        onNodeWithContentDescription("P3: 11 kg/m²",substring=true).assertExists()
+        onNodeWithContentDescription("P50: 15 kg/m²",substring=true).assertExists()
+        onNodeWithContentDescription("P97: 19 kg/m²",substring=true).assertExists()
+    }
 }

@@ -32,11 +32,16 @@ class CrescimentoEvidenciasTest {
                         cortesPercentis=listOf(10.0,11.0,12.0,13.0,15.0,17.0,19.0,20.0).map { it+mes/100.0 },
                         percentil=IntervaloCurvaDto(50.0,85.0),fonte="OMS · fixture sintética",versaoReferencia="oms-1"))))
         }
-        listOf(Triple(390,844,1f),Triple(820,1180,1f),Triple(1180,820,1f),Triple(390,844,2f)).forEach { (w,h,fonte) ->
+        listOf(Triple(390,844,1f),Triple(820,1180,1f),Triple(1180,820,1f),Triple(390,844,2f))
+            .flatMap { listOf(it to false,it to true) }.forEach { (tamanho,unica) ->
+            val (w,h,fonte)=tamanho
             runSkikoComposeUiTest(size=Size(w.toFloat(),h.toFloat()),density=Density(1f,fonte)) {
-                setContent { DietaTheme { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { CrescimentoTela(itens) } } }
-                fun captura(sufixo:String) { val f=File("build/reports/MOB-59/curva-$w-$fonte-$sufixo.png"); f.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(),"png",f) }
+                setContent { DietaTheme { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { CrescimentoTela(if(unica) itens.takeLast(1) else itens) } } }
+                fun captura(sufixo:String) { val caso=if(unica) "unica-" else ""; val f=File("build/reports/MOB-59/curva-$w-$fonte-$caso$sufixo.png"); f.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(),"png",f) }
                 waitForIdle(); captura("grafico")
+                onNodeWithContentDescription("P3:",substring=true).assertExists()
+                onNodeWithContentDescription("P50:",substring=true).assertExists()
+                onNodeWithContentDescription("P97:",substring=true).assertExists()
                 onNodeWithText("Percentil entre 50 e 85").performScrollTo().assertIsDisplayed(); captura("intervalo")
                 onNodeWithText("Ver como tabela").performScrollTo().performClick()
                 onNodeWithText("P50: 15,18 kg/m²",substring=true).performScrollTo().assertIsDisplayed(); captura("tabela")
