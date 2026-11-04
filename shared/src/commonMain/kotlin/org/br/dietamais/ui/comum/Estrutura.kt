@@ -46,7 +46,7 @@ fun BarraTopo(titulo: String, aoVoltar: (() -> Unit)?, descricaoVoltar: String, 
 /** Barra de ações fixa no pé da tela: botão principal ocupando o resto, secundário contornado à esquerda. */
 @Composable
 fun RodapeAcoes(modifier: Modifier = Modifier, conteudo: @Composable RowScope.() -> Unit) {
-    Column(modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+    Column(modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).navigationBarsPadding().imePadding()) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Row(Modifier.fillMaxWidth().padding(horizontal = Dimens.paddingCard, vertical = Dimens.espacoMedio),
             horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalAlignment = Alignment.CenterVertically, content = conteudo)
@@ -56,5 +56,6 @@ fun RodapeAcoes(modifier: Modifier = Modifier, conteudo: @Composable RowScope.()
 /** Separa "Peso (kg)" em rótulo "Peso" e unidade "kg", para a unidade ficar dentro do campo (padrão de design). */
 fun separarUnidade(rotulo: String): Pair<String, String?> {
     val m = Regex("^(.*\\S)\\s*\\(([^()]{1,6})\\)$").find(rotulo) ?: return rotulo to null
+    if ('/' in m.groupValues[2] && m.groupValues[2].length <= 3 && m.groupValues[2].all { it.isUpperCase() || it == '/' }) return rotulo to null
     return m.groupValues[1] to m.groupValues[2]
 }

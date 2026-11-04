@@ -32,14 +32,13 @@ class AcoesListaPaciente(val aoVoltar: () -> Unit = {}, val aoBuscar: (String) -
 fun ListaSubstituicaoTela(estado: EstadoDietaPaciente, acoes: AcoesListaPaciente,
     classe: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass) {
     val ampla = classe.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-        BotaoTexto(stringResource(Res.string.pac_lista_voltar), acoes.aoVoltar)
-        Text(stringResource(Res.string.pac_lista_titulo), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
-        estado.dieta?.let {
-            Text(stringResource(Res.string.pac_lista_nutri, it.nutricionista.nome), style = MaterialTheme.typography.bodySmall)
-            val data = it.publicadoEm.toLocalDateTime(TimeZone.currentSystemDefault()).date.toString().split('-').reversed().joinToString("/")
-            Text(stringResource(Res.string.pac_lista_publicada, data), style = MaterialTheme.typography.bodySmall)
-        }
+    val subtitulo = estado.dieta?.let {
+        val data = it.publicadoEm.toLocalDateTime(TimeZone.currentSystemDefault()).date.toString().split('-').reversed().joinToString("/")
+        stringResource(Res.string.pac_lista_nutri, it.nutricionista.nome) + " · " + stringResource(Res.string.pac_lista_publicada, data)
+    }
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    BarraTopo(stringResource(Res.string.pac_lista_titulo), acoes.aoVoltar, stringResource(Res.string.pac_lista_voltar), subtitulo = subtitulo)
+    Column(Modifier.weight(1f).fillMaxWidth().padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
         if (estado.erro != null) EstadoErro(acoes.aoTentarNovamente, mensagem = stringResource(Res.string.pac_erro_geral))
         when {
@@ -91,6 +90,7 @@ fun ListaSubstituicaoTela(estado: EstadoDietaPaciente, acoes: AcoesListaPaciente
                 }
             }
         }
+    }
     }
 }
 
