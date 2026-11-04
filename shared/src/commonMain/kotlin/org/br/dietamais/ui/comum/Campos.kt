@@ -34,14 +34,16 @@ fun CampoTexto(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     trailingIcon: (@Composable () -> Unit)? = null,
     singleLine: Boolean = true,
+    unidade: String? = null,
+    rotuloVisivel: String = rotulo,
 ) {
     val cores = MaterialTheme.colorScheme
     Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
-        Text(rotulo, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
+        Text(rotuloVisivel, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
         OutlinedTextField(
             value = valor, onValueChange = aoMudar, singleLine = singleLine, maxLines = if (singleLine) 1 else 4,
             enabled = habilitado, isError = erro != null, keyboardOptions = keyboardOptions,
-            visualTransformation = visualTransformation, keyboardActions = keyboardActions, trailingIcon = trailingIcon,
+            visualTransformation = visualTransformation, keyboardActions = keyboardActions, trailingIcon = trailingIcon ?: unidade?.let { u -> { Text(u, style = MaterialTheme.typography.bodyMedium, color = cores.onSurfaceVariant) } },
             shape = FormasDieta.campo, textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.fillMaxWidth().heightIn(min = Dimens.alturaBotao).semantics {
                 contentDescription = rotulo
@@ -82,4 +84,6 @@ fun CampoNumero(
     modifier: Modifier = Modifier,
     erro: String? = null,
     habilitado: Boolean = true,
-) = CampoTexto(rotulo, valor, aoMudar, modifier, erro, habilitado, KeyboardOptions(keyboardType = KeyboardType.Decimal))
+) = separarUnidade(rotulo).let { (nome, un) ->
+    CampoTexto(rotulo, valor, aoMudar, modifier, erro, habilitado, KeyboardOptions(keyboardType = KeyboardType.Decimal), unidade = un, rotuloVisivel = nome)
+}

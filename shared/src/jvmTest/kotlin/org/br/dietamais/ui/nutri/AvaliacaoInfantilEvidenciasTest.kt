@@ -59,7 +59,7 @@ class AvaliacaoInfantilEvidenciasTest {
                     val arquivo = File("build/reports/MOB-58/$tipo-$w-fonte-$fonte.png")
                     arquivo.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", arquivo)
                     if (tipo != "paciente") {
-                        onNodeWithText("Continuar").performScrollTo().assertIsEnabled()
+                        onNodeWithText("Continuar").assertIsDisplayed().assertIsEnabled()
                         if (fonte == 2f) ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", File("build/reports/MOB-58/$tipo-$w-fonte-$fonte-acoes.png"))
                     } else {
                         onNodeWithText("Energia diária estimada: 1678,68 kcal").performScrollTo().assertIsDisplayed()

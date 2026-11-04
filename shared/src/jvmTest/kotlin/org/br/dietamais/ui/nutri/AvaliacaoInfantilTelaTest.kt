@@ -21,7 +21,7 @@ class AvaliacaoInfantilTelaTest {
         onNodeWithContentDescription("Comprimento (cm)").assertExists()
         onNodeWithContentDescription("Peso ao nascer (kg)").assertExists()
         onNodeWithText("3 dobras").assertDoesNotExist()
-        onNodeWithText("Continuar").performScrollTo().assertIsEnabled()
+        onNodeWithText("Continuar").assertIsEnabled()
     }
 
     @Test fun necessidadesInfantisNaoOferecemMetasOuMetodosAdultos() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
