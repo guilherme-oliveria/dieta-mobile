@@ -31,7 +31,7 @@ class AvaliacaoTelasTest {
         // o "Salvar" fica no último passo; offline continua habilitado (grava na fila)
         val form = FormularioAvaliacao(passo = PassoAvaliacao.RESUMO)
         setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form, semConexao = true), AcoesAvaliacao()) } }
-        onNodeWithText("Salvar avaliação").performScrollTo().assertIsEnabled()
+        onNodeWithText("Salvar avaliação").assertIsEnabled()
         onNodeWithText("Passo 4 de 4: Resumo").assertExists()
     }
 
@@ -42,7 +42,7 @@ class AvaliacaoTelasTest {
         onNodeWithText("3 dobras").performScrollTo().assertExists()
         onNodeWithContentDescription("Peitoral (mm)").assertExists()
         onNodeWithContentDescription("Tríceps (mm)").assertDoesNotExist() // homem, 3 dobras: peitoral, abdominal e coxa
-        onNodeWithText("Continuar").performScrollTo().assertIsEnabled()
+        onNodeWithText("Continuar").assertIsEnabled()
     }
 
     @Test fun painelMostraResultadosEAvisoDoQueFalta() = runSkikoComposeUiTest(size = Size(390f, 844f)) {

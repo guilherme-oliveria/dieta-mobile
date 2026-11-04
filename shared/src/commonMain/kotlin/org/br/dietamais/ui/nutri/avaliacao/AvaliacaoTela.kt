@@ -40,13 +40,24 @@ fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Bool
     val form = estado.formulario ?: return
     val resultados = previa ?: previaDe(estado, form, Clock.System.now())
     val largo = classeJanela.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && LocalDensity.current.fontScale <= 1.3f
+    val habilitado = !estado.enviando
+    val subtitulo = if (form.infantilAtiva) form.resultadosInfantis?.idadeTexto else null
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            if (largo) Row(Modifier.widthIn(max = 1100.dp).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = true) }
-                Column(Modifier.width(360.dp)) { if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis) else PainelResultados(resultados, form) }
-            } else Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta),
-                verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = false) }
+        Column(Modifier.fillMaxSize()) {
+            BarraTopo(stringResource(if (form.id == null) Res.string.avaliacao_nova else Res.string.avaliacao_editar), acoes.aoFechar,
+                stringResource(Res.string.avaliacao_cancelar), subtitulo = subtitulo)
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                if (largo) Row(Modifier.widthIn(max = 1100.dp).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = true) }
+                    Column(Modifier.width(360.dp)) { if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis) else PainelResultados(resultados, form) }
+                } else Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = false) }
+            }
+            RodapeAcoes {
+                if (form.passo != PassoAvaliacao.MEDIDAS) BotaoContornado(stringResource(Res.string.avaliacao_voltar_passo), acoes.aoVoltarPasso, habilitado = habilitado)
+                if (form.passo == PassoAvaliacao.RESUMO) BotaoPrincipal(stringResource(Res.string.avaliacao_salvar), acoes.aoSalvar, Modifier.weight(1f), habilitado = habilitado, carregando = estado.enviando)
+                else BotaoPrincipal(stringResource(Res.string.avaliacao_continuar), acoes.aoProximo, Modifier.weight(1f), habilitado = habilitado)
+            }
         }
     }
 }
@@ -55,7 +66,6 @@ fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Bool
 private fun PassoAtual(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoes: AcoesAvaliacao, previa: PreviaAvaliacao, painelAoLado: Boolean) {
     val habilitado = !estado.enviando
     val passos = PassoAvaliacao.entries
-    Text(stringResource(if (form.id == null) Res.string.avaliacao_nova else Res.string.avaliacao_editar), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
     Text(stringResource(Res.string.avaliacao_passo_titulo, form.passo.ordinal + 1, passos.size, stringResource(rotuloPasso(form.passo))), style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
     LinearProgressIndicator(progress = { (form.passo.ordinal + 1f) / passos.size }, Modifier.fillMaxWidth())
@@ -72,12 +82,6 @@ private fun PassoAtual(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoe
         if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis)
         else if (form.passo != PassoAvaliacao.NECESSIDADES) PainelResultados(previa, form)
     }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalAlignment = Alignment.CenterVertically) {
-        if (form.passo != PassoAvaliacao.MEDIDAS) BotaoContornado(stringResource(Res.string.avaliacao_voltar_passo), acoes.aoVoltarPasso, habilitado = habilitado)
-        if (form.passo == PassoAvaliacao.RESUMO) BotaoPrincipal(stringResource(Res.string.avaliacao_salvar), acoes.aoSalvar, Modifier.weight(1f), habilitado = habilitado, carregando = estado.enviando)
-        else BotaoPrincipal(stringResource(Res.string.avaliacao_continuar), acoes.aoProximo, Modifier.weight(1f), habilitado = habilitado)
-    }
-    BotaoTexto(stringResource(Res.string.avaliacao_cancelar), acoes.aoFechar, Modifier.fillMaxWidth(), habilitado = !estado.enviando)
 }
 
 @Composable
