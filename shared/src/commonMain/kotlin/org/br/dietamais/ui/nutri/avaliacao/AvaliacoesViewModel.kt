@@ -11,6 +11,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.br.dietamais.data.remoto.dto.ClassificacaoImc
 import org.br.dietamais.data.remoto.dto.CompartilhamentoAvaliacaoDto
 import org.br.dietamais.data.remoto.dto.ProtocoloAvaliacaoDto
+import org.br.dietamais.data.remoto.dto.SalvarAvaliacaoRequisicao
 import org.br.dietamais.data.remoto.dto.Sexo
 import org.br.dietamais.dominio.calculos.ProtocoloDobras
 import org.br.dietamais.dominio.calculos.ProtocoloMassa
@@ -30,6 +31,7 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
     val estado = atual.asStateFlow()
     private var leitura: Job? = null
     private var operacao: Job? = null
+    private var previa: Job? = null
 
     init {
         conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
@@ -118,16 +120,17 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
             idadeMeses = meses ?: item.resultadosInfantis?.idadeMeses), errosMedidas = emptyMap(), errosInfantis = emptyMap(), justificativaFaltando = false, erro = null, aviso = null) }
     }
 
-    fun fechar() { if (!atual.value.enviando) atual.update { it.copy(formulario = null, errosMedidas = emptyMap(), justificativaFaltando = false) } }
-    fun mudarMedida(medida: MedidaAvaliacao, valor: String) = formulario { it.copy(valores = it.valores + (medida to valor.take(10)), resultadosInfantis = null) }
-        .also { atual.update { e -> e.copy(errosMedidas = e.errosMedidas - medida) } }
+    fun fechar() { previa?.cancel(); if (!atual.value.enviando) atual.update { it.copy(formulario = null, errosMedidas = emptyMap(), justificativaFaltando = false) } }
+    fun mudarMedida(medida: MedidaAvaliacao, valor: String) = formulario { it.copy(valores = it.valores + (medida to valor.take(10)), resultadosInfantis = null, previa = false) }
+        .also { atual.update { e -> e.copy(errosMedidas = e.errosMedidas - medida) }; agendarPrevia() }
     fun mudarParecer(valor: String) = formulario { it.copy(parecer = valor.take(10000), parecerPreenchidoAuto = false) }
     fun mudarProtocoloDobras(valor: ProtocoloDobras) = formulario { it.copy(protocoloDobras = valor) }
     fun mudarProtocoloMassa(valor: ProtocoloMassa) = formulario { it.copy(protocoloMassa = valor) }
     fun mudarEnergia(valor: EscolhasEnergia) = formulario { it.copy(energia = valor.copy(tocada = true)) }
     fun mudarInfantil(valor: FormularioInfantil) {
-        formulario { it.copy(infantil = valor, resultadosInfantis = if (it.infantil == valor) it.resultadosInfantis else null) }
+        formulario { it.copy(infantil = valor, resultadosInfantis = if (it.infantil == valor) it.resultadosInfantis else null, previa = it.infantil == valor && it.previa) }
         atual.update { it.copy(errosInfantis = emptyMap()) }
+        agendarPrevia()
     }
     fun mudarCompartilhamento(medidas: Boolean? = null, composicao: Boolean? = null, resumo: Boolean? = null, necessidades: Boolean? = null) = formulario {
         it.copy(compartilhamento = it.compartilhamento.copy(medidas = medidas ?: it.compartilhamento.medidas,
@@ -175,10 +178,7 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
         val errosInfantis = if (form.infantilAtiva) validarFormularioInfantil(form.infantil) else emptyMap()
         val semJustificativa = form.exigeJustificativa && form.justificativa.isBlank()
         if (erros.isNotEmpty() || errosInfantis.isNotEmpty() || semJustificativa) { atual.update { it.copy(errosMedidas = erros, errosInfantis = errosInfantis, justificativaFaltando = semJustificativa) }; return }
-        val requisicaoBase = montarRequisicao(if (form.infantilAtiva) medidasInfantisParaServidor(form.valores) else form.valores, form.dataHora ?: agora(), form.parecer, form.compartilhada,
-            if (form.exigeJustificativa) form.justificativa else null, form.id,
-            ProtocoloAvaliacaoDto(form.protocoloDobras.name, form.protocoloMassa.name), form.compartilhamento, form.energia)
-        val requisicao = if (form.infantilAtiva) requisicaoBase.copy(infantil = dadosInfantisParaEnviar(form.infantil), protocolo = null, energia = null, complementares = null) else requisicaoBase
+        val requisicao = requisicaoDe(form)
         atual.update { it.copy(enviando = true, erro = null, aviso = null, errosMedidas = emptyMap()) }
         operacao = viewModelScope.launch(dispatcher) {
             try {
@@ -188,6 +188,33 @@ class AvaliacoesViewModel(private val avaliacoes: PortaAvaliacoes, private val d
             catch (c: CancellationException) { throw c }
             catch (falha: Exception) { apresentar(falha) }
             finally { atual.update { it.copy(enviando = false) } }
+        }
+    }
+
+    private fun requisicaoDe(form: FormularioAvaliacao): SalvarAvaliacaoRequisicao {
+        val requisicaoBase = montarRequisicao(if (form.infantilAtiva) medidasInfantisParaServidor(form.valores) else form.valores, form.dataHora ?: agora(), form.parecer, form.compartilhada,
+            if (form.exigeJustificativa) form.justificativa else null, form.id,
+            ProtocoloAvaliacaoDto(form.protocoloDobras.name, form.protocoloMassa.name), form.compartilhamento, form.energia)
+        return if (form.infantilAtiva) requisicaoBase.copy(infantil = dadosInfantisParaEnviar(form.infantil), protocolo = null, energia = null, complementares = null) else requisicaoBase
+    }
+
+    /**
+     * "Resultados ao vivo" (BE-55c): com medidas válidas e conexão, pede ao servidor a prévia depois de uma pausa na digitação.
+     * Falha ou ausência de rede não mostram nada novo: o painel segue em "disponível após salvar". Nunca grava.
+     */
+    private fun agendarPrevia() {
+        previa?.cancel()
+        val e = atual.value; val form = e.formulario ?: return; val paciente = e.pacienteId ?: return
+        if (!form.infantilAtiva || e.semConexao) return
+        if (validarMedidas(form.valores, true).isNotEmpty() || validarFormularioInfantil(form.infantil).isNotEmpty()) return
+        val requisicao = requisicaoDe(form)
+        previa = viewModelScope.launch(dispatcher) {
+            delay(ATRASO_PREVIA_MS)
+            val resultado = try { avaliacoes.previa(paciente, requisicao)?.resultadosInfantis }
+            catch (c: CancellationException) { throw c }
+            catch (_: Exception) { null } ?: return@launch
+            atual.update { atualE -> atualE.formulario?.takeIf { it.valores == form.valores && it.infantil == form.infantil }
+                ?.let { atualE.copy(formulario = it.copy(resultadosInfantis = resultado, previa = true)) } ?: atualE }
         }
     }
 
@@ -266,3 +293,5 @@ fun medidaDoCampo(campo: String): MedidaAvaliacao? = when (campo) {
 fun previaDe(estado: EstadoAvaliacoes, form: FormularioAvaliacao, agora: Instant, fuso: TimeZone = TimeZone.of("America/Sao_Paulo")): PreviaAvaliacao =
     if (form.infantilAtiva) PreviaAvaliacao(null, idadeAvaliacaoMeses(estado.nascimento, form.dataHora ?: agora)?.div(12), emptyList())
     else previaAvaliacao(form.valores, estado.sexo, estado.nascimento, (form.dataHora ?: agora).toLocalDateTime(fuso).date, form.protocoloDobras, form.protocoloMassa)
+
+private const val ATRASO_PREVIA_MS = 600L

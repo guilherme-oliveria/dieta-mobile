@@ -49,7 +49,7 @@ fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Bool
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
                 if (largo) Row(Modifier.widthIn(max = 1100.dp).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = true) }
-                    Column(Modifier.width(360.dp)) { if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis) else PainelResultados(resultados, form) }
+                    Column(Modifier.width(360.dp)) { if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis, previa = form.previa) else PainelResultados(resultados, form) }
                 } else Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta),
                     verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = false) }
             }
@@ -79,7 +79,7 @@ private fun PassoAtual(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoe
         PassoAvaliacao.RESUMO -> PassoResumo(estado, form, acoes, habilitado)
     }
     if (!painelAoLado && form.passo != PassoAvaliacao.RESUMO) {
-        if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis)
+        if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis, previa = form.previa)
         else if (form.passo != PassoAvaliacao.NECESSIDADES) PainelResultados(previa, form)
     }
 }

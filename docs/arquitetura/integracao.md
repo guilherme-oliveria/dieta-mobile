@@ -111,7 +111,7 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 
 Anamnese estruturada (BE-57b): `codigo` opcional por pergunta e `derivados` opcionais, calculados pelo servidor e congelados na conclusão. Tipos, unidades, campos ausentes, compatibilidade e exemplo em [contrato-anamnese.md](contrato-anamnese.md). As mesmas regras valem para respostas parciais no `/sync`.
 
-Avaliação infantil/adolescente (BE-55b): entradas `infantil` e resultados `resultadosInfantis` opcionais, calculados e congelados na escrita. Curvas OMS, Frisancho, intervalos de percentil/Z, G-16, precisão, edição legada e compartilhamento em [contrato-avaliacao-infantil.md](contrato-avaliacao-infantil.md). REST e `/sync` usam as mesmas regras.
+Avaliação infantil/adolescente (BE-55b): entradas `infantil` e resultados `resultadosInfantis` opcionais, calculados e congelados na escrita. Curvas OMS, Frisancho, intervalos de percentil/Z, G-16, precisão, edição legada e compartilhamento em [contrato-avaliacao-infantil.md](contrato-avaliacao-infantil.md). REST e `/sync` usam as mesmas regras. Prévia sem gravar (BE-55c): `POST /pacientes/{id}/avaliacoes/previa`, só online. Decisão do Guilherme (04/11/2026): a prévia não exige assinatura ativa, porque não grava nada; só a criação e a edição passam pela guarda de escrita.
 
 ## Sincronização offline (app ↔ backend)
 
