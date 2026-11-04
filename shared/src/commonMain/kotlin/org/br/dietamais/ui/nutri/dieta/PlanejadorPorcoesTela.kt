@@ -50,7 +50,7 @@ fun PlanejadorPorcoesTela(estado: EstadoPlanejador, acoes: AcoesPlanejador, clas
                 else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Resumo(estado, rascunho, acoes); Refeicoes(estado, rascunho, acoes)
                 }
-                }
+            }
         }
     }
 }
