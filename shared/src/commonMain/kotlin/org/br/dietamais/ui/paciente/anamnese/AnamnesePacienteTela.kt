@@ -61,34 +61,35 @@ fun AnamnesePacienteTela(estado: EstadoAnamnesePaciente, acoes: AcoesAnamnesePac
     val assuntos = passo?.perguntas.orEmpty().mapNotNull { assuntoAnamnese(it.codigo) }.toSet()
     Dialog(onDismissRequest = acoes.aoSair, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                Column(Modifier.widthIn(max = if (ampla) Dimens.larguraAnamneseAmpla else Dimens.larguraLeitura).fillMaxSize().padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-                    Text(questionario.nome, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
-                    Text(stringResource(Res.string.ana_salvamento_automatico), style = MaterialTheme.typography.bodySmall)
-                    LinearProgressIndicator(progress = { if (total == 0) 0f else respondidas.toFloat() / total }, Modifier.fillMaxWidth())
-                    Text(stringResource(Res.string.anamnese_pac_progresso, respondidas, total), style = MaterialTheme.typography.bodySmall)
-                    if (estado.semConexao) FaixaOffline()
-                    if (assuntos.isNotEmpty()) BotaoTexto(stringResource(Res.string.ana_atualizar_resultados), acoes.aoAtualizarResultados,
-                        habilitado = habilitado && !estado.semConexao && !estado.atualizandoResultados)
-                    Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(Dimens.paddingCard)) {
-                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-                        if (passo != null) {
-                            Text(stringResource(Res.string.anamnese_pac_passo, indice + 1, passos.size) + " · " + passo.titulo,
-                                style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-                            CamposAnamneseEstruturada(passo.perguntas, estado.entradas, questionario.respostas, estado.erros, habilitado, acoes.aoMudar)
-                            if (!ampla) ResultadosAnamnese(estado.derivados, assuntos)
+            Column(Modifier.fillMaxSize()) {
+                BarraTopo(questionario.nome, acoes.aoSair, stringResource(Res.string.anamnese_pac_sair), subtitulo = stringResource(Res.string.ana_salvamento_automatico))
+                Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                    Column(Modifier.widthIn(max = if (ampla) Dimens.larguraAnamneseAmpla else Dimens.larguraLeitura).fillMaxSize().padding(horizontal = Dimens.paddingCard, vertical = Dimens.espacoMedio),
+                        verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                        if (passo != null) Text(stringResource(Res.string.anamnese_pac_passo, indice + 1, passos.size) + " · " + passo.titulo,
+                            style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading(); liveRegion = LiveRegionMode.Polite })
+                        LinearProgressIndicator(progress = { if (passos.isEmpty()) 0f else (indice + 1f) / passos.size }, Modifier.fillMaxWidth())
+                        Text(stringResource(Res.string.anamnese_pac_progresso, respondidas, total), style = MaterialTheme.typography.bodySmall)
+                        if (estado.semConexao) FaixaOffline()
+                        if (assuntos.isNotEmpty()) BotaoTexto(stringResource(Res.string.ana_atualizar_resultados), acoes.aoAtualizarResultados,
+                            habilitado = habilitado && !estado.semConexao && !estado.atualizandoResultados)
+                        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(Dimens.paddingCard)) {
+                            Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                                if (passo != null) {
+                                    CamposAnamneseEstruturada(passo.perguntas, estado.entradas, questionario.respostas, estado.erros, habilitado, acoes.aoMudar)
+                                    if (!ampla) ResultadosAnamnese(estado.derivados, assuntos)
+                                }
+                            }
+                            if (ampla && assuntos.isNotEmpty()) Column(Modifier.width(Dimens.larguraResultadosAnamnese).verticalScroll(rememberScrollState())) { ResultadosAnamnese(estado.derivados, assuntos) }
                         }
+                        estado.mensagem?.let { Text(textoMensagemAnamnese(it), color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
+                        if (ultimo && estado.semConexao) Text(stringResource(Res.string.anamnese_pac_offline_concluir), style = MaterialTheme.typography.bodySmall)
                     }
-                    if (ampla && assuntos.isNotEmpty()) Column(Modifier.width(Dimens.larguraResultadosAnamnese).verticalScroll(rememberScrollState())) { ResultadosAnamnese(estado.derivados, assuntos) }
-                    }
-                    estado.mensagem?.let { Text(textoMensagemAnamnese(it), color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
-                    if (ultimo && estado.semConexao) Text(stringResource(Res.string.anamnese_pac_offline_concluir), style = MaterialTheme.typography.bodySmall)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        BotaoTexto(stringResource(Res.string.anamnese_pac_sair), acoes.aoSair, habilitado = habilitado)
-                        if (indice > 0) BotaoContornado(stringResource(Res.string.anamnese_pac_anterior), acoes.aoVoltar, habilitado = habilitado)
-                        if (ultimo) BotaoPrincipal(stringResource(Res.string.anamnese_pac_concluir), acoes.aoConcluir, habilitado = !estado.semConexao, carregando = estado.concluindo)
-                        else BotaoPrincipal(stringResource(Res.string.anamnese_pac_proximo), acoes.aoProximo, habilitado = habilitado)
-                    }
+                }
+                RodapeAcoes {
+                    if (indice > 0) BotaoContornado(stringResource(Res.string.anamnese_pac_anterior), acoes.aoVoltar, habilitado = habilitado)
+                    if (ultimo) BotaoPrincipal(stringResource(Res.string.anamnese_pac_concluir), acoes.aoConcluir, Modifier.weight(1f), habilitado = !estado.semConexao, carregando = estado.concluindo)
+                    else BotaoPrincipal(stringResource(Res.string.anamnese_pac_proximo), acoes.aoProximo, Modifier.weight(1f), habilitado = habilitado)
                 }
             }
         }
