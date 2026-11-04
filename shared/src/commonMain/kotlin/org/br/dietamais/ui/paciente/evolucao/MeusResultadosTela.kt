@@ -15,6 +15,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.br.dietamais.dominio.agenda.formatarData
 import org.br.dietamais.dominio.avaliacao.*
 import org.br.dietamais.recursos.*
+import org.br.dietamais.ui.comum.BarraTopo
 import org.br.dietamais.ui.comum.CardDieta
 import org.br.dietamais.ui.comum.ChipStatus
 import org.br.dietamais.ui.comum.EstiloStatus
@@ -79,16 +80,23 @@ private fun rotuloParte(p: ParteCorpo) = stringResource(when (p) {
 
 @Composable
 fun MeusResultadosTela(resultados: MeusResultados?, modifier: Modifier = Modifier) {
+    Column(modifier) {
+        val subtitulo = resultados?.let { stringResource(Res.string.resultados_data, formatarData(it.data.toLocalDateTime(TimeZone.currentSystemDefault()).date)) }
+        BarraTopo(stringResource(Res.string.resultados_titulo), null, "", subtitulo = subtitulo)
+        Box(Modifier.weight(1f).fillMaxWidth()) { CorpoMeusResultados(resultados) }
+    }
+}
+
+@Composable
+private fun CorpoMeusResultados(resultados: MeusResultados?, modifier: Modifier = Modifier) {
     if (resultados == null) {
         Text(stringResource(Res.string.resultados_vazio), style = MaterialTheme.typography.bodyLarge, modifier = modifier.padding(vertical = Dimens.espacoMedio))
         return
     }
-    val data = formatarData(resultados.data.toLocalDateTime(TimeZone.currentSystemDefault()).date)
     if (resultados.pediatrico) {
         Box(modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
         Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState())
             .padding(horizontal = Dimens.margemCompacta, vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            Text(stringResource(Res.string.resultados_data, data), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             Text(stringResource(Res.string.inf_linha_valor, stringResource(Res.string.inf_peso_idade), textoDecimal(resultados.pesoKg), stringResource(Res.string.inf_unidade_kg)))
             PainelResultadosInfantis(resultados.infantil, paciente = true)
             resultados.textoResumo?.let { Text(it) }
@@ -97,7 +105,6 @@ fun MeusResultadosTela(resultados: MeusResultados?, modifier: Modifier = Modifie
         return
     }
     Column(modifier.verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-        Text(stringResource(Res.string.resultados_data, data), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         resultados.textoResumo?.let {
             CardDieta(Modifier.fillMaxWidth()) {
                 Text(stringResource(Res.string.resultados_conversa), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })

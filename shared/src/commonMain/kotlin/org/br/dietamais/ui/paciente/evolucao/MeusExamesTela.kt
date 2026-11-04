@@ -33,13 +33,14 @@ fun MeusExamesRota(avaliacoes: AvaliacoesViewModel) {
 
 @Composable
 fun MeusExamesTela(exames: ExamesDaAvaliacao?) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio).testTag("meus-exames"), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-        Text(stringResource(Res.string.exames_titulo), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
+    Column(Modifier.fillMaxSize().testTag("meus-exames")) {
+    val subtitulo = exames?.let { stringResource(Res.string.exames_subtitulo, formatarData(it.dataHora.toLocalDateTime(TimeZone.currentSystemDefault()).date)) }
+    BarraTopo(stringResource(Res.string.exames_titulo), null, "", subtitulo = subtitulo)
+    Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (exames == null) { EstadoVazio(mensagem = stringResource(Res.string.exames_vazio)); return@Column }
-        val data = exames.dataHora.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        Text(stringResource(Res.string.exames_subtitulo, formatarData(data)), style = MaterialTheme.typography.bodySmall)
         exames.exames.forEach { CartaoExame(it) }
         Text(stringResource(Res.string.exames_aviso), style = MaterialTheme.typography.bodySmall)
+    }
     }
 }
 
