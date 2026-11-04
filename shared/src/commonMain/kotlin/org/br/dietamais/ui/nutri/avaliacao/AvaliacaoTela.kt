@@ -42,11 +42,13 @@ fun AvaliacaoTela(estado: EstadoAvaliacoes, acoes: AcoesAvaliacao, rolavel: Bool
     val largo = classeJanela.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && LocalDensity.current.fontScale <= 1.3f
     val habilitado = !estado.enviando
     val subtitulo = if (form.infantilAtiva) form.resultadosInfantis?.idadeTexto else null
-    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Column(Modifier.fillMaxSize()) {
+    // Hospedada numa rolagem (a ficha do paciente) a altura é infinita: `weight` daria altura zero e o formulário sumiria. Aí o rodapé segue o conteúdo.
+    val tamanho = if (rolavel) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
+    Surface(tamanho, color = MaterialTheme.colorScheme.background) {
+        Column(tamanho) {
             BarraTopo(stringResource(if (form.id == null) Res.string.avaliacao_nova else Res.string.avaliacao_editar), acoes.aoFechar,
                 stringResource(Res.string.avaliacao_cancelar), subtitulo = subtitulo)
-            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+            Box(if (rolavel) Modifier.weight(1f).fillMaxWidth() else Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
                 if (largo) Row(Modifier.widthIn(max = 1100.dp).fillMaxWidth().rolavelSe(rolavel).padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { PassoAtual(estado, form, acoes, resultados, painelAoLado = true) }
                     Column(Modifier.width(360.dp)) { if (form.infantilAtiva) PainelResultadosInfantis(form.resultadosInfantis, previa = form.previa) else PainelResultados(resultados, form) }

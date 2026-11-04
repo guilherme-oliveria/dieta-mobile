@@ -1,5 +1,7 @@
 package org.br.dietamais.ui.nutri
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.test.*
@@ -25,6 +27,16 @@ class AvaliacaoTelasTest {
         val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
         setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form), AcoesAvaliacao()) } }
         onNodeWithText("IMC 22,86 · Peso normal").assertExists()
+    }
+
+    @Test fun formularioAparecePendurandoNaRolagemDaFicha() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        // Na ficha do paciente a tela fica dentro de uma rolagem (altura infinita): o formulário não pode sumir.
+        val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
+        setContent { DietaTheme { androidx.compose.foundation.layout.Column(androidx.compose.ui.Modifier.verticalScroll(rememberScrollState())) {
+            AvaliacaoTela(EstadoAvaliacoes(formulario = form), AcoesAvaliacao(), rolavel = false)
+        } } }
+        onNodeWithText("IMC 22,86 · Peso normal").assertExists()
+        onNodeWithText("Continuar").assertExists()
     }
 
     @Test fun offlineSalvaNaFila() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
