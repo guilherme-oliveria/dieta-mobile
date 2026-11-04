@@ -19,6 +19,7 @@ import androidx.window.core.layout.WindowSizeClass
 import org.br.dietamais.dominio.rotina.GrupoListaPaciente
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
+import org.br.dietamais.ui.comum.icones.IconesDieta
 import org.br.dietamais.ui.paciente.dieta.EstadoDietaPaciente
 import org.br.dietamais.ui.paciente.dieta.numeroPaciente
 import org.br.dietamais.ui.theme.Dimens
@@ -112,7 +113,7 @@ private fun CabecalhoGrupo(g: GrupoListaPaciente, indice: Int, aberto: Boolean, 
             Text(nomeGrupo(g, indice), style = MaterialTheme.typography.titleMedium)
             Text(energia + " · " + stringResource(Res.string.pac_lista_itens, g.alimentos.size), style = MaterialTheme.typography.bodySmall)
         }
-        Text(if (aberto) "\u2303" else "\u2304", Modifier.clearAndSetSemantics {}, style = MaterialTheme.typography.titleMedium)
+        Icon(if (aberto) IconesDieta.SetaCima else IconesDieta.SetaBaixo, contentDescription = null)
     }
 }
 

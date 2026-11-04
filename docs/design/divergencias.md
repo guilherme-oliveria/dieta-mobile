@@ -15,7 +15,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - [ ] **D-06 · Botão "i" de explicação** nos números da nutri (fórmula, referência, frase), previsto no plano 4.1 e em [padrao-ui.md](padrao-ui.md#5-padrões-de-interação). Não está nos passos de Composição e Necessidades. Resolve: executor, após o BE entregar os textos.
 
 - [x] **D-07 · Lista de substituição do paciente não é acordeão.** O artboard `P-Lista-Substituicao` mostra os grupos recolhidos com "1 porção = N kcal · M itens" e a medida caseira embaixo do nome de cada alimento; o app mostra o cabeçalho do grupo como botão de texto (ver `evidencias/AUD-01/lista-substituicao.png`). Resolve: executor.
-- [ ] **D-08 · Chip de estado da refeição na dieta.** O artboard `P-Dieta-Macros` mostra Feita, Agora ou Depois no fim de cada linha; o app mostra só horário e kcal (`DietaPacienteTela`). Resolve: executor.
+- [x] **D-08 · Chip de estado da refeição na dieta.** O artboard `P-Dieta-Macros` mostra Feita, Agora ou Depois no fim de cada linha; o app mostra só horário e kcal (`DietaPacienteTela`). Resolve: executor.
 - [ ] **D-09 · Avaliação infantil sem "Resultados ao vivo".** `A-Avaliacao-Infantil` tem o cartão com a régua Z; o app mostra "Resultados por idade" só depois de sincronizar (limite do contrato BE-55b, ver observações abaixo). Resolve: depende do backend.
 - [ ] **D-10 · Telas sem barra superior própria.** Meus exames, Meus resultados, Protocolos e Necessidades ficam dentro do cartão ou da aba do host e não têm a barra do padrão. Resolve: executor, junto da próxima tarefa que mexer nelas.
 

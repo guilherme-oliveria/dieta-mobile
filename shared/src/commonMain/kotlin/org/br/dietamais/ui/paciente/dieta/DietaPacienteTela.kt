@@ -68,6 +68,12 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                                 Text(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
                                 Text(stringResource(Res.string.pac_dieta_kcal_refeicao, formatar(r.totais.kcal)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                ChipStatus(when (estado.checkins[r.id]) {
+                                    StatusCheckin.FEITO -> EstiloStatus.FEITA
+                                    StatusCheckin.TROCADO -> EstiloStatus.TROCADA
+                                    StatusCheckin.PULADO -> EstiloStatus.ALERTA
+                                    else -> if (r.id == estado.proxima?.id) EstiloStatus.AGORA else EstiloStatus.DEPOIS
+                                })
                             }
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         }

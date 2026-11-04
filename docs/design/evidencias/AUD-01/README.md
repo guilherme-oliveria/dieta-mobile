@@ -4,4 +4,4 @@ Gerado pelos testes de evidência (`./gradlew :shared:jvmTest`, PNGs em `shared/
 
 - `avaliacao-infantil.png`: barra superior, unidade dentro do campo e rodapé fixo batem; falta o painel "Resultados ao vivo" (depende de BE-55b).
 - `anamnese.png`: o app mostra a anamnese do paciente (barra e rodapé fixo); o artboard é o passo de hábitos da nutri.
-- `dieta-macros.png` e `lista-substituicao.png`: as capturas de teste usam a tela interna sem a navegação inferior; a lista ainda não é acordeão como no artboard.
+- `dieta-macros.png` e `lista-substituicao.png`: as capturas de teste usam a tela interna sem a navegação inferior; a lista é acordeão e a dieta mostra o chip de estado (PRs #79 e seguinte).
