@@ -64,7 +64,7 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                         estado.refeicoes.forEach { r ->
                             val rotuloAbrir = stringResource(Res.string.pac_dieta_ver)
                             Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque + Dimens.espacoPequeno)
-                                .clickable(onClickLabel = rotuloAbrir) { aoAbrirRefeicao(r.id) }.padding(vertical = Dimens.espacoPequeno),
+                                .clickable(onClickLabel = rotuloAbrir, role = androidx.compose.ui.semantics.Role.Button) { aoAbrirRefeicao(r.id) }.padding(vertical = Dimens.espacoPequeno),
                                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                                 Text(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
                                 Text(stringResource(Res.string.pac_dieta_kcal_refeicao, formatar(r.totais.kcal)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
