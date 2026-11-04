@@ -2,6 +2,9 @@ package org.br.dietamais.ui.paciente.substituicao
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.verticalScroll
@@ -100,10 +103,16 @@ private fun nomeGrupo(g: GrupoListaPaciente, indice: Int) = g.nome ?: stringReso
 @Composable
 private fun CabecalhoGrupo(g: GrupoListaPaciente, indice: Int, aberto: Boolean, aoClicar: () -> Unit) {
     val descricao = stringResource(if (aberto) Res.string.pac_lista_expandido else Res.string.pac_lista_recolhido)
-    Column {
-        BotaoTexto(nomeGrupo(g, indice), aoClicar, Modifier.fillMaxWidth().semantics { heading(); stateDescription = descricao }, selecionado = aberto)
-        ReferenciaGrupo(g)
-        Text(stringResource(Res.string.pac_lista_itens, g.alimentos.size), style = MaterialTheme.typography.bodySmall)
+    val energia = g.kcalPorPorcao?.let { stringResource(Res.string.pac_lista_porcao, numeroPaciente(it)) } ?: stringResource(Res.string.pac_lista_sem_energia)
+    Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque)
+        .clickable(onClickLabel = descricao, role = Role.Button, onClick = aoClicar)
+        .semantics(mergeDescendants = true) { heading(); stateDescription = descricao },
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+        Column(Modifier.weight(1f).padding(vertical = Dimens.espacoPequeno)) {
+            Text(nomeGrupo(g, indice), style = MaterialTheme.typography.titleMedium)
+            Text(energia + " · " + stringResource(Res.string.pac_lista_itens, g.alimentos.size), style = MaterialTheme.typography.bodySmall)
+        }
+        Text(if (aberto) "\u2303" else "\u2304", Modifier.clearAndSetSemantics {}, style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -126,12 +135,12 @@ private fun ItensGrupo(g: GrupoListaPaciente, emTabela: Boolean = false) {
             Text(a.medidaCaseira, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
             Text(stringResource(Res.string.pac_lista_gramas, numeroPaciente(a.gramasPorPorcao)), Modifier.weight(0.6f), style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.End)
         } else
-        Column(Modifier.fillMaxWidth().padding(vertical = Dimens.espacoPequeno), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
-            Text(a.nome, style = MaterialTheme.typography.titleSmall)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                Text(a.medidaCaseira, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                Text(stringResource(Res.string.pac_lista_gramas, numeroPaciente(a.gramasPorPorcao)), style = MaterialTheme.typography.labelLarge)
+        Row(Modifier.fillMaxWidth().padding(vertical = Dimens.espacoPequeno), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+            Column(Modifier.weight(1f)) {
+                Text(a.nome, style = MaterialTheme.typography.titleSmall)
+                Text(a.medidaCaseira, style = MaterialTheme.typography.bodySmall)
             }
+            Text(stringResource(Res.string.pac_lista_gramas, numeroPaciente(a.gramasPorPorcao)), style = MaterialTheme.typography.labelLarge)
         }
     }
 }
