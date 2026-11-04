@@ -1147,6 +1147,7 @@
     <string name="inf_pendente_dica">Continue preenchendo e salve a avaliação. Resultados anteriores não são apresentados como atuais após uma alteração.</string>
     <string name="inf_ausente">Esta avaliação ainda não tem resultados pediátricos disponíveis.</string>
     <string name="inf_ausente_dica">A nutri pode revisar os dados da avaliação.</string>
+    <string name="inf_previa">Prévia calculada pelo servidor; só vale depois de salvar.</string>
     <string name="inf_confirmados">Valores confirmados na data da avaliação.</string>
     <string name="inf_ficha_alterada">A ficha mudou. Confira as medidas e as unidades antes de salvar.</string>
     <string name="inf_peso_idade">Peso para a idade</string>

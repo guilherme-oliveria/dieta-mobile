@@ -36,6 +36,13 @@ class AvaliacoesOnline(private val api: ApiDieta) : PortaAvaliacoes {
         resposta.itens.forEach { nova -> recurso.gravado(nova) { it.id == nova.id } }
     }
 
+    override suspend fun previa(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): PreviaAvaliacaoDto? {
+        val esperado = contexto()
+        val resposta = api.enviar<PreviaAvaliacaoDto>("pacientes/$pacienteId/avaliacoes/previa", JsonContrato.encodeToJsonElement(requisicao.copy(id = null)))
+        conferir(esperado)
+        return resposta
+    }
+
     override suspend fun criar(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta {
         val esperado = contexto()
         val criada = api.enviar<AvaliacaoResposta>("pacientes/$pacienteId/avaliacoes", JsonContrato.encodeToJsonElement(requisicao), requisicao.id ?: Uuid.random())

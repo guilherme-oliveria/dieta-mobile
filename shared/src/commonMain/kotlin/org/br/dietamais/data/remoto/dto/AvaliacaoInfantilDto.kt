@@ -40,3 +40,7 @@ data class ResultadosInfantisAvaliacaoDto(val idadeMeses: Int? = null, val idade
     val modoCurva: String? = null, val classificacaoPesoNascer: String? = null, val pesoTeoricoMinKg: Double? = null, val pesoTeoricoMaxKg: Double? = null,
     val curvas: List<CurvaCrescimentoAvaliacaoDto>? = null, val frisancho: List<FrisanchoAvaliacaoDto>? = null,
     val composicao: ComposicaoInfantilDto? = null, val energia: EnergiaInfantilDto? = null, val motivosNulos: Map<String, String>? = null)
+
+/** BE-55c: resultado calculado de uma avaliação ainda não gravada. Só `resultadosInfantis` interessa ao painel "Resultados ao vivo". */
+@Serializable
+data class PreviaAvaliacaoDto(val resultadosInfantis: ResultadosInfantisAvaliacaoDto? = null)

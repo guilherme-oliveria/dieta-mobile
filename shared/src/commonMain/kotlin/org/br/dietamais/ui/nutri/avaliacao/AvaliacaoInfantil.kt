@@ -95,14 +95,14 @@ internal fun NecessidadesInfantis(estado: EstadoAvaliacoes, form: FormularioAval
 }
 
 @Composable
-fun PainelResultadosInfantis(r: ResultadosInfantisAvaliacaoDto?, modifier: Modifier = Modifier, paciente: Boolean = false, edicao: Boolean = true) {
+fun PainelResultadosInfantis(r: ResultadosInfantisAvaliacaoDto?, modifier: Modifier = Modifier, paciente: Boolean = false, edicao: Boolean = true, previa: Boolean = false) {
     CardDieta(modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }) {
         Text(stringResource(Res.string.inf_resultados), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         if (r == null) {
             Text(stringResource(if (edicao && !paciente) Res.string.inf_pendente else Res.string.inf_ausente))
             Text(stringResource(if (edicao && !paciente) Res.string.inf_pendente_dica else Res.string.inf_ausente_dica), style = MaterialTheme.typography.bodySmall)
         } else {
-            Text(stringResource(Res.string.inf_confirmados), style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(if (previa) Res.string.inf_previa else Res.string.inf_confirmados), style = MaterialTheme.typography.bodySmall)
             r.idadeTexto?.let { Text(it, style = MaterialTheme.typography.titleSmall) }
             r.classificacaoPesoNascer?.let { Text(classeInfantil(it)) }
             r.curvas.orEmpty().forEach { curva ->

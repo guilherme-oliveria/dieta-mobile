@@ -31,3 +31,7 @@ O paciente só recebe avaliações compartilhadas. As entradas `infantil` ficam 
 ## Verificação
 
 Testes de cortes e orquestração usam somente valores sintéticos e os vetores já publicados. Testes de API verificam precisão, snapshot, edição de cliente anterior, G-16, isolamento e seções ocultas. Os arquivos originais permanecem fora do Git, sem copiar respostas ou dados de saúde para exemplos.
+
+## Prévia sem gravar — BE-55c
+
+`POST /api/v1/pacientes/{id}/avaliacoes/previa` recebe o mesmo corpo de `criarAvaliacao` e devolve `{imc, classificacaoImc, faixaEtaria, resultados, energiaResultado, resultadosInfantis}` calculados pelas mesmas regras da gravação (idade pela data local e pela ficha, limites técnicos, G-16, intervalos de percentil/Z). Não grava, não audita escrita e não usa `Idempotency-Key`. Só a nutri dona do vínculo; paciente de outra nutri é `404`. Os percentis continuam sendo **intervalos**: não há LMS, então o painel "Resultados ao vivo" mostra o intervalo confirmado, nunca um valor exato. A prévia não é um resultado congelado: só a gravação congela.

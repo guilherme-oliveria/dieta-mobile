@@ -25,6 +25,8 @@ interface PortaAvaliacoes {
     suspend fun atualizar(pacienteId: Uuid)
     suspend fun criar(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta
     suspend fun salvar(id: Uuid, versao: Long, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta
+    /** BE-55c: resultados infantis calculados pelo servidor sem gravar (só online). Nulo = sem prévia. */
+    suspend fun previa(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): PreviaAvaliacaoDto? = null
 }
 
 /**
@@ -48,6 +50,13 @@ class AvaliacaoRepositorio(private val api: ApiDieta, private val banco: BancoDi
         conferir(contexto)
         if (resposta.itens.any { it.pacienteId != pacienteId }) throw RespostaInvalida()
         resposta.itens.forEach { guardar(it) }
+    }
+
+    override suspend fun previa(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): PreviaAvaliacaoDto? {
+        val contexto = contexto()
+        val resposta = api.enviar<PreviaAvaliacaoDto>("pacientes/$pacienteId/avaliacoes/previa", JsonContrato.encodeToJsonElement(requisicao.copy(id = null)))
+        conferir(contexto)
+        return resposta
     }
 
     override suspend fun criar(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta {

@@ -24,7 +24,9 @@ data class FormularioAvaliacao(val id: Uuid? = null, val versao: Long? = null, v
     /** Parecer ainda não mexido pela nutri: ao chegar no resumo, entra o texto gerado, que ela pode editar. */
     val parecerPreenchidoAuto: Boolean = false, val energia: EscolhasEnergia = EscolhasEnergia(),
     val infantilAtiva: Boolean = false, val infantil: org.br.dietamais.dominio.avaliacao.FormularioInfantil = org.br.dietamais.dominio.avaliacao.FormularioInfantil(),
-    val resultadosInfantis: org.br.dietamais.data.remoto.dto.ResultadosInfantisAvaliacaoDto? = null, val fichaAlterada: Boolean = false, val idadeMeses: Int? = null)
+    val resultadosInfantis: org.br.dietamais.data.remoto.dto.ResultadosInfantisAvaliacaoDto? = null, val fichaAlterada: Boolean = false, val idadeMeses: Int? = null,
+    /** `resultadosInfantis` veio da prévia do servidor (BE-55c) e ainda não foi gravado. */
+    val previa: Boolean = false)
 
 /** `sexo` e `nascimento` do paciente só alimentam a prévia local; o servidor recalcula ao salvar (RN-CAL-01). */
 data class EstadoAvaliacoes(val pacienteId: Uuid? = null, val sexo: Sexo? = null, val nascimento: LocalDate? = null, val somenteLeitura: Boolean = false, val itens: List<AvaliacaoResposta> = emptyList(), val atualizando: Boolean = false,

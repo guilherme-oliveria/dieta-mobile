@@ -22,8 +22,12 @@ class AvaliacaoInfantilViewModelTest {
     private class Porta(inicial: List<AvaliacaoResposta> = emptyList()) : PortaAvaliacoes {
         val itens = MutableStateFlow(inicial)
         var enviada: SalvarAvaliacaoRequisicao? = null
+        var previas = 0
+        var offline = false
+        var respostaPrevia: PreviaAvaliacaoDto? = null
+        override suspend fun previa(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): PreviaAvaliacaoDto? { previas++; return respostaPrevia }
         override fun observar(pacienteId: Uuid?) = itens
-        override suspend fun atualizar(pacienteId: Uuid) = Unit
+        override suspend fun atualizar(pacienteId: Uuid) { if (offline) throw org.br.dietamais.data.remoto.FalhaComunicacao() }
         override suspend fun criar(pacienteId: Uuid, requisicao: SalvarAvaliacaoRequisicao): AvaliacaoResposta {
             enviada = requisicao
             return AvaliacaoResposta(requisicao.id!!, pacienteId, pacienteId, requisicao.dataHora, requisicao.pesoKg, requisicao.estaturaM,
@@ -47,6 +51,30 @@ class AvaliacaoInfantilViewModelTest {
         val enviado = assertNotNull(p.enviada)
         assertEquals(0.485, enviado.estaturaM); assertEquals(3301, enviado.infantil?.pesoNascerGramas)
         assertNull(enviado.energia); assertNull(enviado.protocolo)
+    }
+
+    @Test fun resultadosAoVivoPedemPreviaDepoisDaPausaENuncaGravam() = runTest {
+        val p = Porta().apply { respostaPrevia = PreviaAvaliacaoDto(ResultadosInfantisAvaliacaoDto(idadeMeses = 2)) }
+        val vm = AvaliacoesViewModel(p, StandardTestDispatcher(testScheduler), flowOf(true), { agora })
+        vm.abrir(paciente); advanceUntilIdle()
+        vm.definirPaciente(Sexo.FEMININO, LocalDate(2026, 9, 1)); vm.nova()
+        vm.mudarMedida(MedidaAvaliacao.PESO, "3,2"); vm.mudarMedida(MedidaAvaliacao.PESO, "3,25"); vm.mudarMedida(MedidaAvaliacao.ESTATURA, "48,5")
+        advanceUntilIdle()
+        assertEquals(1, p.previas) // as digitações seguidas viram uma só chamada
+        val form = vm.estado.value.formulario!!
+        assertEquals(2, form.resultadosInfantis?.idadeMeses); assertTrue(form.previa)
+        assertNull(p.enviada)
+        vm.mudarMedida(MedidaAvaliacao.PESO, "3,4")
+        assertNull(vm.estado.value.formulario!!.resultadosInfantis); assertFalse(vm.estado.value.formulario!!.previa)
+    }
+
+    @Test fun semConexaoOuMedidaInvalidaNaoPedemPrevia() = runTest {
+        val p = Porta().apply { offline = true; respostaPrevia = PreviaAvaliacaoDto(ResultadosInfantisAvaliacaoDto(idadeMeses = 2)) }
+        val vm = AvaliacoesViewModel(p, StandardTestDispatcher(testScheduler), flowOf(false), { agora })
+        vm.abrir(paciente); advanceUntilIdle()
+        vm.definirPaciente(Sexo.FEMININO, LocalDate(2026, 9, 1)); vm.nova()
+        vm.mudarMedida(MedidaAvaliacao.PESO, "3,25"); vm.mudarMedida(MedidaAvaliacao.ESTATURA, "48,5"); advanceUntilIdle()
+        assertEquals(0, p.previas); assertNull(vm.estado.value.formulario!!.resultadosInfantis)
     }
 
     @Test fun edicaoPreservaMilimetrosEEscolhasDesconhecidas() = runTest {
