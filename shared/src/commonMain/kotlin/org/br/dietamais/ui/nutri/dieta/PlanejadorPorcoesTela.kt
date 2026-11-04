@@ -40,20 +40,23 @@ fun PlanejadorPorcoesTela(estado: EstadoPlanejador, acoes: AcoesPlanejador, clas
     val rascunho = estado.rascunho ?: return
     val expandido = classe.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     Surface(Modifier.fillMaxSize().testTag("planejador-porcoes"), color = MaterialTheme.colorScheme.background) {
-        if (expandido) Row(Modifier.fillMaxSize().padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            Column(Modifier.weight(2f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Refeicoes(estado, rascunho, acoes) }
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Resumo(estado, rascunho, acoes) }
-        }
-        else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            Resumo(estado, rascunho, acoes); Refeicoes(estado, rascunho, acoes)
+        Column(Modifier.fillMaxSize()) {
+            BarraTopo(stringResource(Res.string.plan_titulo), acoes.aoVoltar, stringResource(Res.string.plan_voltar))
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                if (expandido) Row(Modifier.fillMaxSize().padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                    Column(Modifier.weight(2f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Refeicoes(estado, rascunho, acoes) }
+                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Resumo(estado, rascunho, acoes) }
+                }
+                else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                    Resumo(estado, rascunho, acoes); Refeicoes(estado, rascunho, acoes)
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun ColumnScope.Resumo(estado: EstadoPlanejador, r: RascunhoPlano, a: AcoesPlanejador) {
-    BotaoTexto(stringResource(Res.string.plan_voltar), a.aoVoltar)
-    Text(stringResource(Res.string.plan_titulo), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
     if (estado.semConexao) FaixaOffline()
     estado.erro?.let { Text(textoMensagemPlanejador(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
     estado.aviso?.let { Text(textoMensagemPlanejador(it), style = MaterialTheme.typography.bodySmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
