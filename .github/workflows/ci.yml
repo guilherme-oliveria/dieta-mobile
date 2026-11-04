@@ -43,7 +43,7 @@ jobs:
 
   ios:
     name: iOS
-    # Pedido do Guilherme (04/11/2026): o iOS só roda na release 1.3.0 em diante (PR de release/*, push em main, release/* ou tag).
+    # Pedido do Guilherme (04/11/2026): o iOS só roda em qualquer release (PR de release/*, push em main, release/** ou tag v*), nunca em PR comum.
     if: github.event_name == 'push' || startsWith(github.head_ref, 'release/')
     runs-on: macos-latest
     steps:
