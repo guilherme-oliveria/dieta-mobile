@@ -22,41 +22,42 @@ fun AplicarModeloTela(estado: EstadoAplicarModelo, nomePaciente: String, aoVolta
     val modelo = estado.modelo ?: return
     val habilitado = !estado.semConexao && !estado.enviando && estado.situacao != SituacaoEscala.CARREGANDO
     Surface(Modifier.fillMaxSize().testTag("aplicar-modelo"), color = MaterialTheme.colorScheme.background) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            BotaoTexto(stringResource(Res.string.mod_voltar), aoVoltar)
-            Text(stringResource(Res.string.mod_aplicar_titulo), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
-            Text("${modelo.titulo} · $nomePaciente", style = MaterialTheme.typography.bodyMedium)
-            if (estado.semConexao) FaixaOffline()
-            estado.erro?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-            if (estado.situacao == SituacaoEscala.CARREGANDO && estado.erro == null) EstadoCarregando()
-            else if (estado.situacao != SituacaoEscala.CARREGANDO) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    Indicador(stringResource(Res.string.mod_aplicar_vet), estado.vetKcal?.let { stringResource(Res.string.mod_aplicar_kcal, formatar(it)) } ?: "—")
-                    Indicador(stringResource(Res.string.mod_aplicar_modelo), modelo.kcal?.let { stringResource(Res.string.mod_aplicar_kcal, formatar(it)) } ?: "—")
-                    Indicador(stringResource(Res.string.mod_aplicar_escala), estado.fator?.let { "× ${formatar(it)}" } ?: "—")
-                }
-                Text(stringResource(when (estado.situacao) {
-                    SituacaoEscala.CALCULADA -> Res.string.mod_aplicar_arredondadas
-                    SituacaoEscala.SEM_AVALIACAO -> Res.string.mod_aplicar_sem_avaliacao
-                    SituacaoEscala.SEM_BASE -> Res.string.mod_aplicar_sem_base
-                    else -> Res.string.mod_aplicar_fora_faixa
-                }), style = MaterialTheme.typography.bodySmall)
-                if (estado.linhas.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.mod_aplicar_porcoes_dia), style = MaterialTheme.typography.titleMedium)
-                    Linha(stringResource(Res.string.mod_aplicar_grupo), stringResource(Res.string.mod_aplicar_modelo), stringResource(Res.string.mod_aplicar_paciente), MaterialTheme.typography.labelLarge)
-                    estado.linhas.forEach { Linha(it.grupo, formatar(it.modelo), formatar(it.paciente), MaterialTheme.typography.bodyMedium) }
-                }
-                if (modelo.restricoes.isNotEmpty()) {
-                    Text(stringResource(Res.string.mod_aplicar_restricoes), style = MaterialTheme.typography.titleMedium)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        modelo.restricoes.forEach { ChipStatus(EstiloStatus.DEPOIS, texto = textoRestricao(it)) }
+        Column(Modifier.fillMaxSize()) {
+            BarraTopo(stringResource(Res.string.mod_aplicar_titulo), aoVoltar, stringResource(Res.string.mod_voltar))
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                Text("${modelo.titulo} · $nomePaciente", style = MaterialTheme.typography.bodyMedium)
+                if (estado.semConexao) FaixaOffline()
+                estado.erro?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                if (estado.situacao == SituacaoEscala.CARREGANDO && estado.erro == null) EstadoCarregando()
+                else if (estado.situacao != SituacaoEscala.CARREGANDO) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                        Indicador(stringResource(Res.string.mod_aplicar_vet), estado.vetKcal?.let { stringResource(Res.string.mod_aplicar_kcal, formatar(it)) } ?: "—")
+                        Indicador(stringResource(Res.string.mod_aplicar_modelo), modelo.kcal?.let { stringResource(Res.string.mod_aplicar_kcal, formatar(it)) } ?: "—")
+                        Indicador(stringResource(Res.string.mod_aplicar_escala), estado.fator?.let { "× ${formatar(it)}" } ?: "—")
                     }
-                    Text(stringResource(Res.string.mod_aplicar_restricoes_texto), style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(when (estado.situacao) {
+                        SituacaoEscala.CALCULADA -> Res.string.mod_aplicar_arredondadas
+                        SituacaoEscala.SEM_AVALIACAO -> Res.string.mod_aplicar_sem_avaliacao
+                        SituacaoEscala.SEM_BASE -> Res.string.mod_aplicar_sem_base
+                        else -> Res.string.mod_aplicar_fora_faixa
+                    }), style = MaterialTheme.typography.bodySmall)
+                    if (estado.linhas.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {
+                        Text(stringResource(Res.string.mod_aplicar_porcoes_dia), style = MaterialTheme.typography.titleMedium)
+                        Linha(stringResource(Res.string.mod_aplicar_grupo), stringResource(Res.string.mod_aplicar_modelo), stringResource(Res.string.mod_aplicar_paciente), MaterialTheme.typography.labelLarge)
+                        estado.linhas.forEach { Linha(it.grupo, formatar(it.modelo), formatar(it.paciente), MaterialTheme.typography.bodyMedium) }
+                    }
+                    if (modelo.restricoes.isNotEmpty()) {
+                        Text(stringResource(Res.string.mod_aplicar_restricoes), style = MaterialTheme.typography.titleMedium)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                            modelo.restricoes.forEach { ChipStatus(EstiloStatus.DEPOIS, texto = textoRestricao(it)) }
+                        }
+                        Text(stringResource(Res.string.mod_aplicar_restricoes_texto), style = MaterialTheme.typography.bodySmall)
+                    }
                 }
+                estado.avisos.forEach { Text(it.mensagem, style = MaterialTheme.typography.bodySmall) }
+                Text(stringResource(Res.string.mod_aplicar_rascunho), style = MaterialTheme.typography.bodySmall)
+                BotaoPrincipal(stringResource(Res.string.mod_aplicar_criar), aoCriar, habilitado = habilitado)
             }
-            estado.avisos.forEach { Text(it.mensagem, style = MaterialTheme.typography.bodySmall) }
-            Text(stringResource(Res.string.mod_aplicar_rascunho), style = MaterialTheme.typography.bodySmall)
-            BotaoPrincipal(stringResource(Res.string.mod_aplicar_criar), aoCriar, habilitado = habilitado)
         }
     }
 }
