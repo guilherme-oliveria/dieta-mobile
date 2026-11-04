@@ -29,22 +29,23 @@ class AcoesModelos(
 fun ModelosDietaTela(estado: EstadoModelos, acoes: AcoesModelos) {
     val habilitado = !estado.semConexao && !estado.enviando && !estado.carregando
     Surface(Modifier.fillMaxSize().testTag("modelos-dieta"), color = MaterialTheme.colorScheme.background) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            BotaoTexto(stringResource(Res.string.mod_voltar), acoes.aoVoltar)
-            Text(stringResource(Res.string.mod_titulo), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
-            Text(stringResource(Res.string.mod_subtitulo), style = MaterialTheme.typography.bodySmall)
-            if (estado.semConexao) FaixaOffline()
-            estado.erro?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-            estado.aviso?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                FilterChip(estado.aba == AbaModelos.SISTEMA, { acoes.aoAba(AbaModelos.SISTEMA) }, { Text(stringResource(Res.string.mod_aba_sistema)) })
-                FilterChip(estado.aba == AbaModelos.MEUS, { acoes.aoAba(AbaModelos.MEUS) }, { Text(stringResource(Res.string.mod_aba_meus)) })
+        Column(Modifier.fillMaxSize()) {
+            BarraTopo(stringResource(Res.string.mod_titulo), acoes.aoVoltar, stringResource(Res.string.mod_voltar))
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                Text(stringResource(Res.string.mod_subtitulo), style = MaterialTheme.typography.bodySmall)
+                if (estado.semConexao) FaixaOffline()
+                estado.erro?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                estado.aviso?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                    FilterChip(estado.aba == AbaModelos.SISTEMA, { acoes.aoAba(AbaModelos.SISTEMA) }, { Text(stringResource(Res.string.mod_aba_sistema)) })
+                    FilterChip(estado.aba == AbaModelos.MEUS, { acoes.aoAba(AbaModelos.MEUS) }, { Text(stringResource(Res.string.mod_aba_meus)) })
+                }
+                if (estado.aba == AbaModelos.SISTEMA) Text(stringResource(Res.string.mod_somente_leitura), style = MaterialTheme.typography.bodySmall)
+                if (estado.carregando) EstadoCarregando()
+                else if (estado.visiveis.isEmpty()) EstadoVazio(mensagem = stringResource(if (estado.aba == AbaModelos.MEUS) Res.string.mod_vazio_meus else Res.string.mod_vazio_sistema))
+                estado.visiveis.forEach { m -> CartaoModelo(m, habilitado, acoes) }
+                if (estado.erro != null && !estado.carregado) BotaoTexto(stringResource(Res.string.sync_atualizar), acoes.aoRecarregar)
             }
-            if (estado.aba == AbaModelos.SISTEMA) Text(stringResource(Res.string.mod_somente_leitura), style = MaterialTheme.typography.bodySmall)
-            if (estado.carregando) EstadoCarregando()
-            else if (estado.visiveis.isEmpty()) EstadoVazio(mensagem = stringResource(if (estado.aba == AbaModelos.MEUS) Res.string.mod_vazio_meus else Res.string.mod_vazio_sistema))
-            estado.visiveis.forEach { m -> CartaoModelo(m, habilitado, acoes) }
-            if (estado.erro != null && !estado.carregado) BotaoTexto(stringResource(Res.string.sync_atualizar), acoes.aoRecarregar)
         }
     }
     estado.apagar?.let { alvo ->

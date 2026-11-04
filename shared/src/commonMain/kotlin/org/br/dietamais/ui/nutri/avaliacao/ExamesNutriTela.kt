@@ -34,28 +34,29 @@ fun ExamesNutriTela(estado: EstadoExamesNutri, nomePaciente: String, acoes: Acoe
     val habilitado = !estado.enviando && !estado.carregando && !estado.semConexao
     val gravados = av.exames.orEmpty().associateBy { it.codigo }
     Surface(Modifier.fillMaxSize().testTag("lancar-exames"), color = MaterialTheme.colorScheme.background) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            BotaoTexto(stringResource(Res.string.exn_voltar), acoes.aoVoltar, habilitado = !estado.enviando)
-            Text(stringResource(Res.string.exn_titulo), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
-            Text(stringResource(Res.string.exn_subtitulo, textoData(av.dataHora), nomePaciente), style = MaterialTheme.typography.bodySmall)
-            if (estado.semConexao) FaixaOffline()
-            estado.erro?.let { Text(textoMensagemExames(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-            if (estado.carregando) EstadoCarregando()
-            if (estado.catalogo.isNotEmpty()) {
-                CampoTexto(stringResource(Res.string.exn_buscar), estado.busca, acoes.aoBuscar, Modifier.fillMaxWidth())
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    FilterChip(estado.secao == null, { acoes.aoSecao(null) }, { Text(stringResource(Res.string.exn_todas)) })
-                    estado.secoes.forEach { s -> FilterChip(estado.secao == s, { acoes.aoSecao(s) }, { Text(s) }) }
+        Column(Modifier.fillMaxSize()) {
+            BarraTopo(stringResource(Res.string.exn_titulo), acoes.aoVoltar, stringResource(Res.string.exn_voltar))
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                Text(stringResource(Res.string.exn_subtitulo, textoData(av.dataHora), nomePaciente), style = MaterialTheme.typography.bodySmall)
+                if (estado.semConexao) FaixaOffline()
+                estado.erro?.let { Text(textoMensagemExames(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                if (estado.carregando) EstadoCarregando()
+                if (estado.catalogo.isNotEmpty()) {
+                    CampoTexto(stringResource(Res.string.exn_buscar), estado.busca, acoes.aoBuscar, Modifier.fillMaxWidth())
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                        FilterChip(estado.secao == null, { acoes.aoSecao(null) }, { Text(stringResource(Res.string.exn_todas)) })
+                        estado.secoes.forEach { s -> FilterChip(estado.secao == s, { acoes.aoSecao(s) }, { Text(s) }) }
+                    }
+                    if (estado.visiveis.isEmpty()) EstadoVazio(mensagem = stringResource(Res.string.exn_nenhum))
+                    estado.visiveis.forEach { LinhaExame(it, estado, gravados[it.codigo]?.rotulo, habilitado, acoes) }
+                    Row(Modifier.fillMaxWidth().toggleable(estado.mostrarAoPaciente, role = Role.Switch, onValueChange = acoes.aoMostrar), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                        Text(stringResource(Res.string.exn_mostrar), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                        Switch(estado.mostrarAoPaciente, onCheckedChange = null)
+                    }
+                    if (estado.exigeJustificativa) CampoTexto(stringResource(Res.string.avaliacao_justificativa), estado.justificativa, acoes.aoJustificativa, Modifier.fillMaxWidth())
+                    BotaoPrincipal(stringResource(Res.string.exn_salvar), acoes.aoSalvar, Modifier.fillMaxWidth(), habilitado = habilitado, carregando = estado.enviando)
                 }
-                if (estado.visiveis.isEmpty()) EstadoVazio(mensagem = stringResource(Res.string.exn_nenhum))
-                estado.visiveis.forEach { LinhaExame(it, estado, gravados[it.codigo]?.rotulo, habilitado, acoes) }
-                Row(Modifier.fillMaxWidth().toggleable(estado.mostrarAoPaciente, role = Role.Switch, onValueChange = acoes.aoMostrar), verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-                    Text(stringResource(Res.string.exn_mostrar), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                    Switch(estado.mostrarAoPaciente, onCheckedChange = null)
-                }
-                if (estado.exigeJustificativa) CampoTexto(stringResource(Res.string.avaliacao_justificativa), estado.justificativa, acoes.aoJustificativa, Modifier.fillMaxWidth())
-                BotaoPrincipal(stringResource(Res.string.exn_salvar), acoes.aoSalvar, Modifier.fillMaxWidth(), habilitado = habilitado, carregando = estado.enviando)
             }
         }
     }
