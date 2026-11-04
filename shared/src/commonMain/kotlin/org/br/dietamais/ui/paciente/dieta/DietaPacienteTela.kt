@@ -34,9 +34,10 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
         RefeicaoDietaPaciente(estado, refeicao, { aoAbrirRefeicao(null) }, aoTrocar, aoMarcar, aoTrocarRefeicao)
         return
     }
-    Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState()).padding(Dimens.paddingCard),
+    Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    BarraTopo(stringResource(Res.string.aba_dieta), null, "", subtitulo = estado.dieta?.titulo)
+    Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard),
         verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-        Text(stringResource(Res.string.aba_dieta), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
         if (estado.semConexao) FaixaOffline()
         estado.erro?.let { Text(stringResource(textoErro(it)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
         val dieta = estado.dieta
@@ -44,7 +45,6 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
             !estado.carregado -> EstadoCarregando()
             dieta == null -> EstadoVazio(mensagem = stringResource(Res.string.pac_sem_dieta))
             else -> {
-                Text(dieta.titulo, style = MaterialTheme.typography.titleLarge)
                 Text(stringResource(Res.string.pac_dieta_nutri, dieta.nutricionista.nome, dieta.nutricionista.crn), style = MaterialTheme.typography.bodySmall)
                 MacrosPaciente(dieta.totais, dia = true)
                 pdf(estado)
@@ -71,16 +71,17 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
             }
         }
     }
+    }
 }
 
 @Composable
 private fun RefeicaoDietaPaciente(estado: EstadoDietaPaciente, r: RefeicaoResposta, aoVoltar: () -> Unit,
     aoTrocar: (Uuid, Uuid) -> Unit, aoMarcar: (Uuid, StatusCheckin) -> Unit, aoTrocarRefeicao: (Uuid) -> Unit) {
     val dieta = estado.dieta ?: return
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-        BotaoTexto(stringResource(Res.string.pac_lista_voltar), aoVoltar)
-        Text(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
-        Text(stringResource(Res.string.pac_kcal, numeroPaciente(r.totais.kcal)), style = MaterialTheme.typography.labelLarge)
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    BarraTopo(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), aoVoltar, stringResource(Res.string.pac_lista_voltar),
+        subtitulo = stringResource(Res.string.pac_kcal, numeroPaciente(r.totais.kcal)))
+    Column(Modifier.weight(1f).fillMaxWidth().padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
         estado.erro?.let { Text(stringResource(textoErro(it)), color = MaterialTheme.colorScheme.error,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
@@ -118,6 +119,7 @@ private fun RefeicaoDietaPaciente(estado: EstadoDietaPaciente, r: RefeicaoRespos
             BotaoContornado(stringResource(Res.string.pac_troquei), { aoTrocarRefeicao(r.id) }, habilitado = estado.dia != null && r.itens.any { substitutosDoItem(it, dieta.listaSubstituicao).isNotEmpty() })
             BotaoContornado(stringResource(Res.string.pac_pulei), { aoMarcar(r.id, StatusCheckin.PULADO) }, habilitado = estado.dia != null)
         }
+    }
     }
 }
 
