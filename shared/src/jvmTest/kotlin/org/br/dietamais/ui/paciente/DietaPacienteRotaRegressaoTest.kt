@@ -96,7 +96,7 @@ class DietaPacienteRotaRegressaoTest {
         runOnUiThread { entrada.backCompleted() }; waitForIdle()
         assertFalse(vm.estado.value.listaAberta)
         onNode(hasText("Dieta") and hasClickAction()).assertIsSelected()
-        onNodeWithText("Ver itens").performScrollTo().performClick()
+        onNodeWithText("Refeição fictícia", substring = true).performScrollTo().performClick()
         val refeicao = vm.estado.value.refeicaoAberta
         onNode(hasText("Perfil") and hasClickAction()).performClick()
         waitForIdle(); onNode(hasText("Perfil") and hasClickAction()).assertIsSelected()
