@@ -14,6 +14,11 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - [ ] **D-05 · "Gerar PDF" no passo Resumo.** O artboard `A-Avaliacao-Resumo` tem o botão ao lado de "Salvar avaliação"; o app ainda não tem (depende de BE-46). Entra quando o backend entregar o PDF; abrir pelo link no navegador, como o PDF da dieta (MOB-33).
 - [ ] **D-06 · Botão "i" de explicação** nos números da nutri (fórmula, referência, frase), previsto no plano 4.1 e em [padrao-ui.md](padrao-ui.md#5-padrões-de-interação). Não está nos passos de Composição e Necessidades. Resolve: executor, após o BE entregar os textos.
 
+- [ ] **D-07 · Lista de substituição do paciente não é acordeão.** O artboard `P-Lista-Substituicao` mostra os grupos recolhidos com "1 porção = N kcal · M itens" e a medida caseira embaixo do nome de cada alimento; o app mostra o cabeçalho do grupo como botão de texto (ver `evidencias/AUD-01/lista-substituicao.png`). Resolve: executor.
+- [ ] **D-08 · Chip de estado da refeição na dieta.** O artboard `P-Dieta-Macros` mostra Feita, Agora ou Depois no fim de cada linha; o app mostra só horário e kcal (`DietaPacienteTela`). Resolve: executor.
+- [ ] **D-09 · Avaliação infantil sem "Resultados ao vivo".** `A-Avaliacao-Infantil` tem o cartão com a régua Z; o app mostra "Resultados por idade" só depois de sincronizar (limite do contrato BE-55b, ver observações abaixo). Resolve: depende do backend.
+- [ ] **D-10 · Telas sem barra superior própria.** Meus exames, Meus resultados, Protocolos e Necessidades ficam dentro do cartão ou da aba do host e não têm a barra do padrão. Resolve: executor, junto da próxima tarefa que mexer nelas.
+
 ## Observações (sem ação agora)
 
 - **MOB-59 · cobertura histórica das referências.** O gráfico lê os cortes congelados dos snapshots disponíveis, agrupados por paciente, vínculo, sexo, fonte e versão. Liga somente meses consecutivos publicados e mostra marcas isoladas quando faltam vizinhos, sem inventar referências nos meses ausentes; a tabela explicita os oito cortes e as medidas na idade real. Não troca a referência histórica pelo catálogo atual de `/referencias/oms` (consulta de uma linha, sem versão). O artboard de curva contínua e percentil exato exige adequação para essa cobertura; o texto usa o intervalo confirmado. Não é uma tabela OMS completa para todas as idades.
