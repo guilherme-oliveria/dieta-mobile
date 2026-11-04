@@ -38,4 +38,23 @@ class AvaliacaoInfantilOnlineTest {
             assertEquals(1, chamadas)
         }
     }
+
+    @Test fun previaVaiPorPostSemIdESemGravarNoCache() = runTest {
+        val dia = Instant.parse("2026-11-01T12:00:00Z"); val paciente = Uuid.random()
+        val resposta = PreviaAvaliacaoDto(ResultadosInfantisAvaliacaoDto(idadeMeses = 1))
+        var chamadas = 0
+        val engine = MockEngine { req ->
+            chamadas++; assertEquals(HttpMethod.Post, req.method); assertEquals("/api/v1/pacientes/$paciente/avaliacoes/previa", req.url.encodedPath)
+            val enviado = JsonContrato.decodeFromString<SalvarAvaliacaoRequisicao>((req.body as TextContent).text)
+            assertNull(enviado.id); assertEquals(0.485, enviado.estaturaM)
+            respond(JsonContrato.encodeToString(resposta), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
+        }
+        ApiDieta(Config("https://app.example.invalid"), "1.0", Plataforma.WEB, CofreMemoria(recursoContrato("entrar/resposta.json")), ArmazemSessaoMemoria, engine).use { api ->
+            api.restaurarSessao()
+            val porta = AvaliacoesOnline(api)
+            assertEquals(resposta, porta.previa(paciente, SalvarAvaliacaoRequisicao(id = Uuid.random(), dataHora = dia, pesoKg = 3.25, estaturaM = 0.485)))
+            assertEquals(1, chamadas)
+            assertTrue(porta.observar(paciente).first().isEmpty())
+        }
+    }
 }
