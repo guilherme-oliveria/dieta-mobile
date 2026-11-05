@@ -44,7 +44,7 @@ fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
 
 fun moduloListaPaciente(ambiente: AmbienteDieta?) = module {
     single<PortaListaPaciente> { ListaPacienteRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>(), get<org.br.dietamais.data.local.BancoDieta>()) }
-    viewModel { ListaPacienteViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    viewModel { ListaPacienteViewModel(get(), get(), pacientes = getOrNull(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
 }
 
 fun moduloDietas(ambiente: AmbienteDieta?) = module {

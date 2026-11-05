@@ -51,3 +51,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - O resumo do mês aparece no fim da Agenda como um cartão de texto (consultas, compareceram, faltaram, pendentes, recebido, a receber e recebido por forma). Gráfico e filtro por período ficam para depois.
 - Os valores usam `Double` no app (como os demais números do contrato) e só entram na tela formatados em reais; a conta de verdade é do servidor.
 
+## MOB-76 · Lista modelável (05/11/2026)
+
+- A decisão G-19 trocou o "modelo de lista" por **copiar a lista de outro paciente da nutri** (RN-ALI-06). O artboard `C-Listas-Tipos` (ART-P3-06) mostra os 5 tipos de lista e não cobre a cópia: o app só ganhou, na lista do paciente, o botão "Copiar a lista de outro paciente", a escolha da origem e uma confirmação (a troca é da lista inteira e descarta edições não salvas). Pedir ao agente de Design e Usabilidade o artboard da cópia.
+
