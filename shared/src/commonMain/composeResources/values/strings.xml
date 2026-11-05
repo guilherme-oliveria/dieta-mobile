@@ -1285,4 +1285,22 @@
     <string name="lista_copiar_desistir">Manter a atual</string>
     <string name="lista_copiada">Lista copiada.</string>
     <string name="lista_vinculo_encerrado">Vínculo encerrado: a lista só pode ser lida.</string>
+    <string name="pacientes_ampliado_abrir">Mais dados do cadastro</string>
+    <string name="pacientes_ampliado_fechar">Menos dados do cadastro</string>
+    <string name="pacientes_ampliado_descricao">Tudo opcional. Só você vê estes dados.</string>
+    <string name="pacientes_escolaridade">Escolaridade</string>
+    <string name="pacientes_escolaridade_outra">Escolaridade (texto livre)</string>
+    <string name="pacientes_estado_civil">Estado civil</string>
+    <string name="pacientes_profissao">Profissão</string>
+    <string name="pacientes_convenio">Convênio</string>
+    <string name="pacientes_indicacao">Quem indicou</string>
+    <string name="pacientes_motivo">Motivo da consulta</string>
+    <string name="pacientes_endereco">Endereço</string>
+    <string name="pacientes_cep">CEP</string>
+    <string name="pacientes_logradouro">Rua, avenida</string>
+    <string name="pacientes_numero">Número</string>
+    <string name="pacientes_complemento">Complemento</string>
+    <string name="pacientes_bairro">Bairro</string>
+    <string name="pacientes_cidade">Cidade</string>
+    <string name="pacientes_uf">UF</string>
 </resources>

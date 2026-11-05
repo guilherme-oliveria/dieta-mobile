@@ -16,7 +16,7 @@ enum class MensagemPacientes {
 data class FormularioPaciente(
     val id: Uuid = novoIdLocal(), val chave: Uuid = novoIdLocal(), val nome: String = "", val email: String = "",
     val nascimento: String = "", val sexo: Sexo? = null, val telefone: String = "", val estatura: String = "",
-    val objetivo: String = "", val observacoes: String = "",
+    val objetivo: String = "", val observacoes: String = "", val ampliado: org.br.dietamais.dominio.pacientes.FormularioCadastroAmpliado = org.br.dietamais.dominio.pacientes.FormularioCadastroAmpliado(),
 ) { override fun toString() = "FormularioPaciente[conteúdo protegido]" }
 
 data class EstadoPacientes(

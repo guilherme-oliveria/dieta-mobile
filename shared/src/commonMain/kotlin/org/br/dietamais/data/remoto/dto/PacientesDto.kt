@@ -11,17 +11,33 @@ import kotlin.uuid.Uuid
 data class PacienteResposta(val id: Uuid, val vinculoId: Uuid, val nome: String, val email: String? = null,
     val dataNascimento: LocalDate? = null, val sexo: Sexo? = null, val telefone: String? = null,
     val estaturaReferencia: Double? = null, val objetivo: String? = null, val observacoes: String? = null,
-    val status: StatusVinculo, val versao: Long, val criadoEm: Instant, val atualizadoEm: Instant, val adesao7d: Double? = null)
+    val status: StatusVinculo, val versao: Long, val criadoEm: Instant, val atualizadoEm: Instant, val adesao7d: Double? = null,
+    val cadastroAmpliado: CadastroAmpliadoDto? = null)
 
 @Serializable
 data class CriarPacienteRequisicao(val id: Uuid, val nome: String, val email: String? = null,
     val dataNascimento: LocalDate? = null, val sexo: Sexo? = null, val telefone: String? = null,
-    val estaturaReferencia: Double? = null, val objetivo: String? = null, val observacoes: String? = null)
+    val estaturaReferencia: Double? = null, val objetivo: String? = null, val observacoes: String? = null,
+    val cadastroAmpliado: CadastroAmpliadoDto? = null)
 
 @Serializable
 data class AtualizarPacienteRequisicao(val nome: String, val email: String? = null,
     val dataNascimento: LocalDate? = null, val sexo: Sexo? = null, val telefone: String? = null,
-    val estaturaReferencia: Double? = null, val objetivo: String? = null, val observacoes: String? = null)
+    val estaturaReferencia: Double? = null, val objetivo: String? = null, val observacoes: String? = null,
+    val cadastroAmpliado: CadastroAmpliadoDto? = null)
+
+/** Cadastro ampliado (BE-64, RN-VIN-08): tudo opcional e em texto livre curto; só a nutri dona da ficha lê. `toString` não mostra os dados (dado pessoal). */
+@Serializable
+data class CadastroAmpliadoDto(val escolaridade: String? = null, val estadoCivil: String? = null, val profissao: String? = null, val endereco: EnderecoDto? = null,
+    val convenio: String? = null, val indicacao: String? = null, val motivoConsulta: String? = null) {
+    override fun toString() = "CadastroAmpliadoDto[conteúdo protegido]"
+}
+
+@Serializable
+data class EnderecoDto(val logradouro: String? = null, val numero: String? = null, val complemento: String? = null, val bairro: String? = null, val cidade: String? = null,
+    val uf: String? = null, val cep: String? = null) {
+    override fun toString() = "EnderecoDto[conteúdo protegido]"
+}
 
 @Serializable
 data class PaginaPacientesResposta(val itens: List<PacienteResposta>, val pagina: Int, val tamanho: Int, val total: Long)
