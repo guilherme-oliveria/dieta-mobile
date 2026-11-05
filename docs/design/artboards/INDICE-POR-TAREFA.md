@@ -6,6 +6,8 @@ Estado conferido na `develop` em 01/11/2026 (plano de ação, linha de MOB-49 em
 
 ## Mobile pendente
 
+Plano de melhorias (05/11): as telas novas seguem os IDs `ART-P1-nn` a `ART-P4-nn` de [ART-IDS.md](ART-IDS.md). MOB-63 (4 gráficos): ART-P1-09 e ART-P1-10; MOB-64: ART-P1-02 a 08; MOB-65 e MOB-66: ART-P4-04 e ART-P4-05; MOB-67: ART-P1-01 e ART-P1-12; MOB-68 e MOB-69: ART-P2-01 a 05; MOB-56b e MOB-70 a 76: ART-P3-01 a 09; MOB-77 e 78: ART-P4-02 e ART-P4-03.
+
 | Tarefa | O que falta | Artboards (nesta pasta) | Ver também |
 | --- | --- | --- | --- |
 | **MOB-55** Paciente: rosca de macros e lista de substituição | Implementado; limitações de metadados em divergencias.md | `P-Dieta-Macros`, `P-Refeicao-Macros`, `P-Lista-Substituicao`, `P-Lista-Substituicao-Vazio`, `T-Lista-Substituicao` | `padrao-ui.md` seção 8b; `graficos.md` (rosca sem anel de meta para o paciente) |
@@ -13,13 +15,13 @@ Estado conferido na `develop` em 01/11/2026 (plano de ação, linha de MOB-49 em
 | **MOB-58** Avaliação infantil e adolescente | Tudo | `A-Avaliacao-Infantil` | `plano-melhorias-planilhas.md` 3.3 (campos por faixa) |
 | **MOB-59** Curva de crescimento (nutri e responsável) | Tudo | `P-Curva-Crescimento` (usa `CurvaCrescimento`, já existe em `ui/comum/graficos`) | `graficos.md` item "Curva" |
 | **MOB-61** Anamnese estruturada (álcool, sal, óleo) | Implementado; resultados confirmados do servidor, adaptações documentadas | `A-Anamnese-Estruturada`, `P-Anamnese` | `../mob-61-anamnese.md`; contrato-anamnese.md |
-| Divergências D-03, D-05, D-06 | Série de gordura em Meus resultados, "Gerar PDF" no Resumo, botão "i" de explicação | `P-Resultados-Evolucao`, `A-Avaliacao-Resumo` | `divergencias.md` |
+| Divergências D-03, D-05, D-06 | Série de gordura em Meus resultados, "Gerar PDF" no Resumo, botão "i" de explicação | `P-Resultados-Evolucao`, `A-Avaliacao-Resumo` (substituído por `A-Avaliacao-Graficos-2`, ART-P1-10) | `divergencias.md` |
 
 ## Mobile já entregue (a tela conferida com o artboard)
 
 | Tarefa | Artboards |
 | --- | --- |
-| MOB-50 Avaliação em passos | `A-Avaliacao-Medidas`, `A-Avaliacao-Composicao`, `A-Avaliacao-Resumo`, `T-Avaliacao-Passos` |
+| MOB-50 Avaliação em passos | `A-Avaliacao-Medidas`, `A-Avaliacao-Composicao`, `A-Avaliacao-Resumo`, `T-Avaliacao-Passos` (removidos em 05/11: substituídos por ART-P1-03 a 10, ver `ART-IDS.md`) |
 | MOB-51 e MOB-51b Meus resultados | `P-Resultados`, `P-Resultados-Evolucao`, `P-Resultados-Vazio` |
 | MOB-52b Necessidades | `A-Avaliacao-Necessidades` |
 | MOB-53 Meus protocolos | `N-Protocolos` |
