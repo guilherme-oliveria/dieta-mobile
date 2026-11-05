@@ -790,6 +790,10 @@
     <string name="assinatura_pagamento_indisponivel">O pagamento está indisponível no momento. Tente mais tarde.</string>
     <string name="assinatura_erro_ja_ativa">Sua assinatura já está ativa.</string>
     <string name="pdf_dieta">Baixar PDF</string>
+    <string name="pdf_lista_pequena">Lista pequena (PDF)</string>
+    <string name="pdf_lista_media">Lista média (PDF)</string>
+    <string name="pdf_lista_grande">Lista grande (PDF)</string>
+    <string name="pdf_lista_carboidratos">Carboidratos (PDF)</string>
     <string name="pdf_avaliacao">Baixar PDF da avaliação</string>
     <string name="pdf_erro_sem_conexao">Sem conexão. O PDF precisa de internet.</string>
     <string name="pdf_erro_indisponivel">Este PDF não está disponível.</string>
