@@ -582,6 +582,10 @@
     <string name="anamnese_status_respondido">Respondido</string>
     <string name="anamnese_enviado_em">Enviado em %1$s</string>
     <string name="anamnese_ver_respostas">Ver respostas</string>
+    <string name="anamnese_secao_progresso">%1$d de %2$d respondidas</string>
+    <string name="anamnese_secao_completa">Completa</string>
+    <string name="anamnese_secao_expandir">Ver respostas</string>
+    <string name="anamnese_secao_recolher">Recolher</string>
     <string name="anamnese_voltar">Voltar</string>
     <string name="anamnese_sem_resposta">Sem resposta</string>
     <string name="anamnese_modelos_titulo">Modelos de questionário</string>

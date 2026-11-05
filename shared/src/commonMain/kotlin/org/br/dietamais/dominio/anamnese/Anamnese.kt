@@ -81,3 +81,8 @@ fun progresso(blocos: List<BlocoQuestionario>, respostas: Map<Uuid, JsonElement>
     val visiveis = passos(blocos, respostas).flatMap { it.perguntas }
     return visiveis.count { respostas[it.chave] != null } to visiveis.size
 }
+
+/** Quantas perguntas visíveis do passo já têm resposta (cartão por tema, ART-P4-02). */
+data class ProgressoPasso(val respondidas: Int, val total: Int) { val completo get() = total > 0 && respondidas == total }
+
+fun progressoDoPasso(passo: PassoAnamnese, respostas: Map<Uuid, JsonElement>) = ProgressoPasso(passo.perguntas.count { respostas[it.chave] != null }, passo.perguntas.size)

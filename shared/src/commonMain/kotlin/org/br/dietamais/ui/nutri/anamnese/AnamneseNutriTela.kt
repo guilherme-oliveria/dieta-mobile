@@ -9,6 +9,10 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -99,14 +103,28 @@ private fun ConteudoRespostasAnamnese(questionario: QuestionarioResposta, aoVolt
         ChipStatus(if (questionario.status == StatusQuestionario.RESPONDIDO) EstiloStatus.FEITA else EstiloStatus.INFO,
             texto = stringResource(if (questionario.status == StatusQuestionario.RESPONDIDO) Res.string.anamnese_status_respondido else Res.string.anamnese_status_pendente))
         if (mostrarResultados) ResultadosAnamnese(questionario.derivados, questionario.blocos.flatMap { it.perguntas }.mapNotNull { assuntoAnamnese(it.codigo) }.toSet())
-        passos(questionario.blocos, questionario.respostas).forEach { passo ->
-            Text(passo.titulo, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-            passo.perguntas.forEach { p ->
-                CardDieta(Modifier.fillMaxWidth()) {
-                    Text(p.texto, style = MaterialTheme.typography.labelLarge)
-                    Text(textoDaResposta(p, questionario.respostas[p.chave]) ?: stringResource(Res.string.anamnese_sem_resposta), style = MaterialTheme.typography.bodyLarge)
-                }
+        val passosLidos = passos(questionario.blocos, questionario.respostas)
+        passosLidos.forEachIndexed { indice, passo -> SecaoRespostas(passo, questionario.respostas, abertaInicialmente = indice == 0) }
+    }
+}
+
+/** Um tema da anamnese como cartão recolhível, com "n de m respondidas" e o check quando completo (ART-P4-02). */
+@Composable
+private fun SecaoRespostas(passo: PassoAnamnese, respostas: Map<Uuid, kotlinx.serialization.json.JsonElement>, abertaInicialmente: Boolean) {
+    var aberta by remember(passo.titulo) { mutableStateOf(abertaInicialmente) }
+    val progresso = progressoDoPasso(passo, respostas)
+    CardDieta(Modifier.fillMaxWidth().testTag("secao-anamnese")) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
+                Text(passo.titulo, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                Text(stringResource(Res.string.anamnese_secao_progresso, progresso.respondidas, progresso.total), style = MaterialTheme.typography.bodySmall)
             }
+            if (progresso.completo) ChipStatus(EstiloStatus.FEITA, texto = stringResource(Res.string.anamnese_secao_completa))
+            BotaoTexto(stringResource(if (aberta) Res.string.anamnese_secao_recolher else Res.string.anamnese_secao_expandir), { aberta = !aberta })
+        }
+        if (aberta) passo.perguntas.forEach { p ->
+            Text(p.texto, style = MaterialTheme.typography.labelLarge)
+            Text(textoDaResposta(p, respostas[p.chave]) ?: stringResource(Res.string.anamnese_sem_resposta), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
