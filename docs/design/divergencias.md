@@ -44,3 +44,10 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - Filtros de atenção (Retorno hoje, Avaliação vencida, Sem retorno) e o resumo "M precisam de atenção": a lista do backend não traz agenda nem data da última avaliação por paciente. O app mantém os filtros de status (Todos, Convidados, Ativos, Encerrados).
 - "Fixados e recentes": sem fixar nem histórico de abertura no backend.
 - Índice A-Z: aparece como linha de letras sob os filtros (não como régua lateral), só com as iniciais que existem e a partir de 12 pacientes.
+
+## MOB-79 · Financeiro da consulta (05/11/2026)
+
+- **Sem artboard próprio.** A decisão G-20 veio depois dos artboards da Parte 4; a tela segue `componentes.md` e `padrao-ui.md` (diálogo em tela cheia como o formulário da consulta, chips de escolha, campo com unidade "R$", chave "Pago"). Pedir o artboard ao agente de Design e Usabilidade.
+- O resumo do mês aparece no fim da Agenda como um cartão de texto (consultas, compareceram, faltaram, pendentes, recebido, a receber e recebido por forma). Gráfico e filtro por período ficam para depois.
+- Os valores usam `Double` no app (como os demais números do contrato) e só entram na tela formatados em reais; a conta de verdade é do servidor.
+

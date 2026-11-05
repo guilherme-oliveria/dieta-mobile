@@ -96,7 +96,7 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | contas | `/auth/*`, `/eu`, `/eu/dispositivos` (registra token FCM), `/eu/preferencias-notificacao` | todos |
 | assinaturas | `GET /assinatura`, `POST /assinatura/checkout` (link do gateway), `POST /webhooks/pagamento` (público, validado) | nutri / gateway |
 | pacientes | `GET/POST /pacientes`, `GET/PATCH /pacientes/{id}`, `POST /pacientes/{id}/convite`, `POST /pacientes/{id}/encerrar-vinculo` | nutri |
-| alimentos | `GET /grupos-alimentos`, `GET/POST/PATCH /alimentos` (lista da nutri), `GET/POST/PATCH /produtos` (produtos da nutri, `If-Match`; `ativo=false` desativa), `GET/PUT /pacientes/{id}/lista-substituicao` | nutri |
+| alimentos | `GET /grupos-alimentos`, `GET/POST/PATCH /alimentos` (lista da nutri), `GET/POST/PATCH /produtos` (produtos da nutri, `If-Match`; `ativo=false` desativa), `GET/PUT /pacientes/{id}/lista-substituicao`, `POST /pacientes/{id}/lista-substituicao/copiar-de/{origemId}` (G-19, RN-ALI-06, `If-Match` da lista de destino) | nutri |
 | dietas | `GET/POST /pacientes/{id}/dietas`, `GET/PUT /dietas/{id}`, `POST /dietas/{id}/publicar`, `POST /dietas/{id}/duplicar` (item da refeição por `alimentoId`, `grupoId` ou `produtoId` + `gramas`, BE-48c), `GET /eu/dietas`, `PUT /eu/dieta-em-uso` | nutri / paciente |
 | rotina | `POST /eu/checkins`, `POST /eu/agua`, `POST /eu/pesos`, `GET /eu/rotina?de=&ate=` (BE-38: registros do período, até 366 dias, no formato do `/sync`; usado pela web), `GET /pacientes/{id}/adesao` | paciente / nutri |
 | avaliacoes | `GET/POST /pacientes/{id}/avaliacoes`, `PUT /avaliacoes/{id}`, `GET /eu/avaliacoes`, `GET /eu/evolucao` | nutri / paciente |
@@ -105,7 +105,7 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | referencias | `GET /referencias/atividades-met` (tabela de MET), `GET /referencias/dri?sexo&idadeMeses&gestante&lactante` (ingestões de referência) | nutri e paciente |
 | questionarios | `GET/POST /modelos-questionario`, `POST /pacientes/{id}/questionarios` (envia), `GET /eu/questionarios`, `PUT /eu/questionarios/{id}/respostas`, `POST /eu/questionarios/{id}/enviar` | nutri / paciente |
 | notificacoes | `GET /eu/avisos`, `POST /eu/avisos/{id}/lido`, `POST /eu/avisos/lidos` (central de avisos) | nutri / paciente |
-| agenda | `GET/POST /consultas`, `PATCH /consultas/{id}`, `GET /eu/consultas`, `POST /eu/calendario/token` (gera/revoga link .ics) | nutri / paciente |
+| agenda | `GET/POST /consultas`, `PATCH /consultas/{id}`, `GET /eu/consultas`, `POST /eu/calendario/token` (gera/revoga link .ics), `GET/PUT /consultas/{id}/financeiro` (comparecimento, valor e pagamento, `If-Match` com "0" no primeiro lançamento) e `GET /eu/nutri/financeiro` (resumo do período); financeiro é só da nutri, online e fora do sync (BE-65, RN-FIN-01) | nutri / paciente |
 | relatorios | `GET /dietas/{id}/pdf`, `GET /dietas/{id}/pdf-lista`, `GET /eu/dietas/{id}/pdf-lista` (BE-50b, `tamanho` opcional; ver `contrato-fase-8.md`), `GET /avaliacoes/{id}/pdf`, `POST /eu/exportacao` | nutri / paciente |
 | sync | `GET /sync`, `POST /sync` | app |
 
