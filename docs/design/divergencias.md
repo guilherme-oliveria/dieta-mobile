@@ -121,3 +121,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - Auditoria contra A-Avaliacao-Infantil e P-Curva-Crescimento: faltava só a régua do escore Z nos resultados ao vivo da nutri; ela agora marca o ponto médio do intervalo devolvido pelo backend, com a faixa −2 a +2 destacada. O paciente não vê Z (regra já existente).
 - Segue diferente do desenho: os rótulos da régua são um texto único, sem posição por número.
+
+## MOB-69 · Gráficos de 10 a 17 anos (05/11/2026)
+
+- Os 4 gráficos de barras aparecem também para 10 a 17 anos (idade de `resultadosInfantis`, ou faixa ADOLESCENTE se faltar). Menor de 10 anos segue só com a curva de crescimento. O peso mínimo e máximo vem do cálculo infantil.

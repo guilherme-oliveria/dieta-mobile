@@ -8,9 +8,10 @@ import kotlin.uuid.Uuid
 class GraficosAvaliacaoTest {
     private val quando = Instant.parse("2026-10-09T00:00:00Z")
     private fun av(peso: Double = 92.8, resultados: ResultadosAvaliacaoDto? = null, perimetros: PerimetrosAvaliacao = PerimetrosAvaliacao(),
-        dobras: DobrasAvaliacao = DobrasAvaliacao(), composicao: ComposicaoAvaliacao = ComposicaoAvaliacao()) = AvaliacaoResposta(
+        dobras: DobrasAvaliacao = DobrasAvaliacao(), composicao: ComposicaoAvaliacao = ComposicaoAvaliacao(),
+        infantis: ResultadosInfantisAvaliacaoDto? = null) = AvaliacaoResposta(
         Uuid.random(), Uuid.random(), Uuid.random(), quando, peso, 1.75, imcDe(peso, 1.75), classificarImc(imcDe(peso, 1.75)), perimetros, dobras, composicao,
-        versao = 1, criadoEm = quando, atualizadoEm = quando, resultados = resultados)
+        versao = 1, criadoEm = quando, atualizadoEm = quando, resultados = resultados, resultadosInfantis = infantis)
 
     @Test fun semMedidasNemFaixaDePesoNaoHaGraficos() {
         assertTrue(graficosDaAvaliacao(av()).isEmpty())
@@ -44,4 +45,19 @@ class GraficosAvaliacaoTest {
         assertEquals(listOf("TR", "PE", "AM", "SE", "AB", "SI", "CX"), listOf(MedidaAvaliacao.DOBRA_TRICEPS, MedidaAvaliacao.DOBRA_PEITORAL, MedidaAvaliacao.DOBRA_AXILAR_MEDIA,
             MedidaAvaliacao.DOBRA_SUBESCAPULAR, MedidaAvaliacao.DOBRA_ABDOMINAL, MedidaAvaliacao.DOBRA_SUPRAILIACA, MedidaAvaliacao.DOBRA_COXA).map { siglaMedida(it) })
     }
+
+    @Test fun adolescenteDe10A17AnosTemOsGraficosComFaixaDePesoDoInfantil() {
+        val a = av(peso = 48.0, infantis = ResultadosInfantisAvaliacaoDto(idadeMeses = 150, pesoTeoricoMinKg = 40.0, pesoTeoricoMaxKg = 55.0))
+        assertTrue(a.mostraGraficosDeBarras())
+        assertEquals(listOf(40.0, 48.0, 55.0), graficosDaAvaliacao(a).first().pontos.map { it.valor })
+    }
+
+    @Test fun criancaMenorDe10AnosFicaSoComACurva() {
+        assertFalse(av(infantis = ResultadosInfantisAvaliacaoDto(idadeMeses = 119)).mostraGraficosDeBarras())
+        assertTrue(av(infantis = ResultadosInfantisAvaliacaoDto(idadeMeses = 120)).mostraGraficosDeBarras())
+        assertTrue(av(infantis = ResultadosInfantisAvaliacaoDto(idadeMeses = 215)).mostraGraficosDeBarras())
+        assertFalse(av(infantis = ResultadosInfantisAvaliacaoDto(idadeMeses = 216)).mostraGraficosDeBarras())
+    }
+
+    @Test fun adultoSempreTemOsGraficos() { assertTrue(av().mostraGraficosDeBarras()) }
 }
