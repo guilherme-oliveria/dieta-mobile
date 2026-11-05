@@ -1355,4 +1355,7 @@
     <string name="prod_mais">Carregar mais</string>
     <string name="prod_resumo">%1$s kcal · %2$s g de proteína por 100 g</string>
     <string name="alimentos_aba_alimentos">Alimentos</string>
+    <string name="plan_adicionar_produto">Adicionar produto</string>
+    <string name="plan_produto_gramas">%1$s g</string>
+    <string name="plan_produto_kcal">%1$s kcal</string>
 </resources>

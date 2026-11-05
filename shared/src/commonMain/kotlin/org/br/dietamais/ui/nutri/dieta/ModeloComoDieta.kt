@@ -25,7 +25,7 @@ object ModeloComoDieta {
                 RefeicaoResposta(id = r.id ?: novoIdLocal(), nome = r.nome, horario = r.horario, ordem = i, tipo = r.tipo, alternativaDe = r.alternativaDe, totais = zero,
                     itens = r.itens.map { it ->
                         ItemRefeicaoResposta(id = it.id ?: novoIdLocal(), alimentoId = it.alimentoId, grupoId = it.grupoId, porcoes = it.porcoes,
-                            observacao = it.observacao, aVontade = it.aVontade, textoLivre = it.textoLivre, totais = zero)
+                            observacao = it.observacao, aVontade = it.aVontade, textoLivre = it.textoLivre, produtoId = it.produtoId, gramas = it.gramas, totais = zero)
                     })
             }, totais = zero, versao = m.versao, criadoEm = m.criadoEm, atualizadoEm = m.atualizadoEm, porcoes = m.porcoes, metas = m.metas, rodape = m.rodape)
     }

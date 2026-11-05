@@ -97,3 +97,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - Não há artboard do cadastro de produto (ART-P3 pendente). A tela segue o padrão de Alimentos (`padrao-ui.md`): escolha Alimentos | Produtos no topo da aba, lista de cartões, formulário em tela cheia com os 4 macros por 100 g (energia, carboidrato, proteína, lipídeos).
 - O formulário só edita nome, marca, classificação, medida caseira e os 4 macros; apresentação, embalagem, sabores, observação e os micronutrientes são mantidos como vieram do servidor. A busca por alimentos e produtos no planejador (MOB-71) vem em outro PR.
+
+## MOB-71 · Produto como item do planejador (05/11/2026)
+
+- Sem artboard (ART-P3 pendente). O item por produto usa o mesmo cartão do item por porção, com a quantidade em gramas (− e + de 10 g) e a energia do item; o seletor é uma busca por nome ou marca dentro da refeição, ao lado de "Adicionar grupo".
+- O total do dia e as metas ao vivo continuam só com os itens por grupo; o produto entra no total mostrado depois de salvar, calculado pelo servidor.

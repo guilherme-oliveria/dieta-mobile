@@ -20,10 +20,12 @@ import kotlin.uuid.Uuid
  * quantidade de porções, com total ao vivo contra as metas. A conta aqui é só feedback; o backend recalcula e decide ao salvar.
  */
 class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val porcoes: PortaPorcoes,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null) : ViewModel() {
-    private val atual = MutableStateFlow(EstadoPlanejador())
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null,
+    private val produtos: PortaProdutos? = null) : ViewModel() {
+    private val atual = MutableStateFlow(EstadoPlanejador(produtosDisponiveis = produtos != null))
     val estado = atual.asStateFlow()
     private var operacao: Job? = null
+    private var buscaProdutos: Job? = null
     init {
         conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
     }
@@ -31,7 +33,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
     fun abrirPaciente(pacienteId: Uuid) {
         if (atual.value.pacienteId == pacienteId && atual.value.referencia != null) return
         operacao?.cancel()
-        atual.value = EstadoPlanejador(pacienteId = pacienteId, semConexao = atual.value.semConexao)
+        atual.value = EstadoPlanejador(pacienteId = pacienteId, semConexao = atual.value.semConexao, produtosDisponiveis = produtos != null)
         carregarReferencia()
     }
     fun carregarReferencia() = executar(carregar = true) { val r = porcoes.obter(); atual.update { it.copy(referencia = r, semConexao = false) }; recalcular() }
@@ -50,6 +52,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
             RefeicaoPlano(r.id, r.nome, r.horario.paraTexto(), r.itens.mapNotNull { i ->
                 when {
                     i.textoLivre != null -> ItemPlano.TextoLivre(texto = i.textoLivre)
+                    i.produtoId != null && i.gramas != null -> ItemPlano.DoProduto(i.id, i.produtoId, i.nomeAlimento.orEmpty(), i.gramas)
                     i.aVontade == true && i.grupoId != null -> ItemPlano.AVontade(grupoId = i.grupoId)
                     i.grupoId != null && i.porcoes != null -> ItemPlano.DoGrupo(grupoId = i.grupoId, porcoes = i.porcoes)
                     else -> null
@@ -106,6 +109,26 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
     /** Passos de 0,5 porção, de 0,5 a 99. */
     fun ajustarPorcoes(refeicaoId: Uuid, item: Uuid, passos: Int) = refeicao(refeicaoId) { r ->
         r.copy(itens = r.itens.map { i -> if (i.chave == item && i is ItemPlano.DoGrupo) i.copy(porcoes = (i.porcoes + passos * PASSO).coerceIn(PASSO, MAXIMO)) else i })
+    }
+    /** MOB-71: busca produtos da nutri (só ativos) para o seletor; o resultado fica em [EstadoPlanejador.produtosBusca]. */
+    fun buscarProdutos(texto: String) {
+        val porta = produtos ?: return
+        buscaProdutos?.cancel()
+        atual.update { it.copy(buscandoProdutos = true) }
+        buscaProdutos = viewModelScope.launch(dispatcher) {
+            try { val r = porta.listar(texto.trim(), true, 0); atual.update { it.copy(produtosBusca = r.itens) } }
+            catch (c: CancellationException) { throw c }
+            catch (_: Exception) { atual.update { it.copy(produtosBusca = emptyList()) } }
+            finally { atual.update { it.copy(buscandoProdutos = false) } }
+        }
+    }
+    fun adicionarProduto(refeicaoId: Uuid, produto: ProdutoResposta) {
+        val gramas = produto.medidaGramas?.coerceIn(PASSO_GRAMAS, MAXIMO_GRAMAS) ?: 100.0
+        adicionarItem(refeicaoId, ItemPlano.DoProduto(produtoId = produto.id, nome = produto.nome, gramas = gramas, kcalPor100 = produto.nutrientes["energia"]))
+    }
+    /** Passos de 10 g, de 10 a 5000. */
+    fun ajustarGramas(refeicaoId: Uuid, item: Uuid, passos: Int) = refeicao(refeicaoId) { r ->
+        r.copy(itens = r.itens.map { i -> if (i.chave == item && i is ItemPlano.DoProduto) i.copy(gramas = (i.gramas + passos * PASSO_GRAMAS).coerceIn(PASSO_GRAMAS, MAXIMO_GRAMAS)) else i })
     }
     fun removerItem(refeicaoId: Uuid, item: Uuid) = refeicao(refeicaoId) { r -> r.copy(itens = r.itens.filter { it.chave != item }) }
 
@@ -175,6 +198,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
                     when (i) {
                         is ItemPlano.DoGrupo -> ItemRefeicaoRequisicao(id = i.chave, grupoId = i.grupoId, porcoes = i.porcoes)
                         is ItemPlano.AVontade -> ItemRefeicaoRequisicao(id = i.chave, grupoId = i.grupoId, aVontade = true)
+                        is ItemPlano.DoProduto -> ItemRefeicaoRequisicao(id = i.chave, produtoId = i.produtoId, gramas = i.gramas)
                         is ItemPlano.TextoLivre -> ItemRefeicaoRequisicao(id = i.chave, textoLivre = i.texto, aVontade = true)
                     }
                 },
@@ -217,6 +241,8 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
         const val LIMITE_ITENS = 60
         const val PASSO = 0.5
         const val MAXIMO = 99.0
+        const val PASSO_GRAMAS = 10.0
+        const val MAXIMO_GRAMAS = 5000.0
         private val ZERO = TotaisPorcoes(0.0, 0.0, 0.0, 0.0, emptyMap())
         /** VET maior que zero e macros somando 100% (RN-DIE-10, metas). */
         fun metasValidas(m: MetasDieta) = m.vetKcal > 0 && listOf(m.carboidratoPct, m.proteinaPct, m.lipidioPct).all { it >= 0 } &&
