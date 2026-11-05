@@ -55,3 +55,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - A decisão G-19 trocou o "modelo de lista" por **copiar a lista de outro paciente da nutri** (RN-ALI-06). O artboard `C-Listas-Tipos` (ART-P3-06) mostra os 5 tipos de lista e não cobre a cópia: o app só ganhou, na lista do paciente, o botão "Copiar a lista de outro paciente", a escolha da origem e uma confirmação (a troca é da lista inteira e descarta edições não salvas). Pedir ao agente de Design e Usabilidade o artboard da cópia.
 
+## MOB-78 · Cadastro ampliado (05/11/2026)
+
+- O artboard `D-Cadastro-Paciente` (ART-P4-03) agrupa os dados em seções. O app entrega os campos como uma seção recolhível ("Mais dados do cadastro") no formulário de novo paciente e como linhas na ficha; a organização em seções com cartões e a edição da ficha ficam para depois (ainda não há tela de edição do paciente). A conferir com o artboard pelo agente de Design e Usabilidade.
+- Escolaridade e estado civil têm chips de sugestão e aceitam texto livre (RN-VIN-08: o servidor não fixa os valores). `uf` vira maiúsculas e `cep` vai só com os 8 dígitos, como o servidor normaliza.
+

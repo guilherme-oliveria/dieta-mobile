@@ -69,7 +69,7 @@ class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDi
         contexto()
         val agoraLocal = agora()
         val otimista = PacienteResposta(requisicao.id, requisicao.id, requisicao.nome, requisicao.email, requisicao.dataNascimento, requisicao.sexo, requisicao.telefone,
-            requisicao.estaturaReferencia, requisicao.objetivo, requisicao.observacoes, StatusVinculo.CONVIDADO, 0, agoraLocal, agoraLocal)
+            requisicao.estaturaReferencia, requisicao.objetivo, requisicao.observacoes, StatusVinculo.CONVIDADO, 0, agoraLocal, agoraLocal, cadastroAmpliado = requisicao.cadastroAmpliado)
         escrita.criar("pacientes", requisicao.id, JsonContrato.encodeToJsonElement(requisicao).jsonObject, JsonContrato.encodeToString(otimista))
         otimista
     }

@@ -63,6 +63,15 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                     DadoFicha(stringResource(Res.string.pacientes_altura), paciente.estaturaReferencia?.toString()?.replace('.', ','))
                     DadoFicha(stringResource(Res.string.pacientes_objetivo), paciente.objetivo)
                     DadoFicha(stringResource(Res.string.pacientes_observacoes), paciente.observacoes)
+                    paciente.cadastroAmpliado?.let { c ->
+                        DadoFicha(stringResource(Res.string.pacientes_escolaridade), c.escolaridade)
+                        DadoFicha(stringResource(Res.string.pacientes_estado_civil), c.estadoCivil)
+                        DadoFicha(stringResource(Res.string.pacientes_profissao), c.profissao)
+                        DadoFicha(stringResource(Res.string.pacientes_endereco), org.br.dietamais.dominio.pacientes.enderecoEmUmaLinha(c.endereco))
+                        DadoFicha(stringResource(Res.string.pacientes_convenio), c.convenio)
+                        DadoFicha(stringResource(Res.string.pacientes_indicacao), c.indicacao)
+                        DadoFicha(stringResource(Res.string.pacientes_motivo), c.motivoConsulta)
+                    }
                 }
                 if (paciente.status == StatusVinculo.CONVIDADO) BotaoPrincipal(stringResource(Res.string.pacientes_gerar_convite), aoConvidar,
                     Modifier.fillMaxWidth(), habilitado = !estado.semConexao, carregando = estado.envioEmAndamento)

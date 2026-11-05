@@ -14,6 +14,7 @@ import org.br.dietamais.data.repositorio.PortaPacientes
 import org.br.dietamais.data.sync.novoIdLocal
 import org.br.dietamais.plataforma.*
 import kotlin.time.Clock
+import org.br.dietamais.dominio.pacientes.*
 import kotlin.uuid.Uuid
 
 class PacientesViewModel(private val repositorio: PortaPacientes, private val compartilhamento: Compartilhamento,
@@ -81,6 +82,11 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
             }.copy(chave = novoIdLocal())
         }, errosCampos = emptyMap(), erro = null) }
     }
+    /** Cadastro ampliado (MOB-78, RN-VIN-08): campos opcionais em texto livre; o servidor não fixa os valores. */
+    fun mudarCadastroAmpliado(muda: (FormularioCadastroAmpliado) -> FormularioCadastroAmpliado) {
+        if (atual.value.envioEmAndamento) return
+        atual.update { estado -> estado.copy(formulario = estado.formulario?.let { it.copy(ampliado = muda(it.ampliado), chave = novoIdLocal()) }, errosCampos = emptyMap(), erro = null) }
+    }
     fun mudarSexo(sexo: Sexo?) {
         if (!atual.value.envioEmAndamento) atual.update { it.copy(formulario = it.formulario?.copy(sexo = sexo, chave = novoIdLocal())) }
     }
@@ -94,11 +100,12 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
         if (form.nascimento.isNotBlank() && (data == null || data > Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date)) campos["dataNascimento"] = MensagemPacientes.DATA_INVALIDA
         val estatura = form.estatura.replace(',', '.').toDoubleOrNull()
         if (form.estatura.isNotBlank() && (estatura == null || !estatura.isFinite() || estatura <= 0)) campos["estaturaReferencia"] = MensagemPacientes.ALTURA_INVALIDA
+        errosDoCadastroAmpliado(form.ampliado).forEach { campos[if (it == ErroCadastroAmpliado.UF) "uf" else "cep"] = MensagemPacientes.CAMPO_INVALIDO }
         atual.update { it.copy(errosCampos = campos) }
         if (campos.isNotEmpty()) return
         executar(exigeRede = false) {
             val resposta = repositorio.criar(CriarPacienteRequisicao(form.id, form.nome.trim(), form.email.opcional(), data, form.sexo,
-                form.telefone.opcional(), estatura, form.objetivo.opcional(), form.observacoes.opcional()), form.chave)
+                form.telefone.opcional(), estatura, form.objetivo.opcional(), form.observacoes.opcional(), montarCadastroAmpliado(form.ampliado)), form.chave)
             selecionadoId = resposta.vinculoId
             atual.update { it.copy(formulario = null, aviso = MensagemPacientes.PACIENTE_CRIADO) }
             publicarLista()

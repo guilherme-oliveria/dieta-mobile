@@ -25,7 +25,7 @@ fun PacientesRota(viewModel: PacientesViewModel, classe: WindowSizeClass, vincul
             else EstadoVazio(mensagem = stringResource(Res.string.selecione_paciente))
         })
     if (estado.formulario != null) ModalBottomSheet(onDismissRequest = viewModel::fecharCriacao) {
-        CriarPacienteFormulario(estado, viewModel::mudarCampo, viewModel::mudarSexo, viewModel::criar, viewModel::fecharCriacao, viewModel::atualizar)
+        CriarPacienteFormulario(estado, viewModel::mudarCampo, viewModel::mudarSexo, viewModel::criar, viewModel::fecharCriacao, viewModel::atualizar, viewModel::mudarCadastroAmpliado)
     }
     if (estado.convite != null) ModalBottomSheet(onDismissRequest = viewModel::fecharConvite) {
         ConviteConteudo(estado, viewModel::compartilharConvite, viewModel::fecharConvite)

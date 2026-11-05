@@ -63,6 +63,24 @@ class PacientesViewModelTest {
         assertEquals(porta.chaves[0], porta.chaves[1])
     }
 
+    @Test fun cadastroAmpliadoVaiNaRequisicaoSoComOQueFoiPreenchidoECepInvalidoBarra() = runTest {
+        val porta = PortaTeste()
+        val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler))
+        runCurrent(); vm.abrirCriacao(); vm.mudarCampo(CampoPaciente.NOME, "Pessoa fictícia")
+        vm.mudarCadastroAmpliado { it.copy(profissao = "Professora", uf = "sp", cep = "123") }; vm.criar(); runCurrent()
+        assertTrue(porta.criacoes.isEmpty()); assertEquals(MensagemPacientes.CAMPO_INVALIDO, vm.estado.value.errosCampos["cep"]); assertNull(vm.estado.value.errosCampos["uf"])
+        vm.mudarCadastroAmpliado { it.copy(cep = "01310-100") }; vm.criar(); runCurrent()
+        val enviado = porta.criacoes.single().cadastroAmpliado
+        assertEquals("Professora", enviado?.profissao); assertEquals("SP", enviado?.endereco?.uf); assertEquals("01310100", enviado?.endereco?.cep); assertNull(enviado?.convenio)
+    }
+
+    @Test fun semCadastroAmpliadoARequisicaoNaoLevaOCampo() = runTest {
+        val porta = PortaTeste()
+        val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler))
+        runCurrent(); vm.abrirCriacao(); vm.mudarCampo(CampoPaciente.NOME, "Pessoa fictícia"); vm.criar(); runCurrent()
+        assertNull(porta.criacoes.single().cadastroAmpliado)
+    }
+
     @Test fun limiteAbreAvisoSemFabricarPaciente() = runTest {
         val porta = PortaTeste().apply { falhaCriar = ErroApi("LIMITE_PACIENTES_ATINGIDO", "RN-ASS-03", emptyList(), 422, null, null) }
         val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler))
