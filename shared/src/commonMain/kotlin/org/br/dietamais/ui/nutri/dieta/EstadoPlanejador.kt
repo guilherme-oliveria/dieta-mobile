@@ -16,6 +16,8 @@ sealed interface ItemPlano {
     data class DoGrupo(override val chave: Uuid = novoIdLocal(), val grupoId: Uuid, val porcoes: Double = 1.0) : ItemPlano
     data class AVontade(override val chave: Uuid = novoIdLocal(), val grupoId: Uuid) : ItemPlano
     data class TextoLivre(override val chave: Uuid = novoIdLocal(), val texto: String) : ItemPlano
+    /** MOB-71: produto ou suplemento da nutri, em gramas (ou mL); entra no total do servidor ao salvar. */
+    data class DoProduto(override val chave: Uuid = novoIdLocal(), val produtoId: Uuid, val nome: String, val gramas: Double = 100.0, val kcalPor100: Double? = null) : ItemPlano
 }
 
 /** [alternativaDe] preenchido = refeição ALTERNATIVA (RN-DIE-11): fica fora do total do dia. */
@@ -38,6 +40,7 @@ data class EstadoPlanejador(
     val totaisRefeicao: Map<Uuid, TotaisPorcoes> = emptyMap(), val diferencas: Map<Uuid, DiferencaPlano> = emptyMap(),
     val totalDia: TotaisPorcoes = TotaisPorcoes(0.0, 0.0, 0.0, 0.0, emptyMap()), val saldo: SaldoMetasResposta? = null,
     val totaisServidor: org.br.dietamais.data.remoto.dto.TotaisNutricionaisResposta? = null,
+    val produtosDisponiveis: Boolean = false, val produtosBusca: List<ProdutoResposta> = emptyList(), val buscandoProdutos: Boolean = false,
     val refeicaoAtiva: Uuid? = null, val carregando: Boolean = false, val enviando: Boolean = false, val semConexao: Boolean = false,
     val erro: MensagemPlanejador? = null, val aviso: MensagemPlanejador? = null,
 ) { override fun toString() = "EstadoPlanejador[conteúdo clínico protegido]" }

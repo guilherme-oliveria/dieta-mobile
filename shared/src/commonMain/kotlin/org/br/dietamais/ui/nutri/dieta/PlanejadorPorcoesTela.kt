@@ -29,6 +29,8 @@ class AcoesPlanejador(
     val aoAdicionarGrupo: (Uuid, Uuid) -> Unit = { _, _ -> }, val aoAdicionarAVontade: (Uuid, Uuid) -> Unit = { _, _ -> },
     val aoAdicionarTexto: (Uuid, String) -> Unit = { _, _ -> }, val aoEscolherPorcao: (Uuid, Int) -> Unit = { _, _ -> },
     val aoAjustar: (Uuid, Uuid, Int) -> Unit = { _, _, _ -> }, val aoRemoverItem: (Uuid, Uuid) -> Unit = { _, _ -> }, val aoSalvar: () -> Unit = {},
+    /** MOB-71: produtos da nutri como item (gramas). */
+    val aoBuscarProdutos: (String) -> Unit = {}, val aoAdicionarProduto: (Uuid, ProdutoResposta) -> Unit = { _, _ -> }, val aoAjustarGramas: (Uuid, Uuid, Int) -> Unit = { _, _, _ -> },
 )
 
 /**
@@ -151,6 +153,7 @@ private fun RefeicaoAtiva(estado: EstadoPlanejador, r: RascunhoPlano, ref: Refei
     val grupos = estado.referencia?.grupos.orEmpty()
     var seletor by remember(ref.id) { mutableStateOf(false) }
     var texto by remember(ref.id) { mutableStateOf("") }
+    var buscaProduto by remember(ref.id) { mutableStateOf<String?>(null) }
     CardDieta(Modifier.fillMaxWidth().testTag("refeicao-ativa")) {
         if (ref.alternativa) {
             Text(stringResource(Res.string.plan_fora_do_total), style = MaterialTheme.typography.labelLarge)
@@ -184,6 +187,18 @@ private fun RefeicaoAtiva(estado: EstadoPlanejador, r: RascunhoPlano, ref: Refei
                     Text(stringResource(Res.string.plan_a_vontade, grupos.firstOrNull { it.grupoId == item.grupoId }?.nome.orEmpty()), style = MaterialTheme.typography.titleSmall)
                     if (r.editavel) BotaoTexto(stringResource(Res.string.plan_remover_item), { a.aoRemoverItem(ref.id, item.chave) })
                 }
+                is ItemPlano.DoProduto -> {
+                    Text(item.nome, style = MaterialTheme.typography.titleSmall)
+                    item.kcalPor100?.let { Text(stringResource(Res.string.plan_produto_kcal, formatar(it * item.gramas / 100.0)), style = MaterialTheme.typography.bodySmall) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                        BotaoContornado("−", { a.aoAjustarGramas(ref.id, item.chave, -1) }, habilitado = r.editavel && item.gramas > PlanejadorPorcoesViewModel.PASSO_GRAMAS,
+                            modifier = Modifier.semantics { contentDescription = "menos" })
+                        Text(stringResource(Res.string.plan_produto_gramas, item.gramas.paraTexto()), style = MaterialTheme.typography.titleMedium, modifier = Modifier.align(androidx.compose.ui.Alignment.CenterVertically))
+                        BotaoContornado("+", { a.aoAjustarGramas(ref.id, item.chave, 1) }, habilitado = r.editavel && item.gramas < PlanejadorPorcoesViewModel.MAXIMO_GRAMAS,
+                            modifier = Modifier.semantics { contentDescription = "mais" })
+                        if (r.editavel) BotaoTexto(stringResource(Res.string.plan_remover_item), { a.aoRemoverItem(ref.id, item.chave) })
+                    }
+                }
                 is ItemPlano.TextoLivre -> {
                     Text(item.texto, style = MaterialTheme.typography.titleSmall)
                     if (r.editavel) BotaoTexto(stringResource(Res.string.plan_remover_item), { a.aoRemoverItem(ref.id, item.chave) })
@@ -194,6 +209,7 @@ private fun RefeicaoAtiva(estado: EstadoPlanejador, r: RascunhoPlano, ref: Refei
         if (r.editavel) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                 BotaoTexto(stringResource(Res.string.plan_adicionar_grupo), { seletor = !seletor })
+                if (estado.produtosDisponiveis) BotaoTexto(stringResource(Res.string.plan_adicionar_produto), { buscaProduto = if (buscaProduto == null) "" else null; if (buscaProduto != null) a.aoBuscarProdutos("") })
                 if (!ref.alternativa) BotaoTexto(stringResource(Res.string.plan_adicionar_alternativa), { a.aoAdicionarAlternativa(ref.id) })
                 BotaoTexto(stringResource(Res.string.plan_remover_refeicao), { a.aoRemoverRefeicao(ref.id) })
             }
@@ -205,6 +221,15 @@ private fun RefeicaoAtiva(estado: EstadoPlanejador, r: RascunhoPlano, ref: Refei
                     }
                 }
                 BotaoTexto(stringResource(Res.string.plan_fechar_seletor), { seletor = false })
+            }
+            buscaProduto?.let { consulta ->
+                Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
+                    CampoTexto(stringResource(Res.string.prod_busca), consulta, { buscaProduto = it.take(150); a.aoBuscarProdutos(it) }, Modifier.fillMaxWidth())
+                    if (estado.buscandoProdutos) EstadoCarregando()
+                    else if (estado.produtosBusca.isEmpty()) Text(stringResource(Res.string.prod_vazio), style = MaterialTheme.typography.bodySmall)
+                    estado.produtosBusca.forEach { p -> BotaoTexto(listOfNotNull(p.nome, p.marca).joinToString(" · "), { a.aoAdicionarProduto(ref.id, p); buscaProduto = null }, Modifier.fillMaxWidth()) }
+                    BotaoTexto(stringResource(Res.string.plan_fechar_seletor), { buscaProduto = null })
+                }
             }
             CampoTexto(stringResource(Res.string.plan_texto_livre), texto, { texto = it.take(200) }, Modifier.fillMaxWidth())
             BotaoTexto(stringResource(Res.string.plan_texto_adicionar), { a.aoAdicionarTexto(ref.id, texto); texto = "" }, habilitado = texto.isNotBlank())

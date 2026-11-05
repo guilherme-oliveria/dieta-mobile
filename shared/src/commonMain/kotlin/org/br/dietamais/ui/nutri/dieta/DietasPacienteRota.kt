@@ -63,14 +63,16 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
             { fecharEditor() }, editor::mudarTitulo, editor::mudarOrientacao, editor::mudarRodape, editor::mudarMetas,
             editor::selecionarRefeicao, editor::adicionarRefeicao, editor::adicionarAlternativa, editor::removerRefeicao, editor::mudarNomeRefeicao,
             editor::mudarHorario, editor::adicionarGrupo, editor::adicionarAVontade, editor::adicionarTexto, editor::escolherPorcao,
-            editor::ajustarPorcoes, editor::removerItem, editor::salvar))
+            editor::ajustarPorcoes, editor::removerItem, editor::salvar,
+            aoBuscarProdutos = editor::buscarProdutos, aoAdicionarProduto = editor::adicionarProduto, aoAjustarGramas = editor::ajustarGramas))
     }
     if (planejador != null && plano?.rascunho != null) Dialog(onDismissRequest = { planejador.fechar(); viewModel.recarregar() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         PlanejadorPorcoesTela(plano, AcoesPlanejador(
             { planejador.fechar(); viewModel.recarregar() }, planejador::mudarTitulo, planejador::mudarOrientacao, planejador::mudarRodape, planejador::mudarMetas,
             planejador::selecionarRefeicao, planejador::adicionarRefeicao, planejador::adicionarAlternativa, planejador::removerRefeicao, planejador::mudarNomeRefeicao,
             planejador::mudarHorario, planejador::adicionarGrupo, planejador::adicionarAVontade, planejador::adicionarTexto, planejador::escolherPorcao,
-            planejador::ajustarPorcoes, planejador::removerItem, planejador::salvar))
+            planejador::ajustarPorcoes, planejador::removerItem, planejador::salvar,
+            aoBuscarProdutos = planejador::buscarProdutos, aoAdicionarProduto = planejador::adicionarProduto, aoAjustarGramas = planejador::ajustarGramas))
     }
     // tela cheia em diálogo: a ficha já rola na vertical, então o montador não pode aninhar outra rolagem
     if (estado.rascunho != null) Dialog(onDismissRequest = viewModel::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {

@@ -69,13 +69,13 @@ fun moduloWebNutri(ambiente: AmbienteWeb, compartilhamento: Compartilhamento) = 
     single<org.br.dietamais.data.repositorio.PortaExames> { org.br.dietamais.data.repositorio.ExamesRepositorio(get<ApiDieta>()) }
     viewModel { org.br.dietamais.ui.nutri.avaliacao.ExamesNutriViewModel(get(), get(), conectividade = online) }
     single<org.br.dietamais.data.repositorio.PortaPorcoes> { org.br.dietamais.data.repositorio.PorcoesRepositorio(get<ApiDieta>()) }
-    viewModel { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get(), get(), conectividade = online) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get(), get(), conectividade = online, produtos = get()) }
     single<org.br.dietamais.data.repositorio.PortaModelosDieta> { org.br.dietamais.data.repositorio.ModelosDietaRepositorio(get<ApiDieta>()) { } }
     viewModel { org.br.dietamais.ui.nutri.dieta.ModelosDietaViewModel(get(), conectividade = online) }
     viewModel { org.br.dietamais.ui.nutri.dieta.AplicarModeloViewModel(get(), get()) }
     // MOB-56b: editor de modelo = o planejador gravando em modelos-dieta
     single { org.br.dietamais.ui.nutri.dieta.DietasDeModelo(get()) }
-    viewModel(org.koin.core.qualifier.named("modelo")) { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get<org.br.dietamais.ui.nutri.dieta.DietasDeModelo>(), get(), conectividade = online) }
+    viewModel(org.koin.core.qualifier.named("modelo")) { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get<org.br.dietamais.ui.nutri.dieta.DietasDeModelo>(), get(), conectividade = online, produtos = get()) }
     // MOB-70: produtos e suplementos da nutri (online)
     single<org.br.dietamais.data.repositorio.PortaProdutos> { org.br.dietamais.data.repositorio.ProdutosRepositorio(get<ApiDieta>()) }
     viewModel { org.br.dietamais.ui.nutri.produtos.ProdutosViewModel(get(), conectividade = online) }
