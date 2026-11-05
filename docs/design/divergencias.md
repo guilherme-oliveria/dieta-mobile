@@ -78,3 +78,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-72 · Micronutrientes no planejador (05/11/2026)
 
 - Não há artboard para este cartão (ART-P3). O app reaproveita o cartão do MOB-65 abaixo do "Resultado ao vivo". Micronutrientes e adequação só o servidor calcula (o planejador soma só energia e macros), então o cartão mostra o último valor salvo e, com alterações pendentes, pede para salvar de novo.
+
+## MOB-56b · Editor de modelo de dieta (05/11/2026)
+
+- Não há artboard do editor de modelo (ART-P3). O editor reaproveita o planejador por porções (`A/T-Planejador-Porcoes`): o botão "Salvar" e os textos falam de dieta, e o título é o único campo de cabeçalho. Descrição, condição e restrições do modelo seguem as do modelo aberto (modelo novo nasce sem elas); a energia de referência vem das metas, calculada pelo servidor.
+- Só modelo da nutri sem alimento do catálogo abre para editar; o do sistema continua só leitura (duplicar primeiro, RN-MOD-01). A leitura offline fica para a MOB-56c.

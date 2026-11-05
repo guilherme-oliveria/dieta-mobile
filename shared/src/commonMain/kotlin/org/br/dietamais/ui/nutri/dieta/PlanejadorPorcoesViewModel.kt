@@ -42,7 +42,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
         atual.update { it.copy(rascunho = RascunhoPlano(refeicoes = listOf(principal)), totaisServidor = null, refeicaoAtiva = principal.id, erro = null, aviso = null) }; recalcular()
     }
     /** Só abre dieta montada por grupos; dieta com alimento do catálogo continua no montador por alimentos. */
-    fun abrir(dieta: DietaResposta): Boolean {
+    fun abrir(dieta: DietaResposta, comTotais: Boolean = true): Boolean {
         val itensDieta = dieta.refeicoes.flatMap { it.itens }
         if (itensDieta.any { it.alimentoId != null } || atual.value.referencia == null) { atual.update { it.copy(erro = MensagemPlanejador.SO_NO_MONTADOR) }; return false }
         val escolhas = dieta.porcoes.orEmpty().associate { it.grupoId to it.opcao }
@@ -57,7 +57,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
             }, r.alternativaDe)
         }
         val rascunho = RascunhoPlano(dieta.id, dieta.versao, dieta.status, dieta.titulo, dieta.orientacao.orEmpty(), dieta.rodape.orEmpty(), dieta.metas, escolhas, refeicoes)
-        atual.update { it.copy(rascunho = rascunho, totaisServidor = dieta.totais, refeicaoAtiva = refeicoes.firstOrNull { r -> !r.alternativa }?.id, erro = null, aviso = null) }; recalcular()
+        atual.update { it.copy(rascunho = rascunho, totaisServidor = dieta.totais.takeIf { comTotais }, refeicaoAtiva = refeicoes.firstOrNull { r -> !r.alternativa }?.id, erro = null, aviso = null) }; recalcular()
         return true
     }
     fun fechar() { atual.update { it.copy(rascunho = null, totaisServidor = null, refeicaoAtiva = null, erro = null) }; recalcular() }
