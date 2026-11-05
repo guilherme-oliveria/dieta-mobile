@@ -60,3 +60,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - O artboard `D-Cadastro-Paciente` (ART-P4-03) agrupa os dados em seções. O app entrega os campos como uma seção recolhível ("Mais dados do cadastro") no formulário de novo paciente e como linhas na ficha; a organização em seções com cartões e a edição da ficha ficam para depois (ainda não há tela de edição do paciente). A conferir com o artboard pelo agente de Design e Usabilidade.
 - Escolaridade e estado civil têm chips de sugestão e aceitam texto livre (RN-VIN-08: o servidor não fixa os valores). `uf` vira maiúsculas e `cep` vai só com os 8 dígitos, como o servidor normaliza.
 
+## MOB-66 · Evolução em barras (05/11/2026)
+
+- O artboard `D-Evolucao` (ART-P4-05) mostra só as barras de Peso, % gordura e Cintura por mês. No app, as barras são uma alternativa ao gráfico de linha já existente (mesmo seletor de séries e intervalo), não uma tela nova; o rótulo é "mês/ano" curto (ex.: 08/26) e mostra as últimas 6 medidas. Sem variação entre barras nem destaque da última por enquanto.
+

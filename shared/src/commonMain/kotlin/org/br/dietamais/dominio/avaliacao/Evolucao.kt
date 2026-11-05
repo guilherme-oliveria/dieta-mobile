@@ -2,6 +2,7 @@ package org.br.dietamais.dominio.avaliacao
 
 import org.br.dietamais.data.remoto.dto.AvaliacaoResposta
 import org.br.dietamais.data.remoto.dto.PesoResposta
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -51,3 +52,13 @@ fun recortar(pontos: List<PontoSerie>, intervalo: IntervaloEvolucao, agora: Inst
 /** Variação entre o primeiro e o último ponto; nula com menos de 2 pontos. */
 fun variacaoTotal(pontos: List<PontoSerie>): Double? =
     if (pontos.size < 2) null else kotlin.math.round((pontos.last().valor - pontos.first().valor) * 100) / 100
+
+/** Uma barra da evolução entre avaliações (MOB-66): rótulo "mês/ano" curto e o valor da série naquele dia. */
+data class BarraSerie(val rotulo: String, val valor: Double)
+
+/** Últimas [maximo] medidas da série, da mais antiga para a mais nova, com o rótulo "MM/aa" no fuso dado (ART-P4-05). */
+fun barrasDaSerie(pontos: List<PontoSerie>, fuso: kotlinx.datetime.TimeZone, maximo: Int = 6): List<BarraSerie> =
+    pontos.sortedBy { it.instante }.takeLast(maximo).map { p ->
+        val data = p.instante.toLocalDateTime(fuso).date
+        BarraSerie("${(data.month.ordinal + 1).toString().padStart(2, '0')}/${(data.year % 100).toString().padStart(2, '0')}", p.valor)
+    }

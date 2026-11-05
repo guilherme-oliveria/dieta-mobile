@@ -1303,4 +1303,7 @@
     <string name="pacientes_bairro">Bairro</string>
     <string name="pacientes_cidade">Cidade</string>
     <string name="pacientes_uf">UF</string>
+    <string name="evolucao_modo_linha">Linha</string>
+    <string name="evolucao_modo_barras">Barras por avaliação</string>
+    <string name="evolucao_barras_titulo">Últimas %1$d medidas</string>
 </resources>
