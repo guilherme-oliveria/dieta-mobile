@@ -12,7 +12,12 @@ data class PacienteResposta(val id: Uuid, val vinculoId: Uuid, val nome: String,
     val dataNascimento: LocalDate? = null, val sexo: Sexo? = null, val telefone: String? = null,
     val estaturaReferencia: Double? = null, val objetivo: String? = null, val observacoes: String? = null,
     val status: StatusVinculo, val versao: Long, val criadoEm: Instant, val atualizadoEm: Instant, val adesao7d: Double? = null,
-    val cadastroAmpliado: CadastroAmpliadoDto? = null)
+    val cadastroAmpliado: CadastroAmpliadoDto? = null,
+    /** BE-66: só na lista online (`GET /pacientes`); o sync não traz. */
+    val proximaConsulta: Instant? = null, val ultimaAvaliacao: UltimaAvaliacaoResumoDto? = null)
+
+@Serializable
+data class UltimaAvaliacaoResumoDto(val id: Uuid, val dataHora: Instant, val pesoKg: Double, val imc: Double, val classificacaoImc: String)
 
 @Serializable
 data class CriarPacienteRequisicao(val id: Uuid, val nome: String, val email: String? = null,

@@ -34,6 +34,7 @@ class ShellSyncIntegracaoTest {
             val arquivo = when (req.url.encodedPath) {
                 "/api/v1/eu" -> "consultarEu/resposta.json"
                 "/api/v1/grupos-alimentos" -> "fase-2/listarGruposAlimentos/resposta.json"
+                "/api/v1/pacientes" -> return@MockEngine respond("""{"itens":[],"pagina":0,"tamanho":100,"total":0}""", HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json")) // resumo da lista (BE-66)
                 "/api/v1/consultas" -> return@MockEngine respond("""{"itens":[]}""", HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json")) // Início da nutri
                 "/api/v1/alimentos" -> if (req.url.parameters["ativo"] == "true") "fase-2/listarAlimentos/resposta.json"
                     else return@MockEngine respond(JsonContrato.encodeToString(PaginaAlimentosResposta(emptyList(), 0, 20, 0)), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
