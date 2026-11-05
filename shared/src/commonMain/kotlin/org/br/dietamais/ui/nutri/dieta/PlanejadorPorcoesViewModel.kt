@@ -33,7 +33,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
     fun abrirPaciente(pacienteId: Uuid) {
         if (atual.value.pacienteId == pacienteId && atual.value.referencia != null) return
         operacao?.cancel()
-        atual.value = EstadoPlanejador(pacienteId = pacienteId, semConexao = atual.value.semConexao)
+        atual.value = EstadoPlanejador(pacienteId = pacienteId, semConexao = atual.value.semConexao, produtosDisponiveis = produtos != null)
         carregarReferencia()
     }
     fun carregarReferencia() = executar(carregar = true) { val r = porcoes.obter(); atual.update { it.copy(referencia = r, semConexao = false) }; recalcular() }
