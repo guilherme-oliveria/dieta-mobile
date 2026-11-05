@@ -25,15 +25,15 @@ class ResumosPacientesTest {
 
     @Test fun lePaginaAPaginaEGuardaSoOResumo() = runTest {
         val primeira = List(100) { ficha() }; val ultima = ficha(proxima = t, avaliacao = t)
-        val paginas = mutableListOf<String?>()
+        val paginas = mutableListOf<String>()
         val engine = MockEngine { req ->
-            paginas += req.url.parameters["pagina"]
+            paginas += req.url.parameters["pagina"].orEmpty()
             respond(if (req.url.parameters["pagina"] == "0") pagina(primeira, 0, 101) else pagina(listOf(ultima), 1, 101), HttpStatusCode.OK, json)
         }
         api(engine).use { api ->
             api.restaurarSessao()
             val r = carregarResumosPacientes(api)!!
-            assertEquals(listOf("0", "1"), paginas); assertEquals(101, r.size)
+            assertEquals<List<String>>(listOf("0", "1"), paginas); assertEquals(101, r.size)
             assertEquals(t, r[ultima.vinculoId]?.proximaConsulta); assertEquals(t, r[ultima.vinculoId]?.ultimaAvaliacaoEm)
             assertNull(r[primeira.first().vinculoId]?.proximaConsulta)
         }
