@@ -1,6 +1,7 @@
 package org.br.dietamais.dominio.avaliacao
 
 import org.br.dietamais.data.remoto.dto.AvaliacaoResposta
+import org.br.dietamais.data.remoto.dto.FaixaEtariaAvaliacao
 
 /** Os 4 gráficos do PDF da avaliação do adulto (ART-P1-09 e ART-P1-10). */
 enum class SerieGraficoAvaliacao(val unidade: String) { PESO("kg"), PERIMETROS("cm"), DOBRAS("mm"), COMPOSICAO("kg") }
