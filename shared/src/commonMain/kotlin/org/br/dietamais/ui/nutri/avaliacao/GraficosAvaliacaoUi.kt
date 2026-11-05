@@ -12,7 +12,7 @@ import org.br.dietamais.data.remoto.dto.AvaliacaoResposta
 import org.br.dietamais.dominio.avaliacao.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.CardDieta
-import org.br.dietamais.ui.comum.graficos.GraficoBarras
+import org.br.dietamais.ui.comum.graficos.GraficoBarrasVerticais
 import org.br.dietamais.ui.comum.graficos.GraficoComTabela
 import org.br.dietamais.ui.comum.graficos.ItemGrafico
 import org.br.dietamais.ui.theme.Dimens
@@ -49,9 +49,9 @@ fun GraficosAvaliacao(avaliacao: AvaliacaoResposta, modifier: Modifier = Modifie
         graficos.forEach { g ->
             CardDieta {
                 Text(stringResource(tituloSerie(g.serie)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-                val itens = g.pontos.map { ItemGrafico(stringResource(rotuloChave(it.chave)), it.valor) }
+                val itens = g.pontos.map { ItemGrafico(stringResource(rotuloChave(it.chave)), it.valor, sigla = (it.chave as? ChaveGrafico.Medida)?.let { c -> siglaMedida(c.medida) }) }
                 GraficoComTabela(itens.map { it.rotulo to "${textoDecimal(it.valor)} ${g.serie.unidade}" }) {
-                    GraficoBarras(itens, unidade = g.serie.unidade)
+                    GraficoBarrasVerticais(itens, unidade = g.serie.unidade)
                 }
             }
         }

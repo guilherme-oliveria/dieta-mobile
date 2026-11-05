@@ -35,7 +35,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - A **rosca de metas** do passo Necessidades usa o ponto médio das faixas, como no artboard; o anel de meta (`anelMeta`) só passa a ser usado no planejador por porções (MOB-54), onde compara o montado com a meta.
 - Telas do paciente e da nutri anteriores a MOB-47 (Hoje, Dieta, Compras, Pacientes, Painel, Dieta da nutri) não foram reauditadas aqui; seguem a validação de 24/10 ([validacao.md](validacao.md)).
 
-## MOB-64a (ART-P1-02 a 08), pendências no MOB-64b
-- Hub em tela própria por seção (ART-P1-03 a 08): no app há só o resumo das seções no passo Medidas. Fica para o MOB-64b.
-- Cartão "Última avaliação" da ficha (ART-P1-02): não feito. Os atalhos levam às abas Avaliações e Evolução. Fica para o MOB-64b.
-- Barras verticais com siglas (ART-P1-09 e ART-P1-10): os gráficos seguem em barras horizontais (MOB-63). Fica para o MOB-64b.
+## MOB-64a (ART-P1-02 a 08), pendências no MOB-64c
+- Hub em tela própria por seção (ART-P1-03 a 08): no app há só o resumo das seções no passo Medidas. Fica para o MOB-64c.
+- Cartão "Última avaliação" da ficha (ART-P1-02): não feito. Os atalhos levam às abas Avaliações e Evolução. Fica para o MOB-64c.
+- Barras verticais com siglas (ART-P1-09 e ART-P1-10): resolvido no MOB-64b.

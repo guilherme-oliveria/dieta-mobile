@@ -33,7 +33,7 @@ object PaletaGraficos {
 }
 
 /** Item de gráfico de rosca e de barras. [cor] nulo usa a paleta pela posição. */
-data class ItemGrafico(val rotulo: String, val valor: Double, val cor: Color? = null)
+data class ItemGrafico(val rotulo: String, val valor: Double, val cor: Color? = null, val sigla: String? = null)
 
 private fun Double.texto(): String {
     val arredondado = kotlin.math.round(this * 100) / 100
@@ -289,6 +289,32 @@ fun CurvaCrescimento(curvas: List<Pair<String, List<PontoCurva>>>, ponto: PontoC
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("$x0 m", style = MaterialTheme.typography.labelSmall); Text("$x1 m", style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+/**
+ * Barras verticais com o valor em cima e a sigla embaixo (ART-P1-09 e ART-P1-10). O nome completo vai na descrição de acessibilidade
+ * e na tabela de "ver como tabela"; a sigla é só o rótulo curto que cabe sob a barra.
+ */
+@Composable
+fun GraficoBarrasVerticais(itens: List<ItemGrafico>, modifier: Modifier = Modifier, unidade: String = "", altura: androidx.compose.ui.unit.Dp = 120.dp) {
+    val maximo = itens.map { it.valor }.filter { it.isFinite() }.maxOrNull()?.takeIf { it > 0 } ?: 1.0
+    val progresso = progressoEntrada()
+    val descricao = itens.joinToString("; ") { "${it.rotulo}: ${it.valor.texto()} $unidade".trim() }
+    val trilho = MaterialTheme.colorScheme.surfaceVariant
+    Row(modifier.fillMaxWidth().semantics { contentDescription = descricao }, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalAlignment = Alignment.Bottom) {
+        itens.forEachIndexed { i, item ->
+            Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(item.valor.texto(), style = MaterialTheme.typography.labelMedium, maxLines = 1)
+                Canvas(Modifier.fillMaxWidth().height(altura)) {
+                    val raio = CornerRadius(6.dp.toPx())
+                    drawRoundRect(trilho, size = size, cornerRadius = raio)
+                    val h = (item.valor / maximo).coerceIn(0.0, 1.0).toFloat() * size.height * progresso
+                    if (h > 0f) drawRoundRect(item.cor ?: PaletaGraficos.cor(i), topLeft = Offset(0f, size.height - h), size = Size(size.width, h), cornerRadius = raio)
+                }
+                Text(item.sigla ?: item.rotulo, style = MaterialTheme.typography.labelMedium, maxLines = 1)
+            }
         }
     }
 }

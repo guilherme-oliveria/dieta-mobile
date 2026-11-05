@@ -35,3 +35,24 @@ fun graficosDaAvaliacao(avaliacao: AvaliacaoResposta): List<GraficoAvaliacao> {
         GraficoAvaliacao(SerieGraficoAvaliacao.COMPOSICAO, medidas(SecaoAvaliacao.COMPOSICAO, MedidaAvaliacao.PESO_GORDO, MedidaAvaliacao.PESO_MAGRO)),
     ).filter { it.pontos.isNotEmpty() && (it.serie != SerieGraficoAvaliacao.PESO || it.pontos.size > 1) }
 }
+
+/** Sigla curta sob cada barra (ART-P1-09 e ART-P1-10). Medida sem sigla própria usa as 2 primeiras letras do nome em maiúsculas. */
+fun siglaMedida(medida: MedidaAvaliacao): String = when (medida) {
+    MedidaAvaliacao.PESCOCO -> "PE"
+    MedidaAvaliacao.TORAX -> "TO"
+    MedidaAvaliacao.CINTURA -> "C"
+    MedidaAvaliacao.ABDOMEN -> "A"
+    MedidaAvaliacao.QUADRIL -> "Q"
+    MedidaAvaliacao.BRACO -> "BR"
+    MedidaAvaliacao.ANTEBRACO -> "AB"
+    MedidaAvaliacao.COXA -> "CX"
+    MedidaAvaliacao.PANTURRILHA -> "PA"
+    MedidaAvaliacao.DOBRA_TRICEPS -> "TR"
+    MedidaAvaliacao.DOBRA_SUBESCAPULAR -> "SE"
+    MedidaAvaliacao.DOBRA_PEITORAL -> "PE"
+    MedidaAvaliacao.DOBRA_AXILAR_MEDIA -> "AM"
+    MedidaAvaliacao.DOBRA_SUPRAILIACA -> "SI"
+    MedidaAvaliacao.DOBRA_ABDOMINAL -> "AB"
+    MedidaAvaliacao.DOBRA_COXA -> "CX"
+    else -> medida.name.take(2)
+}
