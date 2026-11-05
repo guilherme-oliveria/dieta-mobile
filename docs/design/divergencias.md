@@ -78,3 +78,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-72 · Micronutrientes no planejador (05/11/2026)
 
 - Não há artboard para este cartão (ART-P3). O app reaproveita o cartão do MOB-65 abaixo do "Resultado ao vivo". Micronutrientes e adequação só o servidor calcula (o planejador soma só energia e macros), então o cartão mostra o último valor salvo e, com alterações pendentes, pede para salvar de novo.
+
+## MOB-77 · Anamnese por temas (05/11/2026)
+
+- O artboard `D-Anamnese-Secoes` (ART-P4-02) mostra um cartão por aba da planilha, cada um com um subtítulo ("Histórico, medicamentos, sintomas"). O backend só entrega o `titulo` do bloco, sem subtítulo, então o cartão mostra o título e "n de m respondidas". Nenhuma mudança de backend foi necessária (BE-67 dispensado); se o Design quiser o subtítulo, é um campo opcional novo no bloco.
+- Os cartões aparecem na leitura das respostas pela nutri (primeiro aberto, o resto recolhido). O preenchimento pelo paciente segue em passos ("Passo n de m", `A-Anamnese-Estruturada`), que já usa os mesmos blocos.

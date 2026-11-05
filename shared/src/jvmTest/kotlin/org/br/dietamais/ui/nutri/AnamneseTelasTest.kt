@@ -35,8 +35,15 @@ class AnamneseTelasTest {
     @Test fun respostasMostramSoPerguntasVisiveisESemRespostaQuandoVazio() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         val q = questionario(StatusQuestionario.RESPONDIDO, mapOf(fuma.chave to kotlinx.serialization.json.JsonPrimitive("Não")))
         setContent { DietaTheme { RespostasAnamneseTela(q, {}) } }
+        // ART-P4-02: um cartão por tema; o primeiro abre aberto e o resto recolhido, com "n de m respondidas"
         onNodeWithText("Você fuma?").assertIsDisplayed(); onNodeWithText("Não").assertIsDisplayed()
-        onNodeWithText("Sem resposta").assertIsDisplayed()
+        onNodeWithText("1 de 1 respondidas").assertIsDisplayed(); onNodeWithText("0 de 1 respondidas").assertIsDisplayed()
+        onNodeWithText("Completa").assertIsDisplayed()
+        onNodeWithText("Peso desejado").assertDoesNotExist()
+        onNodeWithText("Ver respostas").performScrollTo().performClick()
+        onNodeWithText("Sem resposta").performScrollTo().assertIsDisplayed()
+        onAllNodesWithText("Recolher")[0].performClick()
+        onNodeWithText("Você fuma?").assertDoesNotExist()
     }
 
     @Test fun editorMostraErrosDeValidacao() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
