@@ -2,6 +2,7 @@ package org.br.dietamais.data.repositorio
 
 import org.br.dietamais.data.remoto.*
 import org.br.dietamais.data.remoto.dto.*
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
