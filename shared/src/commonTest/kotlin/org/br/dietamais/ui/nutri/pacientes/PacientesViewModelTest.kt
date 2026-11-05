@@ -11,6 +11,10 @@ import org.br.dietamais.plataforma.ResultadoCompartilhamento
 import kotlin.test.*
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import org.br.dietamais.dominio.pacientes.FiltroAtencao
+import org.br.dietamais.dominio.pacientes.ResumoPaciente
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class PacientesViewModelTest {
@@ -29,6 +33,47 @@ class PacientesViewModelTest {
         vm.mudarBusca("")
         assertEquals(listOf("Pessoa Alpha"), vm.estado.value.lista.map { it.nome })
         assertEquals(1, porta.atualizacoes)
+    }
+
+    private val agora = Instant.parse("2026-11-05T15:00:00Z")
+    private fun vmResumos(porta: PortaTeste, escopo: kotlinx.coroutines.test.TestScope) =
+        PacientesViewModel(porta, compartilhar, StandardTestDispatcher(escopo.testScheduler), agora = { agora }, fuso = { kotlinx.datetime.TimeZone.UTC })
+
+    @Test fun resumosAlimentamContagemEFiltrosDeAtencao() = runTest {
+        val hoje = paciente("Pessoa Hoje", StatusVinculo.ATIVO); val sem = paciente("Pessoa Sem", StatusVinculo.ATIVO); val ok = paciente("Pessoa Ok", StatusVinculo.ATIVO)
+        val porta = PortaTeste(listOf(hoje, sem, ok)).apply { resumosDados = mapOf(
+            hoje.vinculoId to ResumoPaciente(agora + 2.hours, agora - 5.days),
+            sem.vinculoId to ResumoPaciente(null, agora - 5.days),
+            ok.vinculoId to ResumoPaciente(agora + 4.days, agora - 5.days)) }
+        val vm = vmResumos(porta, this); runCurrent()
+        assertEquals(3, vm.estado.value.resumos?.size)
+        assertEquals(1, vm.estado.value.precisamAtencao)
+        vm.mudarFiltroAtencao(FiltroAtencao.RETORNO_HOJE)
+        assertEquals(listOf("Pessoa Hoje"), vm.estado.value.lista.map { it.nome })
+        vm.mudarFiltroAtencao(FiltroAtencao.SEM_RETORNO)
+        assertEquals(listOf("Pessoa Sem"), vm.estado.value.lista.map { it.nome })
+        // tocar de novo no mesmo chip desliga o filtro
+        vm.mudarFiltroAtencao(FiltroAtencao.SEM_RETORNO)
+        assertNull(vm.estado.value.filtroAtencao); assertEquals(3, vm.estado.value.lista.size)
+        // atenção combina com a busca por nome
+        vm.mudarFiltroAtencao(FiltroAtencao.AVALIACAO_VENCIDA); vm.mudarBusca("ok")
+        assertTrue(vm.estado.value.lista.isEmpty())
+    }
+
+    @Test fun semResumosNaoHaChipsNemContagem() = runTest {
+        val porta = PortaTeste(listOf(paciente("Pessoa Alpha", StatusVinculo.ATIVO)))
+        val vm = vmResumos(porta, this); runCurrent()
+        assertNull(vm.estado.value.resumos); assertEquals(0, vm.estado.value.precisamAtencao)
+        vm.mudarFiltroAtencao(FiltroAtencao.SEM_RETORNO)
+        assertTrue(vm.estado.value.lista.isEmpty(), "sem dados nenhum paciente se encaixa no filtro")
+    }
+
+    @Test fun falhaDoResumoNaoDerrubaAListaEResumoVoltaNaProximaAtualizacao() = runTest {
+        val p = paciente("Pessoa Alpha", StatusVinculo.ATIVO)
+        val porta = PortaTeste(listOf(p)); val vm = vmResumos(porta, this); runCurrent()
+        assertNull(vm.estado.value.resumos); assertEquals(1, vm.estado.value.lista.size); assertNull(vm.estado.value.erro)
+        porta.resumosDados = mapOf(p.vinculoId to ResumoPaciente(null, null)); vm.atualizar(); runCurrent()
+        assertEquals(1, vm.estado.value.precisamAtencao)
     }
 
     @Test fun redeIndisponivelMantemCacheEPermiteCadastrarNaFila() = runTest {
@@ -156,6 +201,8 @@ class PacientesViewModelTest {
         val criacoes = mutableListOf<CriarPacienteRequisicao>(); val chaves = mutableListOf<Uuid>()
         override fun observar() = dados
         override suspend fun assinatura(): AssinaturaResumoResposta? = null
+        var resumosDados: Map<Uuid, org.br.dietamais.dominio.pacientes.ResumoPaciente>? = null
+        override suspend fun resumos() = resumosDados
         override suspend fun atualizar() { atualizacoes++; falhaAtualizar?.let { throw it } }
         override suspend fun criar(requisicao: CriarPacienteRequisicao, chave: Uuid): PacienteResposta {
             criacoes += requisicao; chaves += chave; falhaCriar?.let { throw it }

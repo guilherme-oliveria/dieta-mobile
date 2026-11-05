@@ -106,6 +106,12 @@
     <string name="pacientes_novo">Novo paciente</string>
     <string name="pacientes_atualizar">Atualizar</string>
     <string name="pacientes_busca">Buscar por nome ou telefone</string>
+    <string name="pacientes_atencao_resumo">%1$d precisam de atenção</string>
+    <string name="pacientes_atencao_retorno_hoje">Retorno hoje</string>
+    <string name="pacientes_atencao_avaliacao_vencida">Avaliação vencida</string>
+    <string name="pacientes_atencao_sem_retorno">Sem retorno</string>
+    <string name="pacientes_proximo_retorno">Próximo retorno: %1$s</string>
+    <string name="pacientes_ultima_avaliacao">Última avaliação: %1$s</string>
     <string name="pacientes_todos">Todos</string>
     <string name="pacientes_convidados">Convidados</string>
     <string name="pacientes_ativos">Ativos</string>

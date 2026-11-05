@@ -11,7 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.br.dietamais.dominio.pacientes.*
+import org.br.dietamais.dominio.agenda.formatarData
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -24,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: (StatusVinculo?) -> Unit,
-    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit) {
+    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}) {
     val grupos = remember(estado.lista) { agruparPorInicial(estado.lista) }
     val posicoes = remember(grupos) { grupos.runningFold(1) { acc, g -> acc + 1 + g.pacientes.size }.dropLast(1) }
     val estadoLista = rememberLazyListState()
@@ -51,6 +54,19 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                                 })) })
                         }
                     }
+                    if (estado.resumos != null) {
+                        Text(stringResource(Res.string.pacientes_atencao_resumo, estado.precisamAtencao), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                            FiltroAtencao.entries.forEach { f ->
+                                ChipEscolha(selected = estado.filtroAtencao == f, onClick = { aoFiltroAtencao(f) }, modifier = Modifier.heightIn(min = Dimens.alvoToque),
+                                    label = { Text(stringResource(when (f) {
+                                        FiltroAtencao.RETORNO_HOJE -> Res.string.pacientes_atencao_retorno_hoje
+                                        FiltroAtencao.AVALIACAO_VENCIDA -> Res.string.pacientes_atencao_avaliacao_vencida
+                                        FiltroAtencao.SEM_RETORNO -> Res.string.pacientes_atencao_sem_retorno
+                                    })) })
+                            }
+                        }
+                    }
                     if (estado.lista.size >= LIMITE_INDICE) IndiceInicialPacientes(grupos.map { it.inicial }) { i -> escopo.launch { estadoLista.animateScrollToItem(posicoes[grupos.indexOfFirst { it.inicial == i }]) } }
                     if (estado.semConexao) FaixaOffline()
                     estado.erro?.let { MensagemPaciente(it, alerta = true) }
@@ -75,6 +91,10 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
                                     Text(paciente.nome, style = MaterialTheme.typography.bodyLarge)
                                     StatusPaciente(paciente.status)
+                                    estado.resumos?.get(paciente.vinculoId)?.let { r ->
+                                        r.proximaConsulta?.let { Text(stringResource(Res.string.pacientes_proximo_retorno, formatarData(it.toLocalDateTime(TimeZone.currentSystemDefault()).date)), style = MaterialTheme.typography.bodySmall) }
+                                        r.ultimaAvaliacaoEm?.let { Text(stringResource(Res.string.pacientes_ultima_avaliacao, formatarData(it.toLocalDateTime(TimeZone.currentSystemDefault()).date)), style = MaterialTheme.typography.bodySmall) }
+                                    }
                                 }
                             }
                         }
