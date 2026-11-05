@@ -104,4 +104,13 @@ class AnamneseDominioTest {
         assertEquals(EntradaResposta.Valor(texto("Sim")), entradaInicial(fuma, texto("Sim")))
         assertEquals(EntradaResposta.Itens(emptyList()), entradaInicial(perguntaFalsa("l", TipoPergunta.LISTA_POR_REFEICAO), null))
     }
+
+    @Test fun progressoDoPassoContaSoPerguntasVisiveisComResposta() {
+        val sem = passos(blocos, emptyMap()); val respostas = mapOf(fuma.chave to texto("Sim"))
+        assertEquals(ProgressoPasso(0, 1), progressoDoPasso(sem[0], emptyMap())) // "quanto" ainda escondida
+        val com = passos(blocos, respostas)
+        assertEquals(ProgressoPasso(1, 2), progressoDoPasso(com[0], respostas)); assertFalse(progressoDoPasso(com[0], respostas).completo)
+        val tudo = respostas + (quanto.chave to jsonNumero("10")!!)
+        assertTrue(progressoDoPasso(passos(blocos, tudo)[0], tudo).completo)
+    }
 }
