@@ -42,7 +42,6 @@ class AnamneseTelasTest {
         onNodeWithText("Peso desejado").assertDoesNotExist()
         onNodeWithText("Ver respostas").performScrollTo().performClick()
         onNodeWithText("Sem resposta").performScrollTo().assertIsDisplayed()
-        onNodeWithText("Recolher", useUnmergedTree = true).assertExists()
         onAllNodesWithText("Recolher")[0].performClick()
         onNodeWithText("Você fuma?").assertDoesNotExist()
     }
