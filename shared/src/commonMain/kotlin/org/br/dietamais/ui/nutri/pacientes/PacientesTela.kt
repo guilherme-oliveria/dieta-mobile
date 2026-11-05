@@ -33,7 +33,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                     CampoTexto(stringResource(Res.string.pacientes_busca), estado.busca, aoBusca)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                         listOf(null, StatusVinculo.CONVIDADO, StatusVinculo.ATIVO, StatusVinculo.ENCERRADO).forEach { filtro ->
-                            FilterChip(selected = estado.filtro == filtro, onClick = { aoFiltro(filtro) }, modifier = Modifier.heightIn(min = Dimens.alvoToque),
+                            ChipEscolha(selected = estado.filtro == filtro, onClick = { aoFiltro(filtro) }, modifier = Modifier.heightIn(min = Dimens.alvoToque),
                                 label = { Text(stringResource(when (filtro) {
                                     null -> Res.string.pacientes_todos
                                     StatusVinculo.CONVIDADO -> Res.string.pacientes_convidados

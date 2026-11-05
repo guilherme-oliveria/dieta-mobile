@@ -72,7 +72,7 @@ fun CampoPergunta(pergunta: PerguntaQuestionario, entrada: EntradaResposta, erro
                 val nota = ((entrada as? EntradaResposta.Valor)?.valor as? JsonPrimitive)?.takeIf { !it.isString }?.intOrNull
                 Text(rotulo, style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    (1..5).forEach { n -> FilterChip(nota == n, { aoMudar(EntradaResposta.Valor(JsonPrimitive(n))) }, label = { Text(n.toString()) }, enabled = habilitado) }
+                    (1..5).forEach { n -> ChipEscolha(nota == n, { aoMudar(EntradaResposta.Valor(JsonPrimitive(n))) }, label = { Text(n.toString()) }, enabled = habilitado) }
                 }
             }
             TipoPergunta.LISTA_POR_REFEICAO -> {

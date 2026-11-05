@@ -60,7 +60,7 @@ fun FormularioConsultaTela(estado: EstadoAgenda, acoes: AcoesFormularioConsulta)
                     CampoNumero(stringResource(Res.string.agenda_form_duracao), form.duracao, acoes.aoDuracao, erro = erros.firstOrNull { it == ErroConsulta.DURACAO }?.let { textoErroConsulta(it) }, habilitado = habilitado)
                     Text(stringResource(Res.string.agenda_form_tipo), style = MaterialTheme.typography.labelLarge)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        tiposEscolhiveis.forEach { tipo -> FilterChip(form.tipo == tipo, { acoes.aoTipo(tipo) }, label = { Text(rotuloTipoConsulta(tipo)) }, enabled = habilitado) }
+                        tiposEscolhiveis.forEach { tipo -> ChipEscolha(form.tipo == tipo, { acoes.aoTipo(tipo) }, label = { Text(rotuloTipoConsulta(tipo)) }, enabled = habilitado) }
                     }
                     CampoTexto(stringResource(Res.string.agenda_form_lugar), form.lugar, acoes.aoLugar, habilitado = habilitado)
                     if (estado.conflitosAvisados > 0) Text(stringResource(Res.string.agenda_conflito_aviso, estado.conflitosAvisados), color = MaterialTheme.colorScheme.onErrorContainer,

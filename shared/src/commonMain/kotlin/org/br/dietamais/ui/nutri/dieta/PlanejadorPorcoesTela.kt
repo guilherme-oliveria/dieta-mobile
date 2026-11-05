@@ -129,7 +129,7 @@ private fun ColumnScope.Refeicoes(estado: EstadoPlanejador, r: RascunhoPlano, a:
     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         r.refeicoes.forEach { ref ->
             val nome = ref.nome.ifBlank { ref.horario }
-            FilterChip(estado.refeicaoAtiva == ref.id, { a.aoSelecionar(ref.id) }, label = { Text(if (ref.alternativa) stringResource(Res.string.plan_alternativa_de, nome) else nome) },
+            ChipEscolha(estado.refeicaoAtiva == ref.id, { a.aoSelecionar(ref.id) }, label = { Text(if (ref.alternativa) stringResource(Res.string.plan_alternativa_de, nome) else nome) },
                 modifier = Modifier.heightIn(min = Dimens.alvoToque))
         }
         if (r.editavel) BotaoTexto(stringResource(Res.string.plan_adicionar_refeicao), a.aoAdicionarRefeicao, habilitado = r.refeicoes.size < PlanejadorPorcoesViewModel.LIMITE_REFEICOES)
@@ -168,7 +168,7 @@ private fun RefeicaoAtiva(estado: EstadoPlanejador, r: RascunhoPlano, ref: Refei
                     }
                     if (r.editavel && (grupo?.opcoes?.size ?: 0) > 1) FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                         grupo!!.opcoes.forEach { o ->
-                            FilterChip(o.opcao == r.escolhas[item.grupoId], { a.aoEscolherPorcao(item.grupoId, o.opcao) },
+                            ChipEscolha(o.opcao == r.escolhas[item.grupoId], { a.aoEscolherPorcao(item.grupoId, o.opcao) },
                                 label = { Text(stringResource(Res.string.plan_porcao_opcao, o.opcao.toString(), formatar(o.kcal), descricaoPorcao(o))) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
                         }
                     }

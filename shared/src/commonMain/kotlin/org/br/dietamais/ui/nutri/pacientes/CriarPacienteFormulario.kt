@@ -30,7 +30,7 @@ fun CriarPacienteFormulario(estado: EstadoPacientes, aoCampo: (CampoPaciente, St
         Text(stringResource(Res.string.pacientes_sexo), style = MaterialTheme.typography.labelLarge)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             listOf(null, Sexo.FEMININO, Sexo.MASCULINO, Sexo.OUTRO).forEach { sexo ->
-                FilterChip(selected = form.sexo == sexo, onClick = { aoSexo(sexo) }, enabled = !estado.envioEmAndamento, modifier = Modifier.heightIn(min = Dimens.alvoToque),
+                ChipEscolha(selected = form.sexo == sexo, onClick = { aoSexo(sexo) }, enabled = !estado.envioEmAndamento, modifier = Modifier.heightIn(min = Dimens.alvoToque),
                     label = { Text(stringResource(when (sexo) {
                         Sexo.FEMININO -> Res.string.pacientes_feminino
                         Sexo.MASCULINO -> Res.string.pacientes_masculino

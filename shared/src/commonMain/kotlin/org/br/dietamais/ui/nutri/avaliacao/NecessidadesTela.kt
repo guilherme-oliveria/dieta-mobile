@@ -80,7 +80,7 @@ private fun <T> Opcoes(titulo: StringResource, opcoes: List<T>, atual: T, aoEsco
     Text(stringResource(titulo), style = MaterialTheme.typography.labelLarge)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         opcoes.forEach { valor ->
-            FilterChip(selected = valor == atual, onClick = { aoEscolher(valor) }, label = { Text(stringResource(rotulo(valor))) }, enabled = habilitado,
+            ChipEscolha(selected = valor == atual, onClick = { aoEscolher(valor) }, label = { Text(stringResource(rotulo(valor))) }, enabled = habilitado,
                 modifier = Modifier.heightIn(min = Dimens.alvoToque))
         }
     }
@@ -92,7 +92,7 @@ private fun <T> OpcoesOpcionais(titulo: StringResource, opcoes: List<T>, atual: 
     Text(stringResource(titulo), style = MaterialTheme.typography.labelLarge)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         opcoes.forEach { valor ->
-            FilterChip(selected = valor == atual, onClick = { aoEscolher(if (valor == atual) null else valor) }, label = { Text(stringResource(rotulo(valor))) }, enabled = habilitado,
+            ChipEscolha(selected = valor == atual, onClick = { aoEscolher(if (valor == atual) null else valor) }, label = { Text(stringResource(rotulo(valor))) }, enabled = habilitado,
                 modifier = Modifier.heightIn(min = Dimens.alvoToque))
         }
     }

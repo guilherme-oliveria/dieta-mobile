@@ -13,6 +13,7 @@ import org.br.dietamais.data.remoto.dto.AvaliacaoResposta
 import org.br.dietamais.dominio.avaliacao.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.CardDieta
+import org.br.dietamais.ui.comum.ChipEscolha
 import org.br.dietamais.ui.comum.graficos.GraficoComTabela
 import org.br.dietamais.ui.comum.graficos.CurvaCrescimentoConfirmada
 import org.br.dietamais.ui.theme.Dimens
@@ -36,7 +37,7 @@ fun CrescimentoTela(avaliacoes: List<AvaliacaoResposta>, modifier: Modifier = Mo
                 Text(stringResource(Res.string.crescimento_vazio)); return@Column
             }
             FlowRow(horizontalArrangement=Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                indicadores.forEach { codigo -> FilterChip(codigo == escolhido, { indicador=codigo }, label={ Text(rotuloCrescimento(codigo)) }) }
+                indicadores.forEach { codigo -> ChipEscolha(codigo == escolhido, { indicador=codigo }, label={ Text(rotuloCrescimento(codigo)) }) }
             }
             var datas by remember { mutableStateOf(false) }
             Text(textoData(selecionada.dataHora),style=MaterialTheme.typography.bodyMedium)
