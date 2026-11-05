@@ -39,7 +39,7 @@ private fun <T> Escolha(titulo: String, opcoes: List<Pair<T, String>>, atual: T,
     Text(titulo, style = MaterialTheme.typography.labelLarge)
     Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         opcoes.forEach { (valor, rotulo) ->
-            FilterChip(selected = valor == atual, onClick = { aoEscolher(valor) }, label = { Text(rotulo) }, enabled = habilitado, modifier = Modifier.heightIn(min = Dimens.alvoToque))
+            ChipEscolha(selected = valor == atual, onClick = { aoEscolher(valor) }, label = { Text(rotulo) }, enabled = habilitado, modifier = Modifier.heightIn(min = Dimens.alvoToque))
         }
     }
 }

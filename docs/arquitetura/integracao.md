@@ -96,8 +96,8 @@ Visão geral para planejar; detalhe e schema no OpenAPI.
 | contas | `/auth/*`, `/eu`, `/eu/dispositivos` (registra token FCM), `/eu/preferencias-notificacao` | todos |
 | assinaturas | `GET /assinatura`, `POST /assinatura/checkout` (link do gateway), `POST /webhooks/pagamento` (público, validado) | nutri / gateway |
 | pacientes | `GET/POST /pacientes`, `GET/PATCH /pacientes/{id}`, `POST /pacientes/{id}/convite`, `POST /pacientes/{id}/encerrar-vinculo` | nutri |
-| alimentos | `GET /grupos-alimentos`, `GET/POST/PATCH /alimentos` (lista da nutri), `GET/PUT /pacientes/{id}/lista-substituicao` | nutri |
-| dietas | `GET/POST /pacientes/{id}/dietas`, `GET/PUT /dietas/{id}`, `POST /dietas/{id}/publicar`, `POST /dietas/{id}/duplicar`, `GET /eu/dietas`, `PUT /eu/dieta-em-uso` | nutri / paciente |
+| alimentos | `GET /grupos-alimentos`, `GET/POST/PATCH /alimentos` (lista da nutri), `GET/POST/PATCH /produtos` (produtos da nutri, `If-Match`; `ativo=false` desativa), `GET/PUT /pacientes/{id}/lista-substituicao` | nutri |
+| dietas | `GET/POST /pacientes/{id}/dietas`, `GET/PUT /dietas/{id}`, `POST /dietas/{id}/publicar`, `POST /dietas/{id}/duplicar` (item da refeição por `alimentoId`, `grupoId` ou `produtoId` + `gramas`, BE-48c), `GET /eu/dietas`, `PUT /eu/dieta-em-uso` | nutri / paciente |
 | rotina | `POST /eu/checkins`, `POST /eu/agua`, `POST /eu/pesos`, `GET /eu/rotina?de=&ate=` (BE-38: registros do período, até 366 dias, no formato do `/sync`; usado pela web), `GET /pacientes/{id}/adesao` | paciente / nutri |
 | avaliacoes | `GET/POST /pacientes/{id}/avaliacoes`, `PUT /avaliacoes/{id}`, `GET /eu/avaliacoes`, `GET /eu/evolucao` | nutri / paciente |
 | dietas | `GET/POST /eu/nutri/modelos-dieta`, `GET/PUT/DELETE /eu/nutri/modelos-dieta/{id}`, `POST /eu/nutri/modelos-dieta/{id}/duplicar`, `POST /eu/nutri/modelos-dieta/de-dieta/{dietaId}`, `POST /pacientes/{id}/dietas/de-modelo/{modeloId}` (modelos de dieta, BE-52; detalhes em [contrato-fase-8.md](contrato-fase-8.md)) | nutri |
@@ -176,7 +176,7 @@ Resposta, um resultado por mutação, na mesma ordem:
 | Perfil | Puxa | Envia |
 | --- | --- | --- |
 | Paciente | Seus vínculos, nutris, dietas publicadas (com snapshot da lista de substituição e orientação), avaliações compartilhadas, questionários, consultas, avisos, preferências | Check-ins, água, peso, respostas de questionário, dieta em uso, preferências |
-| Nutri | Seus pacientes, fichas, lista de alimentos, listas por paciente, dietas (rascunhos e publicadas), avaliações, protocolos (Meus protocolos), modelos de dieta dela (`modelosDieta`), modelos e respostas de questionário, consultas, avisos, adesão (check-ins dos últimos 30 dias) | Tudo que ela edita, exceto publicar dieta, convidar paciente e ações de assinatura, que exigem estar online |
+| Nutri | Seus pacientes, fichas, lista de alimentos, produtos dela (`produtos`), listas por paciente, dietas (rascunhos e publicadas), avaliações, protocolos (Meus protocolos), modelos de dieta dela (`modelosDieta`), modelos e respostas de questionário, consultas, avisos, adesão (check-ins dos últimos 30 dias) | Tudo que ela edita, exceto publicar dieta, convidar paciente e ações de assinatura, que exigem estar online |
 
 Ações que **exigem online** (o app desabilita o botão sem conexão): login/cadastro, convidar paciente, aceitar convite, publicar dieta, enviar questionário, gerar PDF, tudo de assinatura.
 

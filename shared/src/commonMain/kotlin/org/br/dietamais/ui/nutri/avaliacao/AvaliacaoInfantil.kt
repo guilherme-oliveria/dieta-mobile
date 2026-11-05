@@ -44,7 +44,7 @@ internal fun MedidasInfantis(estado: EstadoAvaliacoes, form: FormularioAvaliacao
     Text(stringResource(Res.string.inf_modo), style = MaterialTheme.typography.titleSmall)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         listOf("PERCENTIL" to Res.string.inf_percentil, "ESCORE_Z" to Res.string.inf_escore).forEach { (valor, rotulo) ->
-            FilterChip(selected = form.infantil.modoCurva == valor, onClick = { acoes.aoInfantil(form.infantil.copy(modoCurva = valor)) },
+            ChipEscolha(selected = form.infantil.modoCurva == valor, onClick = { acoes.aoInfantil(form.infantil.copy(modoCurva = valor)) },
                 label = { Text(stringResource(rotulo)) }, enabled = habilitado, modifier = Modifier.heightIn(min = Dimens.alvoToque))
         }
     }
@@ -76,7 +76,7 @@ internal fun ComposicaoInfantil(estado: EstadoAvaliacoes, form: FormularioAvalia
         Text(stringResource(Res.string.inf_etnia_dica), style = MaterialTheme.typography.bodySmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             listOf(null to Res.string.inf_nao_informada, "BRANCA" to Res.string.inf_branca, "NEGRA" to Res.string.inf_negra).forEach { (valor, rotulo) ->
-                FilterChip(form.infantil.etniaSlaughter == valor, { acoes.aoInfantil(form.infantil.copy(etniaSlaughter = valor)) },
+                ChipEscolha(form.infantil.etniaSlaughter == valor, { acoes.aoInfantil(form.infantil.copy(etniaSlaughter = valor)) },
                     label = { Text(stringResource(rotulo)) }, enabled = habilitado, modifier = Modifier.heightIn(min = Dimens.alvoToque))
             }
         }

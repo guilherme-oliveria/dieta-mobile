@@ -44,8 +44,8 @@ fun ExamesNutriTela(estado: EstadoExamesNutri, nomePaciente: String, acoes: Acoe
                 if (estado.catalogo.isNotEmpty()) {
                     CampoTexto(stringResource(Res.string.exn_buscar), estado.busca, acoes.aoBuscar, Modifier.fillMaxWidth())
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        FilterChip(estado.secao == null, { acoes.aoSecao(null) }, { Text(stringResource(Res.string.exn_todas)) })
-                        estado.secoes.forEach { s -> FilterChip(estado.secao == s, { acoes.aoSecao(s) }, { Text(s) }) }
+                        ChipEscolha(estado.secao == null, { acoes.aoSecao(null) }, { Text(stringResource(Res.string.exn_todas)) })
+                        estado.secoes.forEach { s -> ChipEscolha(estado.secao == s, { acoes.aoSecao(s) }, { Text(s) }) }
                     }
                     if (estado.visiveis.isEmpty()) EstadoVazio(mensagem = stringResource(Res.string.exn_nenhum))
                     estado.visiveis.forEach { LinhaExame(it, estado, gravados[it.codigo]?.rotulo, habilitado, acoes) }
@@ -72,7 +72,7 @@ private fun LinhaExame(e: ExameCatalogoDto, estado: EstadoExamesNutri, rotuloGra
         if (e.qualitativo) CampoTexto(rotulo, valor, { acoes.aoValor(e.codigo, it) }, Modifier.fillMaxWidth(), erro, habilitado)
         else CampoNumero(rotulo, valor, { acoes.aoValor(e.codigo, it) }, Modifier.fillMaxWidth(), erro, habilitado)
         if (e.condicoes.isNotEmpty()) FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-            e.condicoes.forEach { c -> FilterChip(estado.condicoes[e.codigo] == c, { acoes.aoCondicao(e.codigo, if (estado.condicoes[e.codigo] == c) null else c) }, { Text(c) }) }
+            e.condicoes.forEach { c -> ChipEscolha(estado.condicoes[e.codigo] == c, { acoes.aoCondicao(e.codigo, if (estado.condicoes[e.codigo] == c) null else c) }, { Text(c) }) }
         }
         if (rotuloGravado != null && valor.isNotBlank()) ChipStatus(when (classeDoRotulo(rotuloGravado)) { ClasseFaixa.NORMAL -> EstiloStatus.FEITA; ClasseFaixa.ALTO -> EstiloStatus.ALERTA; else -> EstiloStatus.INFO }, texto = rotuloLegivel(rotuloGravado))
     }

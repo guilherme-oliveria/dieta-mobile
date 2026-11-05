@@ -31,10 +31,10 @@ fun EvolucaoTela(estado: EstadoEvolucao, acoes: AcoesEvolucao, agora: Instant = 
             serie == null -> EstadoVazio(mensagem = stringResource(Res.string.evolucao_vazia))
             else -> {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    estado.disponiveis.forEach { s -> FilterChip(s == serie, { acoes.aoSerie(s) }, label = { Text(stringResource(rotuloSerie(s))) }) }
+                    estado.disponiveis.forEach { s -> ChipEscolha(s == serie, { acoes.aoSerie(s) }, label = { Text(stringResource(rotuloSerie(s))) }) }
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    IntervaloEvolucao.entries.forEach { i -> FilterChip(i == estado.intervalo, { acoes.aoIntervalo(i) }, label = { Text(stringResource(rotuloIntervalo(i))) }) }
+                    IntervaloEvolucao.entries.forEach { i -> ChipEscolha(i == estado.intervalo, { acoes.aoIntervalo(i) }, label = { Text(stringResource(rotuloIntervalo(i))) }) }
                 }
                 val pontos = recortar(estado.pontos, estado.intervalo, agora)
                 val rotulo = stringResource(rotuloSerie(serie))

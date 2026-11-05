@@ -37,8 +37,8 @@ fun AlimentosTela(estado: EstadoAlimentos, aoBusca: (String) -> Unit = {}, aoGru
                     CampoTexto(stringResource(Res.string.alimentos_busca), estado.busca, aoBusca)
                     GruposAlimentos(estado.grupos, estado.grupoId, aoGrupo, todos = true)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        FilterChip(estado.ativo, { aoAtivo(true) }, label = { Text(stringResource(Res.string.alimentos_ativos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
-                        FilterChip(!estado.ativo, { aoAtivo(false) }, label = { Text(stringResource(Res.string.alimentos_inativos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
+                        ChipEscolha(estado.ativo, { aoAtivo(true) }, label = { Text(stringResource(Res.string.alimentos_ativos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
+                        ChipEscolha(!estado.ativo, { aoAtivo(false) }, label = { Text(stringResource(Res.string.alimentos_inativos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
                     }
                 }
             }
@@ -70,9 +70,9 @@ internal fun GruposAlimentos(grupos: List<GrupoAlimentoResposta>, selecionado: U
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
         Text(stringResource(Res.string.alimentos_grupo), style = MaterialTheme.typography.labelLarge)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-            if (todos) FilterChip(selecionado == null, { aoGrupo(null) }, enabled = habilitado,
+            if (todos) ChipEscolha(selecionado == null, { aoGrupo(null) }, enabled = habilitado,
                 label = { Text(stringResource(Res.string.alimentos_todos_grupos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
-            grupos.forEach { grupo -> FilterChip(selecionado == grupo.id, { aoGrupo(grupo.id) }, enabled = habilitado,
+            grupos.forEach { grupo -> ChipEscolha(selecionado == grupo.id, { aoGrupo(grupo.id) }, enabled = habilitado,
                 label = { Text(grupo.nome) }, modifier = Modifier.heightIn(min = Dimens.alvoToque)) }
         }
         if (grupos.isEmpty()) Text(stringResource(Res.string.alimentos_grupos_vazios), style = MaterialTheme.typography.bodySmall)

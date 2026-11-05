@@ -53,6 +53,9 @@ Valem as tabelas de [componentes.md](componentes.md). Em complemento:
 ### Passos (wizard)
 Título da tela, linha "Passo n de N · Nome" (região ao vivo, para o leitor de tela), barra de progresso, conteúdo, barra de ações. "Continuar" valida só o passo; erro aparece abaixo do campo, em `AlertaTexto`, com a faixa aceita ("Informe um valor entre 40 e 200"). Voltar mantém o que foi digitado. Fechar no meio pede confirmação se houver dado novo.
 
+### Componentes comuns (MOB-62)
+Tela nova usa só estes, nunca a versão crua do Material: `BarraTopo` (seta num círculo contornado, título e subtítulo), `RodapeAcoes` (ações fixas no pé), `CampoNumero` (unidade dentro do campo, a partir de "Rótulo (un)") e `ChipEscolha` (chip com check quando selecionado; substitui o `FilterChip`). Todos em `ui/comum`.
+
 ### Escolhas
 2 a 4 opções curtas: chips selecionáveis com "✓" (ícone de check) e rótulo; 5 ou mais: lista com busca. Interruptor para sim/não. Opções que dependem de sexo ou faixa etária **somem**, não ficam desabilitadas.
 

@@ -111,8 +111,8 @@ private fun SeletorAlimento(estado: EstadoDieta, refeicao: Uuid, a: AcoesMontado
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         CampoTexto(stringResource(Res.string.alimentos_busca), estado.busca, a.aoBusca, Modifier.fillMaxWidth())
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-            FilterChip(estado.grupoFiltro == null, { a.aoGrupoFiltro(null) }, label = { Text(stringResource(Res.string.alimentos_todos_grupos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
-            estado.grupos.forEach { g -> FilterChip(estado.grupoFiltro == g.id, { a.aoGrupoFiltro(g.id) }, label = { Text(g.nome) }, modifier = Modifier.heightIn(min = Dimens.alvoToque)) }
+            ChipEscolha(estado.grupoFiltro == null, { a.aoGrupoFiltro(null) }, label = { Text(stringResource(Res.string.alimentos_todos_grupos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
+            estado.grupos.forEach { g -> ChipEscolha(estado.grupoFiltro == g.id, { a.aoGrupoFiltro(g.id) }, label = { Text(g.nome) }, modifier = Modifier.heightIn(min = Dimens.alvoToque)) }
         }
         val opcoes = estado.alimentos.filter { it.ativo && (estado.grupoFiltro == null || it.grupoId == estado.grupoFiltro) && it.nome.contains(estado.busca.trim(), ignoreCase = true) }
         if (opcoes.isEmpty()) Text(stringResource(Res.string.alimentos_vazio), style = MaterialTheme.typography.bodySmall)

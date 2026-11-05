@@ -37,7 +37,7 @@ fun AgendaTela(estado: EstadoAgenda, acoes: AcoesAgenda, fuso: TimeZone = TimeZo
         estado.aviso?.let { Text(textoMensagemAgenda(it), color = MaterialTheme.colorScheme.primary, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno), itemVerticalAlignment = Alignment.CenterVertically) {
             ModoAgenda.entries.forEach { modo ->
-                FilterChip(estado.modo == modo, { acoes.aoModo(modo) }, label = { Text(stringResource(if (modo == ModoAgenda.DIA) Res.string.agenda_dia else Res.string.agenda_semana)) })
+                ChipEscolha(estado.modo == modo, { acoes.aoModo(modo) }, label = { Text(stringResource(if (modo == ModoAgenda.DIA) Res.string.agenda_dia else Res.string.agenda_semana)) })
             }
             BotaoPrincipal(stringResource(Res.string.agenda_nova), acoes.aoNova, habilitado = online && estado.pacientesAgendaveis.isNotEmpty())
             BotaoTexto(stringResource(Res.string.agenda_atualizar), acoes.aoAtualizar, habilitado = !estado.atualizando && !estado.semConexao)

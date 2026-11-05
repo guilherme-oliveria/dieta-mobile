@@ -24,6 +24,7 @@ object IconesDieta {
     val Calendario by lazy { icone("Calendário", "M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM16 2v4M8 2v4M3 10h18") }
     val Lista by lazy { icone("Lista", "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01") }
     val Mais by lazy { icone("Mais", "M12 5v14M5 12h14") }
+    val Check by lazy { icone("Selecionado", "M20 6 9 17l-5-5") }
     val Voltar by lazy { icone("Voltar", "M15 18l-6-6 6-6", espelhar = true) }
     val SetaBaixo by lazy { icone("Abrir", "M6 9l6 6 6-6") }
     val SetaCima by lazy { icone("Fechar", "M18 15l-6-6-6 6") }
