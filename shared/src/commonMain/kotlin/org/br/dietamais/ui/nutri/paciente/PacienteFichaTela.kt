@@ -29,6 +29,10 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                     Text(paciente.nome, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f).semantics { heading() })
                 }
                 StatusPaciente(paciente.status)
+                if (estado.abaFicha == AbaFicha.RESUMO) Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                    BotaoPrincipal(stringResource(Res.string.ficha_atalho_nova_avaliacao), { aoAba(AbaFicha.AVALIACOES) }, Modifier.weight(1f))
+                    BotaoContornado(stringResource(Res.string.ficha_atalho_graficos), { aoAba(AbaFicha.EVOLUCAO) }, Modifier.weight(1f))
+                }
                 if (estado.semConexao) FaixaOffline()
                 estado.erro?.let { MensagemPaciente(it, alerta = true) }
                 estado.aviso?.let { MensagemPaciente(it) }
