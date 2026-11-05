@@ -23,12 +23,12 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 data class AcoesAgenda(val aoModo: (ModoAgenda) -> Unit = {}, val aoAnterior: () -> Unit = {}, val aoProximo: () -> Unit = {}, val aoHoje: () -> Unit = {}, val aoNova: () -> Unit = {},
-    val aoRemarcar: (Uuid) -> Unit = {}, val aoCancelar: (Uuid) -> Unit = {}, val aoAtualizar: () -> Unit = {})
+    val aoRemarcar: (Uuid) -> Unit = {}, val aoCancelar: (Uuid) -> Unit = {}, val aoAtualizar: () -> Unit = {}, val aoFinanceiro: (Uuid) -> Unit = {})
 
 /** Aba Agenda da nutri: dia ou semana, com criar, remarcar e cancelar (MOB-26). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AgendaTela(estado: EstadoAgenda, acoes: AcoesAgenda, fuso: TimeZone = TimeZone.currentSystemDefault()) {
+fun AgendaTela(estado: EstadoAgenda, acoes: AcoesAgenda, fuso: TimeZone = TimeZone.currentSystemDefault(), rodape: @Composable ColumnScope.() -> Unit = {}) {
     val online = !estado.enviando
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         Text(stringResource(Res.string.agenda_titulo), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
@@ -62,6 +62,7 @@ fun AgendaTela(estado: EstadoAgenda, acoes: AcoesAgenda, fuso: TimeZone = TimeZo
                 else lista.forEach { CartaoConsulta(it, estado, acoes, online, fuso) }
             }
         }
+        rodape()
     }
 }
 
@@ -89,5 +90,6 @@ private fun CartaoConsulta(c: ConsultaResposta, estado: EstadoAgenda, acoes: Aco
             BotaoContornado(stringResource(Res.string.agenda_remarcar), { acoes.aoRemarcar(c.id) }, habilitado = online)
             BotaoTexto(stringResource(Res.string.agenda_cancelar), { acoes.aoCancelar(c.id) }, habilitado = online)
         }
+        if (!cancelada) BotaoTexto(stringResource(Res.string.financeiro_abrir), { acoes.aoFinanceiro(c.id) }, habilitado = online && !estado.semConexao)
     }
 }

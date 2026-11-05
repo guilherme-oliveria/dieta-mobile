@@ -27,6 +27,8 @@ fun moduloAvaliacoes(ambiente: AmbienteDieta?) = module {
     viewModel { org.br.dietamais.ui.nutri.avaliacao.ExamesNutriViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     single<org.br.dietamais.data.repositorio.PortaConsultas> { org.br.dietamais.data.repositorio.ConsultaRepositorio(get(), get(), get()) }
     viewModel { org.br.dietamais.ui.nutri.agenda.AgendaViewModel(get(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
+    single<org.br.dietamais.data.repositorio.PortaFinanceiro> { org.br.dietamais.data.repositorio.FinanceiroRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.agenda.FinanceiroViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     viewModel { org.br.dietamais.ui.paciente.hoje.ConsultasPacienteViewModel(get()) }
     viewModel { org.br.dietamais.ui.nutri.painel.PainelViewModel(get(), get(), get(), get()) }
     single<org.br.dietamais.data.repositorio.PortaAvisos> { org.br.dietamais.data.repositorio.AvisosRepositorio(get(), get()) }
