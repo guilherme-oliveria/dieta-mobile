@@ -54,7 +54,7 @@ class ProdutosViewModelTest {
         vm.mudarCampo(CampoProduto.LIPIDIO, "5"); vm.mudarCampo(CampoProduto.MEDIDA_GRAMAS, "30"); vm.salvar(); runCurrent()
         val c = f.criados.single()
         assertEquals(mapOf("energia" to 400.5, "gli" to 10.0, "pro" to 80.0, "lip" to 5.0), c.nutrientes); assertEquals(30.0, c.medidaGramas); assertNotNull(c.id)
-        assertNull(vm.estado.value.formulario); assertEquals(MensagemAlimentos.SALVO, vm.estado.value.aviso)
+        assertNull(vm.estado.value.formulario); assertEquals(MensagemAlimentos.SALVO, vm.estado.value.aviso); assertFalse(vm.estado.value.enviando)
     }
     @Test fun editarPreservaMicronutrientesEEnviaAVersao() = runTest {
         val p = produto("Whey", versao = 3); val f = Fake(listOf(p)); val vm = vm(f); vm.carregar(); runCurrent()
