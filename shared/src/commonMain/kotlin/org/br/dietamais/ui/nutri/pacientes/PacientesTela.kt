@@ -6,7 +6,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.br.dietamais.dominio.pacientes.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -20,8 +25,12 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: (StatusVinculo?) -> Unit,
     aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit) {
+    val grupos = remember(estado.lista) { agruparPorInicial(estado.lista) }
+    val posicoes = remember(grupos) { grupos.runningFold(1) { acc, g -> acc + 1 + g.pacientes.size }.dropLast(1) }
+    val estadoLista = rememberLazyListState()
+    val escopo = rememberCoroutineScope()
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        LazyColumn(Modifier.fillMaxSize().testTag("lista-pacientes"), contentPadding = PaddingValues(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+        LazyColumn(Modifier.fillMaxSize().testTag("lista-pacientes"), estadoLista, contentPadding = PaddingValues(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Text(stringResource(Res.string.aba_pacientes), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
@@ -42,6 +51,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                                 })) })
                         }
                     }
+                    if (estado.lista.size >= LIMITE_INDICE) IndiceInicialPacientes(grupos.map { it.inicial }) { i -> escopo.launch { estadoLista.animateScrollToItem(posicoes[grupos.indexOfFirst { it.inicial == i }]) } }
                     if (estado.semConexao) FaixaOffline()
                     estado.erro?.let { MensagemPaciente(it, alerta = true) }
                     estado.aviso?.let { MensagemPaciente(it) }
@@ -52,7 +62,11 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                 estado.lista.isEmpty() && estado.erro != null -> item { EstadoErro(aoAtualizar, mensagem = textoMensagemPaciente(estado.erro)) }
                 estado.lista.isEmpty() -> item { EstadoVazio(mensagem = stringResource(Res.string.pacientes_lista_vazia)) }
                 else -> {
-                    items(estado.lista, key = { it.vinculoId.toString() }) { paciente ->
+                    grupos.forEach { grupo ->
+                    item(key = "inicial-${grupo.inicial}") {
+                        Text(grupo.inicial.toString(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.semantics { heading() })
+                    }
+                    items(grupo.pacientes, key = { it.vinculoId.toString() }) { paciente ->
                         Surface(shape = FormasDieta.card, color = MaterialTheme.colorScheme.surface, border = BorderStroke(Dimens.borda, MaterialTheme.colorScheme.outlineVariant)) {
                             Row(Modifier.fillMaxWidth().selectable(estado.selecionado?.vinculoId == paciente.vinculoId, role = Role.Button,
                                 onClick = { aoSelecionar(paciente) }).padding(Dimens.paddingCampo).semantics(mergeDescendants = true) {},
@@ -65,8 +79,22 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                             }
                         }
                     }
+                    }
                 }
             }
+        }
+    }
+}
+
+/** Quantos pacientes na lista pedem o índice A-Z (ART-P1-01): com poucos, a rolagem basta. */
+private const val LIMITE_INDICE = 12
+
+/** Índice A-Z: só as iniciais que existem; cada uma leva ao grupo. */
+@Composable
+private fun IndiceInicialPacientes(iniciais: List<Char>, aoEscolher: (Char) -> Unit) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
+        iniciais.forEach { i ->
+            TextButton(onClick = { aoEscolher(i) }, modifier = Modifier.defaultMinSize(minWidth = Dimens.alvoToque, minHeight = Dimens.alvoToque)) { Text(i.toString()) }
         }
     }
 }

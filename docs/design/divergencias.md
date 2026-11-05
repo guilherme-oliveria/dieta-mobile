@@ -39,3 +39,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - Hub em tela própria por seção (ART-P1-03 a 08): no app há só o resumo das seções no passo Medidas. Fica para o MOB-64c.
 - Cartão "Última avaliação" da ficha (ART-P1-02): não feito. Os atalhos levam às abas Avaliações e Evolução. Fica para o MOB-64c.
 - Barras verticais com siglas (ART-P1-09 e ART-P1-10): resolvido no MOB-64b.
+
+## MOB-67a (ART-P1-01), pendências no MOB-67b
+- Filtros de atenção (Retorno hoje, Avaliação vencida, Sem retorno) e o resumo "M precisam de atenção": a lista do backend não traz agenda nem data da última avaliação por paciente. O app mantém os filtros de status (Todos, Convidados, Ativos, Encerrados).
+- "Fixados e recentes": sem fixar nem histórico de abertura no backend.
+- Índice A-Z: aparece como linha de letras sob os filtros (não como régua lateral), só com as iniciais que existem e a partir de 12 pacientes.

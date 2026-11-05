@@ -105,7 +105,7 @@
     <string name="ficha_paciente">Ficha do paciente</string>
     <string name="pacientes_novo">Novo paciente</string>
     <string name="pacientes_atualizar">Atualizar</string>
-    <string name="pacientes_busca">Buscar paciente</string>
+    <string name="pacientes_busca">Buscar por nome ou telefone</string>
     <string name="pacientes_todos">Todos</string>
     <string name="pacientes_convidados">Convidados</string>
     <string name="pacientes_ativos">Ativos</string>
