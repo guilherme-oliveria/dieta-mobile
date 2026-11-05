@@ -37,7 +37,7 @@ suspend fun carregarResumosPacientes(api: ApiDieta): Map<Uuid, org.br.dietamais.
         do {
             val resposta = api.obter<PaginaPacientesResposta>("pacientes", mapOf("pagina" to pagina.toString(), "tamanho" to "100", "ordem" to "nome,asc"))
             if (api.operacaoSessao.value != esperado || resposta.pagina != pagina || (resposta.itens.isEmpty() && r.size < resposta.total)) return null
-            resposta.itens.forEach { r[it.vinculoId] = org.br.dietamais.dominio.pacientes.ResumoPaciente(it.proximaConsulta, it.ultimaAvaliacao?.dataHora) }
+            resposta.itens.forEach { r[it.vinculoId] = org.br.dietamais.dominio.pacientes.ResumoPaciente(it.proximaConsulta, it.ultimaAvaliacao?.dataHora, it.ultimaAvaliacao) }
             pagina++
         } while (r.size < resposta.total && pagina < 20)
         r

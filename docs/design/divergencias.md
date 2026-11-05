@@ -107,3 +107,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - O artboard ART-P1-01/ART-P1-12 mostra a seção "Fixados e recentes" no topo da lista. Como o backend não guarda fixados nem histórico, os fixados e os 5 últimos abertos ficam só no aparelho (não sincronizam entre aparelhos; na web, só enquanto a página estiver aberta). Fixar é um botão de texto no cartão do paciente, não o ícone de alfinete do desenho.
 - Os atalhos aparecem como chips em duas linhas (Fixados, Recentes) e somem quando há busca ou filtro ativo.
+
+## MOB-64c · Cartão Última avaliação (05/11/2026)
+
+- O cartão na aba Resumo da ficha mostra data, peso, IMC e classificação em texto, com o botão "Ver avaliações". Vem do resumo da lista de pacientes (`ultimaAvaliacao`), então aparece offline só se o resumo já foi carregado. O hub por seção (ART-P1-03 a 08) ficou para o MOB-64d.

@@ -1363,4 +1363,7 @@
     <string name="pacientes_recentes">Recentes</string>
     <string name="pacientes_fixar">Fixar</string>
     <string name="pacientes_desafixar">Desafixar</string>
+    <string name="ficha_ultima_avaliacao">Última avaliação · %1$s</string>
+    <string name="ficha_ultima_avaliacao_valores">%1$s kg · IMC %2$s (%3$s)</string>
+    <string name="ficha_ultima_avaliacao_ver">Ver avaliações</string>
 </resources>
