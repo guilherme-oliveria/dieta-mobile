@@ -107,6 +107,7 @@ class AvaliacaoTelasTest {
     }
 }
 
+@OptIn(ExperimentalTestApi::class)
 class HubSecoesAvaliacaoTest {
     @Test fun passoUmAbreNoHubComEstadoEmTextoEVoltaDaSecao() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
