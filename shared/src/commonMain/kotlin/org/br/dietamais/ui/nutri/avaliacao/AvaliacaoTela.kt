@@ -1,10 +1,15 @@
 package org.br.dietamais.ui.nutri.avaliacao
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -100,34 +105,42 @@ private fun PassoMedidas(estado: EstadoAvaliacoes, form: FormularioAvaliacao, ac
     if (form.infantilAtiva) { MedidasInfantis(estado, form, acoes, habilitado); return }
     val dobras = dobrasDoProtocolo(form.protocoloDobras, estado.sexo)
     val previaImc = previaImc(form.valores)
-    ResumoSecoesAvaliacao(progressoDasSecoes(form.valores, listOf(SecaoAvaliacao.BASICAS, SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS, SecaoAvaliacao.COMPLEMENTARES)) { s ->
-        MedidaAvaliacao.entries.filter { it.secao == s && (s != SecaoAvaliacao.DOBRAS || it in dobras) }
-    })
-    listOf(SecaoAvaliacao.BASICAS, SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS, SecaoAvaliacao.COMPLEMENTARES).forEach { secao ->
-        Text(stringResource(rotuloSecao(secao)), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-        if (secao == SecaoAvaliacao.DOBRAS) EscolhaProtocolo(stringResource(Res.string.avaliacao_protocolo_dobras),
-            listOf(ProtocoloDobras.TRES to stringResource(Res.string.avaliacao_protocolo_tres), ProtocoloDobras.SETE to stringResource(Res.string.avaliacao_protocolo_sete)),
-            form.protocoloDobras, acoes.aoProtocoloDobras, habilitado)
-        Campos(estado, form, acoes, habilitado, MedidaAvaliacao.entries.filter { it.secao == secao && (secao != SecaoAvaliacao.DOBRAS || it in dobras) })
-        if (secao == SecaoAvaliacao.BASICAS && previaImc != null) {
-            Text(stringResource(Res.string.avaliacao_imc_previa, textoDecimal(previaImc.first), stringResource(rotuloClassificacao(previaImc.second))),
-                style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-        }
+    val secoes = listOf(SecaoAvaliacao.BASICAS, SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS, SecaoAvaliacao.COMPLEMENTARES)
+    fun medidasDa(s: SecaoAvaliacao) = MedidaAvaliacao.entries.filter { it.secao == s && (s != SecaoAvaliacao.DOBRAS || it in dobras) }
+    // MOB-64d (ART-P1-03): o passo abre num hub de seções; cada seção é uma tela própria e a nutri preenche na ordem que quiser.
+    var aberta by remember { mutableStateOf<SecaoAvaliacao?>(null) }
+    val secao = aberta
+    if (secao == null) {
+        ResumoSecoesAvaliacao(progressoDasSecoes(form.valores, secoes, ::medidasDa), estado.errosMedidas.keys) { aberta = it }
+        return
+    }
+    BotaoTexto(stringResource(Res.string.avaliacao_voltar_secoes), { aberta = null })
+    Text(stringResource(rotuloSecao(secao)), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+    if (secao == SecaoAvaliacao.DOBRAS) EscolhaProtocolo(stringResource(Res.string.avaliacao_protocolo_dobras),
+        listOf(ProtocoloDobras.TRES to stringResource(Res.string.avaliacao_protocolo_tres), ProtocoloDobras.SETE to stringResource(Res.string.avaliacao_protocolo_sete)),
+        form.protocoloDobras, acoes.aoProtocoloDobras, habilitado)
+    Campos(estado, form, acoes, habilitado, medidasDa(secao))
+    if (secao == SecaoAvaliacao.BASICAS && previaImc != null) {
+        Text(stringResource(Res.string.avaliacao_imc_previa, textoDecimal(previaImc.first), stringResource(rotuloClassificacao(previaImc.second))),
+            style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
     }
 }
 
-/** Resumo das seções com o estado de cada uma (ART-P1-03); o estado vai em texto, não só em cor. */
+/** Hub das seções com o estado de cada uma (ART-P1-03); o estado vai em texto, não só em cor, e cada linha abre a seção. */
 @Composable
-private fun ResumoSecoesAvaliacao(progresso: List<ProgressoSecao>) {
-    CardDieta(Modifier.fillMaxWidth()) {
-        Text(stringResource(Res.string.avaliacao_secoes_titulo), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-        progresso.forEach { p ->
-            val nome = stringResource(rotuloSecao(p.secao))
-            Text(when {
-                p.completa -> stringResource(Res.string.avaliacao_secao_completa, nome, p.preenchidas, p.total)
-                p.vazia -> stringResource(Res.string.avaliacao_secao_pendente, nome)
-                else -> stringResource(Res.string.avaliacao_secao_progresso, nome, p.preenchidas, p.total)
-            }, style = MaterialTheme.typography.bodyMedium)
+private fun ResumoSecoesAvaliacao(progresso: List<ProgressoSecao>, comErro: Set<MedidaAvaliacao>, aoAbrir: (SecaoAvaliacao) -> Unit) {
+    Text(stringResource(Res.string.avaliacao_secoes_dica), style = MaterialTheme.typography.bodySmall)
+    progresso.forEach { p ->
+        val nome = stringResource(rotuloSecao(p.secao))
+        val erro = comErro.any { it.secao == p.secao }
+        val estado = when {
+            p.completa -> stringResource(Res.string.avaliacao_secao_completa, nome, p.preenchidas, p.total)
+            p.vazia -> stringResource(Res.string.avaliacao_secao_pendente, nome)
+            else -> stringResource(Res.string.avaliacao_secao_progresso, nome, p.preenchidas, p.total)
+        }
+        CardDieta(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).clickable(role = Role.Button, onClick = { aoAbrir(p.secao) })) {
+            Text(estado, style = MaterialTheme.typography.titleSmall)
+            if (erro) Text(stringResource(Res.string.avaliacao_secao_erro), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
     }
 }

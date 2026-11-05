@@ -26,6 +26,7 @@ class AvaliacaoTelasTest {
     @Test fun formularioMostraPreviaDoImcEErroDeCampo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
         setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form), AcoesAvaliacao()) } }
+        onNodeWithText("Medidas básicas", substring = true).performClick() // MOB-64d: o passo abre no hub de seções
         onNodeWithText("IMC 22,86 · Peso normal").assertExists()
     }
 
@@ -35,6 +36,7 @@ class AvaliacaoTelasTest {
         setContent { DietaTheme { androidx.compose.foundation.layout.Column(androidx.compose.ui.Modifier.verticalScroll(rememberScrollState())) {
             AvaliacaoTela(EstadoAvaliacoes(formulario = form), AcoesAvaliacao(), rolavel = false)
         } } }
+        onNodeWithText("Medidas básicas", substring = true).performClick()
         onNodeWithText("IMC 22,86 · Peso normal").assertExists()
         onNodeWithText("Continuar").assertExists()
     }
@@ -51,6 +53,7 @@ class AvaliacaoTelasTest {
         val estado = EstadoAvaliacoes(formulario = FormularioAvaliacao(protocoloDobras = ProtocoloDobras.TRES), sexo = Sexo.MASCULINO)
         setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
         onNodeWithText("Passo 1 de 4: Medidas").assertExists()
+        onNodeWithText("Dobras cutâneas", substring = true).performClick()
         onNodeWithText("3 dobras").performScrollTo().assertExists()
         onNodeWithContentDescription("Peitoral (mm)").assertExists()
         onNodeWithContentDescription("Tríceps (mm)").assertDoesNotExist() // homem, 3 dobras: peitoral, abdominal e coxa
@@ -101,5 +104,19 @@ class AvaliacaoTelasTest {
         setContent { DietaTheme { AvaliacaoTela(estado, AcoesAvaliacao()) } }
         onNodeWithText("Escolha o nível de atividade para ver o gasto total.").performScrollTo().assertExists()
         onNodeWithText("Lactante até 6 meses").performScrollTo().assertExists()
+    }
+}
+
+@OptIn(ExperimentalTestApi::class)
+class HubSecoesAvaliacaoTest {
+    @Test fun passoUmAbreNoHubComEstadoEmTextoEVoltaDaSecao() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val form = FormularioAvaliacao(valores = mapOf(MedidaAvaliacao.PESO to "70", MedidaAvaliacao.ESTATURA to "1,75"))
+        setContent { DietaTheme { AvaliacaoTela(EstadoAvaliacoes(formulario = form), AcoesAvaliacao()) } }
+        onNodeWithText("Perímetros: nada preenchido", substring = true).assertExists()
+        onNodeWithContentDescription("Peso (kg)").assertDoesNotExist() // campos só dentro da seção
+        onNodeWithText("Perímetros", substring = true).performClick()
+        onNodeWithText("Voltar às seções").assertExists()
+        onNodeWithText("Voltar às seções").performClick()
+        onNodeWithText("Perímetros: nada preenchido", substring = true).assertExists()
     }
 }
