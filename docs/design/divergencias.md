@@ -87,3 +87,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-65b · Unidade nos micronutrientes (05/11/2026)
 
 - O artboard `D-Micronutrientes` (ART-P4-04) mostra "8 mg · adequado". Com o BE-67 o app mostra o total na unidade da meta ("8 mg") ao lado da % e da classe em texto. A tela de Necessidades da avaliação continua sem a lista: o servidor só calcula a adequação sobre a dieta (RN-DIE-13), então ela segue na dieta do paciente e na ficha da nutri. Levar a lista à avaliação exige um cálculo de adequação sem dieta, que não existe.
+
+## MOB-70 · Produtos e suplementos (05/11/2026)
+
+- Não há artboard do cadastro de produto (ART-P3 pendente). A tela segue o padrão de Alimentos (`padrao-ui.md`): escolha Alimentos | Produtos no topo da aba, lista de cartões, formulário em tela cheia com os 4 macros por 100 g (energia, carboidrato, proteína, lipídeos).
+- O formulário só edita nome, marca, classificação, medida caseira e os 4 macros; apresentação, embalagem, sabores, observação e os micronutrientes são mantidos como vieram do servidor. A busca por alimentos e produtos no planejador (MOB-71) vem em outro PR.

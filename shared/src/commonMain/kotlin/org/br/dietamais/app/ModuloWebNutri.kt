@@ -73,15 +73,9 @@ fun moduloWebNutri(ambiente: AmbienteWeb, compartilhamento: Compartilhamento) = 
     single<org.br.dietamais.data.repositorio.PortaModelosDieta> { org.br.dietamais.data.repositorio.ModelosDietaRepositorio(get<ApiDieta>()) { } }
     viewModel { org.br.dietamais.ui.nutri.dieta.ModelosDietaViewModel(get(), conectividade = online) }
     viewModel { org.br.dietamais.ui.nutri.dieta.AplicarModeloViewModel(get(), get()) }
-<<<<<<< Updated upstream
-=======
     // MOB-70: produtos e suplementos da nutri (online)
     single<org.br.dietamais.data.repositorio.PortaProdutos> { org.br.dietamais.data.repositorio.ProdutosRepositorio(get<ApiDieta>()) }
     viewModel { org.br.dietamais.ui.nutri.produtos.ProdutosViewModel(get(), conectividade = online) }
-    // MOB-56b: editor de modelo = o planejador gravando em modelos-dieta
-    single { org.br.dietamais.ui.nutri.dieta.DietasDeModelo(get()) }
-    viewModel(org.koin.core.qualifier.named("modelo")) { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get<org.br.dietamais.ui.nutri.dieta.DietasDeModelo>(), get(), conectividade = online) }
->>>>>>> Stashed changes
     viewModel { PainelViewModel(get(), get(), get(), get()) }
     viewModel { AnamneseNutriViewModel(get(), conectividade = online) }
 }

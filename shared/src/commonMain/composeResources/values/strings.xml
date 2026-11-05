@@ -1331,10 +1331,6 @@
     <string name="dri_outra">Sem classe</string>
     <string name="dri_parcial">Total parcial: alguns alimentos não informam todos os nutrientes, então o valor pode estar abaixo do real.</string>
     <string name="dri_fonte">Metas pela DRI (2005) para a idade e o sexo do paciente. Limites de classe provisórios.</string>
-<<<<<<< Updated upstream
-=======
-    <string name="mod_novo">Novo modelo</string>
-    <string name="mod_editar">Editar</string>
     <string name="prod_aba">Produtos</string>
     <string name="prod_titulo">Produtos e suplementos</string>
     <string name="prod_novo">Novo produto</string>
@@ -1357,5 +1353,4 @@
     <string name="prod_mais">Carregar mais</string>
     <string name="prod_resumo">%1$s kcal · %2$s g de proteína por 100 g</string>
     <string name="alimentos_aba_alimentos">Alimentos</string>
->>>>>>> Stashed changes
 </resources>
