@@ -78,3 +78,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-72 · Micronutrientes no planejador (05/11/2026)
 
 - Não há artboard para este cartão (ART-P3). O app reaproveita o cartão do MOB-65 abaixo do "Resultado ao vivo". Micronutrientes e adequação só o servidor calcula (o planejador soma só energia e macros), então o cartão mostra o último valor salvo e, com alterações pendentes, pede para salvar de novo.
+
+## MOB-65b · Unidade nos micronutrientes (05/11/2026)
+
+- O artboard `D-Micronutrientes` (ART-P4-04) mostra "8 mg · adequado". Com o BE-67 o app mostra o total na unidade da meta ("8 mg") ao lado da % e da classe em texto. A tela de Necessidades da avaliação continua sem a lista: o servidor só calcula a adequação sobre a dieta (RN-DIE-13), então ela segue na dieta do paciente e na ficha da nutri. Levar a lista à avaliação exige um cálculo de adequação sem dieta, que não existe.
