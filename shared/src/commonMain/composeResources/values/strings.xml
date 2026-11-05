@@ -1306,4 +1306,14 @@
     <string name="evolucao_modo_linha">Linha</string>
     <string name="evolucao_modo_barras">Barras por avaliação</string>
     <string name="evolucao_barras_titulo">Últimas %1$d medidas</string>
+    <string name="dri_titulo">Micronutrientes (DRI)</string>
+    <string name="dri_expandir">Ver micronutrientes (%1$d fora da meta)</string>
+    <string name="dri_recolher">Esconder micronutrientes</string>
+    <string name="dri_percentual">%1$d%% da meta</string>
+    <string name="dri_abaixo">Abaixo</string>
+    <string name="dri_adequado">Adequado</string>
+    <string name="dri_acima">Acima</string>
+    <string name="dri_outra">Sem classe</string>
+    <string name="dri_parcial">Total parcial: alguns alimentos não informam todos os nutrientes, então o valor pode estar abaixo do real.</string>
+    <string name="dri_fonte">Metas pela DRI (2005) para a idade e o sexo do paciente. Limites de classe provisórios.</string>
 </resources>

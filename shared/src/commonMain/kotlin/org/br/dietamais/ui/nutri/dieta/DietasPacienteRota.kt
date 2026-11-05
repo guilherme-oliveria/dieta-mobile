@@ -86,6 +86,7 @@ fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResp
                 Text(dieta.titulo, style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(textoStatus(dieta.status)), style = MaterialTheme.typography.labelLarge)
                 Text(stringResource(Res.string.dieta_kcal, formatar(dieta.totais.kcal)), style = MaterialTheme.typography.bodyMedium)
+                MicronutrientesDriCard(dieta.totais)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     BotaoTexto(stringResource(if (dieta.status == StatusDieta.RASCUNHO) Res.string.dieta_editar else Res.string.dieta_ver_acao), { aoAbrir(dieta) })
                     BotaoTexto(stringResource(Res.string.dieta_duplicar), { aoDuplicar(dieta) }, habilitado = habilitado)
