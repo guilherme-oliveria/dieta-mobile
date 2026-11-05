@@ -111,7 +111,10 @@ fun PainelResultadosInfantis(r: ResultadosInfantisAvaliacaoDto?, modifier: Modif
                     Text(stringResource(titulo), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
                     curva.classificacao?.let { Text(classeInfantil(it)) }
                     curva.percentil?.let { Text(textoIntervaloInfantil(stringResource(Res.string.inf_percentil), it)) }
-                    if (!paciente) curva.escoreZ?.let { Text(textoIntervaloInfantil(stringResource(Res.string.inf_escore), it)) }
+                    if (!paciente) curva.escoreZ?.let { z ->
+                        Text(textoIntervaloInfantil(stringResource(Res.string.inf_escore), z))
+                        ReguaZ.valor(z.inferior, z.superior)?.let { ReguaZUi(it) }
+                    }
                     if (curva.classificacao == null && curva.percentil == null) Text(motivoInfantil(curva.motivo))
                     if (!paciente && curva.fonte != null) Text(stringResource(Res.string.inf_fonte, curva.fonte, curva.versaoReferencia.orEmpty()), style = MaterialTheme.typography.labelSmall)
                 }
@@ -189,3 +192,19 @@ private fun classeInfantil(codigo: String): String = stringResource(when (codigo
     "INSUFICIENTE" -> Res.string.inf_nascer_insuficiente; "NORMAL" -> Res.string.inf_nascer_normal; "MACROSSOMIA" -> Res.string.inf_nascer_macrossomia
     else -> Res.string.inf_sem_resultado
 })
+
+/** Régua de −3 a +3 com a faixa adequada (−2 a +2) destacada e o marcador do escore Z. */
+@Composable
+private fun ReguaZUi(z: Double) {
+    val faixa = MaterialTheme.colorScheme.primaryContainer
+    val fundo = MaterialTheme.colorScheme.surfaceVariant
+    val marcador = MaterialTheme.colorScheme.primary
+    val descricao = stringResource(Res.string.inf_regua_z, textoDecimal(z))
+    androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(20.dp).semantics { contentDescription = descricao }) {
+        val y = size.height / 2
+        drawLine(fundo, androidx.compose.ui.geometry.Offset(0f, y), androidx.compose.ui.geometry.Offset(size.width, y), strokeWidth = 8.dp.toPx())
+        drawLine(faixa, androidx.compose.ui.geometry.Offset(size.width * ReguaZ.posicao(-2.0), y), androidx.compose.ui.geometry.Offset(size.width * ReguaZ.posicao(2.0), y), strokeWidth = 8.dp.toPx())
+        drawCircle(marcador, 8.dp.toPx(), androidx.compose.ui.geometry.Offset(size.width * ReguaZ.posicao(z), y))
+    }
+    Text(stringResource(Res.string.inf_regua_z_extremos), style = MaterialTheme.typography.labelSmall)
+}
