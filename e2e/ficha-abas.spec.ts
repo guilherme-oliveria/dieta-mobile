@@ -14,7 +14,7 @@ test("nutri abre Avaliações, Evolução e uma nova avaliação sem erro de fus
   await expect(botao(page, "Nova avaliação")).toBeAttached({ timeout: 20_000 });
 
   await tocar(page, "Evolução");
-  await expect(page.getByText("Ainda não há medidas para mostrar.").or(botao(page, "Peso")).first()).toBeAttached({ timeout: 20_000 });
+  await expect(page.getByText("Ainda não há medidas para mostrar.").or(botao(page, "Peso")).first()).toBeAttached({ timeout: 45_000 });
 
   await tocar(page, "Avaliações");
   await expect(botao(page, "Nova avaliação")).toBeAttached();

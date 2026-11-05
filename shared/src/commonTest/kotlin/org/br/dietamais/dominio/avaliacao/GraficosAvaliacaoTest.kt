@@ -31,4 +31,17 @@ class GraficosAvaliacaoTest {
         // composição só usa gordo e magro (o percentual tem outra unidade)
         assertEquals(listOf(MedidaAvaliacao.PESO_GORDO, MedidaAvaliacao.PESO_MAGRO), g[2].pontos.map { (it.chave as ChaveGrafico.Medida).medida })
     }
+
+    @Test fun siglasNaoSeRepetemDentroDeUmaSerie() {
+        listOf(SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS).forEach { secao ->
+            val siglas = MedidaAvaliacao.entries.filter { it.secao == secao }.map { siglaMedida(it) }
+            assertEquals(siglas.size, siglas.toSet().size, "siglas repetidas em $secao: $siglas")
+        }
+    }
+
+    @Test fun siglasSeguemOArtboard() {
+        assertEquals(listOf("BR", "C", "A", "Q"), listOf(MedidaAvaliacao.BRACO, MedidaAvaliacao.CINTURA, MedidaAvaliacao.ABDOMEN, MedidaAvaliacao.QUADRIL).map { siglaMedida(it) })
+        assertEquals(listOf("TR", "PE", "AM", "SE", "AB", "SI", "CX"), listOf(MedidaAvaliacao.DOBRA_TRICEPS, MedidaAvaliacao.DOBRA_PEITORAL, MedidaAvaliacao.DOBRA_AXILAR_MEDIA,
+            MedidaAvaliacao.DOBRA_SUBESCAPULAR, MedidaAvaliacao.DOBRA_ABDOMINAL, MedidaAvaliacao.DOBRA_SUPRAILIACA, MedidaAvaliacao.DOBRA_COXA).map { siglaMedida(it) })
+    }
 }
