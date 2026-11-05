@@ -13,6 +13,7 @@ import org.br.dietamais.dominio.avaliacao.MedidaAvaliacao
 import org.br.dietamais.dominio.avaliacao.SecaoAvaliacao
 import org.br.dietamais.dominio.avaliacao.textoDecimal
 import org.br.dietamais.dominio.avaliacao.ehPediatrica
+import org.br.dietamais.dominio.avaliacao.mostraGraficosDeBarras
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
@@ -34,7 +35,7 @@ fun DetalhesAvaliacao(avaliacao: AvaliacaoResposta, modifier: Modifier = Modifie
         if (secoes.isEmpty() && avaliacao.parecer.isNullOrBlank() && resultados?.somatorioDobrasMm == null) {
             Text(stringResource(Res.string.avaliacao_detalhe_sem_medidas), style = MaterialTheme.typography.bodySmall)
         }
-        if (!avaliacao.ehPediatrica()) GraficosAvaliacao(avaliacao)
+        if (avaliacao.mostraGraficosDeBarras()) GraficosAvaliacao(avaliacao)
         secoes.forEach { (secao, medidas) ->
             Text(stringResource(rotuloSecao(secao)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
             medidas.forEach { (medida, valor) ->

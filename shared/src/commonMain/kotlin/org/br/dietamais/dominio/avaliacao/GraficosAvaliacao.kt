@@ -20,10 +20,13 @@ data class GraficoAvaliacao(val serie: SerieGraficoAvaliacao, val pontos: List<P
  */
 fun graficosDaAvaliacao(avaliacao: AvaliacaoResposta): List<GraficoAvaliacao> {
     val r = avaliacao.resultados
+    val infantil = avaliacao.resultadosInfantis
+    val minimo = r?.pesoTeoricoMinKg ?: infantil?.pesoTeoricoMinKg
+    val maximo = r?.pesoTeoricoMaxKg ?: infantil?.pesoTeoricoMaxKg
     val peso = listOfNotNull(
-        r?.pesoTeoricoMinKg?.let { PontoGraficoAvaliacao(ChaveGrafico.Peso.MINIMO, it) },
+        minimo?.let { PontoGraficoAvaliacao(ChaveGrafico.Peso.MINIMO, it) },
         PontoGraficoAvaliacao(ChaveGrafico.Peso.ATUAL, avaliacao.pesoKg),
-        r?.pesoTeoricoMaxKg?.let { PontoGraficoAvaliacao(ChaveGrafico.Peso.MAXIMO, it) },
+        maximo?.let { PontoGraficoAvaliacao(ChaveGrafico.Peso.MAXIMO, it) },
     )
     fun medidas(secao: SecaoAvaliacao, vararg incluir: MedidaAvaliacao) = MedidaAvaliacao.entries
         .filter { it.secao == secao && (incluir.isEmpty() || it in incluir) }
@@ -55,4 +58,17 @@ fun siglaMedida(medida: MedidaAvaliacao): String = when (medida) {
     MedidaAvaliacao.DOBRA_ABDOMINAL -> "AB"
     MedidaAvaliacao.DOBRA_COXA -> "CX"
     else -> medida.name.take(2)
+}
+
+/**
+ * MOB-69: os 4 gráficos valem para adulto e também para 10 a 17 anos (medidas de perímetros, dobras e composição já são as mesmas).
+ * Criança menor de 10 anos usa só a curva de crescimento.
+ */
+fun AvaliacaoResposta.mostraGraficosDeBarras(): Boolean {
+    if (!ehPediatrica()) return true
+    val meses = resultadosInfantis?.idadeMeses
+    return when {
+        meses != null -> meses in 120..215
+        else -> faixaEtaria == FaixaEtariaAvaliacao.ADOLESCENTE
+    }
 }
