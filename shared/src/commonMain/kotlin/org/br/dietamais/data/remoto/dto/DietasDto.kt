@@ -20,7 +20,9 @@ data class AtualizarListaSubstituicaoRequisicao(val adicionados: List<Uuid>, val
 data class SaldoMetasResposta(val kcal: Double, val carboidrato: Double, val proteina: Double, val lipidio: Double)
 /** Total do dia contra a meta DRI (BE-49b); `classe` é ABAIXO, ADEQUADO ou ACIMA (texto livre: o servidor pode criar outras). */
 @Serializable
-data class AdequacaoNutrienteResposta(val nutriente: String, val total: Double, val meta: Double, val percentual: Double, val classe: String)
+data class AdequacaoNutrienteResposta(val nutriente: String, val total: Double, val meta: Double, val percentual: Double, val classe: String,
+    /** BE-67: rótulo e unidade da meta (ex.: "mg/dia"); `total` e `meta` já vêm nessa unidade. Opcionais. */
+    val nome: String? = null, val unidade: String? = null)
 /** Total da alternativa menos o da refeição que ela substitui (RN-DIE-11). */
 @Serializable
 data class DiferencaTotaisResposta(val kcal: Double, val carboidratos: Double, val proteinas: Double, val gorduras: Double)

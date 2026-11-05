@@ -5,7 +5,7 @@ import org.br.dietamais.data.remoto.dto.AdequacaoNutrienteResposta
 enum class ClasseDri { ABAIXO, ADEQUADO, ACIMA, OUTRA }
 
 /** Uma linha da lista de micronutrientes (MOB-65, ART-P4-04): nome legível, percentual da meta DRI e classe. */
-data class LinhaDri(val codigo: String, val nome: String, val percentual: Double, val classe: ClasseDri)
+data class LinhaDri(val codigo: String, val nome: String, val percentual: Double, val classe: ClasseDri, val valor: String? = null)
 
 fun classeDri(texto: String) = ClasseDri.entries.firstOrNull { it.name == texto.trim().uppercase() && it != ClasseDri.OUTRA } ?: ClasseDri.OUTRA
 
@@ -26,5 +26,11 @@ private val NOMES_DRI = mapOf(
 
 /** Linhas ordenadas: primeiro o que foge da meta (abaixo e acima), depois o adequado; dentro de cada grupo, pelo nome. */
 fun linhasDri(adequacao: List<AdequacaoNutrienteResposta>?): List<LinhaDri> =
-    adequacao.orEmpty().map { LinhaDri(it.nutriente, nomeDoNutriente(it.nutriente), it.percentual, classeDri(it.classe)) }
+    adequacao.orEmpty().map { LinhaDri(it.nutriente, it.nome?.takeIf { n -> n.isNotBlank() } ?: nomeDoNutriente(it.nutriente), it.percentual, classeDri(it.classe), textoValorDri(it)) }
         .sortedWith(compareBy<LinhaDri> { if (it.classe == ClasseDri.ADEQUADO) 1 else 0 }.thenBy { it.nome })
+
+/** "8 mg" (ART-P4-04): o total na unidade da meta, sem o "/dia"; sem unidade do servidor não mostra valor (só o percentual). */
+fun textoValorDri(a: AdequacaoNutrienteResposta): String? {
+    val unidade = a.unidade?.substringBefore('/')?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+    return org.br.dietamais.dominio.avaliacao.textoDecimal(a.total) + " " + unidade
+}
