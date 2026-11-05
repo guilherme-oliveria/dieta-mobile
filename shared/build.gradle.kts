@@ -159,3 +159,11 @@ tasks.named<org.gradle.api.tasks.testing.AbstractTestTask>("iosSimulatorArm64Tes
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 }
+
+// Mostra a mensagem e o stack completo das falhas de teste no log do CI (sem isso só aparece "AssertionError at Arquivo.kt:N").
+tasks.withType<org.gradle.api.tasks.testing.AbstractTestTask>().configureEach {
+    testLogging {
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        events("failed")
+    }
+}
