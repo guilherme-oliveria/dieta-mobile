@@ -54,6 +54,15 @@ export async function digitar(page: Page, nome: string | RegExp, texto: string) 
   await page.keyboard.type(texto, { delay: 5 });
 }
 
+/** Filtra a lista de pacientes pelo nome (substitui o que já estava no campo), para o cartão procurado ficar sozinho e o toque por coordenada não errar. */
+export async function buscarPaciente(page: Page, texto: string) {
+  await clicar(page, campo(page, /Buscar por nome/));
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type(texto, { delay: 5 });
+  // O filtro e o novo layout da lista levam um instante; clicar antes toca onde o cartão estava.
+  await page.waitForTimeout(800);
+}
+
 export async function tocar(page: Page, nome: string | RegExp) {
   await clicar(page, botao(page, nome));
 }

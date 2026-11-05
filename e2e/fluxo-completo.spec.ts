@@ -7,7 +7,7 @@
 //  - depois que uma folha ou diálogo do Compose fecha, a árvore de semantics do DOM continua mostrando a folha;
 //  - o login por fase deixa cada cenário independente (o F5 em si é coberto por sessao-f5.spec.ts).
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { abrir, botao, campo, clicar, digitar, entrar, NUTRI_EXEMPLO, SENHA_EXEMPLO, tocar, veTexto } from "./apoio.ts";
+import { abrir, botao, buscarPaciente, campo, clicar, digitar, entrar, NUTRI_EXEMPLO, SENHA_EXEMPLO, tocar, veTexto } from "./apoio.ts";
 
 const sufixo = Date.now().toString(36);
 const paciente = { nome: `Paciente ${sufixo}`, email: `p${sufixo}@exemplo.dev`, senha: "Senha-de-Teste-E2E-2026" };
@@ -29,7 +29,11 @@ async function abrirFicha(page: Page, nome: string) {
   const titulo = page.getByRole("heading", { name: nome });
   // O clique é por coordenada: se a lista se rearruma entre medir e clicar (paciente recém-criada), o toque erra. Tenta de novo enquanto a ficha não abre.
   await expect(async () => {
-    if ((await titulo.count()) === 0) await clicar(page, page.getByRole("button", { name: nome }));
+    if ((await titulo.count()) === 0) {
+      // A lista tem atalhos (Fixados/Recentes) e filtros no topo e se rearruma: busca pelo nome para o cartão ficar sozinho.
+      await buscarPaciente(page, nome);
+      await clicar(page, page.getByRole("button", { name: nome }));
+    }
     await expect(titulo).toBeAttached({ timeout: 5_000 });
   }).toPass({ timeout: 40_000 });
 }

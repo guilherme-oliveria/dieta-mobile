@@ -1,10 +1,10 @@
 name: E2E web
 
-# Playwright (Chromium) contra o backend real e a web de produção. Manual (workflow_dispatch).
-# TEMPORÁRIO (pedido do Guilherme, 05/11/2026): fora dos PRs até terminar as Partes 0 a 4 do plano de melhorias; roda à mão no fim de cada parte.
-# Depois disso, devolva o gatilho `pull_request` com os paths ['e2e/**', 'shared/**', 'webApp/**', 'ops/e2e-wsl.sh', '.github/workflows/e2e-web.yml'].
+# Playwright (Chromium) contra o backend real e a web de produção. Roda nos PRs que mexem em e2e, shared, webApp ou neste fluxo, e à mão (workflow_dispatch).
 # Se o dieta-backend for privado, crie o secret BACKEND_REPO_TOKEN (token com leitura nesse repositório).
 on:
+  pull_request:
+    paths: ['e2e/**', 'shared/**', 'webApp/**', 'ops/e2e-wsl.sh', '.github/workflows/e2e-web.yml']
   workflow_dispatch:
 
 jobs:
