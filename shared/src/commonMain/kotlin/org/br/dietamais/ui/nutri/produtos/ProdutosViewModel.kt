@@ -46,11 +46,11 @@ class ProdutosViewModel(private val repositorio: PortaProdutos, private val disp
     fun mudarBusca(valor: String) { atual.update { it.copy(busca = valor.take(150)) }; recarregar() }
     fun mudarAtivo(valor: Boolean) { atual.update { it.copy(ativo = valor) }; recarregar() }
 
-    private fun listar(pagina: Int) {
+    private fun listar(pagina: Int, manterAviso: Boolean = false) {
         val e = atual.value
         val esperada = ++geracao
         operacao?.cancel()
-        atual.update { it.copy(carregando = true, erro = null, aviso = null) }
+        atual.update { it.copy(carregando = true, erro = null, aviso = if (manterAviso) it.aviso else null) }
         operacao = viewModelScope.launch(dispatcher) {
             try {
                 val r = repositorio.listar(e.busca, e.ativo, pagina)
@@ -103,7 +103,7 @@ class ProdutosViewModel(private val repositorio: PortaProdutos, private val disp
                 t(f.medida), medidaG, f.demais?.observacao, nutrientes), f.chave)
             else repositorio.alterar(f.id, f.versao, AtualizarProdutoRequisicao(f.nome.trim(), t(f.marca), t(f.classificacao), f.demais?.apresentacao, f.demais?.embalagem, f.demais?.sabores,
                 t(f.medida), medidaG, f.demais?.observacao, nutrientes, f.ativo))
-            if (geracao == esperada) { atual.update { it.copy(formulario = null, aviso = MensagemAlimentos.SALVO) }; listar(0) }
+            if (geracao == esperada) { atual.update { it.copy(formulario = null, aviso = MensagemAlimentos.SALVO) }; listar(0, manterAviso = true) }
         }
     }
     fun pedirDesativacao(p: ProdutoResposta) { if (!ocupado() && p.ativo) atual.update { it.copy(desativar = p, erro = null) } }
@@ -114,7 +114,7 @@ class ProdutosViewModel(private val repositorio: PortaProdutos, private val disp
         executar {
             repositorio.alterar(p.id, p.versao, AtualizarProdutoRequisicao(p.nome, p.marca, p.classificacao, p.apresentacao, p.embalagem, p.sabores, p.medidaCaseira,
                 p.medidaGramas, p.observacao, p.nutrientes, false))
-            if (geracao == esperada) { atual.update { it.copy(desativar = null, aviso = MensagemAlimentos.SALVO) }; listar(0) }
+            if (geracao == esperada) { atual.update { it.copy(desativar = null, aviso = MensagemAlimentos.SALVO) }; listar(0, manterAviso = true) }
         }
     }
     fun descartarEAtualizar() { fechar(); recarregar() }
