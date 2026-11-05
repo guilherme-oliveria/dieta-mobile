@@ -83,6 +83,13 @@ private fun ColumnScope.Resumo(estado: EstadoPlanejador, r: RascunhoPlano, a: Ac
         Text(stringResource(Res.string.plan_previa_aviso), style = MaterialTheme.typography.bodySmall)
         estado.referencia?.let { Text(stringResource(Res.string.plan_fonte, it.fonte), style = MaterialTheme.typography.bodySmall) }
     }
+    // MOB-72: micronutrientes e adequação vêm do servidor; só valem para o que já foi salvo
+    estado.totaisServidor?.let { totais ->
+        CardDieta(Modifier.fillMaxWidth().testTag("micronutrientes-plano")) {
+            if (r.alterado) Text(stringResource(Res.string.plan_micro_salve), style = MaterialTheme.typography.bodySmall)
+            else MicronutrientesDriCard(totais)
+        }
+    }
     if (r.editavel) BotaoPrincipal(stringResource(Res.string.plan_salvar), a.aoSalvar, Modifier.fillMaxWidth(),
         habilitado = r.alterado && !estado.semConexao && !estado.carregando, carregando = estado.enviando)
 }

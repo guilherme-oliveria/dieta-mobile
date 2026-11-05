@@ -37,6 +37,7 @@ data class EstadoPlanejador(
     val pacienteId: Uuid? = null, val referencia: PorcoesGruposResposta? = null, val rascunho: RascunhoPlano? = null,
     val totaisRefeicao: Map<Uuid, TotaisPorcoes> = emptyMap(), val diferencas: Map<Uuid, DiferencaPlano> = emptyMap(),
     val totalDia: TotaisPorcoes = TotaisPorcoes(0.0, 0.0, 0.0, 0.0, emptyMap()), val saldo: SaldoMetasResposta? = null,
+    val totaisServidor: org.br.dietamais.data.remoto.dto.TotaisNutricionaisResposta? = null,
     val refeicaoAtiva: Uuid? = null, val carregando: Boolean = false, val enviando: Boolean = false, val semConexao: Boolean = false,
     val erro: MensagemPlanejador? = null, val aviso: MensagemPlanejador? = null,
 ) { override fun toString() = "EstadoPlanejador[conteúdo clínico protegido]" }

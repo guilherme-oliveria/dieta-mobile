@@ -83,6 +83,13 @@ class PlanejadorPorcoesViewModelTest {
         assertEquals(MensagemPlanejador.SALVA, vm.estado.value.aviso); assertEquals(1L, vm.estado.value.rascunho!!.versao)
         vm.mudarTitulo("Novo"); vm.salvar(); runCurrent(); assertNull(d.salvas.single().id); assertEquals(2L, vm.estado.value.rascunho!!.versao)
     }
+    @Test fun totaisDoServidorFicamDepoisDeSalvarELimpamAoFechar() = runTest {
+        val vm = vm(Dietas()); val ref = vm.principal()
+        assertNull(vm.estado.value.totaisServidor)
+        vm.adicionarGrupo(ref, arroz); vm.mudarTitulo("Plano"); vm.mudarNomeRefeicao(ref, "Desjejum"); vm.salvar(); runCurrent()
+        assertEquals(zero, vm.estado.value.totaisServidor)
+        vm.fechar(); assertNull(vm.estado.value.totaisServidor)
+    }
     @Test fun alternativaSalvaComTipoEIdDaPrincipal() = runTest {
         val d = Dietas(); val vm = vm(d); val ref = vm.principal()
         vm.mudarTitulo("P"); vm.mudarNomeRefeicao(ref, "Jantar"); vm.adicionarGrupo(ref, arroz); vm.adicionarAlternativa(ref)

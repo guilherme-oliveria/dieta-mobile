@@ -74,3 +74,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - Não há artboard para estes botões (ART-P3 ainda não foi desenhado). O app mostra quatro botões de texto ao lado de "Baixar PDF" na dieta publicada, na ficha da nutri e na tela da dieta do paciente. O Design pode trocá-los por um menu único.
 - Os botões ficam desabilitados sem conexão, como o PDF da dieta: o link é gerado na hora pelo servidor.
+
+## MOB-72 · Micronutrientes no planejador (05/11/2026)
+
+- Não há artboard para este cartão (ART-P3). O app reaproveita o cartão do MOB-65 abaixo do "Resultado ao vivo". Micronutrientes e adequação só o servidor calcula (o planejador soma só energia e macros), então o cartão mostra o último valor salvo e, com alterações pendentes, pede para salvar de novo.
