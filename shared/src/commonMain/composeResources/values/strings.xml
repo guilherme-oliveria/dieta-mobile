@@ -1338,6 +1338,7 @@
     <string name="dri_outra">Sem classe</string>
     <string name="dri_parcial">Total parcial: alguns alimentos não informam todos os nutrientes, então o valor pode estar abaixo do real.</string>
     <string name="dri_fonte">Metas pela DRI (2005) para a idade e o sexo do paciente. Limites de classe provisórios.</string>
+    <string name="mod_offline_seus">Sem conexão: aparecem só os seus modelos já sincronizados. Os do sistema voltam com a internet.</string>
     <string name="mod_novo">Novo modelo</string>
     <string name="mod_editar">Editar</string>
     <string name="prod_aba">Produtos</string>

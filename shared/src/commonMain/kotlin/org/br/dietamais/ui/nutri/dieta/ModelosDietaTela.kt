@@ -35,7 +35,7 @@ fun ModelosDietaTela(estado: EstadoModelos, acoes: AcoesModelos) {
             BarraTopo(stringResource(Res.string.mod_titulo), acoes.aoVoltar, stringResource(Res.string.mod_voltar))
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                 Text(stringResource(Res.string.mod_subtitulo), style = MaterialTheme.typography.bodySmall)
-                if (estado.semConexao) FaixaOffline()
+                if (estado.semConexao) { FaixaOffline(); Text(stringResource(Res.string.mod_offline_seus), style = MaterialTheme.typography.bodySmall) }
                 estado.erro?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 estado.aviso?.let { Text(textoMensagemModelos(it), style = MaterialTheme.typography.bodySmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
