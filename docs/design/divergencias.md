@@ -87,3 +87,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-65b · Unidade nos micronutrientes (05/11/2026)
 
 - O artboard `D-Micronutrientes` (ART-P4-04) mostra "8 mg · adequado". Com o BE-67 o app mostra o total na unidade da meta ("8 mg") ao lado da % e da classe em texto. A tela de Necessidades da avaliação continua sem a lista: o servidor só calcula a adequação sobre a dieta (RN-DIE-13), então ela segue na dieta do paciente e na ficha da nutri. Levar a lista à avaliação exige um cálculo de adequação sem dieta, que não existe.
+
+## MOB-56b · Editor de modelo de dieta (05/11/2026)
+
+- Não há artboard do editor de modelo (ART-P3). O editor reaproveita o planejador por porções (`A/T-Planejador-Porcoes`): o botão "Salvar" e os textos falam de dieta, e o título é o único campo de cabeçalho. Descrição, condição e restrições do modelo seguem as do modelo aberto (modelo novo nasce sem elas); a energia de referência (RN-MOD-02) é o VET das metas editadas ou, sem metas, a do modelo aberto, para a aplicação ao paciente continuar escalando.
+- Só modelo da nutri sem alimento do catálogo abre para editar; o do sistema continua só leitura (duplicar primeiro, RN-MOD-01). A leitura offline fica para a MOB-56c.

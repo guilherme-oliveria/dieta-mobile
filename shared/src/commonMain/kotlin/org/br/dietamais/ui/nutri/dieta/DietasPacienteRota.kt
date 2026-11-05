@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 /** Aba Dieta da ficha: lista de dietas do paciente e montador (MOB-12/13). */
 @Composable
 fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResposta, planejador: PlanejadorPorcoesViewModel? = null, modelos: ModelosDietaViewModel? = null,
-    aplicar: AplicarModeloViewModel? = null) {
+    aplicar: AplicarModeloViewModel? = null, editorModelo: PlanejadorPorcoesViewModel? = null, adaptadorModelo: DietasDeModelo? = null) {
     val estado by viewModel.estado.collectAsState()
     LaunchedEffect(paciente.id) { viewModel.abrirPaciente(paciente.id) }
     val pdf = koinInject<PortaPdf>()
@@ -35,6 +35,11 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
     }
     LaunchedEffect(aplicando?.criada) { if (aplicando?.criada != null && aplicando.avisos.isEmpty()) abrirCriada() }
     if (planejador != null) LaunchedEffect(paciente.id) { planejador.abrirPaciente(paciente.id) }
+    // MOB-56b: o editor de modelo é o mesmo planejador, só que sem paciente e gravando em /eu/nutri/modelos-dieta
+    val editor = editorModelo?.takeIf { adaptadorModelo != null }
+    val editando = editor?.estado?.collectAsState()?.value
+    if (editor != null) LaunchedEffect(Unit) { editor.abrirPaciente(ModeloComoDieta.SEM_PACIENTE) }
+    val fecharEditor = { editor?.fechar(); modelos?.recarregar(); Unit }
     DietasListaTela(estado, viewModel::nova, { d -> if (planejador != null && usaPorcoes(d)) planejador.abrir(d) else viewModel.abrir(d) }, viewModel::duplicar, viewModel::recarregar,
         aoNovaPorcoes = planejador?.let { { it.nova() } }, porcoesDisponiveis = plano?.referencia != null,
         aoModelos = modelos?.let { { it.carregar(); abrirBiblioteca = true } }, aoSalvarModelo = modelos?.let { m -> { d: DietaResposta -> m.salvarComoModelo(d) } },
@@ -46,10 +51,19 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
     if (modelos != null && biblioteca != null && abrirBiblioteca) Dialog(onDismissRequest = { abrirBiblioteca = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         ModelosDietaTela(biblioteca, AcoesModelos(aoVoltar = { abrirBiblioteca = false }, aoAba = modelos::escolherAba, aoDuplicar = modelos::duplicar,
             aoApagar = modelos::pedirExclusao, aoConfirmarApagar = modelos::confirmarExclusao, aoCancelarApagar = modelos::cancelarExclusao, aoRecarregar = modelos::recarregar,
-            aoUsar = aplicar?.let { a -> { m: ModeloDietaResposta -> a.abrir(paciente.id, m) } }))
+            aoUsar = aplicar?.let { a -> { m: ModeloDietaResposta -> a.abrir(paciente.id, m) } },
+            aoNovo = editor?.let { e -> { adaptadorModelo!!.base = null; e.nova() } },
+            aoEditar = editor?.let { e -> { m: ModeloDietaResposta -> adaptadorModelo!!.base = m; e.abrir(ModeloComoDieta.comoDieta(m), comTotais = false); Unit } }))
     }
     if (aplicar != null && aplicando?.modelo != null) Dialog(onDismissRequest = aplicar::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         AplicarModeloTela(aplicando, paciente.nome, aplicar::fechar, { if (aplicando.criada != null) abrirCriada() else aplicar.criar() })
+    }
+    if (editor != null && editando?.rascunho != null) Dialog(onDismissRequest = { fecharEditor() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        PlanejadorPorcoesTela(editando, AcoesPlanejador(
+            { fecharEditor() }, editor::mudarTitulo, editor::mudarOrientacao, editor::mudarRodape, editor::mudarMetas,
+            editor::selecionarRefeicao, editor::adicionarRefeicao, editor::adicionarAlternativa, editor::removerRefeicao, editor::mudarNomeRefeicao,
+            editor::mudarHorario, editor::adicionarGrupo, editor::adicionarAVontade, editor::adicionarTexto, editor::escolherPorcao,
+            editor::ajustarPorcoes, editor::removerItem, editor::salvar))
     }
     if (planejador != null && plano?.rascunho != null) Dialog(onDismissRequest = { planejador.fechar(); viewModel.recarregar() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         PlanejadorPorcoesTela(plano, AcoesPlanejador(

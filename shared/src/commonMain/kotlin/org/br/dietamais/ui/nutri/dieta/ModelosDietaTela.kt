@@ -19,6 +19,8 @@ class AcoesModelos(
     val aoVoltar: () -> Unit = {}, val aoAba: (AbaModelos) -> Unit = {}, val aoDuplicar: (ModeloDietaResposta) -> Unit = {},
     val aoApagar: (ModeloDietaResposta) -> Unit = {}, val aoConfirmarApagar: () -> Unit = {}, val aoCancelarApagar: () -> Unit = {},
     val aoUsar: ((ModeloDietaResposta) -> Unit)? = null, val aoRecarregar: () -> Unit = {},
+    /** MOB-56b: nulos escondem "Novo modelo" e "Editar". */
+    val aoNovo: (() -> Unit)? = null, val aoEditar: ((ModeloDietaResposta) -> Unit)? = null,
 )
 
 /**
@@ -40,6 +42,7 @@ fun ModelosDietaTela(estado: EstadoModelos, acoes: AcoesModelos) {
                     ChipEscolha(estado.aba == AbaModelos.SISTEMA, { acoes.aoAba(AbaModelos.SISTEMA) }, { Text(stringResource(Res.string.mod_aba_sistema)) })
                     ChipEscolha(estado.aba == AbaModelos.MEUS, { acoes.aoAba(AbaModelos.MEUS) }, { Text(stringResource(Res.string.mod_aba_meus)) })
                 }
+                acoes.aoNovo?.let { novo -> BotaoPrincipal(stringResource(Res.string.mod_novo), novo, habilitado = habilitado) }
                 if (estado.aba == AbaModelos.SISTEMA) Text(stringResource(Res.string.mod_somente_leitura), style = MaterialTheme.typography.bodySmall)
                 if (estado.carregando) EstadoCarregando()
                 else if (estado.visiveis.isEmpty()) EstadoVazio(mensagem = stringResource(if (estado.aba == AbaModelos.MEUS) Res.string.mod_vazio_meus else Res.string.mod_vazio_sistema))
@@ -70,6 +73,7 @@ private fun CartaoModelo(m: ModeloDietaResposta, habilitado: Boolean, a: AcoesMo
             style = MaterialTheme.typography.bodyMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             BotaoTexto(stringResource(Res.string.mod_duplicar), { a.aoDuplicar(m) }, habilitado = habilitado)
+            a.aoEditar?.takeIf { ModeloComoDieta.editavel(m) }?.let { editar -> BotaoTexto(stringResource(Res.string.mod_editar), { editar(m) }, habilitado = habilitado) }
             if (!m.doSistema) BotaoTexto(stringResource(Res.string.mod_apagar), { a.aoApagar(m) }, habilitado = habilitado)
             a.aoUsar?.let { usar -> BotaoContornado(stringResource(Res.string.mod_usar), { usar(m) }, habilitado = habilitado) }
         }
