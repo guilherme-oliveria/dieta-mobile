@@ -100,6 +100,9 @@ private fun PassoMedidas(estado: EstadoAvaliacoes, form: FormularioAvaliacao, ac
     if (form.infantilAtiva) { MedidasInfantis(estado, form, acoes, habilitado); return }
     val dobras = dobrasDoProtocolo(form.protocoloDobras, estado.sexo)
     val previaImc = previaImc(form.valores)
+    ResumoSecoesAvaliacao(progressoDasSecoes(form.valores, listOf(SecaoAvaliacao.BASICAS, SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS, SecaoAvaliacao.COMPLEMENTARES)) { s ->
+        MedidaAvaliacao.entries.filter { it.secao == s && (s != SecaoAvaliacao.DOBRAS || it in dobras) }
+    })
     listOf(SecaoAvaliacao.BASICAS, SecaoAvaliacao.PERIMETROS, SecaoAvaliacao.DOBRAS, SecaoAvaliacao.COMPLEMENTARES).forEach { secao ->
         Text(stringResource(rotuloSecao(secao)), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         if (secao == SecaoAvaliacao.DOBRAS) EscolhaProtocolo(stringResource(Res.string.avaliacao_protocolo_dobras),
@@ -109,6 +112,22 @@ private fun PassoMedidas(estado: EstadoAvaliacoes, form: FormularioAvaliacao, ac
         if (secao == SecaoAvaliacao.BASICAS && previaImc != null) {
             Text(stringResource(Res.string.avaliacao_imc_previa, textoDecimal(previaImc.first), stringResource(rotuloClassificacao(previaImc.second))),
                 style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        }
+    }
+}
+
+/** Resumo das seções com o estado de cada uma (ART-P1-03); o estado vai em texto, não só em cor. */
+@Composable
+private fun ResumoSecoesAvaliacao(progresso: List<ProgressoSecao>) {
+    CardDieta(Modifier.fillMaxWidth()) {
+        Text(stringResource(Res.string.avaliacao_secoes_titulo), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+        progresso.forEach { p ->
+            val nome = stringResource(rotuloSecao(p.secao))
+            Text(when {
+                p.completa -> stringResource(Res.string.avaliacao_secao_completa, nome, p.preenchidas, p.total)
+                p.vazia -> stringResource(Res.string.avaliacao_secao_pendente, nome)
+                else -> stringResource(Res.string.avaliacao_secao_progresso, nome, p.preenchidas, p.total)
+            }, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

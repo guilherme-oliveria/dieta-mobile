@@ -100,4 +100,4 @@ Detalhe em [plano-melhorias-planilhas.md](plano-melhorias-planilhas.md) (cópia 
 
 ## Pós-MVP (P2)
 
-Troca de nutri com cópia do histórico, vitrine de nutris, consultoria online paga, foto do prato, chat, integração Google Fit/Apple Saúde, anúncios.
+Troca de nutri com cópia do histórico, vitrine de nutris, consultoria online paga, foto do prato, chat, integração Google Fit/Apple Saúde, anúncios. · [x] **MOB-64 seções e atalhos da avaliação** (resumo das seções com estado em texto no passo Medidas, `progressoDasSecoes`; atalhos "Nova avaliação" e "Ver gráficos" na ficha; ART-P1-02 e ART-P1-03; o hub em tela própria por seção e as barras verticais do ART-P1-09/10 seguem como divergência em `divergencias.md`)

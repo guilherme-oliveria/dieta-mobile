@@ -34,3 +34,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - **Meus protocolos** está implementado como cartão dentro da Conta da nutri (`ProtocolosNutriCard`). O artboard `N-Protocolos` mostra o conteúdo em tela cheia, que é como o cartão deve se comportar no celular ao ser aberto. Mesma estrutura de chips e interruptores; sem ação.
 - A **rosca de metas** do passo Necessidades usa o ponto médio das faixas, como no artboard; o anel de meta (`anelMeta`) só passa a ser usado no planejador por porções (MOB-54), onde compara o montado com a meta.
 - Telas do paciente e da nutri anteriores a MOB-47 (Hoje, Dieta, Compras, Pacientes, Painel, Dieta da nutri) não foram reauditadas aqui; seguem a validação de 24/10 ([validacao.md](validacao.md)).
+
+## MOB-64 (ART-P1-02 a 08)
+- A avaliação continua em passos (Medidas, Composição, Necessidades, Resumo). O artboard A-Avaliacao-Secoes pede um hub com uma tela por seção; no app há só o resumo das seções no passo Medidas.
+- Os atalhos da ficha levam às abas Avaliações e Evolução; o cartão "Última avaliação" do ART-P1-02 não foi feito.
+- Os gráficos seguem em barras horizontais (MOB-63); as barras verticais com abreviações do ART-P1-09/10 ficam pendentes.

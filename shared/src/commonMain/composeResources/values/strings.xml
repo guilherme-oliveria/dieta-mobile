@@ -1240,4 +1240,10 @@
     <string name="crescimento_palavras">Em palavras</string>
     <string name="crescimento_intervalo">O intervalo é o confirmado na avaliação. Não estimamos um percentil exato entre os cortes. Converse com sua nutri sobre o acompanhamento.</string>
     <string name="crescimento_versao">Versão da referência: %1$s</string>
+    <string name="avaliacao_secoes_titulo">Seções da avaliação</string>
+    <string name="avaliacao_secao_progresso">%1$s: %2$d de %3$d preenchidas</string>
+    <string name="avaliacao_secao_completa">%1$s: completa (%2$d de %3$d)</string>
+    <string name="avaliacao_secao_pendente">%1$s: nada preenchido</string>
+    <string name="ficha_atalho_nova_avaliacao">Nova avaliação</string>
+    <string name="ficha_atalho_graficos">Ver gráficos</string>
 </resources>
