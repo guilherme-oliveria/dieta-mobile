@@ -18,7 +18,8 @@ import org.br.dietamais.dominio.pacientes.*
 import kotlin.uuid.Uuid
 
 class PacientesViewModel(private val repositorio: PortaPacientes, private val compartilhamento: Compartilhamento,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null) : ViewModel() {
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null,
+    private val agora: () -> kotlin.time.Instant = { Clock.System.now() }, private val fuso: () -> TimeZone = { TimeZone.currentSystemDefault() }) : ViewModel() {
     private val atual = MutableStateFlow(EstadoPacientes())
     val estado = atual.asStateFlow()
     private var todos = emptyList<PacienteResposta>()
@@ -40,9 +41,12 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
 
     fun mudarBusca(valor: String) { atual.update { it.copy(busca = valor) }; publicarLista() }
     fun mudarFiltro(valor: StatusVinculo?) { atual.update { it.copy(filtro = valor) }; publicarLista() }
+    fun mudarFiltroAtencao(valor: FiltroAtencao?) { atual.update { it.copy(filtroAtencao = if (it.filtroAtencao == valor) null else valor) }; publicarLista() }
     fun mudarAba(valor: AbaFicha) { atual.update { it.copy(abaFicha = valor) } }
     private fun publicarLista() {
-        atual.update { estado -> estado.copy(lista = filtrarPacientes(todos, estado.busca, estado.filtro),
+        atual.update { estado -> val resumos = estado.resumos.orEmpty(); val instante = agora(); val zona = fuso()
+            estado.copy(lista = filtrarPorAtencao(filtrarPacientes(todos, estado.busca, estado.filtro), estado.filtroAtencao, resumos, instante, zona),
+            precisamAtencao = contarAtencao(todos, resumos, instante, zona),
             selecionado = todos.firstOrNull { it.vinculoId == selecionadoId }) }
     }
 
@@ -56,7 +60,8 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
         if (atual.value.atualizando) return
         atual.update { it.copy(atualizando = true, erro = null) }
         viewModelScope.launch(dispatcher) {
-            try { repositorio.atualizar(); val assinatura = repositorio.assinatura(); atual.update { it.copy(semConexao = false, assinatura = assinatura) } }
+            try { repositorio.atualizar(); val assinatura = repositorio.assinatura(); atual.update { it.copy(semConexao = false, assinatura = assinatura) }
+                repositorio.resumos()?.let { r -> atual.update { it.copy(resumos = r) }; publicarLista() } }
             catch (cancelamento: CancellationException) { throw cancelamento }
             catch (falha: Exception) { apresentar(falha) }
             finally { atual.update { it.copy(atualizando = false) } }

@@ -21,6 +21,7 @@ data class FormularioPaciente(
 
 data class EstadoPacientes(
     val lista: List<PacienteResposta> = emptyList(), val busca: String = "", val filtro: StatusVinculo? = null,
+    val filtroAtencao: org.br.dietamais.dominio.pacientes.FiltroAtencao? = null, val resumos: Map<Uuid, org.br.dietamais.dominio.pacientes.ResumoPaciente>? = null, val precisamAtencao: Int = 0,
     val selecionado: PacienteResposta? = null, val atualizando: Boolean = false, val envioEmAndamento: Boolean = false,
     val semConexao: Boolean = false, val erro: MensagemPacientes? = null, val aviso: MensagemPacientes? = null,
     val formulario: FormularioPaciente? = null, val errosCampos: Map<String, MensagemPacientes> = emptyMap(),
