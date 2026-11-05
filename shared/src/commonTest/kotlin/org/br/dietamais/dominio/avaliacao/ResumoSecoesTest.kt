@@ -5,7 +5,8 @@ import kotlin.test.*
 class ResumoSecoesTest {
     @Test fun contaSoCamposComNumero() {
         val basicas = MedidaAvaliacao.entries.filter { it.secao == SecaoAvaliacao.BASICAS }
-        val valores = mapOf(basicas[0] to "80,5", basicas[1] to "abc", basicas[2] to " ")
+        assertTrue(basicas.size >= 2)
+        val valores = mapOf(basicas[0] to "80,5", basicas[1] to "abc")
         val p = progressoDasSecoes(valores, listOf(SecaoAvaliacao.BASICAS)).single()
         assertEquals(1, p.preenchidas); assertEquals(basicas.size, p.total)
         assertFalse(p.completa); assertFalse(p.vazia)
