@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 /**
  * MOB-56b: o editor de modelo reaproveita o planejador por porções. O modelo é lido como uma dieta em rascunho (sem paciente, sem totais do
  * servidor) e a gravação vira `POST/PUT /eu/nutri/modelos-dieta`. Descrição, condição e restrições não têm campo no planejador: seguem as do
- * modelo aberto ([base]); a energia de referência é recalculada pelo servidor a partir das metas (BE-52).
+ * modelo aberto ([base]); a energia de referência é o VET das metas editadas ou, sem metas, a do modelo aberto.
  */
 object ModeloComoDieta {
     /** Paciente "vazio": o planejador exige um dono, mas o modelo é da nutri. */
@@ -32,7 +32,9 @@ object ModeloComoDieta {
 
     fun comoRequisicao(d: SalvarDietaRequisicao, base: ModeloDietaResposta?) = SalvarModeloDietaRequisicao(id = d.id, titulo = d.titulo,
         descricao = base?.descricao, condicao = base?.condicao, orientacao = d.orientacao, refeicoes = d.refeicoes, porcoes = d.porcoes, metas = d.metas,
-        rodape = d.rodape, restricoes = base?.restricoes)
+        rodape = d.rodape, restricoes = base?.restricoes,
+        // RN-MOD-02: sem energia de referência a aplicação cai em SEM_ESCALA; o VET editado nas metas vale mais que a referência antiga
+        kcalReferencia = d.metas?.vetKcal ?: base?.kcalReferencia)
 }
 
 /** Faz o planejador gravar modelos. [base] é o modelo aberto (quem abre o editor define); `null` = modelo novo. */

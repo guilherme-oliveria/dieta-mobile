@@ -50,7 +50,16 @@ class ModeloComoDietaTest {
         val (id, versao, corpo) = modelos.atualizados.single()
         assertEquals(m.id, id); assertEquals(4L, versao); assertEquals("Novo título", corpo.titulo)
         assertEquals("Menos sódio", corpo.descricao); assertEquals("HAS", corpo.condicao); assertEquals(listOf("ALTO_SODIO"), corpo.restricoes); assertNull(corpo.id)
+        assertEquals(1800.0, corpo.kcalReferencia)
         assertEquals(5L, resposta.versao); assertEquals(5L, ponte.base?.versao)
+    }
+    @Test fun semMetasMantemAEnergiaDeReferenciaDoModeloAberto() = runTest {
+        val modelos = Modelos(); val ponte = DietasDeModelo(modelos); val m = modelo(); ponte.base = m
+        ponte.salvar(m.id, m.versao, SalvarDietaRequisicao(titulo = "Sem metas", refeicoes = m.refeicoes))
+        assertEquals(1800.0, modelos.atualizados.single().third.kcalReferencia)
+        val outra = Modelos(); val p2 = DietasDeModelo(outra); p2.base = m
+        p2.salvar(m.id, m.versao, SalvarDietaRequisicao(titulo = "Metas novas", refeicoes = m.refeicoes, metas = MetasDieta(2200.0, 50.0, 20.0, 30.0)))
+        assertEquals(2200.0, outra.atualizados.single().third.kcalReferencia)
     }
     @Test fun modeloNovoNasceSemDescricaoEComIdDoRascunho() = runTest {
         val modelos = Modelos(); val ponte = DietasDeModelo(modelos); val id = Uuid.random()
