@@ -29,6 +29,7 @@ import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesViewModel
 import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
 import org.br.dietamais.ui.nutri.avaliacao.AvaliacoesNutriRota
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
+import org.br.dietamais.ui.nutri.listapaciente.AcoesCopiaLista
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -93,7 +94,8 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
                             val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
                             val estadoLista by lista.estado.collectAsState()
                             LaunchedEffect(paciente.id) { lista.abrir(paciente.id) }
-                            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
+                            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar,
+                                AcoesCopiaLista(lista::escolherOrigem, lista::pedirCopia, lista::confirmarCopia, lista::desistirDaCopia))
                         }
                         AbaFicha.EVOLUCAO -> EvolucaoRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), paciente.id)
                         AbaFicha.ANAMNESE -> AnamneseNutriRota(koinViewModel<AnamneseNutriViewModel>(viewModelStoreOwner = dono), paciente.id)

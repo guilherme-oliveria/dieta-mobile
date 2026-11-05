@@ -1276,4 +1276,13 @@
     <string name="financeiro_resumo_comparecimento">%1$d consultas: %2$d compareceram, %3$d faltaram, %4$d pendentes</string>
     <string name="financeiro_resumo_recebido">Recebido: %1$s</string>
     <string name="financeiro_resumo_a_receber">A receber: %1$s</string>
+    <string name="lista_copiar_abrir">Copiar a lista de outro paciente</string>
+    <string name="lista_copiar_fechar">Fechar a cópia</string>
+    <string name="lista_copiar_descricao">Escolha o paciente. A lista dele vira a deste paciente; alimentos desativados não entram.</string>
+    <string name="lista_copiar_titulo">Copiar a lista?</string>
+    <string name="lista_copiar_texto">A lista atual será substituída pela lista de %1$s. Edições ainda não salvas serão descartadas.</string>
+    <string name="lista_copiar_confirmar">Copiar</string>
+    <string name="lista_copiar_desistir">Manter a atual</string>
+    <string name="lista_copiada">Lista copiada.</string>
+    <string name="lista_vinculo_encerrado">Vínculo encerrado: a lista só pode ser lida.</string>
 </resources>

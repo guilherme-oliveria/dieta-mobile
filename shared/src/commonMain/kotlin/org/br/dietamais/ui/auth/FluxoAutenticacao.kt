@@ -26,6 +26,7 @@ import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
 import org.br.dietamais.ui.nutri.pacientes.PacientesRota
 import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
 import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
+import org.br.dietamais.ui.nutri.listapaciente.AcoesCopiaLista
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
 import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
@@ -268,7 +269,8 @@ private fun NavegacaoNutri() {
             val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
             val estadoLista by lista.estado.collectAsState()
             LaunchedEffect(paciente.id) { lista.abrir(paciente.id) }
-            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
+            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar,
+                                AcoesCopiaLista(lista::escolherOrigem, lista::pedirCopia, lista::confirmarCopia, lista::desistirDaCopia))
           }
         })
     }, conteudoInicio = { PainelRota(koinViewModel<PainelViewModel>(viewModelStoreOwner = dono)) },
