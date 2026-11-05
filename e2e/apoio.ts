@@ -59,6 +59,8 @@ export async function buscarPaciente(page: Page, texto: string) {
   await clicar(page, campo(page, /Buscar por nome/));
   await page.keyboard.press("Control+A");
   await page.keyboard.type(texto, { delay: 5 });
+  // O filtro e o novo layout da lista levam um instante; clicar antes toca onde o cartão estava.
+  await page.waitForTimeout(800);
 }
 
 export async function tocar(page: Page, nome: string | RegExp) {
