@@ -39,7 +39,10 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
         aoNovaPorcoes = planejador?.let { { it.nova() } }, porcoesDisponiveis = plano?.referencia != null,
         aoModelos = modelos?.let { { it.carregar(); abrirBiblioteca = true } }, aoSalvarModelo = modelos?.let { m -> { d: DietaResposta -> m.salvarComoModelo(d) } },
         avisoModelos = biblioteca?.takeIf { !abrirBiblioteca }?.let { it.aviso ?: it.erro },
-        pdf = { d -> BotaoPdf(stringResource(Res.string.pdf_dieta), !estado.semConexao, { pdf.link(RecursoPdf.DIETA, d.id) }) })
+        pdf = { d ->
+            BotaoPdf(stringResource(Res.string.pdf_dieta), !estado.semConexao, { pdf.link(RecursoPdf.DIETA, d.id) })
+            org.br.dietamais.ui.comum.BotoesPdfLista(pdf, d.id, !estado.semConexao)
+        })
     if (modelos != null && biblioteca != null && abrirBiblioteca) Dialog(onDismissRequest = { abrirBiblioteca = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         ModelosDietaTela(biblioteca, AcoesModelos(aoVoltar = { abrirBiblioteca = false }, aoAba = modelos::escolherAba, aoDuplicar = modelos::duplicar,
             aoApagar = modelos::pedirExclusao, aoConfirmarApagar = modelos::confirmarExclusao, aoCancelarApagar = modelos::cancelarExclusao, aoRecarregar = modelos::recarregar,

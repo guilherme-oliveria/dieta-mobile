@@ -84,7 +84,8 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
             conteudoDieta = {
                 val pdf = koinInject<PortaPdf>()
                 org.br.dietamais.ui.paciente.dieta.DietaPacienteRota(vm, pdf = { e -> e.dieta?.let { d ->
-                    BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(RecursoPdf.DIETA, d.dietaId) }) } })
+                    BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(RecursoPdf.DIETA, d.dietaId) })
+                org.br.dietamais.ui.comum.BotoesPdfLista(pdf, d.dietaId, !e.semConexao) } })
             },
             conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
             conteudoCompras = {

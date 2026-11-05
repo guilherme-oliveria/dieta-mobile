@@ -233,7 +233,8 @@ private fun NavegacaoPaciente(aoContaExcluida: () -> Unit) {
         conteudoDieta = {
             val pdf = koinInject<org.br.dietamais.data.repositorio.PortaPdf>()
             org.br.dietamais.ui.paciente.dieta.DietaPacienteRota(vm, pdf = { e -> e.dieta?.let { d ->
-                BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(org.br.dietamais.data.repositorio.RecursoPdf.DIETA, d.dietaId) }) } })
+                BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(org.br.dietamais.data.repositorio.RecursoPdf.DIETA, d.dietaId) })
+                org.br.dietamais.ui.comum.BotoesPdfLista(pdf, d.dietaId, !e.semConexao) } })
         },
         conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
         conteudoCompras = {

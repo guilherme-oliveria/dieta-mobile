@@ -69,3 +69,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - O artboard `D-Micronutrientes` (ART-P4-04) coloca a lista na tela de Necessidades da avaliação, com valor e unidade ("8 mg · adequado"). O servidor só entrega a adequação do dia da **dieta** (total, meta, percentual e classe, sem unidade), então o cartão ficou na dieta do paciente da ficha, mostrando "% da meta" e a classe em texto. Para mostrar valor com unidade e para ir à tela de Necessidades, o backend precisaria devolver a unidade (e uma meta DRI fora de uma dieta): a decidir com o Design.
 - Nomes legíveis ficam numa tabela do app; código desconhecido vira texto com a primeira letra maiúscula.
 
+
+## MOB-73 · PDFs da lista de substituição (05/11/2026)
+
+- Não há artboard para estes botões (ART-P3 ainda não foi desenhado). O app mostra quatro botões de texto ao lado de "Baixar PDF" na dieta publicada, na ficha da nutri e na tela da dieta do paciente. O Design pode trocá-los por um menu único.
+- Os botões ficam desabilitados sem conexão, como o PDF da dieta: o link é gerado na hora pelo servidor.
