@@ -105,7 +105,7 @@ fun ShellWebNutri(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (androi
             },
             conteudoInicio = { PainelRota(koinViewModel<PainelViewModel>(viewModelStoreOwner = dono)) },
             conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
-            conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
+            conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono), koinViewModel<org.br.dietamais.ui.nutri.produtos.ProdutosViewModel>(viewModelStoreOwner = dono)) },
             conteudoConta = {
                 val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
                 val estadoConta by conta.estado.collectAsState()

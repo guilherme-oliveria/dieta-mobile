@@ -92,3 +92,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - Não há artboard do editor de modelo (ART-P3). O editor reaproveita o planejador por porções (`A/T-Planejador-Porcoes`): o botão "Salvar" e os textos falam de dieta, e o título é o único campo de cabeçalho. Descrição, condição e restrições do modelo seguem as do modelo aberto (modelo novo nasce sem elas); a energia de referência (RN-MOD-02) é o VET das metas editadas ou, sem metas, a do modelo aberto, para a aplicação ao paciente continuar escalando.
 - Só modelo da nutri sem alimento do catálogo abre para editar; o do sistema continua só leitura (duplicar primeiro, RN-MOD-01). A leitura offline fica para a MOB-56c.
+
+## MOB-70 · Produtos e suplementos (05/11/2026)
+
+- Não há artboard do cadastro de produto (ART-P3 pendente). A tela segue o padrão de Alimentos (`padrao-ui.md`): escolha Alimentos | Produtos no topo da aba, lista de cartões, formulário em tela cheia com os 4 macros por 100 g (energia, carboidrato, proteína, lipídeos).
+- O formulário só edita nome, marca, classificação, medida caseira e os 4 macros; apresentação, embalagem, sabores, observação e os micronutrientes são mantidos como vieram do servidor. A busca por alimentos e produtos no planejador (MOB-71) vem em outro PR.
