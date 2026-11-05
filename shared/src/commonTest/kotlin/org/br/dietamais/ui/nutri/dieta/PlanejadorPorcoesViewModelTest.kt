@@ -86,7 +86,7 @@ class PlanejadorPorcoesViewModelTest {
     @Test fun totaisDoServidorFicamDepoisDeSalvarELimpamAoFechar() = runTest {
         val vm = vm(Dietas()); val ref = vm.principal()
         assertNull(vm.estado.value.totaisServidor)
-        vm.adicionarGrupo(ref, arroz); vm.mudarTitulo("Plano"); vm.salvar(); runCurrent()
+        vm.adicionarGrupo(ref, arroz); vm.mudarTitulo("Plano"); vm.mudarNomeRefeicao(ref, "Desjejum"); vm.salvar(); runCurrent()
         assertEquals(zero, vm.estado.value.totaisServidor)
         vm.fechar(); assertNull(vm.estado.value.totaisServidor)
     }
