@@ -22,9 +22,10 @@ data class MudancasFase1Resposta(val pacientes: List<MudancaSyncResposta<Pacient
     val modelos: List<MudancaSyncResposta<ModeloQuestionarioResposta>> = emptyList(),
     val questionarios: List<MudancaSyncResposta<QuestionarioResposta>> = emptyList(),
     val consultas: List<MudancaSyncResposta<ConsultaResposta>> = emptyList(),
-    val avisos: List<MudancaSyncResposta<AvisoResposta>> = emptyList()) {
+    val avisos: List<MudancaSyncResposta<AvisoResposta>> = emptyList(),
+    val modelosDieta: List<MudancaSyncResposta<ModeloDietaResposta>> = emptyList()) {
     val total get() = pacientes.size + vinculos.size + nutris.size + grupos.size + alimentos.size + listas.size + dietas.size +
-        snapshots.size + dietaEmUso.size + checkins.size + agua.size + pesos.size + avaliacoes.size + modelos.size + questionarios.size + consultas.size + avisos.size
+        snapshots.size + dietaEmUso.size + checkins.size + agua.size + pesos.size + avaliacoes.size + modelos.size + questionarios.size + consultas.size + avisos.size + modelosDieta.size
 }
 
 @Serializable

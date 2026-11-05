@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 /**
  * Modelos de dieta da nutri (MOB-56, BE-52). Só online: a lista vem de `GET /eu/nutri/modelos-dieta` (sistema e dela) e as ações passam pela API.
- * A leitura offline pelo sync (`modelosDieta`) fica para a MOB-29b.
+ * MOB-56c: sem rede, a lista cai nos modelos dela já sincronizados (`modelosDieta` no sync); os do sistema vêm só pelo GET. Escrever offline é a MOB-29b.
  */
 interface PortaModelosDieta {
     suspend fun listar(): List<ModeloDietaResposta>
@@ -26,15 +26,23 @@ interface PortaModelosDieta {
     suspend fun aplicar(pacienteId: Uuid, modeloId: Uuid, requisicao: AplicarModeloRequisicao, chave: Uuid = novoIdLocal()): DietaDeModeloResposta
 }
 
-class ModelosDietaRepositorio(private val api: ApiDieta, private val conferirArmazem: (OperacaoSessao) -> Unit) : PortaModelosDieta {
+class ModelosDietaRepositorio(private val api: ApiDieta, private val conferirArmazem: (OperacaoSessao) -> Unit,
+    private val lerLocais: () -> List<ModeloDietaResposta> = { emptyList() }) : PortaModelosDieta {
     constructor(api: ApiDieta, banco: BancoDieta) : this(api, { esperado ->
         val sessao = banco.sessaoQueries.atual().executeAsOneOrNull()
         if (sessao?.usuario_id != esperado.contexto.usuarioId.toString() || sessao.perfil != esperado.contexto.perfil.name) throw SessaoAlterada()
-    })
+    }, { lerModelosLocais(banco) })
 
     override suspend fun listar(): List<ModeloDietaResposta> {
         val contexto = contexto()
-        val resposta = api.obter<ModelosDietaResposta>("eu/nutri/modelos-dieta")
+        val resposta = try { api.obter<ModelosDietaResposta>("eu/nutri/modelos-dieta") }
+        catch (falha: FalhaComunicacao) {
+            // MOB-56c: sem rede, mostra os modelos dela que o sync já trouxe; sem nenhum, a falha segue para a tela
+            conferir(contexto)
+            val locais = lerLocais()
+            if (locais.isEmpty()) throw falha
+            return locais
+        }
         conferir(contexto)
         return resposta.itens
     }
@@ -88,3 +96,9 @@ class ModelosDietaRepositorio(private val api: ApiDieta, private val conferirArm
         conferirArmazem(esperado)
     }
 }
+
+/** Modelos da nutri guardados pelo sync (coleção `modelosDieta`), do mais novo para o mais antigo. Registro ilegível é ignorado: é cache, não verdade. */
+internal fun lerModelosLocais(banco: BancoDieta): List<ModeloDietaResposta> =
+    banco.registroSyncQueries.daSessao("modelosDieta").executeAsList().mapNotNull { json ->
+        try { JsonContrato.decodeFromString<ModeloDietaResposta>(json) } catch (_: Exception) { null }
+    }.sortedWith(compareByDescending<ModeloDietaResposta> { it.atualizadoEm }.thenBy { it.id.toString() })
