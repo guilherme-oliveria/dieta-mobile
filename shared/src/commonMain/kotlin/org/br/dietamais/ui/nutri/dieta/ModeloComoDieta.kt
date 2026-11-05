@@ -39,7 +39,7 @@ object ModeloComoDieta {
 
 /** Faz o planejador gravar modelos. [base] é o modelo aberto (quem abre o editor define); `null` = modelo novo. */
 class DietasDeModelo(private val modelos: PortaModelosDieta) : PortaDietas {
-    @Volatile var base: ModeloDietaResposta? = null
+    var base: ModeloDietaResposta? = null
 
     override suspend fun listar(pacienteId: Uuid): List<DietaResposta> = emptyList()
     override suspend fun criar(pacienteId: Uuid, requisicao: SalvarDietaRequisicao, chave: Uuid): DietaResposta {
