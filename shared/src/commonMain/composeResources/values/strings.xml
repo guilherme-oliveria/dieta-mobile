@@ -1331,4 +1331,31 @@
     <string name="dri_outra">Sem classe</string>
     <string name="dri_parcial">Total parcial: alguns alimentos não informam todos os nutrientes, então o valor pode estar abaixo do real.</string>
     <string name="dri_fonte">Metas pela DRI (2005) para a idade e o sexo do paciente. Limites de classe provisórios.</string>
+<<<<<<< Updated upstream
+=======
+    <string name="mod_novo">Novo modelo</string>
+    <string name="mod_editar">Editar</string>
+    <string name="prod_aba">Produtos</string>
+    <string name="prod_titulo">Produtos e suplementos</string>
+    <string name="prod_novo">Novo produto</string>
+    <string name="prod_editar">Editar produto</string>
+    <string name="prod_busca">Buscar por nome ou marca</string>
+    <string name="prod_nome">Nome do produto</string>
+    <string name="prod_marca">Marca</string>
+    <string name="prod_classificacao">Classificação (ex.: whey, barra)</string>
+    <string name="prod_medida">Medida caseira (ex.: 1 scoop)</string>
+    <string name="prod_medida_gramas">Gramas da medida caseira</string>
+    <string name="prod_por100">Nutrientes por 100 g (ou 100 mL)</string>
+    <string name="prod_energia">Energia (kcal)</string>
+    <string name="prod_carboidrato">Carboidrato (g)</string>
+    <string name="prod_proteina">Proteína (g)</string>
+    <string name="prod_lipidio">Lipídeos (g)</string>
+    <string name="prod_salvar">Salvar produto</string>
+    <string name="prod_vazio">Nenhum produto encontrado. Cadastre os que você usa nas dietas.</string>
+    <string name="prod_desativar_titulo">Desativar produto</string>
+    <string name="prod_desativar_descricao">As dietas já publicadas mantêm este produto. Ele deixa de aparecer para novas dietas.</string>
+    <string name="prod_mais">Carregar mais</string>
+    <string name="prod_resumo">%1$s kcal · %2$s g de proteína por 100 g</string>
+    <string name="alimentos_aba_alimentos">Alimentos</string>
+>>>>>>> Stashed changes
 </resources>
