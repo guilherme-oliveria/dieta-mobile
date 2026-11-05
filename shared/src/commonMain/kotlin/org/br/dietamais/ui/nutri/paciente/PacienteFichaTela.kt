@@ -1,12 +1,18 @@
 package org.br.dietamais.ui.nutri.paciente
 
+import org.br.dietamais.ui.nutri.avaliacao.classificacaoOuOutra
+import org.br.dietamais.ui.nutri.avaliacao.rotuloClassificacao
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.br.dietamais.dominio.avaliacao.textoDecimal
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
@@ -50,7 +56,9 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                 }
                 if (estado.abaFicha == AbaFicha.LISTA || estado.abaFicha == AbaFicha.DIETA || estado.abaFicha == AbaFicha.AVALIACOES || estado.abaFicha == AbaFicha.EVOLUCAO) abaConteudo(estado.abaFicha, paciente)
                 else if (estado.abaFicha != AbaFicha.RESUMO) EstadoVazio()
-                else CardDieta(Modifier.fillMaxWidth()) {
+                else {
+                    estado.resumos?.get(paciente.vinculoId)?.ultimaAvaliacao?.let { u -> CartaoUltimaAvaliacao(u) { aoAba(AbaFicha.AVALIACOES) } }
+                    CardDieta(Modifier.fillMaxWidth()) {
                     DadoFicha(stringResource(Res.string.auth_email), paciente.email)
                     DadoFicha(stringResource(Res.string.pacientes_nascimento), paciente.dataNascimento?.let { "${it.day.toString().padStart(2, '0')}/${(it.month.ordinal + 1).toString().padStart(2, '0')}/${it.year}" })
                     DadoFicha(stringResource(Res.string.pacientes_sexo), stringResource(when (paciente.sexo) {
@@ -72,11 +80,24 @@ fun PacienteFichaTela(estado: EstadoPacientes, aoAba: (AbaFicha) -> Unit, aoVolt
                         DadoFicha(stringResource(Res.string.pacientes_indicacao), c.indicacao)
                         DadoFicha(stringResource(Res.string.pacientes_motivo), c.motivoConsulta)
                     }
+                    }
                 }
                 if (paciente.status == StatusVinculo.CONVIDADO) BotaoPrincipal(stringResource(Res.string.pacientes_gerar_convite), aoConvidar,
                     Modifier.fillMaxWidth(), habilitado = !estado.semConexao, carregando = estado.envioEmAndamento)
             }
         }
+    }
+}
+
+/** Cartão "Última avaliação" da ficha (ART-P1-02): data, peso, IMC e classificação em texto, com atalho para as avaliações. */
+@Composable
+private fun CartaoUltimaAvaliacao(u: UltimaAvaliacaoResumoDto, aoVer: () -> Unit) {
+    val data = org.br.dietamais.dominio.agenda.formatarData(u.dataHora.toLocalDateTime(TimeZone.currentSystemDefault()).date)
+    CardDieta(Modifier.fillMaxWidth().testTag("ultima-avaliacao")) {
+        Text(stringResource(Res.string.ficha_ultima_avaliacao, data), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(Res.string.ficha_ultima_avaliacao_valores, textoDecimal(u.pesoKg), textoDecimal(u.imc), stringResource(rotuloClassificacao(classificacaoOuOutra(u.classificacaoImc))).lowercase()),
+            style = MaterialTheme.typography.bodyMedium)
+        BotaoTexto(stringResource(Res.string.ficha_ultima_avaliacao_ver), aoVer)
     }
 }
 

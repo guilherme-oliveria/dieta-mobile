@@ -13,7 +13,9 @@ import kotlin.uuid.Uuid
 const val DIAS_AVALIACAO_VENCIDA = 90
 
 /** O que a lista sabe de cada paciente além da ficha (BE-66): próxima consulta e data da última avaliação. */
-data class ResumoPaciente(val proximaConsulta: Instant? = null, val ultimaAvaliacaoEm: Instant? = null)
+data class ResumoPaciente(val proximaConsulta: Instant? = null, val ultimaAvaliacaoEm: Instant? = null,
+    /** Peso, IMC e classificação da última avaliação, para o cartão "Última avaliação" da ficha (MOB-64c). */
+    val ultimaAvaliacao: org.br.dietamais.data.remoto.dto.UltimaAvaliacaoResumoDto? = null)
 
 enum class FiltroAtencao { RETORNO_HOJE, AVALIACAO_VENCIDA, SEM_RETORNO }
 

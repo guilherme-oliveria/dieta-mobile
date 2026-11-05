@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.runTest
 import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.data.repositorio.carregarResumosPacientes
 import org.br.dietamais.plataforma.Config
+import org.br.dietamais.ui.nutri.avaliacao.classificacaoOuOutra
 import kotlin.test.*
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -36,6 +37,9 @@ class ResumosPacientesTest {
             assertEquals<List<String>>(listOf("0", "1"), paginas); assertEquals(101, r.size)
             assertEquals(t, r[ultima.vinculoId]?.proximaConsulta); assertEquals(t, r[ultima.vinculoId]?.ultimaAvaliacaoEm)
             assertNull(r[primeira.first().vinculoId]?.proximaConsulta)
+            val u = r[ultima.vinculoId]?.ultimaAvaliacao!!
+            assertEquals(70.0, u.pesoKg); assertEquals(22.9, u.imc); assertEquals("NORMAL", u.classificacaoImc)
+            assertNull(r[primeira.first().vinculoId]?.ultimaAvaliacao)
         }
     }
 
@@ -63,5 +67,11 @@ class ResumosPacientesTest {
         }
         cliente = api(engine)
         cliente.use { a -> a.restaurarSessao(); assertNull(carregarResumosPacientes(a)) }
+    }
+
+    @Test fun classificacaoDesconhecidaCaiEmOutra() {
+        assertEquals(ClassificacaoImc.NORMAL, classificacaoOuOutra("NORMAL"))
+        assertEquals(ClassificacaoImc.OBESIDADE_II, classificacaoOuOutra("OBESIDADE_II"))
+        assertEquals(ClassificacaoImc.OUTRO, classificacaoOuOutra("NOVA_FAIXA"))
     }
 }
