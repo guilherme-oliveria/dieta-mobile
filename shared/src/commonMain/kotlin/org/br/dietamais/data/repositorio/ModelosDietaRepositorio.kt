@@ -15,6 +15,10 @@ interface PortaModelosDieta {
     suspend fun listar(): List<ModeloDietaResposta>
     suspend fun duplicar(id: Uuid, chave: Uuid = novoIdLocal()): ModeloDietaResposta
     suspend fun excluir(id: Uuid, versao: Long)
+    /** MOB-56b: cria um modelo da nutri do zero (RN-MOD-01: o do sistema nunca muda). A chave mantém o reenvio idempotente. */
+    suspend fun criar(requisicao: SalvarModeloDietaRequisicao, chave: Uuid = novoIdLocal()): ModeloDietaResposta = throw UnsupportedOperationException()
+    /** MOB-56b: substitui o conteúdo de um modelo dela (`If-Match` pela versão). */
+    suspend fun atualizar(id: Uuid, versao: Long, requisicao: SalvarModeloDietaRequisicao): ModeloDietaResposta = throw UnsupportedOperationException()
     suspend fun salvarComoModelo(dietaId: Uuid, requisicao: SalvarComoModeloRequisicao, chave: Uuid = novoIdLocal()): ModeloDietaResposta
     /** `null` quando o paciente não tem avaliação (404): o modelo se aplica sem escala. */
     suspend fun referenciaAvaliacao(pacienteId: Uuid): ReferenciaAvaliacaoDietaResposta?
@@ -38,6 +42,20 @@ class ModelosDietaRepositorio(private val api: ApiDieta, private val conferirArm
         val contexto = contexto()
         val resposta = api.enviar<ModeloDietaResposta>("eu/nutri/modelos-dieta/$id/duplicar", chave = chave)
         conferir(contexto)
+        return resposta
+    }
+    override suspend fun criar(requisicao: SalvarModeloDietaRequisicao, chave: Uuid): ModeloDietaResposta {
+        val contexto = contexto()
+        val resposta = api.enviar<ModeloDietaResposta>("eu/nutri/modelos-dieta", JsonContrato.encodeToJsonElement(requisicao), chave)
+        conferir(contexto)
+        if (requisicao.id != null && resposta.id != requisicao.id) throw RespostaInvalida()
+        return resposta
+    }
+    override suspend fun atualizar(id: Uuid, versao: Long, requisicao: SalvarModeloDietaRequisicao): ModeloDietaResposta {
+        val contexto = contexto()
+        val resposta = api.substituir<ModeloDietaResposta>("eu/nutri/modelos-dieta/$id", JsonContrato.encodeToJsonElement(requisicao), versao)
+        conferir(contexto)
+        if (resposta.id != id) throw RespostaInvalida()
         return resposta
     }
     override suspend fun excluir(id: Uuid, versao: Long) {

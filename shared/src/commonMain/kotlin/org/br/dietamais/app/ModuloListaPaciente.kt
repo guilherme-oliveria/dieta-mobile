@@ -58,6 +58,9 @@ fun moduloPorcoes(ambiente: AmbienteDieta?) = module {
     single<org.br.dietamais.data.repositorio.PortaModelosDieta> { org.br.dietamais.data.repositorio.ModelosDietaRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>(), get<org.br.dietamais.data.local.BancoDieta>()) }
     viewModel { org.br.dietamais.ui.nutri.dieta.ModelosDietaViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     viewModel { org.br.dietamais.ui.nutri.dieta.AplicarModeloViewModel(get(), get()) }
+    // MOB-56b: editor de modelo = o planejador gravando em modelos-dieta
+    single { org.br.dietamais.ui.nutri.dieta.DietasDeModelo(get()) }
+    viewModel(org.koin.core.qualifier.named("modelo")) { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get<org.br.dietamais.ui.nutri.dieta.DietasDeModelo>(), get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }
     // MOB-70: produtos e suplementos da nutri (online)
     single<org.br.dietamais.data.repositorio.PortaProdutos> { org.br.dietamais.data.repositorio.ProdutosRepositorio(get<org.br.dietamais.data.remoto.ApiDieta>()) }
     viewModel { org.br.dietamais.ui.nutri.produtos.ProdutosViewModel(get(), conectividade = ambiente?.conectividade?.estado?.map { it != EstadoConexao.INDISPONIVEL }) }

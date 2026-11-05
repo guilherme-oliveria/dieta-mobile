@@ -40,3 +40,9 @@ data class DietaDeModeloResposta(val dieta: DietaResposta, val fatorEscala: Doub
 @Serializable
 data class ReferenciaAvaliacaoDietaResposta(val avaliacaoId: Uuid? = null, val dataHora: Instant? = null, val pesoKg: Double? = null,
     val pesoReferenciaKg: Double? = null, val metas: MetasDieta? = null, val gestante: Boolean = false, val lactante: Boolean = false)
+
+/** Cria ou substitui um modelo da nutri (BE-52): o mesmo conteúdo da dieta mais descrição, condição, restrições e energia de referência. */
+@Serializable
+data class SalvarModeloDietaRequisicao(val id: Uuid? = null, val titulo: String, val descricao: String? = null, val condicao: String? = null,
+    val orientacao: String? = null, val refeicoes: List<RefeicaoRequisicao>, val porcoes: List<PorcaoGrupo>? = null, val metas: MetasDieta? = null,
+    val rodape: String? = null, val restricoes: List<String>? = null, val kcalReferencia: Double? = null)
