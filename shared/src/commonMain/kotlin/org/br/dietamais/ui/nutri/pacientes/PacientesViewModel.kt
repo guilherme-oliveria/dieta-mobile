@@ -1,5 +1,6 @@
 package org.br.dietamais.ui.nutri.pacientes
 
+import org.br.dietamais.dominio.pacientes.filtrarPacientes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
@@ -40,7 +41,7 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
     fun mudarFiltro(valor: StatusVinculo?) { atual.update { it.copy(filtro = valor) }; publicarLista() }
     fun mudarAba(valor: AbaFicha) { atual.update { it.copy(abaFicha = valor) } }
     private fun publicarLista() {
-        atual.update { estado -> estado.copy(lista = todos.filter { it.nome.contains(estado.busca.trim(), ignoreCase = true) && (estado.filtro == null || it.status == estado.filtro) },
+        atual.update { estado -> estado.copy(lista = filtrarPacientes(todos, estado.busca, estado.filtro),
             selecionado = todos.firstOrNull { it.vinculoId == selecionadoId }) }
     }
 
