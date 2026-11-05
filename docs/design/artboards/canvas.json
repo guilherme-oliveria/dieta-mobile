@@ -101,33 +101,12 @@
    "h": 820,
    "title": "Nutri · Avaliação (tablet)"
   },
-  "A-Avaliacao-Medidas.dc.html": {
-   "x": 0,
-   "y": 3651,
-   "w": 390,
-   "h": 844,
-   "title": "Nutri · Avaliação 1/4 Medidas (celular)"
-  },
-  "A-Avaliacao-Composicao.dc.html": {
-   "x": 470,
-   "y": 3651,
-   "w": 390,
-   "h": 844,
-   "title": "Nutri · Avaliação 2/4 Composição (celular)"
-  },
   "A-Avaliacao-Necessidades.dc.html": {
    "x": 940,
    "y": 3651,
    "w": 390,
    "h": 844,
    "title": "Nutri · Avaliação 3/4 Necessidades (celular)"
-  },
-  "A-Avaliacao-Resumo.dc.html": {
-   "x": 1410,
-   "y": 3651,
-   "w": 390,
-   "h": 844,
-   "title": "Nutri · Avaliação 4/4 Resumo (celular)"
   },
   "P-Resultados.dc.html": {
    "x": 1880,
@@ -212,13 +191,6 @@
    "w": 390,
    "h": 844,
    "title": "Nutri · Anamnese estruturada (álcool, sal, óleo)"
-  },
-  "T-Avaliacao-Passos.dc.html": {
-   "x": 0,
-   "y": 6025,
-   "w": 1180,
-   "h": 820,
-   "title": "Nutri · Avaliação em passos com painel (tablet)"
   },
   "T-Planejador-Porcoes.dc.html": {
    "x": 1260,
@@ -308,6 +280,90 @@
    "h": 842,
    "title": "PDF · Lista com contagem de carboidratos",
    "paper": "a4"
+  },
+  "A-Pacientes-Escala.dc.html": {
+   "x": 0,
+   "y": 9517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Pacientes com 100 ou 1000 (ART-P1-01)"
+  },
+  "A-Paciente-Atalhos.dc.html": {
+   "x": 470,
+   "y": 9517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Ficha com atalhos (ART-P1-02)"
+  },
+  "A-Avaliacao-Secoes.dc.html": {
+   "x": 940,
+   "y": 9517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação: seções da planilha (ART-P1-03)"
+  },
+  "A-Avaliacao-Cadastro.dc.html": {
+   "x": 1410,
+   "y": 9517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação: cadastro (ART-P1-04)"
+  },
+  "A-Avaliacao-PesoEstatura.dc.html": {
+   "x": 1880,
+   "y": 9517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação: peso × estatura (ART-P1-05)"
+  },
+  "A-Avaliacao-Perimetros.dc.html": {
+   "x": 2350,
+   "y": 9517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação: perímetros (ART-P1-06)"
+  },
+  "A-Avaliacao-Dobras.dc.html": {
+   "x": 0,
+   "y": 10517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação: dobras (ART-P1-07)"
+  },
+  "A-Avaliacao-Composicao-Tabela.dc.html": {
+   "x": 470,
+   "y": 10517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação: composição (ART-P1-08)"
+  },
+  "A-Avaliacao-Graficos.dc.html": {
+   "x": 940,
+   "y": 10517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Resultado: gráficos Peso, Perímetros, Dobras (ART-P1-09)"
+  },
+  "A-Avaliacao-Graficos-2.dc.html": {
+   "x": 1410,
+   "y": 10517,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Resultado: composição e resumo (ART-P1-10)"
+  },
+  "P-Resultados-Graficos.dc.html": {
+   "x": 1880,
+   "y": 10517,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Meus resultados com gráficos (ART-P1-11)"
+  },
+  "T-Pacientes-Avaliacao.dc.html": {
+   "x": 0,
+   "y": 11517,
+   "w": 1180,
+   "h": 820,
+   "title": "Nutri · Tablet: lista e resultado (ART-P1-12)"
   }
  },
  "order": [
