@@ -19,10 +19,12 @@ import kotlin.uuid.Uuid
 
 class PacientesViewModel(private val repositorio: PortaPacientes, private val compartilhamento: Compartilhamento,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null,
-    private val agora: () -> kotlin.time.Instant = { Clock.System.now() }, private val fuso: () -> TimeZone = { TimeZone.currentSystemDefault() }) : ViewModel() {
+    private val agora: () -> kotlin.time.Instant = { Clock.System.now() }, private val fuso: () -> TimeZone = { TimeZone.currentSystemDefault() },
+    private val fixados: org.br.dietamais.data.repositorio.PortaFixados? = null) : ViewModel() {
     private val atual = MutableStateFlow(EstadoPacientes())
     val estado = atual.asStateFlow()
     private var todos = emptyList<PacienteResposta>()
+    private var guardados = FixadosRecentes()
     private var selecionadoId: Uuid? = null
     private var operacao: Job? = null
     private var geracao = 0L
@@ -36,8 +38,12 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
         viewModelScope.launch(dispatcher) {
             repositorio.observar().catch { falha -> apresentar(falha) }.collect { todos = it; publicarLista() }
         }
+        fixados?.let { porta -> viewModelScope.launch(dispatcher) { porta.observar().catch { }.collect { guardados = it; publicarLista() } } }
         atualizar()
     }
+
+    /** MOB-67c: fixa ou desafixa o paciente (só no aparelho). */
+    fun alternarFixado(vinculo: Uuid) { fixados?.alternarFixado(vinculo) }
 
     fun mudarBusca(valor: String) { atual.update { it.copy(busca = valor) }; publicarLista() }
     fun mudarFiltro(valor: StatusVinculo?) { atual.update { it.copy(filtro = valor) }; publicarLista() }
@@ -47,11 +53,13 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
         atual.update { estado -> val resumos = estado.resumos.orEmpty(); val instante = agora(); val zona = fuso()
             estado.copy(lista = filtrarPorAtencao(filtrarPacientes(todos, estado.busca, estado.filtro), estado.filtroAtencao, resumos, instante, zona),
             precisamAtencao = contarAtencao(todos, resumos, instante, zona),
+            ativos = todos.count { it.status == StatusVinculo.ATIVO }, atalhos = montarAtalhos(todos, guardados) { it.vinculoId }, fixadosIds = guardados.fixados.toSet(),
             selecionado = todos.firstOrNull { it.vinculoId == selecionadoId }) }
     }
 
     fun selecionar(vinculo: Uuid?) {
         if (selecionadoId != vinculo) { cancelarOperacao(); atual.update { it.copy(convite = null, erro = null, aviso = null, abaFicha = AbaFicha.RESUMO) } }
+        if (vinculo != null && vinculo != selecionadoId) fixados?.registrarAbertura(vinculo)
         selecionadoId = vinculo
         publicarLista()
     }

@@ -213,4 +213,23 @@ class PacientesViewModelTest {
             return ConviteCriadoResposta("ABCD2345", "https://example.invalid/convite/ABCD2345", Instant.parse("2026-01-08T00:00:00Z"))
         }
     }
+
+    private class FixadosFalso : org.br.dietamais.data.repositorio.PortaFixados {
+        val dados = MutableStateFlow(org.br.dietamais.dominio.pacientes.FixadosRecentes())
+        override fun observar() = dados
+        override fun alternarFixado(vinculo: Uuid) { dados.value = dados.value.alternarFixado(vinculo) }
+        override fun registrarAbertura(vinculo: Uuid) { dados.value = dados.value.registrarAbertura(vinculo) }
+    }
+    @Test fun fixadosRecentesEResumoDeAtivos() = runTest {
+        val ana = paciente("Pessoa Ana", StatusVinculo.ATIVO); val bia = paciente("Pessoa Bia", StatusVinculo.ATIVO); val cid = paciente("Pessoa Cid")
+        val fixados = FixadosFalso()
+        val vm = PacientesViewModel(PortaTeste(listOf(ana, bia, cid)), compartilhar, StandardTestDispatcher(testScheduler), fixados = fixados); runCurrent()
+        assertEquals(2, vm.estado.value.ativos)
+        vm.alternarFixado(bia.vinculoId); vm.selecionar(ana.vinculoId); runCurrent()
+        assertEquals(listOf("Pessoa Bia"), vm.estado.value.atalhos.fixados.map { it.nome })
+        assertEquals(listOf("Pessoa Ana"), vm.estado.value.atalhos.recentes.map { it.nome })
+        assertEquals(setOf(bia.vinculoId), vm.estado.value.fixadosIds)
+        vm.alternarFixado(bia.vinculoId); runCurrent()
+        assertTrue(vm.estado.value.atalhos.fixados.isEmpty())
+    }
 }

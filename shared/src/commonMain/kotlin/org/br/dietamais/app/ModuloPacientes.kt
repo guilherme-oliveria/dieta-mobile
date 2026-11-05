@@ -20,5 +20,5 @@ fun moduloPacientes(compartilhamento: Compartilhamento, ambiente: AmbienteDieta?
         combine(it.conectividade.estado, it.sincronizador.estado) { rede, sync ->
             rede != EstadoConexao.INDISPONIVEL && sync.resultado != ResultadoLeituraSync.SEM_REDE
         }
-    }) }
+    }, fixados = if (ambiente != null) org.br.dietamais.data.repositorio.FixadosRepositorio(get()) else null) }
 }
