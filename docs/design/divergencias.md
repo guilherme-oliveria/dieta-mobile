@@ -102,3 +102,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - Sem artboard (ART-P3 pendente). O item por produto usa o mesmo cartão do item por porção, com a quantidade em gramas (− e + de 10 g) e a energia do item; o seletor é uma busca por nome ou marca dentro da refeição, ao lado de "Adicionar grupo".
 - O total do dia e as metas ao vivo continuam só com os itens por grupo; o produto entra no total mostrado depois de salvar, calculado pelo servidor.
+
+## MOB-67c · Fixados e recentes (05/11/2026)
+
+- O artboard ART-P1-01/ART-P1-12 mostra a seção "Fixados e recentes" no topo da lista. Como o backend não guarda fixados nem histórico, os fixados e os 5 últimos abertos ficam só no aparelho (não sincronizam entre aparelhos; na web, só enquanto a página estiver aberta). Fixar é um botão de texto no cartão do paciente, não o ícone de alfinete do desenho.
+- Os atalhos aparecem como chips em duas linhas (Fixados, Recentes) e somem quando há busca ou filtro ativo.

@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: (StatusVinculo?) -> Unit,
-    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}) {
+    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}, aoFixar: (kotlin.uuid.Uuid) -> Unit = {}) {
     val grupos = remember(estado.lista) { agruparPorInicial(estado.lista) }
     val posicoes = remember(grupos) { grupos.runningFold(1) { acc, g -> acc + 1 + g.pacientes.size }.dropLast(1) }
     val estadoLista = rememberLazyListState()
@@ -55,7 +55,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                         }
                     }
                     if (estado.resumos != null) {
-                        Text(stringResource(Res.string.pacientes_atencao_resumo, estado.precisamAtencao), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                        Text(stringResource(Res.string.pacientes_ativos_atencao, estado.ativos, estado.precisamAtencao), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                             FiltroAtencao.entries.forEach { f ->
                                 ChipEscolha(selected = estado.filtroAtencao == f, onClick = { aoFiltroAtencao(f) }, modifier = Modifier.heightIn(min = Dimens.alvoToque),
@@ -71,6 +71,25 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                     if (estado.semConexao) FaixaOffline()
                     estado.erro?.let { MensagemPaciente(it, alerta = true) }
                     estado.aviso?.let { MensagemPaciente(it) }
+                }
+            }
+            // MOB-67c: atalhos só na visão sem busca nem filtro (a lista filtrada mostra o que foi pedido)
+            if (estado.busca.isBlank() && estado.filtro == null && estado.filtroAtencao == null && (estado.atalhos.fixados.isNotEmpty() || estado.atalhos.recentes.isNotEmpty())) item(key = "atalhos") {
+                Column(Modifier.testTag("atalhos-pacientes"), verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                    if (estado.atalhos.fixados.isNotEmpty()) {
+                        Text(stringResource(Res.string.pacientes_fixados), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                            estado.atalhos.fixados.forEach { p -> ChipEscolha(selected = estado.selecionado?.vinculoId == p.vinculoId, onClick = { aoSelecionar(p) },
+                                modifier = Modifier.heightIn(min = Dimens.alvoToque), label = { Text(p.nome) }) }
+                        }
+                    }
+                    if (estado.atalhos.recentes.isNotEmpty()) {
+                        Text(stringResource(Res.string.pacientes_recentes), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                            estado.atalhos.recentes.forEach { p -> ChipEscolha(selected = estado.selecionado?.vinculoId == p.vinculoId, onClick = { aoSelecionar(p) },
+                                modifier = Modifier.heightIn(min = Dimens.alvoToque), label = { Text(p.nome) }) }
+                        }
+                    }
                 }
             }
             when {
@@ -96,6 +115,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                                         r.ultimaAvaliacaoEm?.let { Text(stringResource(Res.string.pacientes_ultima_avaliacao, formatarData(it.toLocalDateTime(TimeZone.currentSystemDefault()).date)), style = MaterialTheme.typography.bodySmall) }
                                     }
                                 }
+                                BotaoTexto(stringResource(if (paciente.vinculoId in estado.fixadosIds) Res.string.pacientes_desafixar else Res.string.pacientes_fixar), { aoFixar(paciente.vinculoId) })
                             }
                         }
                     }
