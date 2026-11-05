@@ -1,6 +1,6 @@
 package org.br.dietamais.ui.nutri.paciente
 
-import org.br.dietamais.data.remoto.dto.ClassificacaoImc
+import org.br.dietamais.ui.nutri.avaliacao.classificacaoOuOutra
 import org.br.dietamais.ui.nutri.avaliacao.rotuloClassificacao
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -95,7 +95,7 @@ private fun CartaoUltimaAvaliacao(u: UltimaAvaliacaoResumoDto, aoVer: () -> Unit
     val data = org.br.dietamais.dominio.agenda.formatarData(u.dataHora.toLocalDateTime(TimeZone.currentSystemDefault()).date)
     CardDieta(Modifier.fillMaxWidth().testTag("ultima-avaliacao")) {
         Text(stringResource(Res.string.ficha_ultima_avaliacao, data), style = MaterialTheme.typography.titleMedium)
-        Text(stringResource(Res.string.ficha_ultima_avaliacao_valores, textoDecimal(u.pesoKg), textoDecimal(u.imc), stringResource(rotuloClassificacao(ClassificacaoImc.entries.firstOrNull { it.name == u.classificacaoImc } ?: ClassificacaoImc.OUTRO)).lowercase()),
+        Text(stringResource(Res.string.ficha_ultima_avaliacao_valores, textoDecimal(u.pesoKg), textoDecimal(u.imc), stringResource(rotuloClassificacao(classificacaoOuOutra(u.classificacaoImc))).lowercase()),
             style = MaterialTheme.typography.bodyMedium)
         BotaoTexto(stringResource(Res.string.ficha_ultima_avaliacao_ver), aoVer)
     }

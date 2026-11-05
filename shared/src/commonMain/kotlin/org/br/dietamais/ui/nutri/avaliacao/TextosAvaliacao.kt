@@ -48,6 +48,9 @@ fun rotuloSecao(secao: SecaoAvaliacao): StringResource = when (secao) {
     SecaoAvaliacao.COMPOSICAO -> Res.string.avaliacao_secao_composicao
 }
 
+/** O backend pode ganhar faixas novas antes do app: código desconhecido vira OUTRO. */
+fun classificacaoOuOutra(codigo: String): ClassificacaoImc = ClassificacaoImc.entries.firstOrNull { it.name == codigo } ?: ClassificacaoImc.OUTRO
+
 fun rotuloClassificacao(classificacao: ClassificacaoImc): StringResource = when (classificacao) {
     ClassificacaoImc.ABAIXO_DO_PESO -> Res.string.avaliacao_class_abaixo_do_peso
     ClassificacaoImc.NORMAL -> Res.string.avaliacao_class_normal
