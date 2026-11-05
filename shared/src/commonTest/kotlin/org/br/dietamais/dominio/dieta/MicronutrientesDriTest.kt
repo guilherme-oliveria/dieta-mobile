@@ -22,4 +22,11 @@ class MicronutrientesDriTest {
         assertEquals(listOf("Cálcio", "Sódio", "Ferro", "Zinco"), linhas.map { it.nome })
         assertTrue(linhasDri(null).isEmpty()); assertTrue(linhasDri(emptyList()).isEmpty())
     }
+
+    @Test fun nomeEUnidadeDoServidorTemPrioridadeEViramValor() {
+        val linhas = linhasDri(listOf(AdequacaoNutrienteResposta("ferro", 8.0, 8.0, 100.0, "ADEQUADO", "Ferro (Fe)", "mg/dia"), AdequacaoNutrienteResposta("calcio", 600.0, 1000.0, 60.0, "ABAIXO")))
+        assertEquals("Cálcio", linhas[0].nome); assertNull(linhas[0].valor) // sem unidade do servidor, só o percentual
+        assertEquals("Ferro (Fe)", linhas[1].nome); assertEquals("8 mg", linhas[1].valor)
+        assertEquals("2,5 l", textoValorDri(AdequacaoNutrienteResposta("agua", 2.5, 3.7, 67.6, "ABAIXO", null, "l/dia")))
+    }
 }

@@ -31,6 +31,7 @@ fun MicronutrientesDriCard(totais: TotaisNutricionaisResposta) {
         linhas.forEach { l ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                 Text(l.nome, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                l.valor?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
                 Text(stringResource(Res.string.dri_percentual, kotlin.math.round(l.percentual).toLong()), style = MaterialTheme.typography.bodyMedium)
                 ChipStatus(if (l.classe == ClasseDri.ADEQUADO) EstiloStatus.FEITA else EstiloStatus.ALERTA, texto = stringResource(when (l.classe) {
                     ClasseDri.ABAIXO -> Res.string.dri_abaixo
