@@ -789,6 +789,7 @@
     <string name="assinatura_navegador">O pagamento é feito no navegador, fora do app.</string>
     <string name="assinatura_pagamento_indisponivel">O pagamento está indisponível no momento. Tente mais tarde.</string>
     <string name="assinatura_erro_ja_ativa">Sua assinatura já está ativa.</string>
+    <string name="plan_micro_salve">Salve a dieta para atualizar os micronutrientes e a adequação à DRI.</string>
     <string name="pdf_dieta">Baixar PDF</string>
     <string name="pdf_lista_pequena">Lista pequena (PDF)</string>
     <string name="pdf_lista_media">Lista média (PDF)</string>

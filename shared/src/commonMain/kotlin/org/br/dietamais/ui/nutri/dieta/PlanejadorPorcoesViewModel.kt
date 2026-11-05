@@ -39,7 +39,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
     fun nova() {
         if (atual.value.pacienteId == null || atual.value.referencia == null) return
         val principal = RefeicaoPlano(nome = "", horario = "07:00")
-        atual.update { it.copy(rascunho = RascunhoPlano(refeicoes = listOf(principal)), refeicaoAtiva = principal.id, erro = null, aviso = null) }; recalcular()
+        atual.update { it.copy(rascunho = RascunhoPlano(refeicoes = listOf(principal)), totaisServidor = null, refeicaoAtiva = principal.id, erro = null, aviso = null) }; recalcular()
     }
     /** Só abre dieta montada por grupos; dieta com alimento do catálogo continua no montador por alimentos. */
     fun abrir(dieta: DietaResposta): Boolean {
@@ -57,10 +57,10 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
             }, r.alternativaDe)
         }
         val rascunho = RascunhoPlano(dieta.id, dieta.versao, dieta.status, dieta.titulo, dieta.orientacao.orEmpty(), dieta.rodape.orEmpty(), dieta.metas, escolhas, refeicoes)
-        atual.update { it.copy(rascunho = rascunho, refeicaoAtiva = refeicoes.firstOrNull { r -> !r.alternativa }?.id, erro = null, aviso = null) }; recalcular()
+        atual.update { it.copy(rascunho = rascunho, totaisServidor = dieta.totais, refeicaoAtiva = refeicoes.firstOrNull { r -> !r.alternativa }?.id, erro = null, aviso = null) }; recalcular()
         return true
     }
-    fun fechar() { atual.update { it.copy(rascunho = null, refeicaoAtiva = null, erro = null) }; recalcular() }
+    fun fechar() { atual.update { it.copy(rascunho = null, totaisServidor = null, refeicaoAtiva = null, erro = null) }; recalcular() }
 
     // ---- cabeçalho e metas
     fun mudarTitulo(v: String) = editar { it.copy(titulo = v.take(150)) }
@@ -118,7 +118,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
         val pedido = montar(r) ?: return
         executar {
             val resposta = if (r.versao == null) dietas.criar(pacienteId, pedido, r.chave) else dietas.salvar(r.dietaId, r.versao, pedido)
-            atual.update { it.copy(rascunho = it.rascunho?.copy(dietaId = resposta.id, versao = resposta.versao, alterado = false), aviso = MensagemPlanejador.SALVA) }
+            atual.update { it.copy(rascunho = it.rascunho?.copy(dietaId = resposta.id, versao = resposta.versao, alterado = false), totaisServidor = resposta.totais, aviso = MensagemPlanejador.SALVA) }
         }
     }
 
