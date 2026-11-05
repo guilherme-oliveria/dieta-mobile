@@ -44,3 +44,7 @@ Nos PDFs de lista o desenho varia só as gramas; a medida caseira também deve e
 ## Sem artboard ainda (peça ao Design antes, ou siga `padrao-ui.md` e os componentes)
 
 Micronutrientes e adequação à DRI (aba do planejador), suplementos e produtos no planejador, editar modelo (usa o planejador), PDF da dieta (BE-50).
+
+## IDs novos (nov/2026)
+
+Os artboards ART-Pn-nn de `ART-IDS.md` substituem os de avaliação do adulto e acrescentam infantil, dieta (12 abas da planilha) e anamnese/exames. Cada tarefa do plano cita o ID esperado.

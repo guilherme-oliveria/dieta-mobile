@@ -364,6 +364,139 @@
    "w": 1180,
    "h": 820,
    "title": "Nutri · Tablet: lista e resultado (ART-P1-12)"
+  },
+  "B-Infantil-Componentes.dc.html": {
+   "x": 0,
+   "y": 12497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Infantil: componentes muscular e adiposo (ART-P2-03)"
+  },
+  "B-Infantil-Curva.dc.html": {
+   "x": 470,
+   "y": 12497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Infantil: curva de crescimento (ART-P2-04)"
+  },
+  "B-Infantil-Diagnostico.dc.html": {
+   "x": 940,
+   "y": 12497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Infantil: diagnóstico e compartilhar (ART-P2-05)"
+  },
+  "B-Infantil-PesoEstaturaIMC.dc.html": {
+   "x": 1410,
+   "y": 12497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Infantil: peso, estatura e IMC por idade (ART-P2-02)"
+  },
+  "B-Infantil-Secoes.dc.html": {
+   "x": 1880,
+   "y": 12497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Avaliação infantil: seções (ART-P2-01)"
+  },
+  "C-Alimento-Cadastro.dc.html": {
+   "x": 2350,
+   "y": 12497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Cadastrar alimento ou produto (ART-P3-08)"
+  },
+  "C-Alimentos-Busca.dc.html": {
+   "x": 0,
+   "y": 13497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Alimentos e produtos: busca (ART-P3-07)"
+  },
+  "C-Dieta-Calcule.dc.html": {
+   "x": 470,
+   "y": 13497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Dieta: calcule a dieta (ART-P3-02)"
+  },
+  "C-Dieta-CardapioModelavel.dc.html": {
+   "x": 940,
+   "y": 13497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Dieta: cardápio modelável e novo modelo (ART-P3-04)"
+  },
+  "C-Dieta-CardapioPronto.dc.html": {
+   "x": 1410,
+   "y": 13497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Dieta: cardápio pronto (ART-P3-03)"
+  },
+  "C-Dieta-Porcoes.dc.html": {
+   "x": 1880,
+   "y": 13497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Dieta: escolha as porções (ART-P3-01)"
+  },
+  "C-Listas-Tipos.dc.html": {
+   "x": 2350,
+   "y": 13497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Listas de substituição: 5 tipos (ART-P3-06)"
+  },
+  "C-Modelos-Lista.dc.html": {
+   "x": 0,
+   "y": 14497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Modelos de dieta: lista, criar e editar (ART-P3-05)"
+  },
+  "C-Paciente-Dieta.dc.html": {
+   "x": 470,
+   "y": 14497,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Dieta com macros e lista de substituição (ART-P3-09)"
+  },
+  "D-Anamnese-Secoes.dc.html": {
+   "x": 940,
+   "y": 14497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Anamnese: abas da planilha (ART-P4-02)"
+  },
+  "D-Cadastro-Paciente.dc.html": {
+   "x": 1410,
+   "y": 14497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Cadastro ampliado do paciente (ART-P4-03)"
+  },
+  "D-Evolucao.dc.html": {
+   "x": 1880,
+   "y": 14497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Evolução entre avaliações em barras (ART-P4-05)"
+  },
+  "D-Exames.dc.html": {
+   "x": 2350,
+   "y": 14497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Exames bioquímicos (ART-P4-01)"
+  },
+  "D-Micronutrientes.dc.html": {
+   "x": 0,
+   "y": 15497,
+   "w": 390,
+   "h": 844,
+   "title": "Nutri · Necessidades e micronutrientes DRI (ART-P4-04)"
   }
  },
  "order": [
