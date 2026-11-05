@@ -1259,6 +1259,9 @@
     <string name="crescimento_palavras">Em palavras</string>
     <string name="crescimento_intervalo">O intervalo é o confirmado na avaliação. Não estimamos um percentil exato entre os cortes. Converse com sua nutri sobre o acompanhamento.</string>
     <string name="crescimento_versao">Versão da referência: %1$s</string>
+    <string name="avaliacao_secoes_dica">As seções seguem a planilha da nutri. Preencha na ordem que quiser; o app calcula o que depende de outras seções.</string>
+    <string name="avaliacao_voltar_secoes">Voltar às seções</string>
+    <string name="avaliacao_secao_erro">Há campo para corrigir nesta seção.</string>
     <string name="avaliacao_secoes_titulo">Seções da avaliação</string>
     <string name="avaliacao_secao_progresso">%1$s: %2$d de %3$d preenchidas</string>
     <string name="avaliacao_secao_completa">%1$s: completa (%2$d de %3$d)</string>

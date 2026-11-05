@@ -125,3 +125,9 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-69 · Gráficos de 10 a 17 anos (05/11/2026)
 
 - Os 4 gráficos de barras aparecem também para 10 a 17 anos (idade de `resultadosInfantis`, ou faixa ADOLESCENTE se faltar). Menor de 10 anos segue só com a curva de crescimento. O peso mínimo e máximo vem do cálculo infantil.
+
+## MOB-64d · Hub das seções da avaliação (05/11/2026)
+
+- O passo Medidas (adulto) abre no hub ART-P1-03 com as seções Básicas, Perímetros, Dobras e Complementares; tocar numa linha abre só os campos daquela seção, com "Voltar às seções". O estado de cada seção fica em texto ("2 de 5 medidas") e uma seção com erro avisa.
+- Diferente do desenho: Cadastro (ART-P1-04) e Peso × estatura (ART-P1-05) continuam juntos na seção Básicas, a Composição segue como passo próprio e Gráficos e Resumo ficam no último passo. Cada seção é uma tela do mesmo fluxo, não uma rota separada, e a seção aberta não sobrevive a girar a tela.
+- Avaliação infantil não muda.
