@@ -74,11 +74,11 @@ Desenhadas em 01/11/2026 (DES-08 a DES-10). Os artboards estão no canvas e em [
 
 | Tela | Pacote / composable | Artboard | Status | MOB |
 | --- | --- | --- | --- | --- |
-| Avaliação, passo 1 Medidas (celular) | `ui/nutri/avaliacao` · `AvaliacaoTela` | `A-Avaliacao-Medidas.dc.html` | desenhada; implementada MOB-50 | 50 |
-| Avaliação, passo 2 Composição (celular) | idem | `A-Avaliacao-Composicao.dc.html` | desenhada; implementada MOB-50 | 50 |
+| Avaliação, passo 1 Medidas (celular) | `ui/nutri/avaliacao` · `AvaliacaoTela` | `A-Avaliacao-Medidas.dc.html` (substituído por ART-P1-03 a 10) | desenhada; implementada MOB-50 | 50 |
+| Avaliação, passo 2 Composição (celular) | idem | `A-Avaliacao-Composicao.dc.html` (substituído por ART-P1-03 a 10) | desenhada; implementada MOB-50 | 50 |
 | Avaliação, passo 3 Necessidades (rosca das metas) | `ui/nutri/avaliacao` · `PassoNecessidades` | `A-Avaliacao-Necessidades.dc.html` | desenhada; implementada MOB-52b | 52 |
-| Avaliação, passo 4 Resumo (compartilhar por seção, PDF) | idem | `A-Avaliacao-Resumo.dc.html` | desenhada; implementada sem "Gerar PDF" (D-05) | 50 |
-| Avaliação em passos com painel de resultados (tablet e desktop) | `AvaliacaoTela` expandida · `PainelResultados` | `T-Avaliacao-Passos.dc.html` | desenhada; implementada MOB-50 | 50 |
+| Avaliação, passo 4 Resumo (compartilhar por seção, PDF) | idem | `A-Avaliacao-Resumo.dc.html` (substituído por ART-P1-03 a 10) | desenhada; implementada sem "Gerar PDF" (D-05) | 50 |
+| Avaliação em passos com painel de resultados (tablet e desktop) | `AvaliacaoTela` expandida · `PainelResultados` | `T-Avaliacao-Passos.dc.html` (substituído por ART-P1-03 a 10) | desenhada; implementada MOB-50 | 50 |
 | Meus resultados (semáforos, composição, meta) | `ui/paciente/evolucao` · `MeusResultadosTela` | `P-Resultados.dc.html` | desenhada; implementada MOB-51 com divergência D-02 | 51 |
 | Meus resultados, evolução com faixa | idem | `P-Resultados-Evolucao.dc.html` | desenhada; implementada MOB-51 (D-03) | 51 |
 | Meus resultados, nada compartilhado | idem | `P-Resultados-Vazio.dc.html` | desenhada; implementada MOB-51 | 51 |

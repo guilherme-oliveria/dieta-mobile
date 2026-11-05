@@ -34,6 +34,7 @@ fun DetalhesAvaliacao(avaliacao: AvaliacaoResposta, modifier: Modifier = Modifie
         if (secoes.isEmpty() && avaliacao.parecer.isNullOrBlank() && resultados?.somatorioDobrasMm == null) {
             Text(stringResource(Res.string.avaliacao_detalhe_sem_medidas), style = MaterialTheme.typography.bodySmall)
         }
+        if (!avaliacao.ehPediatrica()) GraficosAvaliacao(avaliacao)
         secoes.forEach { (secao, medidas) ->
             Text(stringResource(rotuloSecao(secao)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
             medidas.forEach { (medida, valor) ->
