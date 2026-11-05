@@ -23,6 +23,9 @@ import org.br.dietamais.ui.paciente.substituicao.*
 import org.br.dietamais.dominio.rotina.substitutosDoItem
 import org.br.dietamais.data.remoto.dto.*
 import org.jetbrains.compose.resources.stringResource
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.br.dietamais.dominio.agenda.formatarData
 import kotlin.uuid.Uuid
 
 /** Aba Dieta: refeições detalhadas, orientações e escolha da dieta em uso quando há mais de uma nutri (MOB-14). */
@@ -38,7 +41,7 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
         return
     }
     Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        BarraTopo(stringResource(Res.string.aba_dieta), null, "", subtitulo = estado.dieta?.titulo)
+        BarraTopo(stringResource(Res.string.aba_dieta), null, "", subtitulo = estado.dieta?.let { stringResource(Res.string.pac_dieta_publicada, formatarData(it.publicadoEm.toLocalDateTime(TimeZone.currentSystemDefault()).date)) })
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.paddingCard),
             verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             if (estado.semConexao) FaixaOffline()
@@ -51,7 +54,6 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                     Text(stringResource(Res.string.pac_dieta_nutri, dieta.nutricionista.nome, dieta.nutricionista.crn), style = MaterialTheme.typography.bodySmall)
                     MacrosPaciente(dieta.totais, dia = true)
                     pdf(estado)
-                    BotaoContornado(stringResource(Res.string.pac_lista_ver), aoAbrirLista, Modifier.fillMaxWidth())
                     if (estado.alternativas.isNotEmpty()) CardDieta(Modifier.fillMaxWidth()) {
                         Text(stringResource(Res.string.pac_dieta_escolher), style = MaterialTheme.typography.titleMedium)
                         estado.alternativas.forEach { s ->
@@ -78,6 +80,7 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         }
                     }
+                    BotaoContornado(stringResource(Res.string.pac_lista_ver), aoAbrirLista, Modifier.fillMaxWidth())
                     dieta.orientacao?.takeIf { it.isNotBlank() }?.let {
                         Text(stringResource(Res.string.pac_dieta_orientacoes), style = MaterialTheme.typography.titleMedium)
                         Text(it, style = MaterialTheme.typography.bodyMedium)
@@ -128,6 +131,7 @@ private fun RefeicaoDietaPaciente(estado: EstadoDietaPaciente, r: RefeicaoRespos
                     }
                 }
             }
+            Text(stringResource(Res.string.pac_porcao_nota), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                 BotaoPrincipal(stringResource(Res.string.pac_comi), { aoMarcar(r.id, StatusCheckin.FEITO) }, habilitado = estado.dia != null)
                 BotaoContornado(stringResource(Res.string.pac_troquei), { aoTrocarRefeicao(r.id) }, habilitado = estado.dia != null && r.itens.any { substitutosDoItem(it, dieta.listaSubstituicao).isNotEmpty() })

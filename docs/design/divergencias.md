@@ -111,3 +111,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-64c · Cartão Última avaliação (05/11/2026)
 
 - O cartão na aba Resumo da ficha mostra data, peso, IMC e classificação em texto, com o botão "Ver avaliações". Vem do resumo da lista de pacientes (`ultimaAvaliacao`), então aparece offline só se o resumo já foi carregado. O hub por seção (ART-P1-03 a 08) ficou para o MOB-64d.
+## MOB-74 · Dieta e Refeição do paciente (05/11/2026)
+
+- Auditoria contra P-Dieta-Macros e P-Refeicao-Macros: o subtítulo agora é "Dieta publicada em dd/mm/aaaa", o botão da lista de substituição vai depois das refeições e a refeição ganhou a nota "Cada porção é a mesma energia".
+- Fica diferente do desenho: o link "Ver como tabela" (sem tela de tabela no MVP) e os gramas por item na refeição (o backend não manda gramas por porção). A Lista de substituição não foi alterada: busca e chips por grupo já existem.

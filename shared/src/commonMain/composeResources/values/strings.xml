@@ -1080,6 +1080,8 @@
     <string name="pac_registro_status">Registro salvo: %1$s</string>
     <string name="pac_troca_medida_grupo">A quantidade equivalente deste grupo não veio na dieta. Confirme a medida com a sua nutri.</string>
     <string name="pac_troca_opcao_grupo">%1$s · confirmar medida com a nutri</string>
+    <string name="pac_dieta_publicada">Dieta publicada em %1$s</string>
+    <string name="pac_porcao_nota">Cada “porção” é a mesma energia: pode trocar por qualquer item do mesmo grupo.</string>
     <string name="pac_lista_ver">Ver lista de substituição</string>
     <string name="pac_lista_titulo">Lista de substituição</string>
     <string name="pac_lista_voltar">Voltar à dieta</string>
