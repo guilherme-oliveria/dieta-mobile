@@ -37,11 +37,11 @@ class AmbienteDietaTest {
             ambiente.primeiroPlano(true); runCurrent()
             val segundoPlano = async { ambiente.sincronizarAgora() }; runCurrent()
             esperarPedido(pedidos)
-            assertEquals(1, pedidos.get())
+            // A propriedade testada: com o pull em voo, a segunda chamada se junta a ele em vez de abrir outro pedido e outra leitura do cofre.
+            assertEquals(1, pedidos.get(), "pedidos à API com o pull em voo"); assertEquals(1, leituras.get(), "leituras do cofre com o pull em voo")
             liberar.complete(Unit); runCurrent()
             val resultado = esperarResultado(segundoPlano)
             assertEquals(ResultadoLeituraSync.CONCLUIDO, resultado, "resultado do sync")
-            assertEquals(1, pedidos.get(), "pedidos à API"); assertEquals(1, leituras.get(), "leituras do cofre")
             assertTrue(local.banco.pacienteCacheQueries.daSessao().executeAsList().isNotEmpty())
         } finally { ambiente.encerrar() }
         assertTrue(rede.fechada)
