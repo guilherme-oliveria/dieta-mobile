@@ -37,6 +37,8 @@ class PacientesOnline(private val api: ApiDieta) : PortaPacientes {
         return resposta
     }
 
+    override suspend fun resumos() = org.br.dietamais.data.repositorio.carregarResumosPacientes(api)
+
     override suspend fun assinatura(): AssinaturaResumoResposta? {
         val esperado = contexto()
         val eu = api.obter<EuResposta>("eu")

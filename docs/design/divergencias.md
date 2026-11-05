@@ -41,7 +41,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - Barras verticais com siglas (ART-P1-09 e ART-P1-10): resolvido no MOB-64b.
 
 ## MOB-67a (ART-P1-01), pendências no MOB-67b
-- Filtros de atenção (Retorno hoje, Avaliação vencida, Sem retorno) e o resumo "M precisam de atenção": a lista do backend não traz agenda nem data da última avaliação por paciente. O app mantém os filtros de status (Todos, Convidados, Ativos, Encerrados).
+- Filtros de atenção (Retorno hoje, Avaliação vencida, Sem retorno) e o resumo "M precisam de atenção": entregues no MOB-67b com o BE-66. Os dados vêm de `GET /pacientes` e não entram no sync; offline os chips somem e a lista fica como antes. "Avaliação vencida" = mais de 90 dias ou nenhuma (valor inicial, a confirmar com a nutri); "precisam de atenção" soma vencida e sem retorno (Retorno hoje é só um atalho).
 - "Fixados e recentes": sem fixar nem histórico de abertura no backend.
 - Índice A-Z: aparece como linha de letras sob os filtros (não como régua lateral), só com as iniciais que existem e a partir de 12 pacientes.
 
