@@ -5,6 +5,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.datetime.TimeZone
+import org.br.dietamais.ui.comum.graficos.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
 import org.br.dietamais.dominio.avaliacao.*
@@ -38,10 +44,19 @@ fun EvolucaoTela(estado: EstadoEvolucao, acoes: AcoesEvolucao, agora: Instant = 
                 }
                 val pontos = recortar(estado.pontos, estado.intervalo, agora)
                 val rotulo = stringResource(rotuloSerie(serie))
+                var barras by remember { mutableStateOf(false) }
+                Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                    ChipEscolha(!barras, { barras = false }, label = { Text(stringResource(Res.string.evolucao_modo_linha)) })
+                    ChipEscolha(barras, { barras = true }, label = { Text(stringResource(Res.string.evolucao_modo_barras)) })
+                }
                 CardDieta(Modifier.fillMaxWidth()) {
                     if (pontos.isEmpty()) Text(stringResource(Res.string.evolucao_sem_pontos))
                     else {
-                        GraficoLinha(pontos, rotulo, serie.unidade)
+                        if (barras) {
+                            val itens = barrasDaSerie(pontos, TimeZone.currentSystemDefault())
+                            Text(stringResource(Res.string.evolucao_barras_titulo, itens.size), style = MaterialTheme.typography.labelLarge)
+                            GraficoBarrasVerticais(itens.map { ItemGrafico(it.rotulo, it.valor) }, unidade = serie.unidade)
+                        } else GraficoLinha(pontos, rotulo, serie.unidade)
                         Text(stringResource(Res.string.evolucao_ultimo, textoDecimal(pontos.last().valor), serie.unidade), style = MaterialTheme.typography.titleSmall)
                         variacaoTotal(pontos)?.let { Text(stringResource(Res.string.evolucao_variacao, textoVariacaoEvolucao(it), serie.unidade), style = MaterialTheme.typography.bodyMedium) }
                     }
