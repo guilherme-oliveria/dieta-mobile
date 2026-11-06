@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-/** Produto ou suplemento da nutri (BE-48b, RN-ALI-05). `nutrientes` são por 100 g (ou 100 mL), com as chaves de `/referencias/produtos` (`energia`, `gli`, `pro`, `lip` e micronutrientes). */
+/** Produto ou suplemento da nutri (BE-48b, RN-ALI-05). `nutrientes` são por 100 g (ou 100 mL), com as chaves de `/referencias/produtos` (`energia_kcal`, `carboidrato_g`, `proteina_g`, `lipideos_g` e micronutrientes). */
 @Serializable
 data class ProdutoResposta(val id: Uuid, val nome: String, val marca: String? = null, val classificacao: String? = null, val apresentacao: String? = null,
     val embalagem: String? = null, val sabores: String? = null, val medidaCaseira: String? = null, val medidaGramas: Double? = null, val observacao: String? = null,

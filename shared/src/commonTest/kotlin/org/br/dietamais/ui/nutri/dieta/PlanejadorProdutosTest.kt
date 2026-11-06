@@ -15,7 +15,7 @@ class PlanejadorProdutosTest {
     private val paciente = Uuid.parse("019a0f32-5000-7000-8000-0000000000aa")
     private val agora = Instant.parse("2026-11-05T12:00:00Z")
     private val zero = TotaisNutricionaisResposta(0.0, 0.0, 0.0, 0.0)
-    private val whey = ProdutoResposta(Uuid.random(), "Whey Max", "Marca", medidaGramas = 30.0, nutrientes = mapOf("energia" to 400.0, "gli" to 10.0, "pro" to 80.0, "lip" to 5.0), versao = 1, atualizadoEm = agora)
+    private val whey = ProdutoResposta(Uuid.random(), "Whey Max", "Marca", medidaGramas = 30.0, nutrientes = mapOf("energia_kcal" to 400.0, "carboidrato_g" to 10.0, "proteina_g" to 80.0, "lipideos_g" to 5.0), versao = 1, atualizadoEm = agora)
 
     private class Dietas : PortaDietas {
         val criadas = mutableListOf<SalvarDietaRequisicao>()
