@@ -30,19 +30,20 @@ data class AcoesAvisos(val aoAbrir: () -> Unit = {}, val aoFechar: () -> Unit = 
 
 /** Botão do cabeçalho com a contagem de não lidos. */
 @Composable
-fun BotaoAvisos(estado: EstadoAvisos, acoes: AcoesAvisos, modifier: Modifier = Modifier) {
-    val n = estado.naoLidos
+fun BotaoAvisos(estado: EstadoAvisos, acoes: AcoesAvisos, modifier: Modifier = Modifier, extraPendentes: Int = 0) {
+    val n = estado.naoLidos + extraPendentes
     BotaoTexto(if (n > 0) stringResource(Res.string.avisos_botao_n, n) else stringResource(Res.string.avisos_botao), acoes.aoAbrir, modifier)
 }
 
 @Composable
-fun AvisosTela(estado: EstadoAvisos, acoes: AcoesAvisos, fuso: TimeZone = TimeZone.currentSystemDefault()) {
+fun AvisosTela(estado: EstadoAvisos, acoes: AcoesAvisos, fuso: TimeZone = TimeZone.currentSystemDefault(), topo: @Composable ColumnScope.() -> Unit = {}) {
     if (!estado.aberto) return
     Dialog(onDismissRequest = acoes.aoFechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxSize().padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Text(stringResource(Res.string.avisos_titulo), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
+                    topo()
                     estado.mensagem?.let {
                         Text(stringResource(if (it == MensagemAvisos.SEM_CONEXAO) Res.string.avisos_msg_sem_conexao else Res.string.avisos_msg_erro),
                             color = MaterialTheme.colorScheme.error, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
@@ -72,10 +73,11 @@ private fun ItemAviso(aviso: AvisoResposta, fuso: TimeZone, aoTocar: () -> Unit)
     }
 }
 
+/** [topo] e [extraPendentes]: o que o app quer mostrar só ao abrir Avisos (e-mail por confirmar, atualizar dados) e quantos itens isso soma ao botão. */
 @Composable
-fun AvisosRota(viewModel: AvisosViewModel, modifier: Modifier = Modifier) {
+fun AvisosRota(viewModel: AvisosViewModel, modifier: Modifier = Modifier, extraPendentes: Int = 0, topo: @Composable ColumnScope.() -> Unit = {}) {
     val estado by viewModel.estado.collectAsState()
     val acoes = AcoesAvisos(viewModel::abrir, viewModel::fechar, viewModel::tocar, viewModel::marcarTodosLidos, viewModel::limparMensagem)
-    BotaoAvisos(estado, acoes, modifier)
-    AvisosTela(estado, acoes)
+    BotaoAvisos(estado, acoes, modifier, extraPendentes)
+    AvisosTela(estado, acoes, topo = topo)
 }

@@ -1,5 +1,6 @@
 package org.br.dietamais.ui
 
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
@@ -60,7 +61,8 @@ class ShellSyncIntegracaoTest {
             val nome = onNodeWithText("Paciente de Exemplo", useUnmergedTree = true).performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
             val navegacao = onNodeWithContentDescription("Navegação principal").fetchSemanticsNode().boundsInRoot
             assertTrue(nome.bottom <= navegacao.top, "O cabeçalho global não deve encobrir a lista acima da navegação inferior")
-            onNodeWithText("Atualizar dados").performScrollTo().assertIsDisplayed()
+            // "Atualizar dados" fica dentro de Avisos, não no topo (o conteúdo de Avisos é testado em AvisosTelasTest)
+            onNodeWithText("Atualizar dados").assertDoesNotExist()
             val arquivo = File("build/reports/sincronizacao/shell-390-fonte-2.0.png")
             arquivo.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", arquivo)
             onNodeWithText("Alimentos").performClick()

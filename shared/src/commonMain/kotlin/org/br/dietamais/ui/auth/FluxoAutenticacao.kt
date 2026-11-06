@@ -114,16 +114,17 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                     Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
                         .heightIn(max = Dimens.alturaCabecalhoAutenticado).verticalScroll(rememberScrollState())) {
                         BarraTopoAutenticada(usuario.perfil == Perfil.NUTRICIONISTA, usuario.id, estado.carregando,
-                            aoSair = viewModel::sair, aoTenhoCodigo = { convites.abrir() }, usuarioPerfil = usuario.perfil)
-                        Column(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.espacoMedio),
+                            aoSair = viewModel::sair, aoTenhoCodigo = { convites.abrir() }, usuarioPerfil = usuario.perfil,
+                            emailPendente = !usuario.emailConfirmado, ambiente = ambiente)
+                        // O topo só cresce com o que exige ação agora (erro, período de teste). E-mail por confirmar e "Atualizar dados" ficam em Avisos.
+                        val teste = estado.assinatura?.takeIf { it.status == StatusAssinatura.TESTE }
+                        if (estado.erro != null || teste != null) Column(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.espacoPequeno),
                             verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                             estado.erro?.let { MensagemAutenticacaoTexto(it, alerta = true) }
-                            if (!usuario.emailConfirmado) FaixaAlerta(stringResource(Res.string.auth_email_nao_confirmado))
-                            estado.assinatura?.takeIf { it.status == StatusAssinatura.TESTE }?.let {
+                            teste?.let {
                                 Text(stringResource(Res.string.auth_assinatura_teste, it.limitePacientes, it.fimPeriodoEm.toString().substringBefore('T')),
                                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     }
@@ -153,12 +154,12 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
 /** Barra de topo: marca à esquerda; avisos e pendências à direita; "Tenho um código" e "Sair" no menu. */
 @Composable
 private fun BarraTopoAutenticada(nutri: Boolean, idUsuario: kotlin.uuid.Uuid, carregando: Boolean, aoSair: () -> Unit,
-    aoTenhoCodigo: () -> Unit, usuarioPerfil: Perfil?) {
+    aoTenhoCodigo: () -> Unit, usuarioPerfil: Perfil?, emailPendente: Boolean = false, ambiente: AmbienteDieta? = null) {
     var menu by remember { mutableStateOf(false) }
     Row(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f).semantics { heading() })
-        key(idUsuario, usuarioPerfil) { AvisosDoUsuario(); if (nutri) PendenciasDoUsuario() }
+        key(idUsuario, usuarioPerfil) { AvisosDoUsuario(emailPendente, ambiente); if (nutri) PendenciasDoUsuario() }
         Box {
             TextButton({ menu = true }) { Text(stringResource(Res.string.auth_menu_conta)) }
             DropdownMenu(menu, { menu = false }) {
@@ -181,10 +182,13 @@ private fun FaixaAlerta(texto: String) {
 
 /** Central de avisos: um ViewModel por usuário/perfil, para nunca mostrar o histórico da conta anterior. */
 @Composable
-private fun AvisosDoUsuario() {
+private fun AvisosDoUsuario(emailPendente: Boolean, ambiente: AmbienteDieta?) {
     val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
-    AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono))
+    AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono), extraPendentes = if (emailPendente) 1 else 0, topo = {
+        if (emailPendente) FaixaAlerta(stringResource(Res.string.auth_email_nao_confirmado))
+        if (ambiente != null) IndicadorAmbiente(ambiente)
+    })
 }
 
 /** Conflitos e rejeições da escrita offline da nutri (MOB-30). */

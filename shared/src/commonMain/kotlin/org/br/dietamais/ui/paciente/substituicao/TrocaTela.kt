@@ -27,11 +27,11 @@ fun TrocaTela(estado: EstadoDietaPaciente, aoEscolher: (Uuid, Uuid?) -> Unit, ao
     val dieta = estado.dieta ?: return
     val refeicao = dieta.refeicoes.firstOrNull { it.id == troca.refeicaoId } ?: return
     TelaSobreposta(aoFechar = aoCancelar) {
-        Surface(Modifier.fillMaxWidth().padding(Dimens.paddingCard), color = MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.large) {
-            Column {
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Column(Modifier.fillMaxHeight().wrapContentWidth(androidx.compose.ui.Alignment.CenterHorizontally).widthIn(max = Dimens.larguraLeitura).fillMaxWidth()) {
                 if (estado.erro != null) Text(stringResource(Res.string.pac_erro_geral), color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(Dimens.paddingCard).semantics { liveRegion = LiveRegionMode.Assertive })
-                Column(Modifier.verticalScroll(rememberScrollState()).padding(Dimens.paddingCard), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Text(stringResource(Res.string.pac_troca_titulo), style = MaterialTheme.typography.titleLarge)
                     Text(refeicao.nome, style = MaterialTheme.typography.titleMedium)
                     refeicao.itens.filter { troca.itemId == null || it.id == troca.itemId }.forEach { item ->

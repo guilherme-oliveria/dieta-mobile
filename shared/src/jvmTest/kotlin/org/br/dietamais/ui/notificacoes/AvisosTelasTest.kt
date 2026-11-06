@@ -1,5 +1,7 @@
 package org.br.dietamais.ui.notificacoes
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
@@ -19,6 +21,15 @@ class AvisosTelasTest {
     @Test fun botaoSemNaoLidosNaoMostraNumero() = runSkikoComposeUiTest(size = Size(390f, 200f)) {
         setContent { DietaTheme { BotaoAvisos(EstadoAvisos(avisos = listOf(avisoFalso(lido = true))), AcoesAvisos()) } }
         onNodeWithText("Avisos").assertIsDisplayed()
+    }
+
+    @Test fun botaoSomaOsPendentesExtrasEATelaMostraOTopo() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        setContent { DietaTheme { Column {
+            BotaoAvisos(EstadoAvisos(avisos = listOf(avisoFalso(lido = true))), AcoesAvisos(), extraPendentes = 1)
+            AvisosTela(EstadoAvisos(aberto = true), AcoesAvisos(), topo = { Text("Confirme seu e-mail") })
+        } } }
+        onNodeWithText("Avisos (1)").assertIsDisplayed()
+        onNodeWithText("Confirme seu e-mail").assertIsDisplayed()
     }
 
     @Test fun listaMostraAvisosComDataELocalEToqueAbreOAviso() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
