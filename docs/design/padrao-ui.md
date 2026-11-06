@@ -129,7 +129,7 @@ Criar ou editar (avaliação, dieta, modelo, consulta...) abre uma **tela cheia 
 
 ## Sem botão repetido
 
-O topo do app já tem "Atualizar dados" (sync geral). Telas de aba não repetem o mesmo botão no corpo quando esse topo existe (`LocalAtualizacaoGeralNoTopo`); na web, que não tem o topo, cada tela mantém o seu.
+"Atualizar dados" (sync geral) e o aviso "Confirme seu e-mail" ficam dentro de **Avisos**, não fixos no topo; o botão Avisos soma o e-mail por confirmar à contagem. O topo só tem a marca, Avisos e Conta (mais erro ou período de teste, se houver), sem espaço vazio. Telas de aba não repetem o mesmo botão no corpo quando o app tem o sync geral (`LocalAtualizacaoGeralNoTopo`); na web, que não tem o topo, cada tela mantém o seu.
 
 ## Alvos de toque
 

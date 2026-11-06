@@ -14,7 +14,7 @@ import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Verdadeiro quando o app já mostra "Atualizar dados" no topo (sync geral). As telas não repetem o mesmo botão no corpo;
+ * Verdadeiro quando o app já tem "Atualizar dados" (sync geral) dentro de Avisos. As telas não repetem o mesmo botão no corpo;
  * na web, que não tem esse topo, cada tela mantém o seu.
  */
 val LocalAtualizacaoGeralNoTopo = compositionLocalOf { false }
