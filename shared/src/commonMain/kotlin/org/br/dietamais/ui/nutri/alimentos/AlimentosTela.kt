@@ -30,7 +30,7 @@ fun AlimentosTela(estado: EstadoAlimentos, aoBusca: (String) -> Unit = {}, aoGru
                     Text(stringResource(Res.string.aba_alimentos), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                         BotaoPrincipal(stringResource(Res.string.alimentos_novo), aoNovo, habilitado = habilitado && estado.grupos.isNotEmpty())
-                        BotaoTexto(stringResource(Res.string.sync_atualizar), aoAtualizar, carregando = estado.atualizando, habilitado = !estado.enviando)
+                        if (!LocalAtualizacaoGeralNoTopo.current) BotaoTexto(stringResource(Res.string.sync_atualizar), aoAtualizar, carregando = estado.atualizando, habilitado = !estado.enviando)
                     }
                     if (estado.semConexao) FaixaOffline()
                     MensagensAlimentos(estado)

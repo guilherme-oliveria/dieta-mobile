@@ -49,17 +49,17 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
             BotaoPdf(stringResource(Res.string.pdf_dieta), !estado.semConexao, { pdf.link(RecursoPdf.DIETA, d.id) })
             org.br.dietamais.ui.comum.BotoesPdfLista(pdf, d.id, !estado.semConexao)
         })
-    if (modelos != null && biblioteca != null && abrirBiblioteca) Dialog(onDismissRequest = { abrirBiblioteca = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    if (modelos != null && biblioteca != null && abrirBiblioteca) TelaSobreposta(aoFechar = { abrirBiblioteca = false }) {
         ModelosDietaTela(biblioteca, AcoesModelos(aoVoltar = { abrirBiblioteca = false }, aoAba = modelos::escolherAba, aoDuplicar = modelos::duplicar,
             aoApagar = modelos::pedirExclusao, aoConfirmarApagar = modelos::confirmarExclusao, aoCancelarApagar = modelos::cancelarExclusao, aoRecarregar = modelos::recarregar,
             aoUsar = aplicar?.let { a -> { m: ModeloDietaResposta -> a.abrir(paciente.id, m) } },
             aoNovo = editor?.let { e -> { adaptadorModelo!!.base = null; e.nova() } },
             aoEditar = editor?.let { e -> { m: ModeloDietaResposta -> adaptadorModelo!!.base = m; e.abrir(ModeloComoDieta.comoDieta(m), comTotais = false); Unit } }))
     }
-    if (aplicar != null && aplicando?.modelo != null) Dialog(onDismissRequest = aplicar::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    if (aplicar != null && aplicando?.modelo != null) TelaSobreposta(aoFechar = aplicar::fechar) {
         AplicarModeloTela(aplicando, paciente.nome, aplicar::fechar, { if (aplicando.criada != null) abrirCriada() else aplicar.criar() })
     }
-    if (editor != null && editando?.rascunho != null) Dialog(onDismissRequest = { fecharEditor() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    if (editor != null && editando?.rascunho != null) TelaSobreposta(aoFechar = { fecharEditor() }) {
         PlanejadorPorcoesTela(editando, AcoesPlanejador(
             { fecharEditor() }, editor::mudarTitulo, editor::mudarOrientacao, editor::mudarRodape, editor::mudarMetas,
             editor::selecionarRefeicao, editor::adicionarRefeicao, editor::adicionarAlternativa, editor::removerRefeicao, editor::mudarNomeRefeicao,
@@ -67,7 +67,7 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
             editor::ajustarPorcoes, editor::removerItem, editor::salvar,
             aoBuscarProdutos = editor::buscarProdutos, aoAdicionarProduto = editor::adicionarProduto, aoAjustarGramas = editor::ajustarGramas))
     }
-    if (planejador != null && plano?.rascunho != null) Dialog(onDismissRequest = { planejador.fechar(); viewModel.recarregar() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    if (planejador != null && plano?.rascunho != null) TelaSobreposta(aoFechar = { planejador.fechar(); viewModel.recarregar() }) {
         PlanejadorPorcoesTela(plano, AcoesPlanejador(
             { planejador.fechar(); viewModel.recarregar() }, planejador::mudarTitulo, planejador::mudarOrientacao, planejador::mudarRodape, planejador::mudarMetas,
             planejador::selecionarRefeicao, planejador::adicionarRefeicao, planejador::adicionarAlternativa, planejador::removerRefeicao, planejador::mudarNomeRefeicao,
@@ -76,7 +76,7 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
             aoBuscarProdutos = planejador::buscarProdutos, aoAdicionarProduto = planejador::adicionarProduto, aoAjustarGramas = planejador::ajustarGramas))
     }
     // tela cheia em diálogo: a ficha já rola na vertical, então o montador não pode aninhar outra rolagem
-    if (estado.rascunho != null) Dialog(onDismissRequest = viewModel::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    if (estado.rascunho != null) TelaSobreposta(aoFechar = viewModel::fechar) {
         MontarDietaTela(estado, AcoesMontador(viewModel::fechar, viewModel::mudarTitulo, viewModel::mudarOrientacao, viewModel::adicionarRefeicao,
             viewModel::removerRefeicao, viewModel::moverRefeicao, viewModel::mudarNomeRefeicao, viewModel::mudarHorario, viewModel::abrirSeletor,
             viewModel::mudarBusca, viewModel::mudarGrupoFiltro, viewModel::adicionarItem, viewModel::removerItem, viewModel::mudarPorcoes,

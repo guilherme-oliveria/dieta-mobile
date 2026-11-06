@@ -122,3 +122,15 @@ O PDF da avaliação, da dieta e das listas é gerado no backend (BE-46, BE-50) 
 - [ ] Gráficos pela biblioteca `ui/comum/graficos`, com tabela alternativa.
 - [ ] Acessibilidade da seção 8.
 - [ ] `telas.md` atualizado para "implementada".
+
+## Telas cheias e menu principal
+
+Criar ou editar (avaliação, dieta, modelo, consulta...) abre uma **tela cheia sobre a aba**, e o menu principal (barra inferior no celular, trilho no tablet e desktop) continua visível. No código use `TelaSobreposta` (`ui/comum`), que o `AppScaffold` desenha acima do conteúdo da aba. Não use `Dialog` de tela cheia para isso: ele cobre o menu. `AlertDialog` e folhas pequenas continuam como estão.
+
+## Sem botão repetido
+
+O topo do app já tem "Atualizar dados" (sync geral). Telas de aba não repetem o mesmo botão no corpo quando esse topo existe (`LocalAtualizacaoGeralNoTopo`); na web, que não tem o topo, cada tela mantém o seu.
+
+## Alvos de toque
+
+Toda linha clicável (`clickable`) tem `role = Role.Button` e altura mínima `Dimens.alvoToque` (48 dp).

@@ -73,7 +73,7 @@ fun FinanceiroTela(estado: EstadoFinanceiro, acoes: AcoesFinanceiro) {
     if (!estado.aberto) return
     val f = estado.formulario
     val habilitado = !estado.enviando && !estado.carregando
-    Dialog(onDismissRequest = acoes.aoFechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    TelaSobreposta(aoFechar = acoes.aoFechar) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta),

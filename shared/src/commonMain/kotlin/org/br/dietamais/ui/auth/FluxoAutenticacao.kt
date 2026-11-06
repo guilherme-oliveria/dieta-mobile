@@ -129,9 +129,11 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                     }
                 }
                 Box(Modifier.weight(1f)) {
-                    key(usuario.id, usuario.perfil) {
-                        if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
-                        else NavegacaoPaciente(viewModel::sair)
+                    androidx.compose.runtime.CompositionLocalProvider(org.br.dietamais.ui.comum.LocalAtualizacaoGeralNoTopo provides (ambiente != null)) {
+                        key(usuario.id, usuario.perfil) {
+                            if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
+                            else NavegacaoPaciente(viewModel::sair)
+                        }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
 import org.br.dietamais.data.sync.*
@@ -11,6 +12,12 @@ import org.br.dietamais.plataforma.EstadoConexao
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
+
+/**
+ * Verdadeiro quando o app já mostra "Atualizar dados" no topo (sync geral). As telas não repetem o mesmo botão no corpo;
+ * na web, que não tem esse topo, cada tela mantém o seu.
+ */
+val LocalAtualizacaoGeralNoTopo = compositionLocalOf { false }
 
 @Composable
 fun IndicadorLeitura(estado: EstadoLeituraSync, conexao: EstadoConexao, aoAtualizar: () -> Unit) {
