@@ -73,7 +73,6 @@ private fun ItemAviso(aviso: AvisoResposta, fuso: TimeZone, aoTocar: () -> Unit)
     }
 }
 
-@Composable
 /** [topo] e [extraPendentes]: o que o app quer mostrar só ao abrir Avisos (e-mail por confirmar, atualizar dados) e quantos itens isso soma ao botão. */
 @Composable
 fun AvisosRota(viewModel: AvisosViewModel, modifier: Modifier = Modifier, extraPendentes: Int = 0, topo: @Composable ColumnScope.() -> Unit = {}) {
