@@ -38,12 +38,7 @@ export E2E_PG_PORTA=$pg_porta
 docker compose -f e2e/compose.e2e.yaml down -v >/dev/null 2>&1
 docker compose -f e2e/compose.e2e.yaml up -d --wait >build/e2e-postgres.log 2>&1 || { echo "Postgres não subiu (build/e2e-postgres.log)" | tee -a "$resumo"; exit 1; }
 
-if [ -z "${E2E_SEM_BUILD:-}" ]; then
-	echo "== Web (wasmJsBrowserDistribution)"
-	./gradlew :webApp:wasmJsBrowserDistribution --max-workers=2 >build/e2e-web.log 2>&1 || { echo "Build da web falhou (build/e2e-web.log)" | tee -a "$resumo"; exit 1; }
-fi
-
-echo "== Backend (bootRun com dados de exemplo, perfil dev)"
+echo "== Backend (bootRun, em paralelo com o build da web com dados de exemplo, perfil dev)"
 (
 	cd "$backend"
 	export DB_URL="jdbc:postgresql://localhost:$pg_porta/dietamais" SPRING_DOCKER_COMPOSE_ENABLED=false
@@ -54,6 +49,11 @@ echo "== Backend (bootRun com dados de exemplo, perfil dev)"
 	exec setsid ./gradlew bootRun --args=--dieta.dev.dados-exemplo=true --max-workers=2
 ) >build/e2e-backend.log 2>&1 &
 pid_backend=$!
+if [ -z "${E2E_SEM_BUILD:-}" ]; then
+	echo "== Web (wasmJsBrowserDistribution)"
+	./gradlew :webApp:wasmJsBrowserDistribution --max-workers=2 >build/e2e-web.log 2>&1 || { echo "Build da web falhou (build/e2e-web.log)" | tee -a "$resumo"; exit 1; }
+fi
+
 for _ in $(seq 1 180); do
 	curl -sf http://localhost:8080/actuator/health >/dev/null && break
 	kill -0 "$pid_backend" 2>/dev/null || { echo "Backend caiu (build/e2e-backend.log)" | tee -a "$resumo"; exit 1; }
