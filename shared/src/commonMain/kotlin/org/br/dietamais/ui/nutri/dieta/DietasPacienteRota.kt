@@ -41,6 +41,7 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
     if (editor != null) LaunchedEffect(Unit) { editor.abrirPaciente(ModeloComoDieta.SEM_PACIENTE) }
     val fecharEditor = { editor?.fechar(); modelos?.recarregar(); Unit }
     DietasListaTela(estado, viewModel::nova, { d -> if (planejador != null && usaPorcoes(d)) planejador.abrir(d) else viewModel.abrir(d) }, viewModel::duplicar, viewModel::recarregar,
+        aoPublicar = viewModel::pedirPublicacaoDaLista, aoConfirmarPublicar = viewModel::confirmarPublicacaoDaLista, aoCancelarPublicar = viewModel::cancelarPublicacaoDaLista,
         aoNovaPorcoes = planejador?.let { { it.nova() } }, porcoesDisponiveis = plano?.referencia != null,
         aoModelos = modelos?.let { { it.carregar(); abrirBiblioteca = true } }, aoSalvarModelo = modelos?.let { m -> { d: DietaResposta -> m.salvarComoModelo(d) } },
         avisoModelos = biblioteca?.takeIf { !abrirBiblioteca }?.let { it.aviso ?: it.erro },
@@ -87,8 +88,14 @@ fun DietasPacienteRota(viewModel: MontadorDietaViewModel, paciente: PacienteResp
 @Composable
 fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResposta) -> Unit, aoDuplicar: (DietaResposta) -> Unit, aoRecarregar: () -> Unit,
     pdf: @Composable (DietaResposta) -> Unit = {}, aoNovaPorcoes: (() -> Unit)? = null, porcoesDisponiveis: Boolean = false,
-    aoModelos: (() -> Unit)? = null, aoSalvarModelo: ((DietaResposta) -> Unit)? = null, avisoModelos: MensagemModelos? = null) {
+    aoModelos: (() -> Unit)? = null, aoSalvarModelo: ((DietaResposta) -> Unit)? = null, avisoModelos: MensagemModelos? = null,
+    aoPublicar: ((DietaResposta) -> Unit)? = null, aoConfirmarPublicar: () -> Unit = {}, aoCancelarPublicar: () -> Unit = {}) {
     val habilitado = !estado.semConexao && !estado.enviando && !estado.carregando
+    estado.publicarDaLista?.let { d -> AlertDialog(onDismissRequest = aoCancelarPublicar,
+        title = { Text(stringResource(Res.string.dieta_publicar_titulo)) },
+        text = { Text(stringResource(Res.string.dieta_publicar_resumo, formatar(d.totais.kcal), d.refeicoes.size)) },
+        confirmButton = { BotaoPrincipal(stringResource(Res.string.dieta_publicar), aoConfirmarPublicar, carregando = estado.enviando) },
+        dismissButton = { BotaoTexto(stringResource(Res.string.dieta_cancelar), aoCancelarPublicar) }) }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         if (estado.semConexao) FaixaOffline()
         estado.erro?.let { Text(textoMensagemDieta(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer) }
@@ -109,6 +116,7 @@ fun DietasListaTela(estado: EstadoDieta, aoNova: () -> Unit, aoAbrir: (DietaResp
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     BotaoTexto(stringResource(if (dieta.status == StatusDieta.RASCUNHO) Res.string.dieta_editar else Res.string.dieta_ver_acao), { aoAbrir(dieta) })
                     BotaoTexto(stringResource(Res.string.dieta_duplicar), { aoDuplicar(dieta) }, habilitado = habilitado)
+                    if (aoPublicar != null && dieta.status == StatusDieta.RASCUNHO) BotaoPrincipal(stringResource(Res.string.dieta_publicar), { aoPublicar(dieta) }, habilitado = habilitado)
                     if (aoSalvarModelo != null) BotaoTexto(stringResource(Res.string.mod_salvar_como_modelo), { aoSalvarModelo(dieta) }, habilitado = habilitado)
                     if (dieta.status == StatusDieta.PUBLICADA || dieta.status == StatusDieta.SUBSTITUIDA) pdf(dieta)
                 }

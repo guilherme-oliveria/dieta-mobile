@@ -103,6 +103,22 @@ class MontadorDietaViewModel(private val dietas: PortaDietas, private val alimen
             atual.update { it.copy(dietas = lista, rascunho = null, confirmarPublicar = false, aviso = MensagemDieta.PUBLICADA) }
         }
     }
+    /** Publicar direto do cartão da lista: vale também para a dieta por porções, que não tem botão de publicar no editor. */
+    fun pedirPublicacaoDaLista(dieta: DietaResposta) {
+        if (dieta.status != StatusDieta.RASCUNHO || !podeEnviar()) return
+        atual.update { it.copy(publicarDaLista = dieta, erro = null) }
+    }
+    fun cancelarPublicacaoDaLista() { atual.update { it.copy(publicarDaLista = null) } }
+    fun confirmarPublicacaoDaLista() {
+        val dieta = atual.value.publicarDaLista ?: return
+        val pacienteId = atual.value.pacienteId ?: return
+        if (!podeEnviar()) return
+        executar {
+            dietas.publicar(dieta.id, dieta.versao)
+            val lista = dietas.listar(pacienteId)
+            atual.update { it.copy(dietas = lista, publicarDaLista = null, aviso = MensagemDieta.PUBLICADA) }
+        }
+    }
     fun duplicar(dieta: DietaResposta) {
         if (!podeEnviar()) return
         val pacienteId = atual.value.pacienteId ?: return
@@ -173,7 +189,7 @@ class MontadorDietaViewModel(private val dietas: PortaDietas, private val alimen
             }
             else -> MensagemDieta.ERRO
         }
-        atual.update { it.copy(erro = mensagem, confirmarPublicar = false, semConexao = it.semConexao || falha is FalhaComunicacao) }
+        atual.update { it.copy(erro = mensagem, confirmarPublicar = false, publicarDaLista = null, semConexao = it.semConexao || falha is FalhaComunicacao) }
     }
 
     companion object {

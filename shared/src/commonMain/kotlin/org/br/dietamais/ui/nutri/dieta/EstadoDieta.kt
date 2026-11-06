@@ -26,5 +26,5 @@ data class EstadoDieta(
     val seletorRefeicao: Uuid? = null, val busca: String = "", val grupoFiltro: Uuid? = null,
     val totais: TotaisCent = TotaisCent(), val totaisRefeicao: Map<Uuid, TotaisCent> = emptyMap(),
     val errosCampos: Map<String, MensagemDieta> = emptyMap(), val carregando: Boolean = false, val enviando: Boolean = false,
-    val semConexao: Boolean = false, val confirmarPublicar: Boolean = false, val erro: MensagemDieta? = null, val aviso: MensagemDieta? = null,
+    val semConexao: Boolean = false, val confirmarPublicar: Boolean = false, val publicarDaLista: DietaResposta? = null, val erro: MensagemDieta? = null, val aviso: MensagemDieta? = null,
 ) { override fun toString() = "EstadoDieta[conteúdo clínico protegido]" }
