@@ -15,6 +15,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.window.core.layout.WindowSizeClass
 import org.br.dietamais.ui.comum.BarraNavegacaoInferior
 import org.br.dietamais.ui.comum.HospedeSobreposicao
@@ -41,7 +42,10 @@ fun AppScaffold(
             if (!compacta) TrilhoNavegacao(itens, selecionada, aoSelecionar)
             // Telas cheias (montar dieta, avaliação...) entram aqui, acima do conteúdo da aba e abaixo do menu, que continua à vista.
             Box(Modifier.weight(1f).fillMaxSize()) {
-                CompositionLocalProvider(LocalHospedeSobreposicao provides hospede) { content() }
+                // Com tela cheia aberta, o que está por baixo sai da árvore de acessibilidade: leitor de tela e testes só veem a tela de cima.
+                Box(Modifier.fillMaxSize().then(if (hospede.entradas.isEmpty()) Modifier else Modifier.clearAndSetSemantics {})) {
+                    CompositionLocalProvider(LocalHospedeSobreposicao provides hospede) { content() }
+                }
                 hospede.entradas.forEach { entrada ->
                     key(entrada) { Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { entrada.conteudo() } }
                 }
