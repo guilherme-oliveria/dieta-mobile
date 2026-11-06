@@ -61,11 +61,8 @@ class ShellSyncIntegracaoTest {
             val nome = onNodeWithText("Paciente de Exemplo", useUnmergedTree = true).performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
             val navegacao = onNodeWithContentDescription("Navegação principal").fetchSemanticsNode().boundsInRoot
             assertTrue(nome.bottom <= navegacao.top, "O cabeçalho global não deve encobrir a lista acima da navegação inferior")
-            // "Atualizar dados" fica dentro de Avisos, não no topo
+            // "Atualizar dados" fica dentro de Avisos, não no topo (o conteúdo de Avisos é testado em AvisosTelasTest)
             onNodeWithText("Atualizar dados").assertDoesNotExist()
-            onNode(hasText("Avisos") and hasClickAction()).performClick()
-            onNodeWithText("Atualizar dados").assertIsDisplayed()
-            onNodeWithText("Fechar").performClick()
             val arquivo = File("build/reports/sincronizacao/shell-390-fonte-2.0.png")
             arquivo.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", arquivo)
             onNodeWithText("Alimentos").performClick()
