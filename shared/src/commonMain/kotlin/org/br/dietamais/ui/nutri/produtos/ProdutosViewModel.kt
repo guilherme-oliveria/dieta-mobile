@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 enum class CampoProduto { NOME, MARCA, CLASSIFICACAO, MEDIDA, MEDIDA_GRAMAS, ENERGIA, CARBOIDRATO, PROTEINA, LIPIDIO }
 
 /** Chaves dos 4 nutrientes obrigatórios por 100 g (as mesmas de `/referencias/produtos`); as demais (micronutrientes) seguem como vieram. */
-object NutrientesProduto { const val ENERGIA = "energia"; const val CARBOIDRATO = "gli"; const val PROTEINA = "pro"; const val LIPIDIO = "lip"
+object NutrientesProduto { const val ENERGIA = "energia_kcal"; const val CARBOIDRATO = "carboidrato_g"; const val PROTEINA = "proteina_g"; const val LIPIDIO = "lipideos_g"
     val macros = setOf(ENERGIA, CARBOIDRATO, PROTEINA, LIPIDIO) }
 
 data class FormularioProduto(val id: Uuid = novoIdLocal(), val versao: Long? = null, val nome: String = "", val marca: String = "", val classificacao: String = "",
@@ -88,7 +88,7 @@ class ProdutosViewModel(private val repositorio: PortaProdutos, private val disp
         if (f.nome.isBlank()) erros["nome"] = MensagemAlimentos.OBRIGATORIO else if (f.nome.length > 150) erros["nome"] = MensagemAlimentos.CAMPO_INVALIDO
         val medidaG = f.medidaGramas.takeIf { it.isNotBlank() }?.let { v -> numero(v) }
         if (f.medidaGramas.isNotBlank() && (medidaG == null || medidaG <= 0)) erros["medidaGramas"] = MensagemAlimentos.POSITIVO
-        val macros = listOf("energia" to f.energia, "gli" to f.carboidrato, "pro" to f.proteina, "lip" to f.lipidio).associate { (k, v) ->
+        val macros = listOf(NutrientesProduto.ENERGIA to f.energia, NutrientesProduto.CARBOIDRATO to f.carboidrato, NutrientesProduto.PROTEINA to f.proteina, NutrientesProduto.LIPIDIO to f.lipidio).associate { (k, v) ->
             if (v.isBlank()) erros[k] = MensagemAlimentos.OBRIGATORIO
             val n = numero(v)
             if (v.isNotBlank() && (n == null || n < 0)) erros[k] = MensagemAlimentos.CAMPO_INVALIDO

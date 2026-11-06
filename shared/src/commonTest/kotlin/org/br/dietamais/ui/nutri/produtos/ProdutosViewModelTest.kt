@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 class ProdutosViewModelTest {
     private val agora = Instant.parse("2026-11-05T12:00:00Z")
     private fun produto(nome: String, ativo: Boolean = true, versao: Long = 1) = ProdutoResposta(Uuid.random(), nome, "Marca", "Whey", medidaCaseira = "1 scoop", medidaGramas = 30.0,
-        nutrientes = mapOf("energia" to 400.0, "gli" to 10.0, "pro" to 80.0, "lip" to 5.0, "ca" to 120.0), ativo = ativo, versao = versao, atualizadoEm = agora)
+        nutrientes = mapOf("energia_kcal" to 400.0, "carboidrato_g" to 10.0, "proteina_g" to 80.0, "lipideos_g" to 5.0, "calcio_mg" to 120.0), ativo = ativo, versao = versao, atualizadoEm = agora)
 
     private class Fake(var itens: List<ProdutoResposta>) : PortaProdutos {
         val buscas = mutableListOf<Triple<String, Boolean, Int>>(); val criados = mutableListOf<CriarProdutoRequisicao>(); val alterados = mutableListOf<Triple<Uuid, Long, AtualizarProdutoRequisicao>>()
@@ -46,21 +46,21 @@ class ProdutosViewModelTest {
     @Test fun criarValidaOsQuatroMacrosEEnviaPorCemGramas() = runTest {
         val f = Fake(emptyList()); val vm = vm(f); vm.novo()
         vm.salvar(); runCurrent()
-        assertEquals(MensagemAlimentos.OBRIGATORIO, vm.estado.value.errosCampos["nome"]); assertEquals(MensagemAlimentos.OBRIGATORIO, vm.estado.value.errosCampos["energia"])
+        assertEquals(MensagemAlimentos.OBRIGATORIO, vm.estado.value.errosCampos["nome"]); assertEquals(MensagemAlimentos.OBRIGATORIO, vm.estado.value.errosCampos["energia_kcal"])
         assertTrue(f.criados.isEmpty())
         vm.mudarCampo(CampoProduto.NOME, "Whey Max"); vm.mudarCampo(CampoProduto.ENERGIA, "400,5"); vm.mudarCampo(CampoProduto.CARBOIDRATO, "10")
         vm.mudarCampo(CampoProduto.PROTEINA, "80"); vm.mudarCampo(CampoProduto.LIPIDIO, "-1"); vm.salvar()
-        assertEquals(MensagemAlimentos.CAMPO_INVALIDO, vm.estado.value.errosCampos["lip"])
+        assertEquals(MensagemAlimentos.CAMPO_INVALIDO, vm.estado.value.errosCampos["lipideos_g"])
         vm.mudarCampo(CampoProduto.LIPIDIO, "5"); vm.mudarCampo(CampoProduto.MEDIDA_GRAMAS, "30"); vm.salvar(); runCurrent()
         val c = f.criados.single()
-        assertEquals(mapOf("energia" to 400.5, "gli" to 10.0, "pro" to 80.0, "lip" to 5.0), c.nutrientes); assertEquals(30.0, c.medidaGramas); assertNotNull(c.id)
+        assertEquals(mapOf("energia_kcal" to 400.5, "carboidrato_g" to 10.0, "proteina_g" to 80.0, "lipideos_g" to 5.0), c.nutrientes); assertEquals(30.0, c.medidaGramas); assertNotNull(c.id)
         assertNull(vm.estado.value.formulario); assertEquals(MensagemAlimentos.SALVO, vm.estado.value.aviso); assertFalse(vm.estado.value.enviando)
     }
     @Test fun editarPreservaMicronutrientesEEnviaAVersao() = runTest {
         val p = produto("Whey", versao = 3); val f = Fake(listOf(p)); val vm = vm(f); vm.carregar(); runCurrent()
         vm.editar(p); vm.mudarCampo(CampoProduto.NOME, "Whey Novo"); vm.salvar(); runCurrent()
         val (id, versao, corpo) = f.alterados.single()
-        assertEquals(p.id, id); assertEquals(3L, versao); assertEquals("Whey Novo", corpo.nome); assertEquals(120.0, corpo.nutrientes["ca"]); assertTrue(corpo.ativo)
+        assertEquals(p.id, id); assertEquals(3L, versao); assertEquals("Whey Novo", corpo.nome); assertEquals(120.0, corpo.nutrientes["calcio_mg"]); assertTrue(corpo.ativo)
     }
     @Test fun desativarPedeConfirmacaoEMandaAtivoFalso() = runTest {
         val p = produto("Whey"); val f = Fake(listOf(p)); val vm = vm(f); vm.carregar(); runCurrent()

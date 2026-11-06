@@ -124,7 +124,7 @@ class PlanejadorPorcoesViewModel(private val dietas: PortaDietas, private val po
     }
     fun adicionarProduto(refeicaoId: Uuid, produto: ProdutoResposta) {
         val gramas = produto.medidaGramas?.coerceIn(PASSO_GRAMAS, MAXIMO_GRAMAS) ?: 100.0
-        adicionarItem(refeicaoId, ItemPlano.DoProduto(produtoId = produto.id, nome = produto.nome, gramas = gramas, kcalPor100 = produto.nutrientes["energia"]))
+        adicionarItem(refeicaoId, ItemPlano.DoProduto(produtoId = produto.id, nome = produto.nome, gramas = gramas, kcalPor100 = produto.nutrientes[org.br.dietamais.ui.nutri.produtos.NutrientesProduto.ENERGIA]))
     }
     /** Passos de 10 g, de 10 a 5000. */
     fun ajustarGramas(refeicaoId: Uuid, item: Uuid, passos: Int) = refeicao(refeicaoId) { r ->
