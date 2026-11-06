@@ -68,6 +68,17 @@ class MontadorDietaViewModelTest {
         vm.confirmarPublicacao(); runCurrent()
         assertEquals(MensagemDieta.DIETA_VAZIA, vm.estado.value.erro); assertFalse(vm.estado.value.confirmarPublicar)
     }
+    @Test fun publicarDaListaPedeConfirmacaoEPublicaSoRascunho() = runTest {
+        val d = Dietas(); val vm = vm(d)
+        fun dieta(status: StatusDieta) = DietaResposta(Uuid.random(), paciente, Uuid.random(), "Sem restrições", status, null, emptyList(), zero, 3,
+            Instant.parse("2026-10-26T12:00:00Z"), Instant.parse("2026-10-26T12:00:00Z"))
+        vm.pedirPublicacaoDaLista(dieta(StatusDieta.PUBLICADA)); assertNull(vm.estado.value.publicarDaLista)
+        vm.pedirPublicacaoDaLista(dieta(StatusDieta.RASCUNHO)); assertNotNull(vm.estado.value.publicarDaLista)
+        vm.cancelarPublicacaoDaLista(); assertNull(vm.estado.value.publicarDaLista)
+        vm.pedirPublicacaoDaLista(dieta(StatusDieta.RASCUNHO)); vm.confirmarPublicacaoDaLista(); runCurrent()
+        assertEquals(listOf(3L), d.publicadas); assertNull(vm.estado.value.publicarDaLista) // o fake de publicar termina em erro, por isso não se confere o aviso
+    }
+
     @Test fun validadoresDePorcoesEHorario() {
         assertEquals(1.5, MontadorDietaViewModel.porcoesValidas("1,5")); assertNull(MontadorDietaViewModel.porcoesValidas("0")); assertNull(MontadorDietaViewModel.porcoesValidas("1,23456"))
         assertNotNull(MontadorDietaViewModel.horarioValido("7:05")); assertNull(MontadorDietaViewModel.horarioValido("24:00")); assertNull(MontadorDietaViewModel.horarioValido("8h"))
