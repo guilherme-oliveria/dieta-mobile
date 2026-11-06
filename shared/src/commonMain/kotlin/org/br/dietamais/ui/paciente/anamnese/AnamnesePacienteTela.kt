@@ -59,7 +59,7 @@ fun AnamnesePacienteTela(estado: EstadoAnamnesePaciente, acoes: AcoesAnamnesePac
     val habilitado = !estado.concluindo
     val ampla = classe.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && LocalDensity.current.fontScale <= 1.3f
     val assuntos = passo?.perguntas.orEmpty().mapNotNull { assuntoAnamnese(it.codigo) }.toSet()
-    Dialog(onDismissRequest = acoes.aoSair, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    TelaSobreposta(aoFechar = acoes.aoSair) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Column(Modifier.fillMaxSize()) {
                 BarraTopo(questionario.nome, acoes.aoSair, stringResource(Res.string.anamnese_pac_sair), subtitulo = stringResource(Res.string.ana_salvamento_automatico))

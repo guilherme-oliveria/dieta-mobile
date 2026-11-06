@@ -64,7 +64,7 @@ fun AvisosTela(estado: EstadoAvisos, acoes: AcoesAvisos, fuso: TimeZone = TimeZo
 @Composable
 private fun ItemAviso(aviso: AvisoResposta, fuso: TimeZone, aoTocar: () -> Unit) {
     val naoLidoDescricao = stringResource(Res.string.avisos_nao_lido)
-    CardDieta(Modifier.fillMaxWidth().clickable(onClick = aoTocar).semantics(mergeDescendants = true) { if (!aviso.lido) stateDescription = naoLidoDescricao }) {
+    CardDieta(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = aoTocar).semantics(mergeDescendants = true) { if (!aviso.lido) stateDescription = naoLidoDescricao }) {
         Text(aviso.titulo, style = MaterialTheme.typography.titleSmall, fontWeight = if (aviso.lido) FontWeight.Normal else FontWeight.Bold)
         Text(aviso.corpo, style = MaterialTheme.typography.bodyMedium)
         Text(stringResource(Res.string.avisos_quando, formatarData(diaLocal(aviso.criadoEm, fuso)), formatarHora(aviso.criadoEm, fuso)),

@@ -1,5 +1,6 @@
 package org.br.dietamais.ui.nutri.avaliacao
 
+import org.br.dietamais.ui.comum.TelaSobreposta
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,16 +24,17 @@ fun AvaliacoesNutriRota(viewModel: AvaliacoesViewModel, pacienteId: Uuid, sexo: 
     LaunchedEffect(sexo, nascimento) { viewModel.definirPaciente(sexo, nascimento) }
     val pdf = koinInject<PortaPdf>()
     val lancando = exames?.estado?.collectAsState()?.value
-    if (exames != null && lancando?.avaliacao != null) Dialog(onDismissRequest = exames::fechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    if (exames != null && lancando?.avaliacao != null) TelaSobreposta(aoFechar = exames::fechar) {
         ExamesNutriTela(lancando, nomePaciente, AcoesExames(exames::fechar, exames::mudarBusca, exames::escolherSecao, exames::mudarValor, exames::mudarCondicao,
             exames::mudarMostrarAoPaciente, exames::mudarJustificativa, exames::salvar))
     }
-    if (estado.formulario != null) AvaliacaoTela(estado, AcoesAvaliacao(viewModel::mudarMedida, viewModel::mudarParecer, viewModel::mudarCompartilhada,
+    // Tela cheia sobre a aba, com o rodapé fixo e o menu principal à vista (não some ao criar/editar).
+    if (estado.formulario != null) TelaSobreposta(aoFechar = viewModel::fechar) { AvaliacaoTela(estado, AcoesAvaliacao(viewModel::mudarMedida, viewModel::mudarParecer, viewModel::mudarCompartilhada,
         viewModel::mudarJustificativa, viewModel::salvar, viewModel::fechar, viewModel::proximoPasso, viewModel::passoAnterior, viewModel::repetirMedidasDaUltima,
         viewModel::mudarProtocoloDobras, viewModel::mudarProtocoloMassa, { viewModel.mudarCompartilhamento(medidas = it) }, { viewModel.mudarCompartilhamento(composicao = it) },
         { viewModel.mudarCompartilhamento(resumo = it) }, viewModel::mudarEnergia, viewModel::mudarInfantil,
-        { viewModel.mudarCompartilhamento(necessidades = it) }), rolavel = false)
-    else HistoricoAvaliacoesTela(estado, AcoesHistorico(viewModel::nova, viewModel::editar, viewModel::alternarSelecao, viewModel::comparar,
+        { viewModel.mudarCompartilhamento(necessidades = it) })) }
+    HistoricoAvaliacoesTela(estado, AcoesHistorico(viewModel::nova, viewModel::editar, viewModel::alternarSelecao, viewModel::comparar,
         viewModel::voltarDaComparacao, viewModel::recarregar, aoExames = exames?.let { vm -> { a: org.br.dietamais.data.remoto.dto.AvaliacaoResposta -> vm.abrir(a) } },
         pdf = { a -> BotaoPdf(stringResource(Res.string.pdf_avaliacao), !estado.semConexao, { pdf.link(RecursoPdf.AVALIACAO, a.id) }) }), rolavel = false)
 }

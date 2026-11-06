@@ -26,7 +26,7 @@ fun TrocaTela(estado: EstadoDietaPaciente, aoEscolher: (Uuid, Uuid?) -> Unit, ao
     val troca = estado.troca ?: return
     val dieta = estado.dieta ?: return
     val refeicao = dieta.refeicoes.firstOrNull { it.id == troca.refeicaoId } ?: return
-    Dialog(onDismissRequest = aoCancelar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    TelaSobreposta(aoFechar = aoCancelar) {
         Surface(Modifier.fillMaxWidth().padding(Dimens.paddingCard), color = MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.large) {
             Column {
                 if (estado.erro != null) Text(stringResource(Res.string.pac_erro_geral), color = MaterialTheme.colorScheme.error,
