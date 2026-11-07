@@ -14,6 +14,7 @@ import androidx.compose.ui.semantics.*
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.br.dietamais.dominio.rotina.Substituto
+import org.br.dietamais.dominio.rotina.filtrarSubstitutos
 import org.br.dietamais.dominio.rotina.substitutosDoItem
 import org.br.dietamais.data.remoto.dto.ItemRefeicaoResposta
 import org.br.dietamais.recursos.*
@@ -33,11 +34,6 @@ private sealed interface LinhaTroca {
     class SemOpcao(val item: ItemRefeicaoResposta) : LinhaTroca { override val chave = "s-${item.id}" }
 }
 
-private fun semAcentos(s: String) = s.lowercase().map { when (it) {
-    'á', 'à', 'â', 'ã', 'ä' -> 'a'; 'é', 'ê', 'è', 'ë' -> 'e'; 'í', 'ì', 'î', 'ï' -> 'i'
-    'ó', 'ô', 'õ', 'ò', 'ö' -> 'o'; 'ú', 'ü', 'ù', 'û' -> 'u'; 'ç' -> 'c'; else -> it
-} }.joinToString("")
-
 /**
  * Troca de alimento (RN-SUB): primeiro os substitutos da lista do paciente para o item/grupo, com busca, lista preguiçosa paginada
  * (30 por vez) e voltar na barra do topo e no voltar do sistema. Vira check-in TROCADO.
@@ -50,23 +46,24 @@ fun TrocaTela(estado: EstadoDietaPaciente, aoEscolher: (Uuid, Uuid?) -> Unit, ao
     TelaSobreposta(aoFechar = aoCancelar) {
         var busca by remember(troca.refeicaoId, troca.itemId) { mutableStateOf("") }
         var limite by remember(troca.refeicaoId, troca.itemId, busca) { mutableStateOf(TAMANHO_PAGINA) }
-        val termo = semAcentos(busca.trim())
-        val linhas = remember(refeicao, troca.itemId, troca.escolhas, dieta.listaSubstituicao, termo) {
+        val linhas = remember(refeicao, troca.itemId, troca.escolhas, dieta.listaSubstituicao, busca) {
             refeicao.itens.filter { troca.itemId == null || it.id == troca.itemId }.flatMap { item ->
                 val todas = substitutosDoItem(item, dieta.listaSubstituicao)
-                val opcoes = todas.filter { termo.isEmpty() || semAcentos(it.alimento.nome).contains(termo) }
+                val opcoes = filtrarSubstitutos(todas, busca)
                 when {
                     todas.isEmpty() -> listOf(LinhaTroca.SemOpcao(item))
-                    termo.isNotEmpty() && opcoes.isEmpty() -> emptyList()
+                    busca.isNotBlank() && opcoes.isEmpty() -> emptyList()
                     else -> listOf<LinhaTroca>(LinhaTroca.Cabecalho(item, opcoes.size, troca.escolhas[item.id] != null)) + opcoes.map { LinhaTroca.Opcao(item, it) }
                 }
             }
         }
         val visiveis = linhas.take(limite)
         val lista = rememberLazyListState()
-        LaunchedEffect(lista, linhas.size) {
+        val tamanhoVisivel by rememberUpdatedState(visiveis.size)
+        val tamanhoTotal by rememberUpdatedState(linhas.size)
+        LaunchedEffect(lista) {
             snapshotFlow { lista.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }.collect { ultimo ->
-                if (ultimo >= visiveis.size - 5 && limite < linhas.size) limite += TAMANHO_PAGINA
+                if (ultimo >= tamanhoVisivel - 5 && limite < tamanhoTotal) limite += TAMANHO_PAGINA
             }
         }
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {

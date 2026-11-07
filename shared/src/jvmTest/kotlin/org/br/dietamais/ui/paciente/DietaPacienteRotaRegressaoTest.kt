@@ -63,6 +63,18 @@ class DietaPacienteRotaRegressaoTest {
         assertNull(vm.estado.value.troca)
         assertEquals(StatusCheckin.TROCADO, vm.estado.value.checkins[r.id])
     }
+    @Test fun trocaFiltraPelaBuscaEVoltaPelaSeta() = runSkikoComposeUiTest(size = Size(390f, 844f)) {
+        val rotina = Rotina(); val vm = vm(rotina); val r = vm.estado.value.refeicoes.single()
+        vm.abrirRefeicao(r.id); vm.abrirTroca(r.id, r.itens.single().id)
+        var voltou = 0
+        setContent { DietaTheme { val estado by vm.estado.collectAsState(); TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca) { voltou++ } } }
+        onNodeWithText("Substituto fictício", substring = true).assertIsDisplayed()
+        onNodeWithContentDescription("Buscar alimento").performTextInput("zzz")
+        onNodeWithText("Nenhum alimento encontrado").assertIsDisplayed()
+        onAllNodesWithText("Substituto fictício", substring = true).assertCountEquals(0)
+        onNodeWithContentDescription("Voltar para Hoje").performClick()
+        assertEquals(1, voltou)
+    }
     private fun verificarFalha(botao: String, status: String) = runSkikoComposeUiTest(size = Size(390f, 844f)) {
         val rotina = Rotina(); val vm = vm(rotina); val id = vm.estado.value.refeicoes.single().id
         vm.abrirRefeicao(id)
