@@ -46,3 +46,5 @@ Fontes: planilhas 0 a 9 e 10 a 17 anos (P2), Dieta sem restrições (P3: 12 abas
 | ART-P4-03 | `D-Cadastro-Paciente` | Nutri · Cadastro ampliado do paciente |
 | ART-P4-04 | `D-Micronutrientes` | Nutri · Necessidades e micronutrientes DRI |
 | ART-P4-05 | `D-Evolucao` | Nutri · Evolução entre avaliações em barras |
+| ART-P3-10 | `P-Troca-Alimento` | Paciente · Trocar alimento (TrocaTela): topo com voltar, busca, lista paginada só da lista de substituição do paciente, Confirmar fixo e menu inferior visível |
+| ART-P3-11 | `P-Troca-Alimento-Vazio` | Paciente · Trocar alimento: sem resultado, Confirmar desabilitado |
