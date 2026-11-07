@@ -131,3 +131,10 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - O passo Medidas (adulto) abre no hub ART-P1-03 com as seções Básicas, Perímetros, Dobras e Complementares; tocar numa linha abre só os campos daquela seção, com "Voltar às seções". O estado de cada seção fica em texto ("2 de 5 medidas") e uma seção com erro avisa.
 - Diferente do desenho: Cadastro (ART-P1-04) e Peso × estatura (ART-P1-05) continuam juntos na seção Básicas, a Composição segue como passo próprio e Gráficos e Resumo ficam no último passo. Cada seção é uma tela do mesmo fluxo, não uma rota separada, e a seção aberta não sobrevive a girar a tela.
 - Avaliação infantil não muda.
+
+## MOB-FIX · Troca de alimento no Hoje (07/11/2026)
+
+- Artboards ART-P3-10 (`P-Troca-Alimento`) e ART-P3-11 (`P-Troca-Alimento-Vazio`). A tela implementa topo com voltar, busca, lista paginada só da lista do paciente, Confirmar fixo e menu inferior visível.
+- Diferente do desenho: o desenho usa linhas com círculo e o bloco "Você vai trocar"; o app usa botões de texto com ✓ no escolhido, sem o bloco.
+- O desenho tem "Carregar mais"; o app carrega mais 30 ao rolar.
+- Sem resultado, o desenho diz "Nenhum substituto encontrado"; o app mostra "Nenhum alimento encontrado".
