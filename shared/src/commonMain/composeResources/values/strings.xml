@@ -1327,7 +1327,7 @@
     <string name="pacientes_uf">UF</string>
     <string name="evolucao_modo_linha">Linha</string>
     <string name="evolucao_modo_barras">Barras por avaliação</string>
-    <string name="evolucao_barras_titulo">Últimas %1$d medidas</string>
+    <string name="evolucao_barras_titulo">%1$d medidas no período</string>
     <string name="dri_titulo">Micronutrientes (DRI)</string>
     <string name="dri_expandir">Ver micronutrientes (%1$d fora da meta)</string>
     <string name="dri_recolher">Esconder micronutrientes</string>
