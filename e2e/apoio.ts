@@ -40,8 +40,22 @@ async function trazer(page: Page, loc: Locator) {
   throw new Error(`Não consegui trazer ${loc} para a janela`);
 }
 
+/** Espera o elemento parar de se mexer (mesma caixa em duas leituras seguidas) e devolve o ponto central.
+ *  O Compose reposiciona a tela depois de um toque (ex.: ao sair do Resumo some a faixa de atalhos acima das abas e as abas sobem),
+ *  e clicar na coordenada lida antes disso acerta outro botão (era o "Atualizar" no lugar da aba Evolução). */
+async function pontoEstavel(page: Page, loc: Locator) {
+  let ultimo = await trazer(page, loc);
+  for (let i = 0; i < 20; i++) {
+    await page.waitForTimeout(120);
+    const atual = await trazer(page, loc);
+    if (Math.abs(atual.x - ultimo.x) < 1 && Math.abs(atual.y - ultimo.y) < 1) return atual;
+    ultimo = atual;
+  }
+  throw new Error(`${loc} não parou de mudar de posição`);
+}
+
 export async function clicar(page: Page, loc: Locator) {
-  const { x, y } = await trazer(page, loc);
+  const { x, y } = await pontoEstavel(page, loc);
   await page.mouse.click(x, y);
   await page.waitForTimeout(150);
 }
