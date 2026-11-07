@@ -34,11 +34,11 @@ class EvolucaoBarrasTest {
     }
 
     @Test fun maximoDeBarrasSegueALarguraEFicaEntre4E12() {
-        assertEquals(7, maximoBarrasPorLargura(358f)) // celular de 390 dp menos margens e cartão
+        assertEquals(7, maximoBarrasPorLargura(326f)) // celular de 390 dp menos margens da tela e do cartão
         assertEquals(4, maximoBarrasPorLargura(100f))
         assertEquals(12, maximoBarrasPorLargura(900f))
         val pontos = (0 until 26).map { PontoSerie(Instant.parse("2026-05-01T12:00:00Z") + (7 * it).days, it.toDouble()) }
-        val barras = barrasDaSerie(pontos, fuso, maximoBarrasPorLargura(358f))
+        val barras = barrasDaSerie(pontos, fuso, maximoBarrasPorLargura(326f))
         assertEquals(7, barras.size)
         assertEquals(0.0, barras.first().valor); assertEquals(25.0, barras.last().valor)
     }
