@@ -69,3 +69,6 @@ fun barrasDaSerie(pontos: List<PontoSerie>, fuso: kotlinx.datetime.TimeZone, max
         BarraSerie("${data.day.toString().padStart(2, '0')}/${(data.month.ordinal + 1).toString().padStart(2, '0')}", p.valor)
     }
 }
+
+/** Quantas barras cabem na largura útil (em dp): valor e rótulo "dd/MM" pedem cerca de 44 dp por barra; entre 4 e 12. */
+fun maximoBarrasPorLargura(larguraDp: Float): Int = (larguraDp / 44f).toInt().coerceIn(4, 12)

@@ -53,9 +53,13 @@ fun EvolucaoTela(estado: EstadoEvolucao, acoes: AcoesEvolucao, agora: Instant = 
                     if (pontos.isEmpty()) Text(stringResource(Res.string.evolucao_sem_pontos))
                     else {
                         if (barras) {
-                            val itens = barrasDaSerie(pontos, TimeZone.currentSystemDefault())
-                            Text(stringResource(Res.string.evolucao_barras_titulo, itens.size), style = MaterialTheme.typography.labelLarge)
-                            GraficoBarrasVerticais(itens.map { ItemGrafico(it.rotulo, it.valor) }, unidade = serie.unidade)
+                            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                                val itens = barrasDaSerie(pontos, TimeZone.currentSystemDefault(), maximoBarrasPorLargura(maxWidth.value))
+                                Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                                    Text(stringResource(Res.string.evolucao_barras_titulo, itens.size), style = MaterialTheme.typography.labelLarge)
+                                    GraficoBarrasVerticais(itens.map { ItemGrafico(it.rotulo, it.valor) }, unidade = serie.unidade)
+                                }
+                            }
                         } else GraficoLinha(pontos, rotulo, serie.unidade)
                         Text(stringResource(Res.string.evolucao_ultimo, textoDecimal(pontos.last().valor), serie.unidade), style = MaterialTheme.typography.titleSmall)
                         variacaoTotal(pontos)?.let { Text(stringResource(Res.string.evolucao_variacao, textoVariacaoEvolucao(it), serie.unidade), style = MaterialTheme.typography.bodyMedium) }
