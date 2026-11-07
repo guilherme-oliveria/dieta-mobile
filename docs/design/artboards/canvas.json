@@ -497,6 +497,20 @@
    "w": 390,
    "h": 844,
    "title": "Nutri · Necessidades e micronutrientes DRI (ART-P4-04)"
+  },
+  "P-Troca-Alimento.dc.html": {
+   "x": 0,
+   "y": 16501,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Trocar alimento (TrocaTela) (ART-P3-10)"
+  },
+  "P-Troca-Alimento-Vazio.dc.html": {
+   "x": 470,
+   "y": 16501,
+   "w": 390,
+   "h": 844,
+   "title": "Paciente · Trocar alimento: sem resultado (ART-P3-11)"
   }
  },
  "order": [
