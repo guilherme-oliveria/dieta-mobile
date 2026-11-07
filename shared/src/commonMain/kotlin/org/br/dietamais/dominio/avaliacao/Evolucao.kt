@@ -56,9 +56,19 @@ fun variacaoTotal(pontos: List<PontoSerie>): Double? =
 /** Uma barra da evolução entre avaliações (MOB-66): rótulo "mês/ano" curto e o valor da série naquele dia. */
 data class BarraSerie(val rotulo: String, val valor: Double)
 
-/** Últimas [maximo] medidas da série, da mais antiga para a mais nova, com o rótulo "MM/aa" no fuso dado (ART-P4-05). */
-fun barrasDaSerie(pontos: List<PontoSerie>, fuso: kotlinx.datetime.TimeZone, maximo: Int = 6): List<BarraSerie> =
-    pontos.sortedBy { it.instante }.takeLast(maximo).map { p ->
+/**
+ * Barras da série já recortada pelo período: até [maximo] medidas, da mais antiga para a mais nova, com o rótulo "dd/MM" no fuso dado (ART-P4-05).
+ * Com mais pontos que o máximo, escolhe medidas espaçadas por igual (sempre a primeira e a última), para o período escolhido aparecer inteiro nas barras.
+ */
+fun barrasDaSerie(pontos: List<PontoSerie>, fuso: kotlinx.datetime.TimeZone, maximo: Int = 12): List<BarraSerie> {
+    val ordenados = pontos.sortedBy { it.instante }
+    val escolhidos = if (ordenados.size <= maximo || maximo < 2) ordenados.takeLast(maximo.coerceAtLeast(1))
+    else (0 until maximo).map { ordenados[(it * (ordenados.size - 1) + (maximo - 1) / 2) / (maximo - 1)] }
+    return escolhidos.map { p ->
         val data = p.instante.toLocalDateTime(fuso).date
-        BarraSerie("${(data.month.ordinal + 1).toString().padStart(2, '0')}/${(data.year % 100).toString().padStart(2, '0')}", p.valor)
+        BarraSerie("${data.day.toString().padStart(2, '0')}/${(data.month.ordinal + 1).toString().padStart(2, '0')}", p.valor)
     }
+}
+
+/** Quantas barras cabem na largura útil (em dp): valor e rótulo "dd/MM" pedem cerca de 44 dp por barra; entre 4 e 12. */
+fun maximoBarrasPorLargura(larguraDp: Float): Int = (larguraDp / 44f).toInt().coerceIn(4, 12)
