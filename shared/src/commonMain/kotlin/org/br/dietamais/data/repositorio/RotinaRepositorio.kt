@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
@@ -40,6 +41,17 @@ class RotinaRepositorio(private val banco: BancoDieta, private val fila: FilaMut
         try { DadosRotina(checkins.map { JsonContrato.decodeFromString<CheckinResposta>(it) }, agua.map { JsonContrato.decodeFromString<AguaResposta>(it) },
             pesos.map { JsonContrato.decodeFromString<PesoResposta>(it) }) }
         catch (_: Exception) { throw RespostaInvalida() }
+    }
+
+    /** O servidor recusou depois um registro já mostrado (a criação otimista some): avisa a tela, que de outro modo ficaria muda. Recusas antigas não contam. */
+    override val falhas: Flow<Unit> = flow {
+        var vistas: Set<String>? = null
+        banco.mutacaoPendenteQueries.daSessaoAtual().asFlow().mapToList(Dispatchers.Default).collect { lista ->
+            val agora = lista.filter { it.status == "REJEITADA" && it.entidade in setOf("checkins", "agua", "pesos") }.map { it.id_mutacao }.toSet()
+            val antes = vistas
+            vistas = agora
+            if (antes != null && (agora - antes).isNotEmpty()) emit(Unit)
+        }
     }
 
     override fun registrarCheckin(dietaId: Uuid, refeicaoId: Uuid, data: LocalDate, status: StatusCheckin, trocas: List<TrocaCheckin>, agora: Instant) {
