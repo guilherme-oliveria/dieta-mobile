@@ -24,6 +24,8 @@ data class DadosRotina(val checkins: List<CheckinResposta> = emptyList(), val ag
 
 interface PortaRotina {
     fun observar(): Flow<DadosRotina>
+    /** Emite quando o servidor recusa um registro já mostrado (só na web, que grava pela API); o app local nunca emite. */
+    val falhas: Flow<Unit> get() = kotlinx.coroutines.flow.emptyFlow()
     /** Offline-first: grava o registro local e a mutação na mesma transação (RN-SYN-01). */
     fun registrarCheckin(dietaId: Uuid, refeicaoId: Uuid, data: LocalDate, status: StatusCheckin, trocas: List<TrocaCheckin>, agora: Instant)
     fun registrarAgua(ml: Int, agora: Instant)

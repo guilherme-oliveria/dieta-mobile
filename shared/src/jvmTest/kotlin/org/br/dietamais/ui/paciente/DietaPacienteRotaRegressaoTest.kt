@@ -55,11 +55,11 @@ class DietaPacienteRotaRegressaoTest {
         val substituto = vm.estado.value.dieta!!.listaSubstituicao.alimentos.first { it.nome == "Substituto fictício" }
         vm.abrirRefeicao(r.id); vm.abrirTroca(r.id, item.id); vm.escolherSubstituto(item.id, substituto.id)
         setContent { DietaTheme { val estado by vm.estado.collectAsState(); TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca) } }
-        onNodeWithText("Confirmar troca").performScrollTo().performClick()
+        onNodeWithText("Confirmar troca").performClick()
         onNodeWithText("Não foi possível concluir. Tente de novo.").assertIsDisplayed()
         assertEquals(substituto.id, vm.estado.value.troca?.escolhas?.get(item.id))
         rotina.falha = false
-        onNodeWithText("Confirmar troca").performScrollTo().performClick()
+        onNodeWithText("Confirmar troca").performClick()
         assertNull(vm.estado.value.troca)
         assertEquals(StatusCheckin.TROCADO, vm.estado.value.checkins[r.id])
     }
@@ -85,7 +85,7 @@ class DietaPacienteRotaRegressaoTest {
             DietaTheme { NavegacaoApp(PerfilNavegacao.PACIENTE, conteudoDieta = { DietaPacienteRota(vm) }) }
         } }
         onNode(hasText("Dieta") and hasClickAction()).performClick()
-        onNodeWithText("Ver lista de substituição").performScrollTo().performClick()
+        onNodeWithText("Ver lista de substituição").performClick()
         onNode(hasText("Compras") and hasClickAction()).performClick()
         waitForIdle(); onNode(hasText("Compras") and hasClickAction()).assertIsSelected()
         runOnUiThread { entrada.backCompleted() }; waitForIdle()
@@ -96,14 +96,14 @@ class DietaPacienteRotaRegressaoTest {
         runOnUiThread { entrada.backCompleted() }; waitForIdle()
         assertFalse(vm.estado.value.listaAberta)
         onNode(hasText("Dieta") and hasClickAction()).assertIsSelected()
-        onNodeWithText("Refeição fictícia", substring = true).performScrollTo().performClick()
+        onNodeWithText("Refeição fictícia", substring = true).performClick()
         val refeicao = vm.estado.value.refeicaoAberta
         onNode(hasText("Perfil") and hasClickAction()).performClick()
         waitForIdle(); onNode(hasText("Perfil") and hasClickAction()).assertIsSelected()
         runOnUiThread { entrada.backCompleted() }; waitForIdle()
         assertEquals(refeicao, vm.estado.value.refeicaoAberta)
         onNode(hasText("Dieta") and hasClickAction()).performClick()
-        onNodeWithText("Trocar").performScrollTo().performClick()
+        onNodeWithText("Trocar").performClick()
         onNodeWithText("Cancelar").assertIsDisplayed()
         runOnUiThread { entrada.backCompleted() }; waitForIdle()
         assertNull(vm.estado.value.troca)

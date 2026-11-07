@@ -31,6 +31,7 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
 
     init {
         observarDados()
+        viewModelScope.launch(dispatcher) { rotina.falhas.collect { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO) } } }
         conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
     }
 
