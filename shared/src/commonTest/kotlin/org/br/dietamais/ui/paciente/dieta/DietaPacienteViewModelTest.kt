@@ -39,6 +39,8 @@ class DietaPacienteViewModelTest {
 
     private class Rotina : PortaRotina {
         var falha = false
+        val recusas = MutableSharedFlow<Unit>(extraBufferCapacity = 4)
+        override val falhas: Flow<Unit> = recusas
         val dados = MutableStateFlow(DadosRotina())
         val checkins = mutableListOf<CheckinResposta>()
         override fun observar() = dados
@@ -133,6 +135,13 @@ class DietaPacienteViewModelTest {
         assertEquals(StatusCheckin.FEITO, vm.estado.value.checkins[almoco.id]); assertNull(vm.estado.value.proxima); assertEquals(1, gravacoes)
         assertEquals(LocalDate(2026, 10, 28), rotina.checkins.single().data)
         vm.marcar(almoco.id, StatusCheckin.TROCADO); assertEquals(1, rotina.checkins.size) // TROCADO só pelo fluxo de troca
+    }
+
+    @Test fun recusaDoServidorMostraErroNoHoje() = runTest {
+        val rotina = Rotina(); val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(snap("Ana", "2026-01-01T10:00:00Z"))))), rotina); advanceUntilIdle()
+        assertNull(vm.estado.value.erro)
+        rotina.recusas.tryEmit(Unit); advanceUntilIdle()
+        assertEquals(MensagemDietaPaciente.ERRO, vm.estado.value.erro)
     }
 
     @Test fun ultimoCheckinDaRefeicaoVale() = runTest {

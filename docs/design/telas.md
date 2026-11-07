@@ -24,7 +24,7 @@ Status: **desenhada** (seguir o artboard com as correções de [validacao.md](va
 | Dieta / refeição detalhada | `ui/paciente/dieta` · `RefeicaoScreen` | `P-Refeicao.dc.html` | desenhada | 2 |
 | Orientações gerais | `ui/paciente/dieta` · `OrientacoesScreen` | — | faltando | 2 |
 | PDF da dieta | `ui/paciente/dieta` · `PdfDietaScreen` | — | faltando | 4 |
-| Trocar alimento | `ui/paciente/substituicao` · `SubstituirScreen` | `P-Substituir.dc.html` | desenhada | 2 |
+| Trocar alimento | `ui/paciente/substituicao` · `TrocaTela` | `P-Troca-Alimento.dc.html` (+ `P-Troca-Alimento-Vazio`) | desenhada | 2 |
 | Lista de compras (3, 7, 15 dias) | `ui/paciente/compras` · `ComprasScreen` | `P-Compras.dc.html` | desenhada | 3 |
 | Evolução | `ui/paciente/evolucao` · `EvolucaoScreen` | `P-Progresso.dc.html` | desenhada | 3 |
 | Registrar peso (folha inferior) | `ui/paciente/evolucao` · `RegistrarPesoSheet` | — | faltando | 3 |

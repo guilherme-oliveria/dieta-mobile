@@ -27,5 +27,14 @@ class SubstituicaoTest {
         assertEquals(2000, metaAguaMl(null)); assertEquals(2450, metaAguaMl(70.0)); assertEquals(2625, metaAguaMl(75.0))
     }
 
+    @Test fun buscaDeSubstitutoIgnoraAcentoECaixa() {
+        val todos = listOf("Maçã", "Macarrão", "Pão francês").map { calcularSubstituto(ItemRefeicaoResposta(Uuid.random(), null, grupo, "X", 1.0, "medida", 1.0, null, zero), alimento(it, gramas = 10.0)) }
+        assertEquals(listOf("Maçã", "Macarrão"), filtrarSubstitutos(todos, "MAC").map { it.alimento.nome })
+        assertEquals(listOf("Maçã"), filtrarSubstitutos(todos, " maca ").map { it.alimento.nome }.take(1))
+        assertEquals(listOf("Pão francês"), filtrarSubstitutos(todos, "frances").map { it.alimento.nome })
+        assertEquals(3, filtrarSubstitutos(todos, "").size)
+        assertTrue(filtrarSubstitutos(todos, "xyz").isEmpty())
+    }
+
     private companion object { val UUID_OUTRO = Uuid.random() }
 }

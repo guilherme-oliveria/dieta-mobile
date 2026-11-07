@@ -85,7 +85,7 @@ Um usuário pode ter os perfis `NUTRICIONISTA` e `PACIENTE` na mesma conta (deci
 
 ## Rotina do paciente (RN-ROT)
 
-- **RN-ROT-01** Check-in por refeição e por dia: `FEITO`, `TROCADO` (com alimento) ou `PULADO`. Um check-in por refeição/dia; o último vale. Pode ser feito até 3 dias depois.
+- **RN-ROT-01** Check-in por refeição e por dia: `FEITO`, `TROCADO` (com alimento) ou `PULADO`. Um check-in por refeição/dia; o último vale. Pode ser feito até 3 dias depois. Data futura é recusada, com tolerância de 1 dia à frente do fuso do perfil (aparelho em outro fuso).
 - **RN-ROT-02** Check-ins são do paciente, mas a nutri do vínculo ativo os vê (painel de adesão). São só de inclusão: nunca geram conflito de sync.
 - **RN-ROT-03** Água: meta padrão = 35 ml × peso mais recente (kg); a nutri pode sobrescrever na dieta. Registros de água e peso em casa seguem a mesma regra de inclusão.
 - **RN-ROT-04** Lista de compras: gerada no aparelho a partir da dieta em uso para N dias (padrão 7), somando gramas por alimento de referência. Itens marcados ficam só no aparelho no MVP.

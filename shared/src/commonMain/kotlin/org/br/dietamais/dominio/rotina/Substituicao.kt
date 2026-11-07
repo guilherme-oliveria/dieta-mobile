@@ -20,6 +20,17 @@ fun substitutosDoItem(item: ItemRefeicaoResposta, lista: ListaSubstituicaoRespos
 fun calcularSubstituto(item: ItemRefeicaoResposta, substituto: AlimentoResposta) =
     (item.porcoes ?: 0.0).let { porcoes -> Substituto(substituto, porcoes, round(porcoes * substituto.gramasPorPorcao * 100 + 1e-6) / 100) }
 
+/** Busca de substituto pelo nome, sem acento e sem diferença de caixa; termo vazio devolve todos. */
+fun filtrarSubstitutos(substitutos: List<Substituto>, busca: String): List<Substituto> {
+    val termo = semAcentosSubstituto(busca.trim())
+    return if (termo.isEmpty()) substitutos else substitutos.filter { semAcentosSubstituto(it.alimento.nome).contains(termo) }
+}
+
+private fun semAcentosSubstituto(s: String) = s.lowercase().map { when (it) {
+    'á', 'à', 'â', 'ã', 'ä' -> 'a'; 'é', 'ê', 'è', 'ë' -> 'e'; 'í', 'ì', 'î', 'ï' -> 'i'
+    'ó', 'ô', 'õ', 'ò', 'ö' -> 'o'; 'ú', 'ü', 'ù', 'û' -> 'u'; 'ç' -> 'c'; else -> it
+} }.joinToString("")
+
 /** Dias em que o check-in é aceito: hoje e até 3 dias para trás (RN-ROT-01). Mais recente primeiro. */
 fun diasComCheckin(hoje: LocalDate): List<LocalDate> = (0..3).map { hoje.minus(DatePeriod(days = it)) }
 
