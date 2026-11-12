@@ -1,6 +1,7 @@
 package org.br.dietamais.ui.paciente.hoje
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -9,13 +10,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import org.br.dietamais.data.remoto.dto.StatusCheckin
 import org.br.dietamais.dominio.rotina.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
+import org.br.dietamais.ui.nutri.agenda.nomeDiaSemana
 import org.br.dietamais.ui.nutri.dieta.formatar
 import org.br.dietamais.ui.paciente.dieta.EstadoDietaPaciente
 import org.br.dietamais.ui.theme.Dimens
@@ -37,10 +41,13 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
             estado.dieta == null -> EstadoVazio(mensagem = stringResource(Res.string.pac_sem_dieta))
             else -> {
                 if (estado.podeDesfazer) AvisoDesfazer(stringResource(Res.string.pac_checkin_registrado), stringResource(Res.string.pac_desfazer), acoes.aoDesfazer)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     estado.dias.forEach { d ->
-                        BotaoTexto(rotuloDia(d, estado.hoje), { acoes.aoMudarDia(d) }, selecionado = d == estado.dia)
+                        val extenso = descricaoDia(d)
+                        ChipEscolha(d == estado.dia, { acoes.aoMudarDia(d) }, { Text(rotuloDia(d, estado.hoje)) },
+                            Modifier.semantics { contentDescription = extenso })
                     }
+                }
                 }
                 val proxima = estado.proxima
                 if (proxima != null) CardProximaRefeicao(proxima.nome, proxima.horario.toString().take(5),
@@ -75,10 +82,25 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
 }
 
 @Composable
-private fun rotuloDia(d: LocalDate, hoje: LocalDate?): String = when {
-    d == hoje -> stringResource(Res.string.pac_dia_hoje)
-    else -> "${d.day.toString().padStart(2, '0')}/${(d.month.ordinal + 1).toString().padStart(2, '0')}"
+private fun rotuloDia(d: LocalDate, hoje: LocalDate?): String = when (tipoDia(d, hoje)) {
+    TipoDia.HOJE -> stringResource(Res.string.pac_dia_hoje)
+    TipoDia.ONTEM -> stringResource(Res.string.pac_dia_ontem)
+    TipoDia.OUTRO -> stringResource(Res.string.pac_dia_rotulo, nomeDiaSemana(d.dayOfWeek), diaMes(d))
 }
+
+/** Data por extenso para o leitor de tela: "segunda-feira, 9 de novembro". */
+@Composable
+private fun descricaoDia(d: LocalDate): String = stringResource(Res.string.pac_dia_extenso,
+    stringResource(when (d.dayOfWeek) {
+        DayOfWeek.MONDAY -> Res.string.pac_dia_longo_seg; DayOfWeek.TUESDAY -> Res.string.pac_dia_longo_ter
+        DayOfWeek.WEDNESDAY -> Res.string.pac_dia_longo_qua; DayOfWeek.THURSDAY -> Res.string.pac_dia_longo_qui
+        DayOfWeek.FRIDAY -> Res.string.pac_dia_longo_sex; DayOfWeek.SATURDAY -> Res.string.pac_dia_longo_sab
+        DayOfWeek.SUNDAY -> Res.string.pac_dia_longo_dom
+    }), d.day.toString(), stringResource(when (d.month.ordinal) {
+        0 -> Res.string.pac_mes_1; 1 -> Res.string.pac_mes_2; 2 -> Res.string.pac_mes_3; 3 -> Res.string.pac_mes_4
+        4 -> Res.string.pac_mes_5; 5 -> Res.string.pac_mes_6; 6 -> Res.string.pac_mes_7; 7 -> Res.string.pac_mes_8
+        8 -> Res.string.pac_mes_9; 9 -> Res.string.pac_mes_10; 10 -> Res.string.pac_mes_11; else -> Res.string.pac_mes_12
+    }))
 
 /** Cartão de água: três valores rápidos, valor livre e desfazer do último lançamento ainda não enviado (MOB-UX-05). */
 @Composable
