@@ -45,7 +45,7 @@ class DietaPacienteRotaRegressaoTest {
             override suspend fun selecionar(dietaId: Uuid, versao: Long): DietaEmUsoResposta = error("não deve selecionar")
         }
         return DietaPacienteViewModel(porta, rotina, object : Clock { override fun now() = Instant.parse("2026-11-01T12:00:00Z") },
-            TimeZone.UTC, Dispatchers.Unconfined, tique = flowOf(Unit))
+            TimeZone.UTC, Dispatchers.Unconfined, tique = flowOf(Unit), prazoDesfazerMs = 0) // sem espera: o teste olha a gravação na hora
     }
     @Test fun falhaEmComiFicaVisivelEAceitaNovaTentativa() = verificarFalha("Comi", "Feita")
     @Test fun falhaEmPuleiFicaVisivelEAceitaNovaTentativa() = verificarFalha("Pulei", "Pulada")

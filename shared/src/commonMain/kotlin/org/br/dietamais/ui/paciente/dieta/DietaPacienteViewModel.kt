@@ -21,7 +21,7 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     private val relogio: Clock = Clock.System, private val fuso: TimeZone = TimeZone.currentSystemDefault(),
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null,
     private val tique: Flow<Unit> = flow { while (true) { emit(Unit); delay(1.minutes) } },
-    private val aoGravar: () -> Unit = {}) : ViewModel() {
+    private val aoGravar: () -> Unit = {}, private val prazoDesfazerMs: Long = PRAZO_DESFAZER_MS) : ViewModel() {
     private val atual = MutableStateFlow(EstadoDietaPaciente())
     val estado = atual.asStateFlow()
     private var dados = DadosDietaPaciente()
@@ -100,7 +100,7 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         confirmarPendente()
         pendente = CheckinPendente(dieta.dietaId, refeicaoId, dia, status, relogio.now())
         recalcular()
-        prazoDesfazer = viewModelScope.launch(dispatcher) { delay(PRAZO_DESFAZER_MS); confirmarPendente(); recalcular() }
+        prazoDesfazer = viewModelScope.launch(dispatcher) { delay(prazoDesfazerMs); confirmarPendente(); recalcular() }
     }
 
     /** MOB-UX-04: descarta o check-in que ainda não foi gravado; a refeição volta ao estado anterior. */
