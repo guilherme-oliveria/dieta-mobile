@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ fun AvisoDesfazer(texto: String, rotuloDesfazer: String, aoDesfazer: () -> Unit,
         Row(Modifier.padding(start = Dimens.paddingCard, end = Dimens.espacoPequeno).heightIn(min = Dimens.alvoToque),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             Text(texto, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-            androidx.compose.material3.TextButton(aoDesfazer, Modifier.heightIn(min = Dimens.alvoToque)) {
+            TextButton(aoDesfazer, Modifier.heightIn(min = Dimens.alvoToque)) {
                 Text(rotuloDesfazer, color = MaterialTheme.colorScheme.inversePrimary)
             }
         }

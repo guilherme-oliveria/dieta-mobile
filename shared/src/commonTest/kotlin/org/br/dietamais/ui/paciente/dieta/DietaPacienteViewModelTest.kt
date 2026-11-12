@@ -2,6 +2,10 @@ package org.br.dietamais.ui.paciente.dieta
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.viewmodel.initializer
 import kotlinx.coroutines.test.*
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -168,6 +172,31 @@ class DietaPacienteViewModelTest {
         assertEquals(a.id, rotina.checkins.single().refeicaoId)
         vm.desfazerCheckin(); advanceUntilIdle()
         assertEquals(1, rotina.checkins.size); assertNull(vm.estado.value.checkins[b.id]); assertEquals(StatusCheckin.FEITO, vm.estado.value.checkins[a.id])
+    }
+
+    @Test fun falhaAoGravarDepoisDoPrazoTiraOAvisoVoltaARefeicaoEMostraOErro() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina().apply { falha = true }
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.FEITO); runCurrent()
+        assertTrue(vm.estado.value.podeDesfazer); assertNull(vm.estado.value.erro)
+        advanceTimeBy(PRAZO_DESFAZER_MS + 1); runCurrent()
+        assertFalse(vm.estado.value.podeDesfazer); assertNull(vm.estado.value.checkins[cafe.id])
+        assertEquals(cafe.id, vm.estado.value.proxima?.id); assertEquals(MensagemDietaPaciente.ERRO, vm.estado.value.erro)
+        rotina.falha = false; vm.marcar(cafe.id, StatusCheckin.FEITO); advanceUntilIdle()
+        assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status); assertNull(vm.estado.value.erro)
+    }
+
+    @Test fun fecharATelaGravaOCheckinPendente() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.FEITO); runCurrent()
+        assertTrue(rotina.checkins.isEmpty())
+        val loja = ViewModelStore()
+        ViewModelProvider.create(loja, viewModelFactory { initializer { vm } })[DietaPacienteViewModel::class]
+        loja.clear() // o mesmo caminho de quando a aba/tela sai: onCleared com o viewModelScope já cancelado
+        assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status)
     }
 
     @Test fun recusaDoServidorMostraErroNoHoje() = runTest {

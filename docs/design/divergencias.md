@@ -138,3 +138,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - Diferente do desenho: o desenho usa linhas com círculo e o bloco "Você vai trocar"; o app usa botões de texto com ✓ no escolhido, sem o bloco.
 - O desenho tem "Carregar mais"; o app carrega mais 30 ao rolar.
 - Sem resultado, o desenho diz "Nenhum substituto encontrado"; o app mostra "Nenhum alimento encontrado".
+
+## MOB-UX-04 · Desfazer o registro de refeição (12/11/2026)
+
+- O canvas `Main.dc.html` (Hoje) e o detalhe da refeição não têm o estado "Refeição registrada · Desfazer". O app mostra, por 5 s, uma faixa escura com o texto e o botão "Desfazer" no topo do conteúdo. Divergência até o Design atualizar o canvas.
