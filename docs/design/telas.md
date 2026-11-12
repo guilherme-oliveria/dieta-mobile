@@ -35,6 +35,8 @@ Status: **desenhada** (seguir o artboard com as correções de [validacao.md](va
 | Minhas nutris (vínculos, trocar nutri ativa, autorizar cópia do histórico) | `ui/paciente/perfil` · `MinhasNutrisScreen` | — | faltando | 4 |
 | Dados e privacidade (exportar, excluir conta) | `ui/paciente/perfil` · `PrivacidadeScreen` | — | faltando | 4 |
 
+**Hoje, aviso de desfazer (MOB-UX-04):** depois de Comi/Pulei aparece, por 5 s, a faixa escura "Refeição registrada · Desfazer" no topo do conteúdo (também no detalhe da refeição). O canvas `Main.dc.html` precisa ganhar esse estado; a cópia local do artboard não existe.
+
 Bottom nav do paciente: Hoje · Dieta · Compras · Evolução · Perfil.
 
 ## Nutri

@@ -232,7 +232,7 @@ private fun NavegacaoPaciente(aoContaExcluida: () -> Unit) {
             Column(Modifier.fillMaxSize()) {
                 AnamnesePacienteRota(anamnese)
                 ProximaConsultaRota(koinViewModel<ConsultasPacienteViewModel>(viewModelStoreOwner = dono))
-                HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua), Modifier.weight(1f))
+                HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua, vm::desfazerCheckin), Modifier.weight(1f))
             }
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },

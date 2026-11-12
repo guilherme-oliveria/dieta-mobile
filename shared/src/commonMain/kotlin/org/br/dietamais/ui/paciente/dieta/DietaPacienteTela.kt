@@ -33,11 +33,11 @@ import kotlin.uuid.Uuid
 fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> Unit, aoEscolher: (Uuid) -> Unit, modifier: Modifier = Modifier,
     pdf: @Composable (EstadoDietaPaciente) -> Unit = {}, aoAbrirLista: () -> Unit = {},
     acoesLista: AcoesListaPaciente = AcoesListaPaciente(), aoTrocar: (Uuid, Uuid) -> Unit = { _, _ -> },
-    aoMarcar: (Uuid, StatusCheckin) -> Unit = { _, _ -> }, aoTrocarRefeicao: (Uuid) -> Unit = {}) {
+    aoMarcar: (Uuid, StatusCheckin) -> Unit = { _, _ -> }, aoTrocarRefeicao: (Uuid) -> Unit = {}, aoDesfazer: () -> Unit = {}) {
     if (estado.listaAberta) { ListaSubstituicaoTela(estado, acoesLista); return }
     val refeicao = estado.refeicoes.firstOrNull { it.id == estado.refeicaoAberta }
     if (refeicao != null && estado.dieta != null) {
-        RefeicaoDietaPaciente(estado, refeicao, { aoAbrirRefeicao(null) }, aoTrocar, aoMarcar, aoTrocarRefeicao)
+        RefeicaoDietaPaciente(estado, refeicao, { aoAbrirRefeicao(null) }, aoTrocar, aoMarcar, aoTrocarRefeicao, aoDesfazer)
         return
     }
     Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -93,7 +93,7 @@ fun DietaPacienteTela(estado: EstadoDietaPaciente, aoAbrirRefeicao: (Uuid?) -> U
 
 @Composable
 private fun RefeicaoDietaPaciente(estado: EstadoDietaPaciente, r: RefeicaoResposta, aoVoltar: () -> Unit,
-    aoTrocar: (Uuid, Uuid) -> Unit, aoMarcar: (Uuid, StatusCheckin) -> Unit, aoTrocarRefeicao: (Uuid) -> Unit) {
+    aoTrocar: (Uuid, Uuid) -> Unit, aoMarcar: (Uuid, StatusCheckin) -> Unit, aoTrocarRefeicao: (Uuid) -> Unit, aoDesfazer: () -> Unit) {
     val dieta = estado.dieta ?: return
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         BarraTopo(stringResource(Res.string.refeicao_nome_horario, r.nome, r.horario.toString().take(5)), aoVoltar, stringResource(Res.string.pac_lista_voltar),
@@ -102,6 +102,7 @@ private fun RefeicaoDietaPaciente(estado: EstadoDietaPaciente, r: RefeicaoRespos
             if (estado.semConexao) FaixaOffline()
             estado.erro?.let { Text(stringResource(textoErro(it)), color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
+            if (estado.podeDesfazer) AvisoDesfazer(stringResource(Res.string.pac_checkin_registrado), stringResource(Res.string.pac_desfazer), aoDesfazer)
             val status = when (estado.checkins[r.id]) {
                 StatusCheckin.FEITO -> Res.string.status_feita
                 StatusCheckin.TROCADO -> Res.string.status_trocada

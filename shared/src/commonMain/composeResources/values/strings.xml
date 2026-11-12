@@ -305,6 +305,8 @@
     <string name="pac_dia_hoje">Hoje</string>
     <string name="pac_dia_ontem">Ontem</string>
     <string name="pac_dia_antes">%1$s</string>
+    <string name="pac_checkin_registrado">Refeição registrada</string>
+    <string name="pac_desfazer">Desfazer</string>
     <string name="pac_comi">Comi</string>
     <string name="pac_troquei">Troquei</string>
     <string name="pac_pulei">Pulei</string>
