@@ -48,7 +48,6 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
                             Modifier.semantics { contentDescription = extenso })
                     }
                 }
-                }
                 val proxima = estado.proxima
                 if (proxima != null) CardProximaRefeicao(proxima.nome, proxima.horario.toString().take(5),
                     stringResource(Res.string.pac_dieta_kcal_refeicao, formatar(proxima.totais.kcal)),
