@@ -28,6 +28,8 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     private var registros = DadosRotina()
     private var diaEscolhido: LocalDate? = null
     private var observacao: Job? = null
+    private var pendente: CheckinPendente? = null
+    private var prazoDesfazer: Job? = null
 
     init {
         observarDados()
@@ -54,8 +56,11 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         val dieta = dietaVigente(dados.snapshots, dados.emUso?.dietaId)
         val porNutri = dados.snapshots.sortedByDescending { it.publicadoEm }.distinctBy { it.nutricionista.id }
         // RN-ROT-01: um check-in por refeição/dia, o último vale
-        val doDia = registros.checkins.filter { it.data == dia && it.dietaId == dieta?.dietaId }.groupBy { it.refeicaoId }
+        val gravados = registros.checkins.filter { it.data == dia && it.dietaId == dieta?.dietaId }.groupBy { it.refeicaoId }
             .mapValues { (_, lista) -> lista.maxBy { it.registradoEm }.status }
+        // MOB-UX-04: o check-in que ainda espera o prazo de desfazer já aparece como registrado
+        val p = pendente?.takeIf { it.dia == dia && it.dietaId == dieta?.dietaId }
+        val doDia = if (p == null) gravados else gravados + (p.refeicaoId to p.status)
         val peso = registros.pesos.maxByOrNull { it.registradoEm }?.pesoKg
         val aguaDoDia = registros.agua.filter { it.registradoEm.toLocalDateTime(fuso).date == dia }.sumOf { it.ml }
         val mudou = dieta?.id != e.dieta?.id
@@ -63,7 +68,7 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         e.copy(carregado = true, dieta = dieta, refeicoes = dieta?.let { refeicoesOrdenadas(it.refeicoes) }.orEmpty(),
             proxima = if (dia == hoje) dieta?.let { proximaRefeicao(it.refeicoes.filter { r -> r.id !in doDia }, agora.time) } else null,
             alternativas = if (porNutri.size > 1) porNutri else emptyList(), versaoSelecao = dados.emUso?.versao ?: 0,
-            hoje = hoje, dia = dia, dias = dias, checkins = doDia, aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso),
+            hoje = hoje, dia = dia, dias = dias, checkins = doDia, podeDesfazer = pendente != null, aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso),
             gruposLista = grupos, buscaLista = if (mudou) "" else e.buscaLista,
             grupoListaFiltro = e.grupoListaFiltro.takeIf { !mudou && grupos.any { g -> g.id == it } },
             grupoListaAberto = if (mudou) grupos.firstOrNull()?.id else e.grupoListaAberto.takeIf { id -> grupos.any { it.id == id } },
@@ -91,8 +96,27 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     fun marcar(refeicaoId: Uuid, status: StatusCheckin) {
         val e = atual.value; val dieta = e.dieta ?: return; val dia = e.dia ?: return
         if (status == StatusCheckin.TROCADO || status == StatusCheckin.OUTRO || dieta.refeicoes.none { it.id == refeicaoId }) return
-        gravar { rotina.registrarCheckin(dieta.dietaId, refeicaoId, dia, status, emptyList(), relogio.now()) }
+        // grava o anterior se houver; o novo espera o prazo, porque o contrato só inclui check-ins (RN-ROT-02) e não dá para remover um já enviado
+        confirmarPendente()
+        pendente = CheckinPendente(dieta.dietaId, refeicaoId, dia, status, relogio.now())
+        recalcular()
+        prazoDesfazer = viewModelScope.launch(dispatcher) { delay(PRAZO_DESFAZER_MS); confirmarPendente(); recalcular() }
     }
+
+    /** MOB-UX-04: descarta o check-in que ainda não foi gravado; a refeição volta ao estado anterior. */
+    fun desfazerCheckin() {
+        if (pendente == null) return
+        prazoDesfazer?.cancel(); prazoDesfazer = null; pendente = null
+        recalcular()
+    }
+
+    private fun confirmarPendente() {
+        val p = pendente ?: return
+        prazoDesfazer?.cancel(); prazoDesfazer = null; pendente = null
+        gravar { rotina.registrarCheckin(p.dietaId, p.refeicaoId, p.dia, p.status, emptyList(), p.registradoEm) }
+    }
+
+    override fun onCleared() { confirmarPendente(); super.onCleared() }
 
     fun beberAgua(ml: Int) {
         if (ml !in 1..5000) return
@@ -153,3 +177,8 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         }
     }
 }
+
+private class CheckinPendente(val dietaId: Uuid, val refeicaoId: Uuid, val dia: LocalDate, val status: StatusCheckin, val registradoEm: kotlin.time.Instant)
+
+/** Tempo que o aviso "Refeição registrada · Desfazer" fica na tela (MOB-UX-04). */
+const val PRAZO_DESFAZER_MS = 5_000L

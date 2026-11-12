@@ -137,6 +137,39 @@ class DietaPacienteViewModelTest {
         vm.marcar(almoco.id, StatusCheckin.TROCADO); assertEquals(1, rotina.checkins.size) // TROCADO só pelo fluxo de troca
     }
 
+    @Test fun desfazerDentroDoPrazoNaoGravaOCheckin() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.PULADO); runCurrent()
+        assertEquals(StatusCheckin.PULADO, vm.estado.value.checkins[cafe.id]); assertTrue(vm.estado.value.podeDesfazer)
+        assertTrue(rotina.checkins.isEmpty())
+        vm.desfazerCheckin(); advanceUntilIdle()
+        assertNull(vm.estado.value.checkins[cafe.id]); assertFalse(vm.estado.value.podeDesfazer)
+        assertEquals(cafe.id, vm.estado.value.proxima?.id); assertTrue(rotina.checkins.isEmpty())
+    }
+
+    @Test fun semDesfazerOCheckinEGravadoAposOPrazo() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.FEITO); advanceTimeBy(PRAZO_DESFAZER_MS - 1); runCurrent()
+        assertTrue(rotina.checkins.isEmpty()); assertTrue(vm.estado.value.podeDesfazer)
+        advanceTimeBy(2); runCurrent()
+        assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status); assertFalse(vm.estado.value.podeDesfazer)
+    }
+
+    @Test fun novoRegistroGravaOAnteriorEDesfazerSoAfetaOUltimo() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val a = s.refeicoes[0]; val b = s.refeicoes[1]
+        vm.marcar(a.id, StatusCheckin.FEITO); runCurrent()
+        vm.marcar(b.id, StatusCheckin.PULADO); runCurrent()
+        assertEquals(a.id, rotina.checkins.single().refeicaoId)
+        vm.desfazerCheckin(); advanceUntilIdle()
+        assertEquals(1, rotina.checkins.size); assertNull(vm.estado.value.checkins[b.id]); assertEquals(StatusCheckin.FEITO, vm.estado.value.checkins[a.id])
+    }
+
     @Test fun recusaDoServidorMostraErroNoHoje() = runTest {
         val rotina = Rotina(); val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(snap("Ana", "2026-01-01T10:00:00Z"))))), rotina); advanceUntilIdle()
         assertNull(vm.estado.value.erro)

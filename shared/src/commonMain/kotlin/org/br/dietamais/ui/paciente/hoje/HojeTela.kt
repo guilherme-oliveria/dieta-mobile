@@ -21,7 +21,7 @@ import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
-class AcoesHoje(val aoMudarDia: (LocalDate) -> Unit, val aoMarcar: (Uuid, StatusCheckin) -> Unit, val aoTrocar: (Uuid) -> Unit, val aoBeberAgua: (Int) -> Unit)
+class AcoesHoje(val aoMudarDia: (LocalDate) -> Unit, val aoMarcar: (Uuid, StatusCheckin) -> Unit, val aoTrocar: (Uuid) -> Unit, val aoBeberAgua: (Int) -> Unit, val aoDesfazer: () -> Unit = {})
 
 /** Aba Hoje: dia, próxima refeição com Comi/Troquei/Pulei, demais refeições e água (MOB-14, 15, 17). */
 @Composable
@@ -35,6 +35,7 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
             !estado.carregado -> EstadoCarregando()
             estado.dieta == null -> EstadoVazio(mensagem = stringResource(Res.string.pac_sem_dieta))
             else -> {
+                if (estado.podeDesfazer) AvisoDesfazer(stringResource(Res.string.pac_checkin_registrado), stringResource(Res.string.pac_desfazer), acoes.aoDesfazer)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     estado.dias.forEach { d ->
                         BotaoTexto(rotuloDia(d, estado.hoje), { acoes.aoMudarDia(d) }, selecionado = d == estado.dia)

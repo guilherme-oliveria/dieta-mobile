@@ -21,6 +21,8 @@ data class EstadoDietaPaciente(
     val checkins: Map<Uuid, StatusCheckin> = emptyMap(), val aguaMl: Int = 0, val metaAguaMl: Int = 2000, val troca: EstadoTroca? = null,
     val listaAberta: Boolean = false, val gruposLista: List<GrupoListaPaciente> = emptyList(), val buscaLista: String = "",
     val grupoListaFiltro: Uuid? = null, val grupoListaAberto: Uuid? = null,
+    /** MOB-UX-04: há um check-in ainda não gravado, que o paciente pode desfazer. */
+    val podeDesfazer: Boolean = false,
 ) {
     val gruposListaVisiveis get() = filtrarListaPaciente(gruposLista, buscaLista, grupoListaFiltro)
     val ehHoje get() = dia != null && dia == hoje

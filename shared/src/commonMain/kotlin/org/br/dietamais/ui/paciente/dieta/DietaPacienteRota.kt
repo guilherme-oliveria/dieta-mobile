@@ -13,6 +13,6 @@ fun DietaPacienteRota(vm: DietaPacienteViewModel, pdf: @Composable (EstadoDietaP
     RetornoDietaPaciente(estado, vm::fecharLista, { vm.abrirRefeicao(null) }, vm::cancelarTroca, ativo = ciclo == Lifecycle.State.RESUMED)
     DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, pdf = pdf, aoAbrirLista = vm::abrirLista,
         acoesLista = AcoesListaPaciente(vm::fecharLista, vm::buscarNaLista, vm::filtrarGrupoLista, vm::expandirGrupoLista, vm::tentarNovamente),
-        aoTrocar = vm::abrirTroca, aoMarcar = vm::marcar, aoTrocarRefeicao = vm::abrirTroca)
+        aoTrocar = vm::abrirTroca, aoMarcar = vm::marcar, aoTrocarRefeicao = vm::abrirTroca, aoDesfazer = vm::desfazerCheckin)
     TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
 }
