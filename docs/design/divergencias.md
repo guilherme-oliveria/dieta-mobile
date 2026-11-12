@@ -142,3 +142,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-UX-04 · Desfazer o registro de refeição (12/11/2026)
 
 - O canvas `Main.dc.html` (Hoje) e o detalhe da refeição não têm o estado "Refeição registrada · Desfazer". O app mostra, por 5 s, uma faixa escura com o texto e o botão "Desfazer" no topo do conteúdo. Divergência até o Design atualizar o canvas.
+
+## MOB-UX-05 · Água no Hoje (12/11/2026)
+
+- O cartão de água ganhou "Outro valor" (campo de ml de 10 a 2.000, inline) e "Desfazer último". Não estão no canvas `Main.dc.html`; divergência até o Design atualizar.
+- "Desfazer último" só alcança lançamentos ainda não enviados (5 s depois do toque), porque o backend só inclui água e não remove. Depois disso o botão fica desabilitado.

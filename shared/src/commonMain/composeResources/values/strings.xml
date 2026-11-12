@@ -320,6 +320,11 @@
     <string name="pac_troca_manter">Manter o original</string>
     <string name="pac_agua_titulo">Água</string>
     <string name="pac_agua_progresso">%1$s de %2$s ml</string>
+    <string name="pac_agua_desfazer">Desfazer último</string>
+    <string name="pac_agua_outro">Outro valor</string>
+    <string name="pac_agua_outro_rotulo">Quantidade (ml)</string>
+    <string name="pac_agua_outro_adicionar">Adicionar</string>
+    <string name="pac_agua_faixa_invalida">Informe um valor de %1$s a %2$s ml.</string>
     <string name="pac_agua_mais">+ %1$s ml</string>
     <string name="lembrete_titulo">Dieta+</string>
     <string name="lembrete_corpo">Hora da refeição: %1$s</string>

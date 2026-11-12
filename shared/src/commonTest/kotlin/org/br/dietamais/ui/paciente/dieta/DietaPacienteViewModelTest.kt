@@ -199,6 +199,32 @@ class DietaPacienteViewModelTest {
         assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status)
     }
 
+    @Test fun desfazerAguaTiraSoOUltimoLancamentoAindaNaoEnviado() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        assertFalse(vm.estado.value.podeDesfazerAgua)
+        vm.beberAgua(200); vm.beberAgua(250); runCurrent()
+        assertEquals(450, vm.estado.value.aguaMl); assertTrue(vm.estado.value.podeDesfazerAgua)
+        vm.desfazerAgua(); runCurrent()
+        assertEquals(200, vm.estado.value.aguaMl); assertTrue(vm.estado.value.podeDesfazerAgua)
+        advanceUntilIdle()
+        assertEquals(200, vm.estado.value.aguaMl); assertFalse(vm.estado.value.podeDesfazerAgua)
+        assertEquals(listOf(200), rotina.dados.value.agua.map { it.ml })
+        vm.desfazerAgua(); advanceUntilIdle() // nada pendente: não faz nada
+        assertEquals(200, vm.estado.value.aguaMl)
+    }
+
+    @Test fun fecharATelaGravaAAguaPendente() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        vm.beberAgua(300); runCurrent()
+        assertTrue(rotina.dados.value.agua.isEmpty())
+        val loja = ViewModelStore()
+        ViewModelProvider.create(loja, viewModelFactory { initializer { vm } })[DietaPacienteViewModel::class]
+        loja.clear()
+        assertEquals(listOf(300), rotina.dados.value.agua.map { it.ml })
+    }
+
     @Test fun recusaDoServidorMostraErroNoHoje() = runTest {
         val rotina = Rotina(); val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(snap("Ana", "2026-01-01T10:00:00Z"))))), rotina); advanceUntilIdle()
         assertNull(vm.estado.value.erro)
