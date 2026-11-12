@@ -5,7 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import kotlinx.datetime.LocalDate
 import org.br.dietamais.data.remoto.dto.StatusCheckin
+import org.br.dietamais.dominio.rotina.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.nutri.dieta.formatar
@@ -21,7 +22,7 @@ import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
-class AcoesHoje(val aoMudarDia: (LocalDate) -> Unit, val aoMarcar: (Uuid, StatusCheckin) -> Unit, val aoTrocar: (Uuid) -> Unit, val aoBeberAgua: (Int) -> Unit, val aoDesfazer: () -> Unit = {})
+class AcoesHoje(val aoMudarDia: (LocalDate) -> Unit, val aoMarcar: (Uuid, StatusCheckin) -> Unit, val aoTrocar: (Uuid) -> Unit, val aoBeberAgua: (Int) -> Unit, val aoDesfazer: () -> Unit = {}, val aoDesfazerAgua: () -> Unit = {})
 
 /** Aba Hoje: dia, próxima refeição com Comi/Troquei/Pulei, demais refeições e água (MOB-14, 15, 17). */
 @Composable
@@ -67,13 +68,7 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
                         }
                     }
                 }
-                CardDieta(Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.pac_agua_titulo), style = MaterialTheme.typography.titleMedium)
-                    Text(stringResource(Res.string.pac_agua_progresso, estado.aguaMl.toString(), estado.metaAguaMl.toString()), style = MaterialTheme.typography.bodyMedium)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        listOf(200, 300, 500).forEach { ml -> BotaoTexto(stringResource(Res.string.pac_agua_mais, ml.toString()), { acoes.aoBeberAgua(ml) }) }
-                    }
-                }
+                CardAgua(estado, acoes)
             }
         }
     }
@@ -83,4 +78,30 @@ fun HojeTela(estado: EstadoDietaPaciente, acoes: AcoesHoje, modifier: Modifier =
 private fun rotuloDia(d: LocalDate, hoje: LocalDate?): String = when {
     d == hoje -> stringResource(Res.string.pac_dia_hoje)
     else -> "${d.day.toString().padStart(2, '0')}/${(d.month.ordinal + 1).toString().padStart(2, '0')}"
+}
+
+/** Cartão de água: três valores rápidos, valor livre e desfazer do último lançamento ainda não enviado (MOB-UX-05). */
+@Composable
+private fun CardAgua(estado: EstadoDietaPaciente, acoes: AcoesHoje) {
+    var livre by remember { mutableStateOf(false) }
+    var texto by remember { mutableStateOf("") }
+    var tentou by remember { mutableStateOf(false) }
+    val valor = lerMlAgua(texto)
+    CardDieta(Modifier.fillMaxWidth()) {
+        Text(stringResource(Res.string.pac_agua_titulo), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(Res.string.pac_agua_progresso, estado.aguaMl.toString(), estado.metaAguaMl.toString()), style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+            listOf(200, 300, 500).forEach { ml -> BotaoTexto(stringResource(Res.string.pac_agua_mais, ml.toString()), { acoes.aoBeberAgua(ml) }) }
+            BotaoTexto(stringResource(Res.string.pac_agua_outro), { livre = !livre }, selecionado = livre)
+            BotaoTexto(stringResource(Res.string.pac_agua_desfazer), acoes.aoDesfazerAgua, habilitado = estado.podeDesfazerAgua)
+        }
+        if (livre) {
+            CampoNumero(stringResource(Res.string.pac_agua_outro_rotulo), texto, { texto = it.filter(Char::isDigit).take(5); tentou = false },
+                Modifier.fillMaxWidth(), erro = if (tentou && valor == null) stringResource(Res.string.pac_agua_faixa_invalida, AGUA_MIN_ML.toString(), AGUA_MAX_ML.toString()) else null)
+            BotaoPrincipal(stringResource(Res.string.pac_agua_outro_adicionar), {
+                if (valor == null) tentou = true else { acoes.aoBeberAgua(valor); texto = ""; livre = false }
+            })
+        }
+    }
 }

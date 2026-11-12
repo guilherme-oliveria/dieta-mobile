@@ -23,6 +23,8 @@ data class EstadoDietaPaciente(
     val grupoListaFiltro: Uuid? = null, val grupoListaAberto: Uuid? = null,
     /** MOB-UX-04: há um check-in ainda não gravado, que o paciente pode desfazer. */
     val podeDesfazer: Boolean = false,
+    /** MOB-UX-05: há lançamento de água ainda não enviado. */
+    val podeDesfazerAgua: Boolean = false,
 ) {
     val gruposListaVisiveis get() = filtrarListaPaciente(gruposLista, buscaLista, grupoListaFiltro)
     val ehHoje get() = dia != null && dia == hoje

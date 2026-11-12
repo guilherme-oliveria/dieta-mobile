@@ -30,6 +30,7 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     private var observacao: Job? = null
     private var pendente: CheckinPendente? = null
     private var prazoDesfazer: Job? = null
+    private val aguaPendente = mutableListOf<Pair<AguaPendente, Job?>>()
 
     init {
         observarDados()
@@ -62,13 +63,14 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         val p = pendente?.takeIf { it.dia == dia && it.dietaId == dieta?.dietaId }
         val doDia = if (p == null) gravados else gravados + (p.refeicaoId to p.status)
         val peso = registros.pesos.maxByOrNull { it.registradoEm }?.pesoKg
-        val aguaDoDia = registros.agua.filter { it.registradoEm.toLocalDateTime(fuso).date == dia }.sumOf { it.ml }
+        val aguaGravada = registros.agua.filter { it.registradoEm.toLocalDateTime(fuso).date == dia }.sumOf { it.ml }
+        val aguaDoDia = totalAguaMl(aguaGravada, aguaPendente.map { it.first }.filter { it.registradoEm.toLocalDateTime(fuso).date == dia })
         val mudou = dieta?.id != e.dieta?.id
         val grupos = dieta?.let { gruposListaPaciente(it.listaSubstituicao, it.refeicoes) }.orEmpty()
         e.copy(carregado = true, dieta = dieta, refeicoes = dieta?.let { refeicoesOrdenadas(it.refeicoes) }.orEmpty(),
             proxima = if (dia == hoje) dieta?.let { proximaRefeicao(it.refeicoes.filter { r -> r.id !in doDia }, agora.time) } else null,
             alternativas = if (porNutri.size > 1) porNutri else emptyList(), versaoSelecao = dados.emUso?.versao ?: 0,
-            hoje = hoje, dia = dia, dias = dias, checkins = doDia, podeDesfazer = pendente != null, aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso),
+            hoje = hoje, dia = dia, dias = dias, checkins = doDia, podeDesfazer = pendente != null, podeDesfazerAgua = aguaPendente.isNotEmpty(), aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso),
             gruposLista = grupos, buscaLista = if (mudou) "" else e.buscaLista,
             grupoListaFiltro = e.grupoListaFiltro.takeIf { !mudou && grupos.any { g -> g.id == it } },
             grupoListaAberto = if (mudou) grupos.firstOrNull()?.id else e.grupoListaAberto.takeIf { id -> grupos.any { it.id == id } },
@@ -116,11 +118,32 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         gravar { rotina.registrarCheckin(p.dietaId, p.refeicaoId, p.dia, p.status, emptyList(), p.registradoEm) }
     }
 
-    override fun onCleared() { confirmarPendente(); super.onCleared() }
+    override fun onCleared() { confirmarPendente(); aguaPendente.toList().forEach { confirmarAgua(it.first) }; super.onCleared() }
 
+    /** MOB-UX-05: o lançamento só vai à fila depois do prazo, porque o contrato só inclui água (RN-ROT-03); até lá dá para desfazer. */
     fun beberAgua(ml: Int) {
         if (ml !in 1..5000) return
-        gravar { rotina.registrarAgua(ml, relogio.now()) }
+        val lancamento = AguaPendente(ml, relogio.now())
+        val entrada = lancamento to null as Job?
+        aguaPendente += entrada
+        recalcular()
+        val job = viewModelScope.launch(dispatcher) { delay(prazoDesfazerMs); confirmarAgua(lancamento); recalcular() }
+        val i = aguaPendente.indexOfFirst { it.first === lancamento }
+        if (i >= 0) aguaPendente[i] = lancamento to job
+    }
+
+    /** Descarta o último lançamento de água ainda não enviado. */
+    fun desfazerAgua() {
+        val ultimo = aguaPendente.removeLastOrNull() ?: return
+        ultimo.second?.cancel()
+        recalcular()
+    }
+
+    private fun confirmarAgua(l: AguaPendente) {
+        val i = aguaPendente.indexOfFirst { it.first === l }
+        if (i < 0) return
+        aguaPendente.removeAt(i)
+        gravar { rotina.registrarAgua(l.ml, l.registradoEm) }
     }
 
     // ---- troca de alimento (MOB-15)
