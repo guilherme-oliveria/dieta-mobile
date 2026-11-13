@@ -167,3 +167,9 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - A folha "Filtros" (e, em tela larga, a linha de filtros) ganhou a seção "Ordem" com "Nome (A-Z)" e "Próximo retorno". Em "Próximo retorno" a lista fica plana: quem tem retorno mais próximo primeiro, quem não tem consulta marcada no fim, sem letras de grupo e sem o índice A-Z.
 - A escolha fica guardada no aparelho, por conta (`registro_sync`, coleção `ordem-pacientes-local`; na web só vale com a página aberta). "Próximo retorno" depende dos resumos da lista: sem eles (offline ou ainda carregando) o chip fica desabilitado com o texto do motivo e a lista segue A-Z. Seção ainda não desenhada no canvas (ART-P1-01).
+
+## MOB-UX-07 · Lista de compras lembra o que foi marcado (13/11/2026)
+
+- Já persistia no app (Android, iOS, desktop): `ComprasRepositorio` guarda os marcados em `registro_sync` (coleção `compras-marcados`), por conta; na web continua só em memória. Acrescentado: "X de Y itens" abaixo do título (região ao vivo), item marcado riscado e em cinza, e "Desmarcar tudo" passou a "Limpar marcados".
+- Divergência do artboard `P-Compras`: o artboard põe o "X de Y itens" na linha do subtítulo ("Da dieta de 13/10 · 3 de 10 itens"); no app ele fica logo acima da lista, e o subtítulo com a data da dieta não foi implementado. Os marcados não vão para o fim da lista (só riscados, como no artboard), para o item não pular sob o dedo.
+- A marca é por alimento e por conta, não por lista e semana: ao trocar o período (3, 7, 14 dias) ou a dieta, quem continua na lista continua marcado, e a contagem só considera itens da lista atual.
