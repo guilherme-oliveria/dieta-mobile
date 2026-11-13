@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.PathParser
 import org.br.dietamais.ui.theme.Dimens
 
 object IconesDieta {
+    val MaisAcoes by lazy { icone("Mais ações", "M13 12a1 1 0 1 1-2 0a1 1 0 1 1 2 0", "M13 5a1 1 0 1 1-2 0a1 1 0 1 1 2 0", "M13 19a1 1 0 1 1-2 0a1 1 0 1 1 2 0") }
     val Olho by lazy { icone("Olho", "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z", "M15 12a3 3 0 1 1-6 0a3 3 0 1 1 6 0") }
     val OlhoFechado by lazy { icone("Olho fechado", "M2 2l20 20M9 5.4A11 11 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.7M6 6.3A18 18 0 0 0 2 12s3.5 7 10 7a11 11 0 0 0 5-1.2") }
     val Folha by lazy { icone("Folha", "M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z", "M2 21c0-3 1.9-5.4 5.1-6") }

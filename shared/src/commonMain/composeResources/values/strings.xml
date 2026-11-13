@@ -714,6 +714,7 @@
     <string name="anamnese_item_remover">Remover refeição</string>
     <string name="agenda_titulo">Agenda</string>
     <string name="agenda_nova">Nova consulta</string>
+    <string name="agenda_mais_acoes">Mais ações</string>
     <string name="agenda_remarcar">Remarcar</string>
     <string name="agenda_cancelar">Cancelar consulta</string>
     <string name="agenda_dia">Dia</string>

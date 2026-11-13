@@ -173,3 +173,10 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - Já persistia no app (Android, iOS, desktop): `ComprasRepositorio` guarda os marcados em `registro_sync` (coleção `compras-marcados`), por conta; na web continua só em memória. Acrescentado: "X de Y itens" abaixo do título (região ao vivo), item marcado riscado e em cinza, e "Desmarcar tudo" passou a "Limpar marcados".
 - Divergência do artboard `P-Compras`: o artboard põe o "X de Y itens" na linha do subtítulo ("Da dieta de 13/10 · 3 de 10 itens"); no app ele fica logo acima da lista, e o subtítulo com a data da dieta não foi implementado. Os marcados não vão para o fim da lista (só riscados, como no artboard), para o item não pular sob o dedo.
 - A marca é por alimento e por conta, não por lista e semana: ao trocar o período (3, 7, 14 dias) ou a dieta, quem continua na lista continua marcado, e a contagem só considera itens da lista atual.
+
+## MOB-UX-08 · Ações da consulta num menu "Mais ações" (13/11/2026)
+
+- Cada cartão de consulta não cancelada mostra um botão com a ação mais provável (consulta futura: "Remarcar"; consulta que já terminou: "Financeiro") e o ícone de três pontos (48 dp, `contentDescription` "Mais ações") com as outras: "Cancelar consulta" (em vermelho) e a ação que não é o botão. A ordem de foco segue a ordem visual: botão, depois menu.
+- O cancelamento já pedia confirmação (`ConfirmarCancelamentoDialog`: título "Cancelar consulta?", corpo "Paciente, data às hora", botões "Cancelar consulta" e "Manter"); não mudou. O texto do critério ("Cancelar a consulta de Maria às 14:00?") ficou como está hoje.
+- "Financeiro" segue desabilitado sem conexão; o motivo é a faixa "sem conexão" no topo da agenda, como antes.
+- A Agenda da nutri não tem artboard no canvas (`telas.md`: "faltando"), então não havia o que atualizar; o Design precisa desenhar o cartão com o menu.
