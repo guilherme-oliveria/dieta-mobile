@@ -162,3 +162,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - Acima da lista aparece "N pacientes" (ou "N de M pacientes" com busca ou filtro) em região ao vivo, e "Limpar filtros" ao lado quando há busca ou filtro ligado. "Limpar filtros" desliga busca, situação e atenção de uma vez.
 - Sem resultado, a lista diz "Nenhum paciente com “texto”." ou "Nenhum paciente neste filtro." com o botão "Limpar filtros"; o vazio de quem ainda não tem paciente fica como estava. Estados ainda não desenhados no canvas (ART-P1-01).
+
+## MOB-UX-03 · Ordem da lista de pacientes (13/11/2026)
+
+- A folha "Filtros" (e, em tela larga, a linha de filtros) ganhou a seção "Ordem" com "Nome (A-Z)" e "Próximo retorno". Em "Próximo retorno" a lista fica plana: quem tem retorno mais próximo primeiro, quem não tem consulta marcada no fim, sem letras de grupo e sem o índice A-Z.
+- A escolha fica guardada no aparelho, por conta (`registro_sync`, coleção `ordem-pacientes-local`; na web só vale com a página aberta). "Próximo retorno" depende dos resumos da lista: sem eles (offline ou ainda carregando) o chip fica desabilitado com o texto do motivo e a lista segue A-Z. Seção ainda não desenhada no canvas (ART-P1-01).
