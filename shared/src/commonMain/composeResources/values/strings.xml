@@ -112,6 +112,11 @@
     <string name="pacientes_atencao_sem_retorno">Sem retorno</string>
     <string name="pacientes_proximo_retorno">Próximo retorno: %1$s</string>
     <string name="pacientes_ultima_avaliacao">Última avaliação: %1$s</string>
+    <string name="pacientes_filtros">Filtros</string>
+    <string name="pacientes_filtros_contagem">Filtros (%1$d)</string>
+    <string name="pacientes_filtros_situacao">Situação</string>
+    <string name="pacientes_filtros_atencao">Atenção</string>
+    <string name="pacientes_filtros_concluir">Concluir</string>
     <string name="pacientes_todos">Todos</string>
     <string name="pacientes_convidados">Convidados</string>
     <string name="pacientes_ativos">Ativos</string>

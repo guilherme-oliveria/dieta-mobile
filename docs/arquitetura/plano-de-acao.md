@@ -102,7 +102,7 @@ Detalhe em [plano-melhorias-planilhas.md](plano-melhorias-planilhas.md) (cópia 
 
 Detalhe (problema, critério de aceite, tela, estimativa) em [tarefas-usabilidade.md](tarefas-usabilidade.md); copie o critério de cada tarefa para o PR. Cada tarefa é de 2 a 4 h, uma tela ou componente, sem contrato novo. Onde está "(conferir)", confirme o comportamento atual antes; se já estiver certo, a tarefa vira só um teste.
 
-- [ ] **MOB-UX-01 Busca fixa e filtros recolhidos na lista de pacientes.** Busca com `stickyHeader`; chips de status e atenção atrás de um chip "Filtros" no celular; primeiro paciente visível sem rolar em 390 × 800 dp; atualizar o artboard `ART-P1-01`.
+- [x] **MOB-UX-01 Busca fixa e filtros recolhidos na lista de pacientes.** Busca com `stickyHeader`; chips de status e atenção atrás de um chip "Filtros" no celular; primeiro paciente visível sem rolar em 390 × 800 dp; atualizar o artboard `ART-P1-01`.
 - [ ] **MOB-UX-02 Contagem, "Limpar filtros" e vazio específico na lista de pacientes.** "N pacientes" ou "N de M" em região ao vivo; vazio com busca/filtro diz o que não achou e oferece "Limpar filtros". *Depende de:* nada.
 - [ ] **MOB-UX-03 Ordenar a lista de pacientes.** "Nome (A-Z)" e "Próximo retorno" (sem consulta vai para o fim), guardado no aparelho, função pura em `dominio/pacientes` com teste. *Depende de:* MOB-UX-01.
 - [x] **MOB-UX-04 Desfazer o registro de refeição.** Aviso "Refeição registrada · Desfazer" por 5 s no Hoje; funciona offline. *(conferir)* se já existe caminho de correção. Conferido: não existia. O check-in só é enviado à fila depois dos 5 s (o contrato só inclui, RN-ROT-02); falha ao gravar tira o aviso, a refeição volta ao estado anterior e o erro aparece.
