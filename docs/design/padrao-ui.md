@@ -56,6 +56,8 @@ Título da tela, linha "Passo n de N · Nome" (região ao vivo, para o leitor de
 ### Componentes comuns (MOB-62)
 Tela nova usa só estes, nunca a versão crua do Material: `BarraTopo` (seta num círculo contornado, título e subtítulo), `RodapeAcoes` (ações fixas no pé), `CampoNumero` (unidade dentro do campo, a partir de "Rótulo (un)") e `ChipEscolha` (chip com check quando selecionado; substitui o `FilterChip`). Todos em `ui/comum`.
 
+**Campos numéricos (MOB-UX-10).** `CampoNumero` abre o teclado decimal; a tecla de ação é "Próximo" e passa o foco ao campo seguinte, e "Concluir" (fecha o teclado) no último do passo (`ultimo = true`). Vírgula e ponto valem como separador (`lerDecimal` troca a vírgula por ponto antes de ler). O campo com foco é levado para fora do teclado pelo próprio `OutlinedTextField` (bring-into-view) com o `imePadding` do `RodapeAcoes`. Teste em `ComponentesBaseTest`.
+
 ### Escolhas
 2 a 4 opções curtas: chips selecionáveis com "✓" (ícone de check) e rótulo; 5 ou mais: lista com busca. Interruptor para sim/não. Opções que dependem de sexo ou faixa etária **somem**, não ficam desabilitadas.
 

@@ -11,6 +11,8 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -43,6 +45,23 @@ class ComponentesBaseTest {
         onNodeWithText("Salvar").assertIsNotEnabled().assertIsDisplayed()
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Carregando"))
         assertEquals(1, envios)
+    }
+
+    @Test
+    fun campoNumeroUsaTecladoDecimalProximoEConcluirEPassaOFoco() = runSkikoComposeUiTest {
+        setContent {
+            DietaTheme {
+                androidx.compose.foundation.layout.Column {
+                    CampoNumero("Peso (kg)", "", {})
+                    CampoNumero("Estatura (cm)", "", {}, ultimo = true)
+                }
+            }
+        }
+        onNodeWithContentDescription("Peso (kg)").assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, androidx.compose.ui.text.input.ImeAction.Next))
+        onNodeWithContentDescription("Estatura (cm)").assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, androidx.compose.ui.text.input.ImeAction.Done))
+        onNodeWithContentDescription("Peso (kg)").performClick()
+        onNodeWithContentDescription("Peso (kg)").performImeAction()
+        onNodeWithContentDescription("Estatura (cm)").assertIsFocused()
     }
 
     @Test

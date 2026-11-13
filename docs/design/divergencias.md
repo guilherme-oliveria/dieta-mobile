@@ -186,3 +186,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - No celular (largura compacta) o planejador por porções e o montador de dieta mostram uma faixa fixa abaixo da barra do topo, fora da rolagem, em região ao vivo: "1.850 de 2.000 kcal · C 52% · P 22% · L 26%" (com meta) ou "1.850 kcal · C 52% · P 22% · L 26%" (sem meta; só kcal se ainda não há macro). Os percentuais são a parte de cada macro nas calorias (4, 4 e 9 kcal/g). `A-Planejador-Porcoes` ganhou a faixa; `T-Planejador-Porcoes` (tablet) não muda: lá o cartão de totais continua na coluna lateral e a faixa não aparece.
 - Salvar (e Publicar, no montador) passam a ficar no `RodapeAcoes`, fixo no pé, no celular. No tablet continuam na coluna lateral. A nota "Salve o rascunho para poder publicar." continua na rolagem, acima das refeições.
 - Divergência: o artboard `A-Planejador-Porcoes` mantém o botão de salvar no cabeçalho; o app usa o rodapé, como pede `padrao-ui.md`. O artboard ainda não mostra o rodapé fixo.
+
+## MOB-UX-10 · Teclado e "Próximo" nos campos numéricos (13/11/2026)
+
+- Conferido: `CampoNumero` já abria o teclado decimal e a vírgula já era aceita. Faltava a tecla de ação: agora é "Próximo" (leva o foco ao campo seguinte) e "Concluir" no último campo de cada seção de medidas do `AvaliacaoTela`. Nos demais usos de `CampoNumero` (infantil, exames, necessidades) fica "Próximo"; marcar o último campo desses passos fica para quando houver necessidade.
+- Sem mudança visual: nada a atualizar no canvas.

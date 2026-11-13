@@ -111,7 +111,7 @@ Detalhe (problema, critério de aceite, tela, estimativa) em [tarefas-usabilidad
 - [x] **MOB-UX-07 Lista de compras lembra o que foi marcado.** *(Conferido: no app os marcados já ficavam no aparelho (`ComprasRepositorio`, por conta); faltava o "X de Y itens", o item riscado e o teste de repositório. Na web segue só em memória.)* Marcados guardados no aparelho por lista e semana (não na web), "X de Y itens", "Limpar marcados" apaga o guardado. *(conferir)* o que já persiste.
 - [x] **MOB-UX-08 Ações da consulta num menu "mais".** Uma ação principal por contexto no cartão, o resto no menu; "Cancelar" com confirmação.
 - [x] **MOB-UX-09 Totais da dieta sempre visíveis ao montar.** Faixa compacta de kcal e macros fixa no topo da rolagem; Salvar e Publicar no `RodapeAcoes`; conferir o artboard do planejador.
-- [ ] **MOB-UX-10 Teclado certo e "Próximo" nos formulários de medidas.** `CampoNumero` com teclado decimal, `ImeAction.Next`/`Done`, vírgula ou ponto aceitos. *(conferir)* o que já existe.
+- [x] **MOB-UX-10 Teclado certo e "Próximo" nos formulários de medidas.** `CampoNumero` com teclado decimal, `ImeAction.Next`/`Done`, vírgula ou ponto aceitos. *(conferir)* o que já existe.
 
 ## Pós-MVP (P2)
 
