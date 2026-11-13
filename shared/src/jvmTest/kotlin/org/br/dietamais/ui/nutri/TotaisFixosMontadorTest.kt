@@ -23,7 +23,7 @@ class TotaisFixosMontadorTest {
         setContent { DietaTheme { MontarDietaTela(estado, AcoesMontador(), celular) } }
         onNodeWithTag("faixa-totais").assertIsDisplayed()
         onNodeWithText("1.850 kcal · C 52% · P 22% · L 26%").assertIsDisplayed()
-        onNodeWithText("Salvar").assertIsDisplayed(); onNodeWithText("Publicar").assertIsDisplayed()
+        onNodeWithText("Salvar rascunho").assertIsDisplayed(); onNodeWithText("Publicar").assertIsDisplayed()
         onNodeWithText("Salve o rascunho para poder publicar.").assertExists()
     }
 
@@ -32,7 +32,7 @@ class TotaisFixosMontadorTest {
         setContent { DietaTheme { MontarDietaTela(estado, AcoesMontador(), tablet) } }
         onNodeWithTag("faixa-totais").assertDoesNotExist()
         onNodeWithTag("totais-dieta").assertIsDisplayed()
-        onNodeWithText("Salvar").assertIsDisplayed()
+        onNodeWithText("Salvar rascunho").assertIsDisplayed()
     }
 
     @Test fun planejadorNoCelularMostraFaixaComMetaESalvarNoPe() = runSkikoComposeUiTest(size = Size(390f, 844f)) {

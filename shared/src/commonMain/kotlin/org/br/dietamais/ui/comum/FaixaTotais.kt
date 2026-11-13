@@ -28,8 +28,8 @@ fun FaixaTotais(kcal: Double, carboidratosG: Double, proteinasG: Double, gordura
     val texto = when {
         pct == null -> stringResource(Res.string.faixa_totais_vazia, kcalInteiro(kcal))
         metaKcal != null && metaKcal > 0 -> stringResource(Res.string.faixa_totais_meta, kcalInteiro(kcal), kcalInteiro(metaKcal),
-            pct.carboidratos.toString(), pct.proteinas.toString(), pct.lipidios.toString())
-        else -> stringResource(Res.string.faixa_totais, kcalInteiro(kcal), pct.carboidratos.toString(), pct.proteinas.toString(), pct.lipidios.toString())
+            "${pct.carboidratos}%", "${pct.proteinas}%", "${pct.lipidios}%")
+        else -> stringResource(Res.string.faixa_totais, kcalInteiro(kcal), "${pct.carboidratos}%", "${pct.proteinas}%", "${pct.lipidios}%")
     }
     Surface(modifier.fillMaxWidth().testTag("faixa-totais"), color = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) {
         Box(Modifier.padding(horizontal = Dimens.paddingCard, vertical = Dimens.espacoPequeno)) {

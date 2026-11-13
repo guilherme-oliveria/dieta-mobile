@@ -265,8 +265,8 @@
     <string name="dieta_status_arquivada">Arquivada</string>
     <string name="dieta_titulo">Título da dieta</string>
     <string name="dieta_orientacao">Orientações gerais</string>
-    <string name="faixa_totais_meta">%1$s de %2$s kcal · C %3$s%% · P %4$s%% · L %5$s%%</string>
-    <string name="faixa_totais">%1$s kcal · C %2$s%% · P %3$s%% · L %4$s%%</string>
+    <string name="faixa_totais_meta">%1$s de %2$s kcal · C %3$s · P %4$s · L %5$s</string>
+    <string name="faixa_totais">%1$s kcal · C %2$s · P %3$s · L %4$s</string>
     <string name="faixa_totais_vazia">%1$s kcal</string>
     <string name="dieta_totais">Totais do dia</string>
     <string name="dieta_kcal">%1$s kcal</string>
