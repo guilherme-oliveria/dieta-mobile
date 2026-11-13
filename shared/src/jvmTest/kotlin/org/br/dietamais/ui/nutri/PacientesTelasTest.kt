@@ -99,10 +99,10 @@ class PacientesTelasTest {
         var estado by mutableStateOf(EstadoPacientes(lista = pacientes(30), total = 30))
         setContent { DietaTheme { PacientesTela(estado, {}, {}, {}, {}, {}, aoOrdem = { estado = estado.copy(ordemEscolhida = it) }) } }
         onNodeWithText("Filtros").performClick()
-        onNodeWithText("Próximo retorno").assertIsNotEnabled()
+        onNodeWithText("Próximo retorno").performScrollTo().assertIsNotEnabled()
         onNodeWithText("Próximo retorno indisponível", substring = true).assertIsDisplayed()
         estado = estado.copy(resumos = emptyMap())
-        onNodeWithText("Próximo retorno").assertIsEnabled().performClick()
+        onNodeWithText("Próximo retorno").performScrollTo().assertIsEnabled().performClick()
         assertEquals(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO, estado.ordemEfetiva)
     }
 

@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.launch
@@ -136,7 +137,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
         }
     }
     if (filtrosAbertos) ModalBottomSheet(onDismissRequest = { filtrosAbertos = false }) {
-        Column(Modifier.padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.margemAmpla), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.margemAmpla), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             Text(stringResource(Res.string.pacientes_filtros), style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
             FiltrosPacientes(estado, aoFiltro, aoFiltroAtencao, aoOrdem, titulos = true)
             BotaoPrincipal(stringResource(Res.string.pacientes_filtros_concluir), { filtrosAbertos = false }, Modifier.fillMaxWidth())
