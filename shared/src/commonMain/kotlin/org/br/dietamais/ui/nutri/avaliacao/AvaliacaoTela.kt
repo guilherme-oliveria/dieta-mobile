@@ -95,7 +95,7 @@ private fun PassoAtual(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoe
 private fun Campos(estado: EstadoAvaliacoes, form: FormularioAvaliacao, acoes: AcoesAvaliacao, habilitado: Boolean, medidas: List<MedidaAvaliacao>) {
     medidas.forEach { medida ->
         CampoNumero(stringResource(rotuloMedida(medida)), form.valores[medida].orEmpty(), { acoes.aoMedida(medida, it) },
-            erro = estado.errosMedidas[medida]?.let { textoErroMedida(it) }, habilitado = habilitado)
+            erro = estado.errosMedidas[medida]?.let { textoErroMedida(it) }, habilitado = habilitado, ultimo = medida == medidas.last())
     }
 }
 

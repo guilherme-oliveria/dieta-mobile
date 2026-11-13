@@ -46,6 +46,23 @@ class ComponentesBaseTest {
     }
 
     @Test
+    fun campoNumeroUsaTecladoDecimalProximoEConcluirEPassaOFoco() = runSkikoComposeUiTest {
+        setContent {
+            DietaTheme {
+                androidx.compose.foundation.layout.Column {
+                    CampoNumero("Peso (kg)", "", {})
+                    CampoNumero("Estatura (cm)", "", {}, ultimo = true)
+                }
+            }
+        }
+        onNodeWithContentDescription("Peso (kg)").assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, androidx.compose.ui.text.input.ImeAction.Next))
+        onNodeWithContentDescription("Estatura (cm)").assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, androidx.compose.ui.text.input.ImeAction.Done))
+        onNodeWithContentDescription("Peso (kg)").performClick()
+        onNodeWithContentDescription("Peso (kg)").performImeAction()
+        onNodeWithContentDescription("Estatura (cm)").assertIsFocused()
+    }
+
+    @Test
     fun campoDecimalPreservaVirgulaEAnunciaErro() = runSkikoComposeUiTest {
         var recebido = ""
         setContent {
