@@ -32,6 +32,12 @@ fun gerarListaCompras(dieta: DietaSnapshotResposta, dias: Int = 7): List<GrupoCo
 private fun arredondar(v: Double) = round(v * 100 + 1e-6) / 100
 
 /** Peso em texto pt-BR: abaixo de 1 kg em gramas, depois em kg (ex.: "850 g", "1,4 kg"). */
+/** Itens da lista e quantos deles já foram marcados (marcas de outros alimentos, de uma dieta anterior, não contam). */
+fun contarItensCompra(grupos: List<GrupoCompras>, marcados: Set<Uuid>): Pair<Int, Int> {
+    val ids = grupos.flatMap { g -> g.itens.map { it.alimentoId } }.toSet()
+    return ids.count { it in marcados } to ids.size
+}
+
 fun textoPeso(gramas: Double): String {
     if (gramas < 1000) return "${formatarDecimal(gramas, 1)} g"
     return "${formatarDecimal(gramas / 1000, 2)} kg"

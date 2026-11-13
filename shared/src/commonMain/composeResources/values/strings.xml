@@ -398,7 +398,8 @@
     <string name="compras_itens">Itens</string>
     <string name="compras_titulo_texto">Lista de compras</string>
     <string name="compras_compartilhar">Compartilhar lista</string>
-    <string name="compras_limpar">Desmarcar tudo</string>
+    <string name="compras_limpar">Limpar marcados</string>
+    <string name="compras_progresso">%1$s de %2$s itens</string>
     <string name="compras_copiada">Lista copiada.</string>
     <string name="compras_aberta">Escolha onde enviar a lista.</string>
     <string name="compras_falhou">Não foi possível compartilhar a lista.</string>
