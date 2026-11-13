@@ -44,21 +44,27 @@ fun PlanejadorPorcoesTela(estado: EstadoPlanejador, acoes: AcoesPlanejador, clas
     Surface(Modifier.fillMaxSize().testTag("planejador-porcoes"), color = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxSize()) {
             BarraTopo(stringResource(Res.string.plan_titulo), acoes.aoVoltar, stringResource(Res.string.plan_voltar))
+            // MOB-UX-09: no celular a faixa de totais fica fixa no topo e o Salvar no pé; no tablet o resultado vivo segue na coluna lateral.
+            if (!expandido) FaixaTotais(estado.totalDia.energia, estado.totalDia.carboidratos, estado.totalDia.proteinas, estado.totalDia.gorduras, rascunho.metas?.vetKcal)
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 if (expandido) Row(Modifier.fillMaxSize().padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
                     Column(Modifier.weight(2f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Refeicoes(estado, rascunho, acoes) }
-                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Resumo(estado, rascunho, acoes) }
+                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Resumo(estado, rascunho, acoes, comSalvar = true) }
                 }
                 else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-                    Resumo(estado, rascunho, acoes); Refeicoes(estado, rascunho, acoes)
+                    Resumo(estado, rascunho, acoes, comSalvar = false); Refeicoes(estado, rascunho, acoes)
                 }
+            }
+            if (!expandido && rascunho.editavel) RodapeAcoes {
+                BotaoPrincipal(stringResource(Res.string.plan_salvar), acoes.aoSalvar, Modifier.weight(1f),
+                    habilitado = rascunho.alterado && !estado.semConexao && !estado.carregando, carregando = estado.enviando)
             }
         }
     }
 }
 
 @Composable
-private fun ColumnScope.Resumo(estado: EstadoPlanejador, r: RascunhoPlano, a: AcoesPlanejador) {
+private fun ColumnScope.Resumo(estado: EstadoPlanejador, r: RascunhoPlano, a: AcoesPlanejador, comSalvar: Boolean) {
     if (estado.semConexao) FaixaOffline()
     estado.erro?.let { Text(textoMensagemPlanejador(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
     estado.aviso?.let { Text(textoMensagemPlanejador(it), style = MaterialTheme.typography.bodySmall, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
@@ -92,7 +98,7 @@ private fun ColumnScope.Resumo(estado: EstadoPlanejador, r: RascunhoPlano, a: Ac
             else MicronutrientesDriCard(totais)
         }
     }
-    if (r.editavel) BotaoPrincipal(stringResource(Res.string.plan_salvar), a.aoSalvar, Modifier.fillMaxWidth(),
+    if (comSalvar && r.editavel) BotaoPrincipal(stringResource(Res.string.plan_salvar), a.aoSalvar, Modifier.fillMaxWidth(),
         habilitado = r.alterado && !estado.semConexao && !estado.carregando, carregando = estado.enviando)
 }
 

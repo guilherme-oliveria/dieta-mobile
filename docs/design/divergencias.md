@@ -180,3 +180,9 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - O cancelamento já pedia confirmação (`ConfirmarCancelamentoDialog`: título "Cancelar consulta?", corpo "Paciente, data às hora", botões "Cancelar consulta" e "Manter"); não mudou. O texto do critério ("Cancelar a consulta de Maria às 14:00?") ficou como está hoje.
 - "Financeiro" segue desabilitado sem conexão; o motivo é a faixa "sem conexão" no topo da agenda, como antes.
 - A Agenda da nutri não tem artboard no canvas (`telas.md`: "faltando"), então não havia o que atualizar; o Design precisa desenhar o cartão com o menu.
+
+## MOB-UX-09 · Totais da dieta sempre visíveis ao montar (13/11/2026)
+
+- No celular (largura compacta) o planejador por porções e o montador de dieta mostram uma faixa fixa abaixo da barra do topo, fora da rolagem, em região ao vivo: "1.850 de 2.000 kcal · C 52% · P 22% · L 26%" (com meta) ou "1.850 kcal · C 52% · P 22% · L 26%" (sem meta; só kcal se ainda não há macro). Os percentuais são a parte de cada macro nas calorias (4, 4 e 9 kcal/g). `A-Planejador-Porcoes` ganhou a faixa; `T-Planejador-Porcoes` (tablet) não muda: lá o cartão de totais continua na coluna lateral e a faixa não aparece.
+- Salvar (e Publicar, no montador) passam a ficar no `RodapeAcoes`, fixo no pé, no celular. No tablet continuam na coluna lateral. A nota "Salve o rascunho para poder publicar." continua na rolagem, acima das refeições.
+- Divergência: o artboard `A-Planejador-Porcoes` mantém o botão de salvar no cabeçalho; o app usa o rodapé, como pede `padrao-ui.md`. O artboard ainda não mostra o rodapé fixo.
