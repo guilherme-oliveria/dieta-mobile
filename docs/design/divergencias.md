@@ -147,3 +147,7 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 
 - O cartão de água ganhou "Outro valor" (campo de ml de 10 a 2.000, inline) e "Desfazer último". Não estão no canvas `Main.dc.html`; divergência até o Design atualizar.
 - "Desfazer último" só alcança lançamentos ainda não enviados (5 s depois do toque), porque o backend só inclui água e não remove. Depois disso o botão fica desabilitado.
+
+## MOB-UX-06 · Seletor de dia do Hoje (12/11/2026)
+
+- Os dias viram `ChipEscolha` (48 dp, check no escolhido) em linha com rolagem horizontal, com "Hoje", "Ontem" e "seg 09/11"; a descrição de acessibilidade traz a data por extenso. O canvas `Main.dc.html` ainda mostra os botões de texto; divergência até o Design atualizar.
