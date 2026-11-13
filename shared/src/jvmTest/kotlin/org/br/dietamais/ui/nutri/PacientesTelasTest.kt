@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.material3.Surface
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
@@ -99,10 +100,10 @@ class PacientesTelasTest {
         var estado by mutableStateOf(EstadoPacientes(lista = pacientes(30), total = 30))
         setContent { DietaTheme { PacientesTela(estado, {}, {}, {}, {}, {}, aoOrdem = { estado = estado.copy(ordemEscolhida = it) }) } }
         onNodeWithText("Filtros").performClick()
-        onNodeWithText("Próximo retorno").performScrollTo().assertIsNotEnabled()
+        onNodeWithText("Próximo retorno").assertIsNotEnabled()
         onNodeWithText("Próximo retorno indisponível", substring = true).assertIsDisplayed()
         estado = estado.copy(resumos = emptyMap())
-        onNodeWithText("Próximo retorno").performScrollTo().assertIsEnabled().performClick()
+        onNodeWithText("Próximo retorno").assertIsEnabled().performSemanticsAction(SemanticsActions.OnClick) // a folha pode ficar parcialmente fora da janela de teste
         assertEquals(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO, estado.ordemEfetiva)
     }
 
