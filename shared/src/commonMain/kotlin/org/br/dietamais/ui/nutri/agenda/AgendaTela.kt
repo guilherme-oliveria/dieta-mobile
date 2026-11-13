@@ -101,7 +101,7 @@ private fun CartaoConsulta(c: ConsultaResposta, estado: EstadoAgenda, acoes: Aco
                 if (passou) BotaoContornado(stringResource(Res.string.financeiro_abrir), { acoes.aoFinanceiro(c.id) }, habilitado = financeiroLiberado)
                 else BotaoContornado(stringResource(Res.string.agenda_remarcar), { acoes.aoRemarcar(c.id) }, habilitado = online)
                 Box {
-                    IconButton({ menu = true }, Modifier.size(Dimens.alvoToque)) { Icon(IconesDieta.Mais, contentDescription = stringResource(Res.string.agenda_mais_acoes)) }
+                    IconButton({ menu = true }, Modifier.size(Dimens.alvoToque)) { Icon(IconesDieta.MaisAcoes, contentDescription = stringResource(Res.string.agenda_mais_acoes)) }
                     DropdownMenu(menu, { menu = false }) {
                         if (passou) DropdownMenuItem({ Text(stringResource(Res.string.agenda_remarcar)) }, { menu = false; acoes.aoRemarcar(c.id) }, enabled = online)
                         else DropdownMenuItem({ Text(stringResource(Res.string.financeiro_abrir)) }, { menu = false; acoes.aoFinanceiro(c.id) }, enabled = financeiroLiberado)
