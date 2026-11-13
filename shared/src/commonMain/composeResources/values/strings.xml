@@ -123,6 +123,10 @@
     <string name="pacientes_limpar_filtros">Limpar filtros</string>
     <string name="pacientes_vazio_busca">Nenhum paciente com “%1$s”.</string>
     <string name="pacientes_vazio_filtro">Nenhum paciente neste filtro.</string>
+    <string name="pacientes_ordem">Ordem</string>
+    <string name="pacientes_ordem_nome">Nome (A-Z)</string>
+    <string name="pacientes_ordem_retorno">Próximo retorno</string>
+    <string name="pacientes_ordem_retorno_indisponivel">Próximo retorno indisponível: os retornos ainda não foram carregados. Conecte-se e atualize a lista.</string>
     <string name="pacientes_todos">Todos</string>
     <string name="pacientes_convidados">Convidados</string>
     <string name="pacientes_ativos">Ativos</string>

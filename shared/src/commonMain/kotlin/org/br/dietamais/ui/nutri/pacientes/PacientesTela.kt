@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.launch
@@ -30,9 +31,11 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: (StatusVinculo?) -> Unit,
-    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}, aoFixar: (kotlin.uuid.Uuid) -> Unit = {}, aoLimparFiltros: () -> Unit = {},
+    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}, aoFixar: (kotlin.uuid.Uuid) -> Unit = {}, aoLimparFiltros: () -> Unit = {}, aoOrdem: (OrdemPacientes) -> Unit = {},
     /** Largura grande (tablet, desktop): os chips de filtro ficam visíveis em vez de atrás do chip "Filtros" (MOB-UX-01). */ largo: Boolean = false) {
-    val grupos = remember(estado.lista) { agruparPorInicial(estado.lista) }
+    // MOB-UX-03: por próximo retorno a lista é plana, sem letras de grupo nem índice
+    val porRetorno = estado.ordemEfetiva == OrdemPacientes.PROXIMO_RETORNO
+    val grupos = remember(estado.lista, porRetorno) { if (porRetorno) listOf(GrupoPacientes(' ', estado.lista)) else agruparPorInicial(estado.lista) }
     // MOB-67c: atalhos só na visão sem busca nem filtro (a lista filtrada mostra o que foi pedido)
     val atalhosVisiveis = estado.busca.isBlank() && estado.filtro == null && estado.filtroAtencao == null && (estado.atalhos.fixados.isNotEmpty() || estado.atalhos.recentes.isNotEmpty())
     val posicoes = remember(grupos, atalhosVisiveis) { grupos.runningFold(3 + (if (atalhosVisiveis) 1 else 0)) { acc, g -> acc + 1 + g.pacientes.size }.dropLast(1) }
@@ -61,7 +64,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                             if (!largo) ChipEscolha(selected = filtrosAtivos > 0, onClick = { filtrosAbertos = true },
                                 label = { Text(if (filtrosAtivos > 0) stringResource(Res.string.pacientes_filtros_contagem, filtrosAtivos) else stringResource(Res.string.pacientes_filtros)) })
                         }
-                        if (largo) FiltrosPacientes(estado, aoFiltro, aoFiltroAtencao, titulos = false)
+                        if (largo) FiltrosPacientes(estado, aoFiltro, aoFiltroAtencao, aoOrdem, titulos = false)
                     }
                 }
             }
@@ -73,7 +76,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                         if (estado.filtrando) BotaoTexto(stringResource(Res.string.pacientes_limpar_filtros), aoLimparFiltros)
                     }
                     if (estado.resumos != null) Text(stringResource(Res.string.pacientes_ativos_atencao, estado.ativos, estado.precisamAtencao), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                    if (estado.lista.size >= LIMITE_INDICE) IndiceInicialPacientes(grupos.map { it.inicial }) { i -> escopo.launch { estadoLista.animateScrollToItem(posicoes[grupos.indexOfFirst { it.inicial == i }]) } }
+                    if (!porRetorno && estado.lista.size >= LIMITE_INDICE) IndiceInicialPacientes(grupos.map { it.inicial }) { i -> escopo.launch { estadoLista.animateScrollToItem(posicoes[grupos.indexOfFirst { it.inicial == i }]) } }
                     if (estado.semConexao) FaixaOffline()
                     estado.erro?.let { MensagemPaciente(it, alerta = true) }
                     estado.aviso?.let { MensagemPaciente(it) }
@@ -107,7 +110,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
                 estado.lista.isEmpty() -> item { EstadoVazio(mensagem = stringResource(Res.string.pacientes_lista_vazia)) }
                 else -> {
                     grupos.forEach { grupo ->
-                    item(key = "inicial-${grupo.inicial}") {
+                    if (!porRetorno) item(key = "inicial-${grupo.inicial}") {
                         Text(grupo.inicial.toString(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.semantics { heading() })
                     }
                     items(grupo.pacientes, key = { it.vinculoId.toString() }) { paciente ->
@@ -134,9 +137,9 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
         }
     }
     if (filtrosAbertos) ModalBottomSheet(onDismissRequest = { filtrosAbertos = false }) {
-        Column(Modifier.padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.margemAmpla), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.margemAmpla), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             Text(stringResource(Res.string.pacientes_filtros), style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
-            FiltrosPacientes(estado, aoFiltro, aoFiltroAtencao, titulos = true)
+            FiltrosPacientes(estado, aoFiltro, aoFiltroAtencao, aoOrdem, titulos = true)
             BotaoPrincipal(stringResource(Res.string.pacientes_filtros_concluir), { filtrosAbertos = false }, Modifier.fillMaxWidth())
         }
     }
@@ -144,7 +147,7 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
 
 /** Chips de situação e, havendo resumos, de atenção (MOB-UX-01): inline em tela larga, na folha "Filtros" no celular. */
 @Composable
-private fun FiltrosPacientes(estado: EstadoPacientes, aoFiltro: (StatusVinculo?) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit, titulos: Boolean) {
+private fun FiltrosPacientes(estado: EstadoPacientes, aoFiltro: (StatusVinculo?) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit, aoOrdem: (OrdemPacientes) -> Unit, titulos: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         if (titulos) Text(stringResource(Res.string.pacientes_filtros_situacao), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
@@ -171,6 +174,14 @@ private fun FiltrosPacientes(estado: EstadoPacientes, aoFiltro: (StatusVinculo?)
                 }
             }
         }
+        // MOB-UX-03: ordem da lista; "Próximo retorno" precisa dos resumos (offline fica desabilitada, com o motivo)
+        if (titulos) Text(stringResource(Res.string.pacientes_ordem), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
+            ChipEscolha(selected = estado.ordemEfetiva == OrdemPacientes.NOME, onClick = { aoOrdem(OrdemPacientes.NOME) }, label = { Text(stringResource(Res.string.pacientes_ordem_nome)) })
+            ChipEscolha(selected = estado.ordemEfetiva == OrdemPacientes.PROXIMO_RETORNO, onClick = { aoOrdem(OrdemPacientes.PROXIMO_RETORNO) },
+                enabled = estado.porRetornoPossivel, label = { Text(stringResource(Res.string.pacientes_ordem_retorno)) })
+        }
+        if (!estado.porRetornoPossivel) Text(stringResource(Res.string.pacientes_ordem_retorno_indisponivel), style = MaterialTheme.typography.bodySmall)
     }
 }
 

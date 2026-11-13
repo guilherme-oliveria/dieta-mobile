@@ -50,6 +50,31 @@ class PacientesViewModelTest {
         assertEquals(3, vm.estado.value.lista.size); assertFalse(vm.estado.value.filtrando)
     }
 
+    @Test fun ordemPorRetornoFicaGuardadaEExigeResumos() = runTest {
+        val ana = paciente("Ana", StatusVinculo.ATIVO); val bia = paciente("Bia", StatusVinculo.ATIVO); val caio = paciente("Caio", StatusVinculo.ATIVO)
+        val porta = PortaTeste(listOf(ana, bia, caio)).apply { resumosDados = mapOf(
+            ana.vinculoId to ResumoPaciente(), bia.vinculoId to ResumoPaciente(agora + 4.days), caio.vinculoId to ResumoPaciente(agora + 1.days)) }
+        val guardada = org.br.dietamais.data.repositorio.OrdemPacientesEmMemoria()
+        val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler), agora = { agora }, fuso = { kotlinx.datetime.TimeZone.UTC }, ordem = guardada)
+        runCurrent()
+        vm.mudarOrdem(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO); runCurrent()
+        assertEquals(listOf("Caio", "Bia", "Ana"), vm.estado.value.lista.map { it.nome })
+        assertEquals(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO, vm.estado.value.ordemEfetiva)
+        // guardada: um novo ViewModel já abre na ordem escolhida
+        val outro = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler), agora = { agora }, fuso = { kotlinx.datetime.TimeZone.UTC }, ordem = guardada)
+        runCurrent()
+        assertEquals(listOf("Caio", "Bia", "Ana"), outro.estado.value.lista.map { it.nome })
+    }
+
+    @Test fun semResumosAOrdemEfetivaFicaPorNomeMesmoComRetornoEscolhido() = runTest {
+        val porta = PortaTeste(listOf(paciente("Bia"), paciente("Ana"))) // resumos indisponíveis (offline)
+        val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler), ordem = org.br.dietamais.data.repositorio.OrdemPacientesEmMemoria())
+        runCurrent()
+        vm.mudarOrdem(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO); runCurrent()
+        assertFalse(vm.estado.value.porRetornoPossivel)
+        assertEquals(org.br.dietamais.dominio.pacientes.OrdemPacientes.NOME, vm.estado.value.ordemEfetiva)
+    }
+
     @Test fun semPacientesNenhumTotalZeroNaoEFiltrando() = runTest {
         val vm = PacientesViewModel(PortaTeste(emptyList()), compartilhar, StandardTestDispatcher(testScheduler))
         runCurrent()

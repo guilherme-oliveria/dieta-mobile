@@ -45,3 +45,11 @@ fun contarFiltrosAtivos(situacao: StatusVinculo?, atencao: FiltroAtencao?): Int 
 
 /** Há busca ou filtro ligado na lista de pacientes (MOB-UX-02). */
 fun estaFiltrando(busca: String, situacao: StatusVinculo?, atencao: FiltroAtencao?): Boolean = busca.isNotBlank() || contarFiltrosAtivos(situacao, atencao) > 0
+
+/** Ordem da lista de pacientes (MOB-UX-03): A-Z por nome (agrupada por inicial) ou quem tem o retorno mais próximo. */
+@kotlinx.serialization.Serializable
+enum class OrdemPacientes { NOME, PROXIMO_RETORNO }
+
+/** Próximo retorno primeiro; quem não tem consulta marcada vai para o fim; empate por nome. */
+fun <T> ordenarPorProximoRetorno(lista: List<T>, resumos: Map<Uuid, ResumoPaciente>, id: (T) -> Uuid, nome: (T) -> String): List<T> =
+    lista.sortedWith(compareBy<T>({ resumos[id(it)]?.proximaConsulta == null }, { resumos[id(it)]?.proximaConsulta }, { nome(it).trim().lowercase() }))

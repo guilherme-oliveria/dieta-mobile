@@ -20,7 +20,8 @@ import kotlin.uuid.Uuid
 class PacientesViewModel(private val repositorio: PortaPacientes, private val compartilhamento: Compartilhamento,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null,
     private val agora: () -> kotlin.time.Instant = { Clock.System.now() }, private val fuso: () -> TimeZone = { TimeZone.currentSystemDefault() },
-    private val fixados: org.br.dietamais.data.repositorio.PortaFixados? = null) : ViewModel() {
+    private val fixados: org.br.dietamais.data.repositorio.PortaFixados? = null,
+    private val ordem: org.br.dietamais.data.repositorio.PortaOrdemPacientes? = null) : ViewModel() {
     private val atual = MutableStateFlow(EstadoPacientes())
     val estado = atual.asStateFlow()
     private var todos = emptyList<PacienteResposta>()
@@ -39,8 +40,12 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
             repositorio.observar().catch { falha -> apresentar(falha) }.collect { todos = it; publicarLista() }
         }
         fixados?.let { porta -> viewModelScope.launch(dispatcher) { porta.observar().catch { }.collect { guardados = it; publicarLista() } } }
+        ordem?.let { porta -> viewModelScope.launch(dispatcher) { porta.observar().catch { }.collect { o -> atual.update { it.copy(ordemEscolhida = o) }; publicarLista() } } }
         atualizar()
     }
+
+    /** MOB-UX-03: guarda a ordem no aparelho e reordena a lista. */
+    fun mudarOrdem(valor: OrdemPacientes) { atual.update { it.copy(ordemEscolhida = valor) }; ordem?.definir(valor); publicarLista() }
 
     /** MOB-67c: fixa ou desafixa o paciente (só no aparelho). */
     fun alternarFixado(vinculo: Uuid) { fixados?.alternarFixado(vinculo) }
@@ -53,7 +58,9 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
     fun mudarAba(valor: AbaFicha) { atual.update { it.copy(abaFicha = valor) } }
     private fun publicarLista() {
         atual.update { estado -> val resumos = estado.resumos.orEmpty(); val instante = agora(); val zona = fuso()
-            estado.copy(lista = filtrarPorAtencao(filtrarPacientes(todos, estado.busca, estado.filtro), estado.filtroAtencao, resumos, instante, zona),
+            val filtrada = filtrarPorAtencao(filtrarPacientes(todos, estado.busca, estado.filtro), estado.filtroAtencao, resumos, instante, zona)
+            val ordenada = if (estado.ordemEscolhida == OrdemPacientes.PROXIMO_RETORNO && estado.resumos != null) ordenarPorProximoRetorno(filtrada, resumos, { it.vinculoId }, { it.nome }) else filtrada
+            estado.copy(lista = ordenada,
             total = todos.size, precisamAtencao = contarAtencao(todos, resumos, instante, zona),
             ativos = todos.count { it.status == StatusVinculo.ATIVO }, atalhos = montarAtalhos(todos, guardados) { it.vinculoId }, fixadosIds = guardados.fixados.toSet(),
             selecionado = todos.firstOrNull { it.vinculoId == selecionadoId }) }
