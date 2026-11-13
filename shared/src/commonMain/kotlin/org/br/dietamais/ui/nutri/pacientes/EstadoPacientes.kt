@@ -28,7 +28,12 @@ data class EstadoPacientes(
     val formulario: FormularioPaciente? = null, val errosCampos: Map<String, MensagemPacientes> = emptyMap(),
     val convite: ConviteCriadoResposta? = null, val limiteAtingido: Boolean = false,
     val assinatura: AssinaturaResumoResposta? = null, val abaFicha: AbaFicha = AbaFicha.RESUMO,
+    /** Ordem escolhida pela nutri, guardada no aparelho (MOB-UX-03). */
+    val ordemEscolhida: org.br.dietamais.dominio.pacientes.OrdemPacientes = org.br.dietamais.dominio.pacientes.OrdemPacientes.NOME,
 ) {
+    /** "Próximo retorno" precisa dos resumos; sem eles (offline, ainda carregando) a lista fica A-Z. */
+    val porRetornoPossivel get() = resumos != null
+    val ordemEfetiva get() = if (ordemEscolhida == org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO && porRetornoPossivel) ordemEscolhida else org.br.dietamais.dominio.pacientes.OrdemPacientes.NOME
     val filtrando get() = org.br.dietamais.dominio.pacientes.estaFiltrando(busca, filtro, filtroAtencao)
     override fun toString() = "EstadoPacientes[conteúdo clínico protegido]"
 }

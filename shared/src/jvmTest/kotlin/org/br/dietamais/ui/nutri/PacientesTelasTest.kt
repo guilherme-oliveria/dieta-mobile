@@ -95,6 +95,17 @@ class PacientesTelasTest {
         onNodeWithText("Limpar filtros").assertDoesNotExist()
     }
 
+    @Test fun ordemPorRetornoSomeComIndiceELetrasEFicaDesabilitadaSemResumos() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        var estado by mutableStateOf(EstadoPacientes(lista = pacientes(30), total = 30))
+        setContent { DietaTheme { PacientesTela(estado, {}, {}, {}, {}, {}, aoOrdem = { estado = estado.copy(ordemEscolhida = it) }) } }
+        onNodeWithText("Filtros").performClick()
+        onNodeWithText("Próximo retorno").assertIsNotEnabled()
+        onNodeWithText("Próximo retorno indisponível", substring = true).assertIsDisplayed()
+        estado = estado.copy(resumos = emptyMap())
+        onNodeWithText("Próximo retorno").assertIsEnabled().performClick()
+        assertEquals(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO, estado.ordemEfetiva)
+    }
+
     @Test fun telasNosTresTamanhosEFonteAmpliada() {
         listOf(390 to 844, 820 to 1180, 1180 to 820).forEach { (w, h) ->
             listOf("lista", "ficha", "cadastro", "convite").forEach { capturar(it, w, h, 1f) }
