@@ -48,11 +48,13 @@ class PacientesViewModel(private val repositorio: PortaPacientes, private val co
     fun mudarBusca(valor: String) { atual.update { it.copy(busca = valor) }; publicarLista() }
     fun mudarFiltro(valor: StatusVinculo?) { atual.update { it.copy(filtro = valor) }; publicarLista() }
     fun mudarFiltroAtencao(valor: FiltroAtencao?) { atual.update { it.copy(filtroAtencao = if (it.filtroAtencao == valor) null else valor) }; publicarLista() }
+    /** MOB-UX-02: desliga busca, situação e atenção de uma vez. */
+    fun limparFiltros() { atual.update { it.copy(busca = "", filtro = null, filtroAtencao = null) }; publicarLista() }
     fun mudarAba(valor: AbaFicha) { atual.update { it.copy(abaFicha = valor) } }
     private fun publicarLista() {
         atual.update { estado -> val resumos = estado.resumos.orEmpty(); val instante = agora(); val zona = fuso()
             estado.copy(lista = filtrarPorAtencao(filtrarPacientes(todos, estado.busca, estado.filtro), estado.filtroAtencao, resumos, instante, zona),
-            precisamAtencao = contarAtencao(todos, resumos, instante, zona),
+            total = todos.size, precisamAtencao = contarAtencao(todos, resumos, instante, zona),
             ativos = todos.count { it.status == StatusVinculo.ATIVO }, atalhos = montarAtalhos(todos, guardados) { it.vinculoId }, fixadosIds = guardados.fixados.toSet(),
             selecionado = todos.firstOrNull { it.vinculoId == selecionadoId }) }
     }

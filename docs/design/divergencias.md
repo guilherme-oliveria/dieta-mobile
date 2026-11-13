@@ -157,3 +157,8 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 - ART-P1-01 atualizado: a busca fica fixa no topo ao rolar e os chips de situação e de atenção ficam atrás do chip "Filtros (n)", que abre uma folha ("Situação" e "Atenção", com "Concluir"). No tablet e no desktop (largura grande) os chips continuam à vista, em linha, abaixo da busca.
 - O índice A-Z passa a ser uma única linha com rolagem horizontal (antes quebrava em várias linhas e empurrava o primeiro paciente para fora da tela). O resumo "N ativos · M precisam de atenção" continua visível acima da lista.
 - Corrigido junto: o salto do índice A-Z errava a posição quando os atalhos (fixados e recentes) estavam visíveis.
+
+## MOB-UX-02 · Contagem e vazio da lista de pacientes (13/11/2026)
+
+- Acima da lista aparece "N pacientes" (ou "N de M pacientes" com busca ou filtro) em região ao vivo, e "Limpar filtros" ao lado quando há busca ou filtro ligado. "Limpar filtros" desliga busca, situação e atenção de uma vez.
+- Sem resultado, a lista diz "Nenhum paciente com “texto”." ou "Nenhum paciente neste filtro." com o botão "Limpar filtros"; o vazio de quem ainda não tem paciente fica como estava. Estados ainda não desenhados no canvas (ART-P1-01).

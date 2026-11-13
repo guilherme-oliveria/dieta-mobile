@@ -42,3 +42,6 @@ fun filtrarPorAtencao(pacientes: List<PacienteResposta>, filtro: FiltroAtencao?,
 
 /** Quantos filtros estão ligados na lista de pacientes (MOB-UX-01): situação e atenção contam um cada; a busca não conta. */
 fun contarFiltrosAtivos(situacao: StatusVinculo?, atencao: FiltroAtencao?): Int = (if (situacao != null) 1 else 0) + (if (atencao != null) 1 else 0)
+
+/** Há busca ou filtro ligado na lista de pacientes (MOB-UX-02). */
+fun estaFiltrando(busca: String, situacao: StatusVinculo?, atencao: FiltroAtencao?): Boolean = busca.isNotBlank() || contarFiltrosAtivos(situacao, atencao) > 0

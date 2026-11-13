@@ -10,4 +10,9 @@ class FiltrosAtivosTest {
         assertEquals(1, contarFiltrosAtivos(null, FiltroAtencao.SEM_RETORNO))
         assertEquals(2, contarFiltrosAtivos(StatusVinculo.ENCERRADO, FiltroAtencao.RETORNO_HOJE))
     }
+
+    @Test fun filtrandoQuandoHaBuscaOuFiltro() {
+        assertFalse(estaFiltrando("", null, null)); assertFalse(estaFiltrando("   ", null, null))
+        assertTrue(estaFiltrando("ana", null, null)); assertTrue(estaFiltrando("", StatusVinculo.ATIVO, null)); assertTrue(estaFiltrando("", null, FiltroAtencao.SEM_RETORNO))
+    }
 }

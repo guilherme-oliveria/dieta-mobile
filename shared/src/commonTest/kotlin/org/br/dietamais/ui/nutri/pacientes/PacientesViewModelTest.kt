@@ -35,6 +35,27 @@ class PacientesViewModelTest {
         assertEquals(1, porta.atualizacoes)
     }
 
+    @Test fun contagemTotalEFiltrandoEmLimparFiltros() = runTest {
+        val porta = PortaTeste(listOf(paciente("Pessoa Alpha", StatusVinculo.ATIVO), paciente("Pessoa Beta"), paciente("Pessoa Gama")))
+        val vm = PacientesViewModel(porta, compartilhar, StandardTestDispatcher(testScheduler))
+        runCurrent()
+        assertEquals(3, vm.estado.value.total); assertEquals(3, vm.estado.value.lista.size); assertFalse(vm.estado.value.filtrando)
+        vm.mudarBusca("beta")
+        assertEquals(3, vm.estado.value.total); assertEquals(1, vm.estado.value.lista.size); assertTrue(vm.estado.value.filtrando)
+        vm.mudarBusca("zzz")
+        assertEquals(0, vm.estado.value.lista.size); assertEquals(3, vm.estado.value.total) // vazio de filtro, não de "sem pacientes"
+        vm.mudarFiltro(StatusVinculo.ATIVO)
+        vm.limparFiltros()
+        assertEquals("", vm.estado.value.busca); assertNull(vm.estado.value.filtro); assertNull(vm.estado.value.filtroAtencao)
+        assertEquals(3, vm.estado.value.lista.size); assertFalse(vm.estado.value.filtrando)
+    }
+
+    @Test fun semPacientesNenhumTotalZeroNaoEFiltrando() = runTest {
+        val vm = PacientesViewModel(PortaTeste(emptyList()), compartilhar, StandardTestDispatcher(testScheduler))
+        runCurrent()
+        assertEquals(0, vm.estado.value.total); assertFalse(vm.estado.value.filtrando)
+    }
+
     private val agora = Instant.parse("2026-11-05T15:00:00Z")
     private fun vmResumos(porta: PortaTeste, escopo: kotlinx.coroutines.test.TestScope) =
         PacientesViewModel(porta, compartilhar, StandardTestDispatcher(escopo.testScheduler), agora = { agora }, fuso = { kotlinx.datetime.TimeZone.UTC })
