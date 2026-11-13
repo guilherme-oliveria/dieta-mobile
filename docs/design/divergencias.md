@@ -151,3 +151,9 @@ Revisão do Design e Usabilidade sobre a `develop` do `dieta-mobile` (até MOB-5
 ## MOB-UX-06 · Seletor de dia do Hoje (12/11/2026)
 
 - Os dias viram `ChipEscolha` (48 dp, check no escolhido) em linha com rolagem horizontal, com "Hoje", "Ontem" e "seg 09/11"; a descrição de acessibilidade traz a data por extenso. O canvas `Main.dc.html` ainda mostra os botões de texto; divergência até o Design atualizar.
+
+## MOB-UX-01 · Busca fixa e filtros recolhidos (12/11/2026)
+
+- ART-P1-01 atualizado: a busca fica fixa no topo ao rolar e os chips de situação e de atenção ficam atrás do chip "Filtros (n)", que abre uma folha ("Situação" e "Atenção", com "Concluir"). No tablet e no desktop (largura grande) os chips continuam à vista, em linha, abaixo da busca.
+- O índice A-Z passa a ser uma única linha com rolagem horizontal (antes quebrava em várias linhas e empurrava o primeiro paciente para fora da tela). O resumo "N ativos · M precisam de atenção" continua visível acima da lista.
+- Corrigido junto: o salto do índice A-Z errava a posição quando os atalhos (fixados e recentes) estavam visíveis.

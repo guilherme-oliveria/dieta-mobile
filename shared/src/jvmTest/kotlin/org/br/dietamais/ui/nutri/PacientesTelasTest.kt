@@ -47,6 +47,35 @@ class PacientesTelasTest {
         assertFalse(texto!!.contains(paciente.nome))
     }
 
+    private fun pacientes(n: Int) = (0 until n).map { i ->
+        paciente.copy(id = Uuid.random(), vinculoId = Uuid.random(), nome = "${'A' + i % 26}${"abcdefghij"[i / 26]} Fictício", status = StatusVinculo.ATIVO)
+    }
+
+    @Test fun celularMostraChipFiltrosEPrimeiroPacienteSemRolar() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        val lista = pacientes(30)
+        setContent { DietaTheme { PacientesTela(EstadoPacientes(lista = lista), {}, {}, {}, {}, {}) } }
+        onNodeWithText("Filtros").assertIsDisplayed()
+        onNodeWithText("Convidados").assertDoesNotExist()
+        onNodeWithText("Aa Fictício", substring = true).assertIsDisplayed()
+    }
+
+    @Test fun chipFiltrosAbreFolhaEMostraContagemDosAtivos() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        var estado by mutableStateOf(EstadoPacientes(lista = pacientes(3)))
+        setContent { DietaTheme { PacientesTela(estado, {}, { estado = estado.copy(filtro = it) }, {}, {}, {}) } }
+        onNodeWithText("Filtros").performClick()
+        onNodeWithText("Convidados").assertIsDisplayed()
+        onNodeWithText("Ativos").performClick()
+        assertEquals(StatusVinculo.ATIVO, estado.filtro)
+        onNodeWithText("Concluir").performClick()
+        onNodeWithText("Filtros (1)").assertIsDisplayed()
+    }
+
+    @Test fun larguraGrandeMantemOsChipsVisiveis() = runSkikoComposeUiTest(size = Size(360f, 800f)) {
+        setContent { DietaTheme { PacientesTela(EstadoPacientes(lista = pacientes(3)), {}, {}, {}, {}, {}, largo = true) } }
+        onNodeWithText("Convidados").assertIsDisplayed()
+        onNodeWithText("Filtros").assertDoesNotExist()
+    }
+
     @Test fun telasNosTresTamanhosEFonteAmpliada() {
         listOf(390 to 844, 820 to 1180, 1180 to 820).forEach { (w, h) ->
             listOf("lista", "ficha", "cadastro", "convite").forEach { capturar(it, w, h, 1f) }
