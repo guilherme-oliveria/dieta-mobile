@@ -117,6 +117,12 @@
     <string name="pacientes_filtros_situacao">Situação</string>
     <string name="pacientes_filtros_atencao">Atenção</string>
     <string name="pacientes_filtros_concluir">Concluir</string>
+    <string name="pacientes_contagem">%1$d pacientes</string>
+    <string name="pacientes_contagem_um">1 paciente</string>
+    <string name="pacientes_contagem_filtrada">%1$d de %2$d pacientes</string>
+    <string name="pacientes_limpar_filtros">Limpar filtros</string>
+    <string name="pacientes_vazio_busca">Nenhum paciente com “%1$s”.</string>
+    <string name="pacientes_vazio_filtro">Nenhum paciente neste filtro.</string>
     <string name="pacientes_todos">Todos</string>
     <string name="pacientes_convidados">Convidados</string>
     <string name="pacientes_ativos">Ativos</string>

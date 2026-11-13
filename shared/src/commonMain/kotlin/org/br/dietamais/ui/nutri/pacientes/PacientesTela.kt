@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: (StatusVinculo?) -> Unit,
-    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}, aoFixar: (kotlin.uuid.Uuid) -> Unit = {},
+    aoNovo: () -> Unit, aoAtualizar: () -> Unit, aoSelecionar: (PacienteResposta) -> Unit, aoFiltroAtencao: (FiltroAtencao?) -> Unit = {}, aoFixar: (kotlin.uuid.Uuid) -> Unit = {}, aoLimparFiltros: () -> Unit = {},
     /** Largura grande (tablet, desktop): os chips de filtro ficam visíveis em vez de atrás do chip "Filtros" (MOB-UX-01). */ largo: Boolean = false) {
     val grupos = remember(estado.lista) { agruparPorInicial(estado.lista) }
     // MOB-67c: atalhos só na visão sem busca nem filtro (a lista filtrada mostra o que foi pedido)
@@ -67,6 +67,11 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
             }
             item(key = "resumo") {
                 Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                    // MOB-UX-02: contagem ao vivo e atalho para desligar busca e filtros
+                    if (estado.total > 0 && !estado.atualizando) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text(textoContagem(estado.lista.size, estado.total, estado.filtrando), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite })
+                        if (estado.filtrando) BotaoTexto(stringResource(Res.string.pacientes_limpar_filtros), aoLimparFiltros)
+                    }
                     if (estado.resumos != null) Text(stringResource(Res.string.pacientes_ativos_atencao, estado.ativos, estado.precisamAtencao), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     if (estado.lista.size >= LIMITE_INDICE) IndiceInicialPacientes(grupos.map { it.inicial }) { i -> escopo.launch { estadoLista.animateScrollToItem(posicoes[grupos.indexOfFirst { it.inicial == i }]) } }
                     if (estado.semConexao) FaixaOffline()
@@ -95,6 +100,10 @@ fun PacientesTela(estado: EstadoPacientes, aoBusca: (String) -> Unit, aoFiltro: 
             when {
                 estado.atualizando && estado.lista.isEmpty() -> item { EstadoCarregando() }
                 estado.lista.isEmpty() && estado.erro != null -> item { EstadoErro(aoAtualizar, mensagem = textoMensagemPaciente(estado.erro)) }
+                estado.lista.isEmpty() && estado.total > 0 && estado.filtrando -> item {
+                    EstadoVazio(mensagem = if (estado.busca.isNotBlank()) stringResource(Res.string.pacientes_vazio_busca, estado.busca.trim()) else stringResource(Res.string.pacientes_vazio_filtro),
+                        textoAcao = stringResource(Res.string.pacientes_limpar_filtros), aoAcionar = aoLimparFiltros)
+                }
                 estado.lista.isEmpty() -> item { EstadoVazio(mensagem = stringResource(Res.string.pacientes_lista_vazia)) }
                 else -> {
                     grupos.forEach { grupo ->
@@ -163,6 +172,14 @@ private fun FiltrosPacientes(estado: EstadoPacientes, aoFiltro: (StatusVinculo?)
             }
         }
     }
+}
+
+/** "N pacientes", ou "N de M pacientes" quando há busca ou filtro. */
+@Composable
+private fun textoContagem(exibidos: Int, total: Int, filtrando: Boolean): String = when {
+    filtrando -> stringResource(Res.string.pacientes_contagem_filtrada, exibidos, total)
+    total == 1 -> stringResource(Res.string.pacientes_contagem_um)
+    else -> stringResource(Res.string.pacientes_contagem, total)
 }
 
 /** Quantos pacientes na lista pedem o índice A-Z (ART-P1-01): com poucos, a rolagem basta. */

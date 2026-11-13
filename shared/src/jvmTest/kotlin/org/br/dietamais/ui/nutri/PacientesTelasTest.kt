@@ -76,6 +76,25 @@ class PacientesTelasTest {
         onNodeWithText("Filtros").assertDoesNotExist()
     }
 
+    @Test fun contagemEVazioEspecificoComLimparFiltros() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        var estado by mutableStateOf(EstadoPacientes(lista = pacientes(3), total = 3))
+        var limpou = 0
+        setContent { DietaTheme { PacientesTela(estado, {}, {}, {}, {}, {}, aoLimparFiltros = { limpou++ }) } }
+        onNodeWithText("3 pacientes").assertIsDisplayed()
+        onNodeWithText("Limpar filtros").assertDoesNotExist()
+        estado = estado.copy(lista = pacientes(1), busca = "Ab")
+        onNodeWithText("1 de 3 pacientes").assertIsDisplayed()
+        onNodeWithText("Limpar filtros").performClick()
+        assertEquals(1, limpou)
+        estado = estado.copy(lista = emptyList(), busca = "zzz")
+        onNodeWithText("Nenhum paciente com “zzz”.").assertIsDisplayed()
+        estado = estado.copy(busca = "", filtro = StatusVinculo.ENCERRADO)
+        onNodeWithText("Nenhum paciente neste filtro.").assertIsDisplayed()
+        estado = EstadoPacientes()
+        onNodeWithText("Nenhum paciente encontrado.").assertIsDisplayed()
+        onNodeWithText("Limpar filtros").assertDoesNotExist()
+    }
+
     @Test fun telasNosTresTamanhosEFonteAmpliada() {
         listOf(390 to 844, 820 to 1180, 1180 to 820).forEach { (w, h) ->
             listOf("lista", "ficha", "cadastro", "convite").forEach { capturar(it, w, h, 1f) }
