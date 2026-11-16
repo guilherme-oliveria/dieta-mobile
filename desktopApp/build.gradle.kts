@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
-val versaoDistribuicao = "1.2.0"
+val versaoDistribuicao = "1.3.0"
 val diretorioVersao = layout.buildDirectory.dir("generated/versaoApp")
 val gerarVersaoApp by tasks.registering(WriteProperties::class) {
     destinationFile = diretorioVersao.get().file("dietamais-versao.properties").asFile
