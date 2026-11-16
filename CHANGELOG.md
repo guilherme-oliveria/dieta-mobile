@@ -12,14 +12,13 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), versões [S
 - MOB-46 Publicação da web na VPS (depende do BE-32b).
 - Conferir com leitor de tela real (NVDA, VoiceOver, TalkBack), Safari e Firefox (G-14).
 
-## [1.4.0] — M10: crianças, exames e anamnese (em andamento)
+## [1.3.0] — M9 e M10: necessidades, protocolos, crianças, exames e anamnese (16/11/2026)
 
 - MOB-59 Crescimento para nutri e paciente: seleção de avaliação/indicador, medidas e referências OMS congeladas, intervalos confirmados, fonte/versão e alternativa em tabela. Histórico offline sem classificação adulta para menores, sem misturar pacientes, vínculos, sexos ou versões. Referências ligadas somente em meses consecutivos disponíveis; lacunas permanecem explícitas.
 
 - MOB-58 Avaliação infantil e adolescente: campos por idade, comprimento/estatura em cm com precisão de milímetros, peso ao nascer em kg convertido para gramas e escolhas opcionais de referência, Slaughter e atividade. Resultados confirmados pelo servidor (OMS/Frisancho, composição e energia), com intervalos sem interpolação e G-16 explícita. Escrita offline preserva entradas e remove derivados antigos; refresh respeita mutações pendentes. Histórico e paciente não usam classificação de IMC adulto para menores. A curva histórica de MOB-59 continua pendente.
 - MOB-61 Anamnese estruturada: campos agrupados, medidas de bebida em seletor, resultados de pressão arterial, álcool, sal, óleo e duração recebidos do servidor. Digitação válida salva parcial, resultados antigos desaparecem após edição e podem ser atualizados sem concluir. Editor preserva códigos; web incorpora o PUT sem sobrescrever novas entradas. Falhas de gravação mantêm o formulário e permitem nova tentativa. Layout amplo com resultados laterais e fonte 200% em uma coluna.
 
-## [1.3.0] — M9: necessidades e protocolos (em andamento)
 
 - MOB-52 Passo "Necessidades" da avaliação (método do GET, nível de atividade, objetivo, gestante/lactante, protocolos das metas, dislipidêmico) com GEB, GET, VET, rosca e metas ao vivo; avaliações salvas reabrem com as escolhas. Textos antigos com `%%` corrigidos.
 - MOB-53 "Meus protocolos" na conta da nutri (dobras e massa, salvo online com `If-Match`); a avaliação nova já vem com o padrão dela.
