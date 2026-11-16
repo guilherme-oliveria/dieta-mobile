@@ -1,3 +1,5 @@
+> **Este repositório está sendo substituído pelo monorepo [dieta-plus](https://github.com/guilherme-oliveria/dieta-plus)** (pastas `backend/` e `mobile/`, histórico preservado). Novas tarefas e PRs vão para lá; este repositório será arquivado depois.
+
 # Dieta+ — app (Android, iOS e desktop)
 
 App do Dieta+ em Kotlin Multiplatform com Compose Multiplatform: a mesma interface roda no Android, no iPhone e no desktop (Windows, Mac e Linux). Um único app atende a nutricionista e o paciente.
