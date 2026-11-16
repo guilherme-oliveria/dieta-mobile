@@ -16,14 +16,24 @@ enum class MensagemPacientes {
 data class FormularioPaciente(
     val id: Uuid = novoIdLocal(), val chave: Uuid = novoIdLocal(), val nome: String = "", val email: String = "",
     val nascimento: String = "", val sexo: Sexo? = null, val telefone: String = "", val estatura: String = "",
-    val objetivo: String = "", val observacoes: String = "",
+    val objetivo: String = "", val observacoes: String = "", val ampliado: org.br.dietamais.dominio.pacientes.FormularioCadastroAmpliado = org.br.dietamais.dominio.pacientes.FormularioCadastroAmpliado(),
 ) { override fun toString() = "FormularioPaciente[conteúdo protegido]" }
 
 data class EstadoPacientes(
-    val lista: List<PacienteResposta> = emptyList(), val busca: String = "", val filtro: StatusVinculo? = null,
-    val selecionado: PacienteResposta? = null, val atualizando: Boolean = false, val envioEmAndamento: Boolean = false,
+    val lista: List<PacienteResposta> = emptyList(), /** Todos os pacientes, sem busca nem filtro (MOB-UX-02). */ val total: Int = 0, val busca: String = "", val filtro: StatusVinculo? = null,
+    val filtroAtencao: org.br.dietamais.dominio.pacientes.FiltroAtencao? = null, val resumos: Map<Uuid, org.br.dietamais.dominio.pacientes.ResumoPaciente>? = null, val precisamAtencao: Int = 0,
+    val ativos: Int = 0, val atalhos: org.br.dietamais.dominio.pacientes.AtalhosPacientes<PacienteResposta> = org.br.dietamais.dominio.pacientes.AtalhosPacientes(emptyList(), emptyList()),
+    val fixadosIds: Set<Uuid> = emptySet(), val selecionado: PacienteResposta? = null, val atualizando: Boolean = false, val envioEmAndamento: Boolean = false,
     val semConexao: Boolean = false, val erro: MensagemPacientes? = null, val aviso: MensagemPacientes? = null,
     val formulario: FormularioPaciente? = null, val errosCampos: Map<String, MensagemPacientes> = emptyMap(),
     val convite: ConviteCriadoResposta? = null, val limiteAtingido: Boolean = false,
     val assinatura: AssinaturaResumoResposta? = null, val abaFicha: AbaFicha = AbaFicha.RESUMO,
-) { override fun toString() = "EstadoPacientes[conteúdo clínico protegido]" }
+    /** Ordem escolhida pela nutri, guardada no aparelho (MOB-UX-03). */
+    val ordemEscolhida: org.br.dietamais.dominio.pacientes.OrdemPacientes = org.br.dietamais.dominio.pacientes.OrdemPacientes.NOME,
+) {
+    /** "Próximo retorno" precisa dos resumos; sem eles (offline, ainda carregando) a lista fica A-Z. */
+    val porRetornoPossivel get() = resumos != null
+    val ordemEfetiva get() = if (ordemEscolhida == org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO && porRetornoPossivel) ordemEscolhida else org.br.dietamais.dominio.pacientes.OrdemPacientes.NOME
+    val filtrando get() = org.br.dietamais.dominio.pacientes.estaFiltrando(busca, filtro, filtroAtencao)
+    override fun toString() = "EstadoPacientes[conteúdo clínico protegido]"
+}

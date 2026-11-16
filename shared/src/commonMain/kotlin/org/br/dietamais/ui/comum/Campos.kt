@@ -12,6 +12,9 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
@@ -34,14 +37,16 @@ fun CampoTexto(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     trailingIcon: (@Composable () -> Unit)? = null,
     singleLine: Boolean = true,
+    unidade: String? = null,
+    rotuloVisivel: String = rotulo,
 ) {
     val cores = MaterialTheme.colorScheme
     Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
-        Text(rotulo, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
+        Text(rotuloVisivel, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
         OutlinedTextField(
             value = valor, onValueChange = aoMudar, singleLine = singleLine, maxLines = if (singleLine) 1 else 4,
             enabled = habilitado, isError = erro != null, keyboardOptions = keyboardOptions,
-            visualTransformation = visualTransformation, keyboardActions = keyboardActions, trailingIcon = trailingIcon,
+            visualTransformation = visualTransformation, keyboardActions = keyboardActions, trailingIcon = trailingIcon ?: unidade?.let { u -> { Text(u, style = MaterialTheme.typography.bodyMedium, color = cores.onSurfaceVariant) } },
             shape = FormasDieta.campo, textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.fillMaxWidth().heightIn(min = Dimens.alturaBotao).semantics {
                 contentDescription = rotulo
@@ -74,6 +79,10 @@ fun CampoHora(
     habilitado: Boolean = true,
 ) = CampoTexto(rotulo, valor, aoMudar, modifier, erro, habilitado, KeyboardOptions(keyboardType = KeyboardType.Ascii))
 
+/**
+ * Campo de número decimal (MOB-UX-10): teclado decimal; a tecla de ação é "Próximo" e leva o foco ao campo seguinte, ou "Concluir"
+ * (fecha o teclado) quando `ultimo`. Vírgula e ponto valem como separador: quem lê o texto troca a vírgula por ponto (`lerDecimal`).
+ */
 @Composable
 fun CampoNumero(
     rotulo: String,
@@ -82,4 +91,11 @@ fun CampoNumero(
     modifier: Modifier = Modifier,
     erro: String? = null,
     habilitado: Boolean = true,
-) = CampoTexto(rotulo, valor, aoMudar, modifier, erro, habilitado, KeyboardOptions(keyboardType = KeyboardType.Decimal))
+    ultimo: Boolean = false,
+) = separarUnidade(rotulo).let { (nome, un) ->
+    val foco = LocalFocusManager.current
+    CampoTexto(rotulo, valor, aoMudar, modifier, erro, habilitado,
+        KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = if (ultimo) ImeAction.Done else ImeAction.Next),
+        keyboardActions = KeyboardActions(onNext = { foco.moveFocus(FocusDirection.Next) }, onDone = { foco.clearFocus() }),
+        unidade = un, rotuloVisivel = nome)
+}

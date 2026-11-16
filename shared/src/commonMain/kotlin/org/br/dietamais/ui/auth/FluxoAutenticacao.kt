@@ -26,10 +26,10 @@ import org.br.dietamais.ui.nutri.pacientes.PacientesViewModel
 import org.br.dietamais.ui.nutri.pacientes.PacientesRota
 import org.br.dietamais.ui.nutri.alimentos.AlimentosViewModel
 import org.br.dietamais.ui.nutri.alimentos.AlimentosRota
+import org.br.dietamais.ui.nutri.listapaciente.AcoesCopiaLista
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteViewModel
 import org.br.dietamais.ui.nutri.listapaciente.ListaPacienteTela
 import org.br.dietamais.ui.nutri.dieta.DietasPacienteRota
-import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.data.sync.AgendadorLembretes
 import org.koin.compose.getKoin
@@ -114,24 +114,27 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
                     Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
                         .heightIn(max = Dimens.alturaCabecalhoAutenticado).verticalScroll(rememberScrollState())) {
                         BarraTopoAutenticada(usuario.perfil == Perfil.NUTRICIONISTA, usuario.id, estado.carregando,
-                            aoSair = viewModel::sair, aoTenhoCodigo = { convites.abrir() }, usuarioPerfil = usuario.perfil)
-                        Column(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.espacoMedio),
+                            aoSair = viewModel::sair, aoTenhoCodigo = { convites.abrir() }, usuarioPerfil = usuario.perfil,
+                            emailPendente = !usuario.emailConfirmado, ambiente = ambiente)
+                        // O topo só cresce com o que exige ação agora (erro, período de teste). E-mail por confirmar e "Atualizar dados" ficam em Avisos.
+                        val teste = estado.assinatura?.takeIf { it.status == StatusAssinatura.TESTE }
+                        if (estado.erro != null || teste != null) Column(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta).padding(bottom = Dimens.espacoPequeno),
                             verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                             estado.erro?.let { MensagemAutenticacaoTexto(it, alerta = true) }
-                            if (!usuario.emailConfirmado) FaixaAlerta(stringResource(Res.string.auth_email_nao_confirmado))
-                            estado.assinatura?.takeIf { it.status == StatusAssinatura.TESTE }?.let {
+                            teste?.let {
                                 Text(stringResource(Res.string.auth_assinatura_teste, it.limitePacientes, it.fimPeriodoEm.toString().substringBefore('T')),
                                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            if (ambiente != null) key(usuario.id, usuario.perfil) { IndicadorAmbiente(ambiente) }
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     }
                 }
                 Box(Modifier.weight(1f)) {
-                    key(usuario.id, usuario.perfil) {
-                        if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
-                        else NavegacaoPaciente(viewModel::sair)
+                    androidx.compose.runtime.CompositionLocalProvider(org.br.dietamais.ui.comum.LocalAtualizacaoGeralNoTopo provides (ambiente != null)) {
+                        key(usuario.id, usuario.perfil) {
+                            if (usuario.perfil == Perfil.NUTRICIONISTA) NavegacaoNutri()
+                            else NavegacaoPaciente(viewModel::sair)
+                        }
                     }
                 }
             }
@@ -151,12 +154,12 @@ fun FluxoAutenticacao(viewModel: AutenticacaoViewModel = koinViewModel(), convit
 /** Barra de topo: marca à esquerda; avisos e pendências à direita; "Tenho um código" e "Sair" no menu. */
 @Composable
 private fun BarraTopoAutenticada(nutri: Boolean, idUsuario: kotlin.uuid.Uuid, carregando: Boolean, aoSair: () -> Unit,
-    aoTenhoCodigo: () -> Unit, usuarioPerfil: Perfil?) {
+    aoTenhoCodigo: () -> Unit, usuarioPerfil: Perfil?, emailPendente: Boolean = false, ambiente: AmbienteDieta? = null) {
     var menu by remember { mutableStateOf(false) }
     Row(Modifier.fillMaxWidth().padding(horizontal = Dimens.margemCompacta), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(Res.string.app_nome), style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f).semantics { heading() })
-        key(idUsuario, usuarioPerfil) { AvisosDoUsuario(); if (nutri) PendenciasDoUsuario() }
+        key(idUsuario, usuarioPerfil) { AvisosDoUsuario(emailPendente, ambiente); if (nutri) PendenciasDoUsuario() }
         Box {
             TextButton({ menu = true }) { Text(stringResource(Res.string.auth_menu_conta)) }
             DropdownMenu(menu, { menu = false }) {
@@ -179,10 +182,13 @@ private fun FaixaAlerta(texto: String) {
 
 /** Central de avisos: um ViewModel por usuário/perfil, para nunca mostrar o histórico da conta anterior. */
 @Composable
-private fun AvisosDoUsuario() {
+private fun AvisosDoUsuario(emailPendente: Boolean, ambiente: AmbienteDieta?) {
     val dono = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(dono) { onDispose { dono.viewModelStore.clear() } }
-    AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono))
+    AvisosRota(koinViewModel<AvisosViewModel>(viewModelStoreOwner = dono), extraPendentes = if (emailPendente) 1 else 0, topo = {
+        if (emailPendente) FaixaAlerta(stringResource(Res.string.auth_email_nao_confirmado))
+        if (ambiente != null) IndicadorAmbiente(ambiente)
+    })
 }
 
 /** Conflitos e rejeições da escrita offline da nutri (MOB-30). */
@@ -226,14 +232,15 @@ private fun NavegacaoPaciente(aoContaExcluida: () -> Unit) {
             Column(Modifier.fillMaxSize()) {
                 AnamnesePacienteRota(anamnese)
                 ProximaConsultaRota(koinViewModel<ConsultasPacienteViewModel>(viewModelStoreOwner = dono))
-                HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua), Modifier.weight(1f))
+                HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua, vm::desfazerCheckin, vm::desfazerAgua), Modifier.weight(1f))
             }
             TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
         },
         conteudoDieta = {
             val pdf = koinInject<org.br.dietamais.data.repositorio.PortaPdf>()
-            DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, pdf = { e -> e.dieta?.let { d ->
-                BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(org.br.dietamais.data.repositorio.RecursoPdf.DIETA, d.dietaId) }) } })
+            org.br.dietamais.ui.paciente.dieta.DietaPacienteRota(vm, pdf = { e -> e.dieta?.let { d ->
+                BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(org.br.dietamais.data.repositorio.RecursoPdf.DIETA, d.dietaId) })
+                org.br.dietamais.ui.comum.BotoesPdfLista(pdf, d.dietaId, !e.semConexao) } })
         },
         conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
         conteudoCompras = {
@@ -262,19 +269,20 @@ private fun NavegacaoNutri() {
     conteudoPacientes = { classe, vinculo, abrir, voltar ->
         PacientesRota(pacientes, classe, vinculo, abrir, voltar, abaConteudo = { aba, paciente ->
           if (aba == AbaFicha.EVOLUCAO) EvolucaoRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), paciente.id)
-          else if (aba == AbaFicha.AVALIACOES) AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id, paciente.sexo, paciente.dataNascimento)
+          else if (aba == AbaFicha.AVALIACOES) AvaliacoesNutriRota(koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono), paciente.id, paciente.sexo, paciente.dataNascimento, koinViewModel<org.br.dietamais.ui.nutri.avaliacao.ExamesNutriViewModel>(viewModelStoreOwner = dono), paciente.nome)
           else if (aba == AbaFicha.ANAMNESE) AnamneseNutriRota(koinViewModel<AnamneseNutriViewModel>(viewModelStoreOwner = dono), paciente.id)
-          else if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente)
+          else if (aba == AbaFicha.DIETA) DietasPacienteRota(koinViewModel<MontadorDietaViewModel>(viewModelStoreOwner = dono), paciente, koinViewModel<org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel>(viewModelStoreOwner = dono), koinViewModel<org.br.dietamais.ui.nutri.dieta.ModelosDietaViewModel>(viewModelStoreOwner = dono), koinViewModel<org.br.dietamais.ui.nutri.dieta.AplicarModeloViewModel>(viewModelStoreOwner = dono), koinViewModel<org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel>(qualifier = org.koin.core.qualifier.named("modelo"), viewModelStoreOwner = dono), koinInject<org.br.dietamais.ui.nutri.dieta.DietasDeModelo>())
           else {
             val lista = koinViewModel<ListaPacienteViewModel>(viewModelStoreOwner = dono)
             val estadoLista by lista.estado.collectAsState()
             LaunchedEffect(paciente.id) { lista.abrir(paciente.id) }
-            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar)
+            ListaPacienteTela(estadoLista, lista::mudarBusca, lista::remover, lista::adicionar, lista::salvar, lista::descartar, lista::recarregar,
+                                AcoesCopiaLista(lista::escolherOrigem, lista::pedirCopia, lista::confirmarCopia, lista::desistirDaCopia))
           }
         })
     }, conteudoInicio = { PainelRota(koinViewModel<PainelViewModel>(viewModelStoreOwner = dono)) },
     conteudoAgenda = { AgendaRota(koinViewModel<AgendaViewModel>(viewModelStoreOwner = dono)) },
-    conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono)) },
+    conteudoAlimentos = { AlimentosRota(koinViewModel<AlimentosViewModel>(viewModelStoreOwner = dono), koinViewModel<org.br.dietamais.ui.nutri.produtos.ProdutosViewModel>(viewModelStoreOwner = dono)) },
     conteudoConta = {
         val conta = koinViewModel<PerfilNutriViewModel>(viewModelStoreOwner = dono)
         val estadoConta by conta.estado.collectAsState()
@@ -284,6 +292,9 @@ private fun NavegacaoNutri() {
         ContaNutriTela(estadoConta, AcoesPerfilNutri(conta::mudarNome, conta::mudarCrn, conta::mudarTelefone, conta::mudarOrientacao, conta::salvar, conta::recarregar,
             seletorLogo, conta::removerLogo),
             extras = {
+                val protocolos = koinViewModel<org.br.dietamais.ui.nutri.protocolos.ProtocolosNutriViewModel>(viewModelStoreOwner = dono)
+                val estadoProtocolos by protocolos.estado.collectAsState()
+                org.br.dietamais.ui.nutri.protocolos.ProtocolosNutriCard(estadoProtocolos, org.br.dietamais.ui.nutri.protocolos.AcoesProtocolosNutri(protocolos::mudarDobras, protocolos::mudarMassa, protocolos::salvar, protocolos::recarregar))
                 AssinaturaCard(estadoAssinatura, AcoesAssinatura(assinatura::assinar, assinatura::urlAberta, assinatura::recarregar))
                 val priv = koinViewModel<PrivacidadeViewModel>(viewModelStoreOwner = dono) { parametersOf(false) }
                 val estadoPriv by priv.estado.collectAsState()

@@ -1,0 +1,1992 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores de crianças e adolescentes (BE-55, MOB-58). Mesmo arquivo nos dois repositórios (RN-CAL-06). Esperados por script independente que reimplementa as macros (TESTA_*, SLAUGHTER, GET_*_CCA/ADOLESCENTE) com as correções documentadas na CalculadoraInfantil.",
+ "tolerancia": {
+  "valor": 0.01
+ },
+ "arredondamento": "Valores com 2 casas em HALF_UP.",
+ "casos": [
+  {
+   "id": "PN-900",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 900
+   },
+   "esperado": "EXTREMAMENTE_BAIXO"
+  },
+  {
+   "id": "PN-999",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 999
+   },
+   "esperado": "EXTREMAMENTE_BAIXO"
+  },
+  {
+   "id": "PN-1000",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 1000
+   },
+   "esperado": "MUITO_BAIXO"
+  },
+  {
+   "id": "PN-1500",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 1500
+   },
+   "esperado": "MUITO_BAIXO"
+  },
+  {
+   "id": "PN-1501",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 1501
+   },
+   "esperado": "BAIXO"
+  },
+  {
+   "id": "PN-2500",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 2500
+   },
+   "esperado": "BAIXO"
+  },
+  {
+   "id": "PN-2501",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 2501
+   },
+   "esperado": "INSUFICIENTE"
+  },
+  {
+   "id": "PN-3000",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 3000
+   },
+   "esperado": "INSUFICIENTE"
+  },
+  {
+   "id": "PN-3001",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 3001
+   },
+   "esperado": "NORMAL"
+  },
+  {
+   "id": "PN-4000",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 4000
+   },
+   "esperado": "NORMAL"
+  },
+  {
+   "id": "PN-4001",
+   "descricao": "classe do peso ao nascer",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoNascer",
+   "entrada": {
+    "gramas": 4001
+   },
+   "esperado": "MACROSSOMIA"
+  },
+  {
+   "id": "ADQ-14.0-20.0",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "14.0",
+    "p50": "20.0"
+   },
+   "esperado": {
+    "percentual": "70.0",
+    "classe": "DM"
+   }
+  },
+  {
+   "id": "ADQ-16-20",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "16",
+    "p50": "20"
+   },
+   "esperado": {
+    "percentual": "80.0",
+    "classe": "DM"
+   }
+  },
+  {
+   "id": "ADQ-18-20",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "18",
+    "p50": "20"
+   },
+   "esperado": {
+    "percentual": "90.0",
+    "classe": "DL"
+   }
+  },
+  {
+   "id": "ADQ-20-20",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "20",
+    "p50": "20"
+   },
+   "esperado": {
+    "percentual": "100.0",
+    "classe": "A"
+   }
+  },
+  {
+   "id": "ADQ-22-20",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "22",
+    "p50": "20"
+   },
+   "esperado": {
+    "percentual": "110.0",
+    "classe": "A"
+   }
+  },
+  {
+   "id": "ADQ-24-20",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "24",
+    "p50": "20"
+   },
+   "esperado": {
+    "percentual": "120.0",
+    "classe": "EP"
+   }
+  },
+  {
+   "id": "ADQ-25-20",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "25",
+    "p50": "20"
+   },
+   "esperado": {
+    "percentual": "125.0",
+    "classe": "O"
+   }
+  },
+  {
+   "id": "ADQ-18.5-17.3",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "18.5",
+    "p50": "17.3"
+   },
+   "esperado": {
+    "percentual": "106.94",
+    "classe": "A"
+   }
+  },
+  {
+   "id": "ADQ-13.2-19.1",
+   "descricao": "adequação % e classe",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "adequacao",
+   "entrada": {
+    "medida": "13.2",
+    "p50": "19.1"
+   },
+   "esperado": {
+    "percentual": "69.11",
+    "classe": "DG"
+   }
+  },
+  {
+   "id": "BR-M-16.5-8.0",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": true,
+    "cb": "16.5",
+    "dct": "8.0"
+   },
+   "esperado": {
+    "ambc": "1547.84",
+    "agb": "619.76"
+   }
+  },
+  {
+   "id": "BR-M-19.0-10.5",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": true,
+    "cb": "19.0",
+    "dct": "10.5"
+   },
+   "esperado": {
+    "ambc": "1953.25",
+    "agb": "920.95"
+   }
+  },
+  {
+   "id": "BR-M-22.3-12.0",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": true,
+    "cb": "22.3",
+    "dct": "12.0"
+   },
+   "esperado": {
+    "ambc": "2724.36",
+    "agb": "1234.96"
+   }
+  },
+  {
+   "id": "BR-M-14.2-6.5",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": true,
+    "cb": "14.2",
+    "dct": "6.5"
+   },
+   "esperado": {
+    "ambc": "1167.08",
+    "agb": "438.33"
+   }
+  },
+  {
+   "id": "BR-M-25.0-15.0",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": true,
+    "cb": "25.0",
+    "dct": "15.0"
+   },
+   "esperado": {
+    "ambc": "3267.74",
+    "agb": "1708.38"
+   }
+  },
+  {
+   "id": "BR-F-16.5-8.0",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": false,
+    "cb": "16.5",
+    "dct": "8.0"
+   },
+   "esperado": {
+    "ambc": "1551.34",
+    "agb": "616.26"
+   }
+  },
+  {
+   "id": "BR-F-19.0-10.5",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": false,
+    "cb": "19.0",
+    "dct": "10.5"
+   },
+   "esperado": {
+    "ambc": "1956.75",
+    "agb": "917.45"
+   }
+  },
+  {
+   "id": "BR-F-22.3-12.0",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": false,
+    "cb": "22.3",
+    "dct": "12.0"
+   },
+   "esperado": {
+    "ambc": "2727.86",
+    "agb": "1231.46"
+   }
+  },
+  {
+   "id": "BR-F-14.2-6.5",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": false,
+    "cb": "14.2",
+    "dct": "6.5"
+   },
+   "esperado": {
+    "ambc": "1170.58",
+    "agb": "434.83"
+   }
+  },
+  {
+   "id": "BR-F-25.0-15.0",
+   "descricao": "AMBc e AGB",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "braco",
+   "entrada": {
+    "masculino": false,
+    "cb": "25.0",
+    "dct": "15.0"
+   },
+   "esperado": {
+    "ambc": "3271.24",
+    "agb": "1704.88"
+   }
+  },
+  {
+   "id": "PB-900",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "900",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "ABAIXO_P5"
+  },
+  {
+   "id": "PB-1000",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "1000",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "P5_A_P10"
+  },
+  {
+   "id": "PB-1100",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "1100",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "P5_A_P10"
+  },
+  {
+   "id": "PB-1200",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "1200",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "P10_A_P90"
+  },
+  {
+   "id": "PB-1300",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "1300",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "P10_A_P90"
+  },
+  {
+   "id": "PB-1301",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "1301",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "P10_A_P90"
+  },
+  {
+   "id": "PB-2500",
+   "descricao": "classe pelos percentis 5/10/90",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "percentilBraco",
+   "entrada": {
+    "valor": "2500",
+    "p5": "1000",
+    "p10": "1100",
+    "p90": "2000"
+   },
+   "esperado": "ACIMA_P90"
+  },
+  {
+   "id": "EI-70",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "70",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "MB"
+  },
+  {
+   "id": "EI-75",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "75",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "B"
+  },
+  {
+   "id": "EI-76",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "76",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "B"
+  },
+  {
+   "id": "EI-80",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "80",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "EI-90",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "90",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "EI-95",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "95",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "EI-96",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "96",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "AC"
+  },
+  {
+   "id": "EI-100",
+   "descricao": "classe estatura/idade",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "estaturaIdade",
+   "entrada": {
+    "valor": "100",
+    "a": "75",
+    "b": "80",
+    "c": "95"
+   },
+   "esperado": "AC"
+  },
+  {
+   "id": "IC-12",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "12",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "MA"
+  },
+  {
+   "id": "IC-13",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "13",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "M"
+  },
+  {
+   "id": "IC-14",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "14",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "IC-15.5",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "15.5",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "A"
+  },
+  {
+   "id": "IC-16",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "16",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "S"
+  },
+  {
+   "id": "IC-17",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "17",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "S"
+  },
+  {
+   "id": "IC-18",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "18",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "O"
+  },
+  {
+   "id": "IC-19",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "19",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "O"
+  },
+  {
+   "id": "IC-20.5",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "20.5",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "OG"
+  },
+  {
+   "id": "IC-25",
+   "descricao": "classe IMC/idade 0-9",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcCrianca",
+   "entrada": {
+    "valor": "25",
+    "a": "13",
+    "b": "14",
+    "c": "16",
+    "d": "18",
+    "e": "20"
+   },
+   "esperado": "OG"
+  },
+  {
+   "id": "IA-15",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "15",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "BP"
+  },
+  {
+   "id": "IA-17.2",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "17.2",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IA-18.3",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "18.3",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IA-21",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "21",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "NO"
+  },
+  {
+   "id": "IA-22.5",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "22.5",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "SP"
+  },
+  {
+   "id": "IA-23.9",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "23.9",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "SP"
+  },
+  {
+   "id": "IA-24",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "24",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "OB"
+  },
+  {
+   "id": "IA-30",
+   "descricao": "classe IMC/idade 10-17",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "imcAdolescente",
+   "entrada": {
+    "valor": "30",
+    "a": "17.2",
+    "b": "22.5",
+    "c": "24"
+   },
+   "esperado": "OB"
+  },
+  {
+   "id": "SL-F-10-8-12-None",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": false,
+    "triciptal": "10",
+    "subescapular": "8",
+    "idade": 12,
+    "etnia": null
+   },
+   "esperado": "17.23"
+  },
+  {
+   "id": "SL-F-20-15-15-None",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": false,
+    "triciptal": "20",
+    "subescapular": "15",
+    "idade": 15,
+    "etnia": null
+   },
+   "esperado": "28.13"
+  },
+  {
+   "id": "SL-F-20-16-15-None",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": false,
+    "triciptal": "20",
+    "subescapular": "16",
+    "idade": 15,
+    "etnia": null
+   },
+   "esperado": "29.36"
+  },
+  {
+   "id": "SL-F-5-5-10-None",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": false,
+    "triciptal": "5",
+    "subescapular": "5",
+    "idade": 10,
+    "etnia": null
+   },
+   "esperado": "9.5"
+  },
+  {
+   "id": "SL-M-10-8-10-1",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "10",
+    "subescapular": "8",
+    "idade": 10,
+    "etnia": 1
+   },
+   "esperado": "17.49"
+  },
+  {
+   "id": "SL-M-12-9-13-1",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "12",
+    "subescapular": "9",
+    "idade": 13,
+    "etnia": 1
+   },
+   "esperado": "18.48"
+  },
+  {
+   "id": "SL-M-14-10-16-1",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "14",
+    "subescapular": "10",
+    "idade": 16,
+    "etnia": 1
+   },
+   "esperado": "18.93"
+  },
+  {
+   "id": "SL-M-10-8-10-2",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "10",
+    "subescapular": "8",
+    "idade": 10,
+    "etnia": 2
+   },
+   "esperado": "15.69"
+  },
+  {
+   "id": "SL-M-12-9-13-2",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "12",
+    "subescapular": "9",
+    "idade": 13,
+    "etnia": 2
+   },
+   "esperado": "16.68"
+  },
+  {
+   "id": "SL-M-14-10-16-2",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "14",
+    "subescapular": "10",
+    "idade": 16,
+    "etnia": 2
+   },
+   "esperado": "17.63"
+  },
+  {
+   "id": "SL-M-20-16-15-1",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "20",
+    "subescapular": "16",
+    "idade": 15,
+    "etnia": 1
+   },
+   "esperado": "29.79"
+  },
+  {
+   "id": "SL-M-10-8-15-None",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "10",
+    "subescapular": "8",
+    "idade": 15,
+    "etnia": null
+   },
+   "esperado": null
+  },
+  {
+   "id": "SL-M-10-8-9-1",
+   "descricao": "% gordura Slaughter",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "slaughter",
+   "entrada": {
+    "masculino": true,
+    "triciptal": "10",
+    "subescapular": "8",
+    "idade": 9,
+    "etnia": 1
+   },
+   "esperado": null
+  },
+  {
+   "id": "CG-M-5",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "5"
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "CG-M-6",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "6"
+   },
+   "esperado": "BXO"
+  },
+  {
+   "id": "CG-M-10",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "10"
+   },
+   "esperado": "BXO"
+  },
+  {
+   "id": "CG-M-11",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "11"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-M-20",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "20"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-M-21",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "21"
+   },
+   "esperado": "MOD_ALTO"
+  },
+  {
+   "id": "CG-M-25",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "25"
+   },
+   "esperado": "MOD_ALTO"
+  },
+  {
+   "id": "CG-M-26",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "26"
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "CG-M-31",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "31"
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "CG-M-32",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "32"
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "CG-M-12",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "12"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-M-15",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "15"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-M-16",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "16"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-M-30",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "30"
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "CG-M-36",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "36"
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "CG-M-37",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": true,
+    "percentual": "37"
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "CG-F-5",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "5"
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "CG-F-6",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "6"
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "CG-F-10",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "10"
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "CG-F-11",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "11"
+   },
+   "esperado": "MT_BXO"
+  },
+  {
+   "id": "CG-F-20",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "20"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-F-21",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "21"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-F-25",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "25"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-F-26",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "26"
+   },
+   "esperado": "MOD_ALTO"
+  },
+  {
+   "id": "CG-F-31",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "31"
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "CG-F-32",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "32"
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "CG-F-12",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "12"
+   },
+   "esperado": "BXO"
+  },
+  {
+   "id": "CG-F-15",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "15"
+   },
+   "esperado": "BXO"
+  },
+  {
+   "id": "CG-F-16",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "16"
+   },
+   "esperado": "ADEQ"
+  },
+  {
+   "id": "CG-F-30",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "30"
+   },
+   "esperado": "MOD_ALTO"
+  },
+  {
+   "id": "CG-F-36",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "36"
+   },
+   "esperado": "ALTO"
+  },
+  {
+   "id": "CG-F-37",
+   "descricao": "classe do % de gordura (Deurenberg 1990)",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "classeGordura",
+   "entrada": {
+    "masculino": false,
+    "percentual": "37"
+   },
+   "esperado": "MT_ALTO"
+  },
+  {
+   "id": "GEB-M-4",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": true,
+    "idade": "4",
+    "peso": "16.5",
+    "estatura": "1.02"
+   },
+   "esperado": "939.25"
+  },
+  {
+   "id": "GETI-M-4",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": true,
+    "idade": 4,
+    "af": "1.13",
+    "peso": "16.5",
+    "estatura": "1.02"
+   },
+   "esperado": "1612.15"
+  },
+  {
+   "id": "GETR-M-4",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 4,
+    "meses": 0,
+    "af": "1.13",
+    "peso": "16.5",
+    "estatura": "1.02"
+   },
+   "esperado": "1399.52"
+  },
+  {
+   "id": "GEB-M-8",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": true,
+    "idade": "8",
+    "peso": "26",
+    "estatura": "1.28"
+   },
+   "esperado": "1137.6"
+  },
+  {
+   "id": "GETI-M-8",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": true,
+    "idade": 8,
+    "af": "1.26",
+    "peso": "26",
+    "estatura": "1.28"
+   },
+   "esperado": "2218.08"
+  },
+  {
+   "id": "GETR-M-8",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 8,
+    "meses": 0,
+    "af": "1.26",
+    "peso": "26",
+    "estatura": "1.28"
+   },
+   "esperado": "1944.35"
+  },
+  {
+   "id": "GEB-M-12",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": true,
+    "idade": "12",
+    "peso": "40",
+    "estatura": "1.5"
+   },
+   "esperado": "1375.6"
+  },
+  {
+   "id": "GETI-M-12",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": true,
+    "idade": 12,
+    "af": "1.18",
+    "peso": "40",
+    "estatura": "1.5"
+   },
+   "esperado": "2478.57"
+  },
+  {
+   "id": "GETR-M-12",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 12,
+    "meses": 0,
+    "af": "1.18",
+    "peso": "40",
+    "estatura": "1.5"
+   },
+   "esperado": "2229.25"
+  },
+  {
+   "id": "GEB-M-16",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": true,
+    "idade": "16",
+    "peso": "58.5",
+    "estatura": "1.68"
+   },
+   "esperado": "1653.25"
+  },
+  {
+   "id": "GETI-M-16",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": true,
+    "idade": 16,
+    "af": "1.31",
+    "peso": "58.5",
+    "estatura": "1.68"
+   },
+   "esperado": "3349.11"
+  },
+  {
+   "id": "GETR-M-16",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 16,
+    "meses": 0,
+    "af": "1.31",
+    "peso": "58.5",
+    "estatura": "1.68"
+   },
+   "esperado": "3156.58"
+  },
+  {
+   "id": "GETR-M-9",
+   "descricao": "GET RDI 9 anos",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 9,
+    "meses": 0,
+    "af": "1.13",
+    "peso": "30",
+    "estatura": "1.35"
+   },
+   "esperado": "1839.06"
+  },
+  {
+   "id": "GETI-M-2",
+   "descricao": "GET IOM abaixo de 3 anos é nulo",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": true,
+    "idade": 2,
+    "af": "1.0",
+    "peso": "12",
+    "estatura": "0.9"
+   },
+   "esperado": null
+  },
+  {
+   "id": "GEB-F-4",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": false,
+    "idade": "4",
+    "peso": "16.5",
+    "estatura": "1.02"
+   },
+   "esperado": "923.48"
+  },
+  {
+   "id": "GETI-F-4",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": false,
+    "idade": 4,
+    "af": "1.13",
+    "peso": "16.5",
+    "estatura": "1.02"
+   },
+   "esperado": "1312.54"
+  },
+  {
+   "id": "GETR-F-4",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 4,
+    "meses": 0,
+    "af": "1.13",
+    "peso": "16.5",
+    "estatura": "1.02"
+   },
+   "esperado": "1295.08"
+  },
+  {
+   "id": "GEB-F-8",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": false,
+    "idade": "8",
+    "peso": "26",
+    "estatura": "1.28"
+   },
+   "esperado": "1060.72"
+  },
+  {
+   "id": "GETI-F-8",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": false,
+    "idade": 8,
+    "af": "1.26",
+    "peso": "26",
+    "estatura": "1.28"
+   },
+   "esperado": "1682.34"
+  },
+  {
+   "id": "GETR-F-8",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 8,
+    "meses": 0,
+    "af": "1.26",
+    "peso": "26",
+    "estatura": "1.28"
+   },
+   "esperado": "1742.86"
+  },
+  {
+   "id": "GEB-F-12",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": false,
+    "idade": "12",
+    "peso": "40",
+    "estatura": "1.5"
+   },
+   "esperado": "1230.0"
+  },
+  {
+   "id": "GETI-F-12",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": false,
+    "idade": 12,
+    "af": "1.18",
+    "peso": "40",
+    "estatura": "1.5"
+   },
+   "esperado": "1844.43"
+  },
+  {
+   "id": "GETR-F-12",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 12,
+    "meses": 0,
+    "af": "1.18",
+    "peso": "40",
+    "estatura": "1.5"
+   },
+   "esperado": "1915.88"
+  },
+  {
+   "id": "GEB-F-16",
+   "descricao": "GEB IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "gebIom",
+   "entrada": {
+    "masculino": false,
+    "idade": "16",
+    "peso": "58.5",
+    "estatura": "1.68"
+   },
+   "esperado": "1431.32"
+  },
+  {
+   "id": "GETI-F-16",
+   "descricao": "GET IOM",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": false,
+    "idade": 16,
+    "af": "1.31",
+    "peso": "58.5",
+    "estatura": "1.68"
+   },
+   "esperado": "2423.41"
+  },
+  {
+   "id": "GETR-F-16",
+   "descricao": "GET RDI",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 16,
+    "meses": 0,
+    "af": "1.31",
+    "peso": "58.5",
+    "estatura": "1.68"
+   },
+   "esperado": "2489.4"
+  },
+  {
+   "id": "GETR-F-9",
+   "descricao": "GET RDI 9 anos",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 9,
+    "meses": 0,
+    "af": "1.13",
+    "peso": "30",
+    "estatura": "1.35"
+   },
+   "esperado": "1646.92"
+  },
+  {
+   "id": "GETI-F-2",
+   "descricao": "GET IOM abaixo de 3 anos é nulo",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getIom",
+   "entrada": {
+    "masculino": false,
+    "idade": 2,
+    "af": "1.0",
+    "peso": "12",
+    "estatura": "0.9"
+   },
+   "esperado": null
+  },
+  {
+   "id": "GETR-LAC-0",
+   "descricao": "GET RDI lactente",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 0,
+    "meses": 0,
+    "af": null,
+    "peso": "4.2",
+    "estatura": null
+   },
+   "esperado": "448.8"
+  },
+  {
+   "id": "GETR-LAC-3",
+   "descricao": "GET RDI lactente",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 0,
+    "meses": 3,
+    "af": null,
+    "peso": "6.0",
+    "estatura": null
+   },
+   "esperado": "609.0"
+  },
+  {
+   "id": "GETR-LAC-4",
+   "descricao": "GET RDI lactente",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 0,
+    "meses": 4,
+    "af": null,
+    "peso": "6.5",
+    "estatura": null
+   },
+   "esperado": "534.5"
+  },
+  {
+   "id": "GETR-LAC-6",
+   "descricao": "GET RDI lactente",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 0,
+    "meses": 6,
+    "af": null,
+    "peso": "7.4",
+    "estatura": null
+   },
+   "esperado": "614.6"
+  },
+  {
+   "id": "GETR-LAC-7",
+   "descricao": "GET RDI lactente",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 0,
+    "meses": 7,
+    "af": null,
+    "peso": "8.0",
+    "estatura": null
+   },
+   "esperado": "634.0"
+  },
+  {
+   "id": "GETR-LAC-11",
+   "descricao": "GET RDI lactente",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": true,
+    "anos": 0,
+    "meses": 11,
+    "af": null,
+    "peso": "9.5",
+    "estatura": null
+   },
+   "esperado": "767.5"
+  },
+  {
+   "id": "GETR-1A",
+   "descricao": "GET RDI 1-2 anos",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 1,
+    "meses": 0,
+    "af": null,
+    "peso": "10.5",
+    "estatura": null
+   },
+   "esperado": "854.5"
+  },
+  {
+   "id": "GETR-2A",
+   "descricao": "GET RDI 1-2 anos",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "getRdi",
+   "entrada": {
+    "masculino": false,
+    "anos": 2,
+    "meses": 0,
+    "af": null,
+    "peso": "12.4",
+    "estatura": null
+   },
+   "esperado": "1023.6"
+  },
+  {
+   "id": "PI-18.5-1.5",
+   "descricao": "peso esperado para o IMC",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoParaImc",
+   "entrada": {
+    "imc": "18.5",
+    "estatura": "1.5"
+   },
+   "esperado": "41.63"
+  },
+  {
+   "id": "PI-24.9-1.62",
+   "descricao": "peso esperado para o IMC",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoParaImc",
+   "entrada": {
+    "imc": "24.9",
+    "estatura": "1.62"
+   },
+   "esperado": "65.35"
+  },
+  {
+   "id": "PI-21-1.2",
+   "descricao": "peso esperado para o IMC",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "pesoParaImc",
+   "entrada": {
+    "imc": "21",
+    "estatura": "1.2"
+   },
+   "esperado": "30.24"
+  },
+  {
+   "id": "IT-2025-11-01",
+   "descricao": "idade em texto",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "idadeTexto",
+   "entrada": {
+    "nascimento": "2025-11-01",
+    "data": "2025-11-20"
+   },
+   "esperado": "menos de 1 mês"
+  },
+  {
+   "id": "IT-2025-10-01",
+   "descricao": "idade em texto",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "idadeTexto",
+   "entrada": {
+    "nascimento": "2025-10-01",
+    "data": "2025-11-20"
+   },
+   "esperado": "1 mês"
+  },
+  {
+   "id": "IT-2024-11-01",
+   "descricao": "idade em texto",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "idadeTexto",
+   "entrada": {
+    "nascimento": "2024-11-01",
+    "data": "2025-11-20"
+   },
+   "esperado": "1 ano"
+  },
+  {
+   "id": "IT-2023-02-15",
+   "descricao": "idade em texto",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "idadeTexto",
+   "entrada": {
+    "nascimento": "2023-02-15",
+    "data": "2025-11-20"
+   },
+   "esperado": "2 anos e 9 meses"
+  },
+  {
+   "id": "IT-2022-11-20",
+   "descricao": "idade em texto",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "idadeTexto",
+   "entrada": {
+    "nascimento": "2022-11-20",
+    "data": "2025-11-20"
+   },
+   "esperado": "3 anos"
+  },
+  {
+   "id": "IT-2020-01-31",
+   "descricao": "idade em texto",
+   "origem": "macros/abas 0-9 e 10-17 anos",
+   "funcao": "idadeTexto",
+   "entrada": {
+    "nascimento": "2020-01-31",
+    "data": "2025-11-20"
+   },
+   "esperado": "5 anos e 9 meses"
+  }
+ ]
+}

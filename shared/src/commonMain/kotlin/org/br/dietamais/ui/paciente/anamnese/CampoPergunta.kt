@@ -20,6 +20,7 @@ import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
 import org.br.dietamais.ui.nutri.anamnese.textoErroResposta
 import org.br.dietamais.ui.theme.Dimens
+import org.br.dietamais.ui.comum.anamnese.EscolhaAnamnese
 import org.jetbrains.compose.resources.stringResource
 
 private const val MAX_ITENS = 12
@@ -39,13 +40,17 @@ fun CampoPergunta(pergunta: PerguntaQuestionario, entrada: EntradaResposta, erro
             TipoPergunta.HORARIO -> CampoHora(rotulo, (entrada as? EntradaResposta.Texto)?.texto.orEmpty(), { aoMudar(EntradaResposta.Texto(it.take(5))) }, erro = mensagemErro, habilitado = habilitado)
             TipoPergunta.ESCOLHA_UNICA -> {
                 val escolhida = ((entrada as? EntradaResposta.Valor)?.valor as? JsonPrimitive)?.contentOrNull
-                Text(rotulo, style = MaterialTheme.typography.labelLarge)
-                pergunta.opcoes.orEmpty().forEach { opcao ->
+                if (pergunta.opcoes.orEmpty().size > 5 || assuntoAnamnese(pergunta.codigo) == AssuntoAnamnese.ALCOOL) {
+                    EscolhaAnamnese(rotulo, pergunta.opcoes.orEmpty(), escolhida, habilitado, pergunta.obrigatoria) { aoMudar(EntradaResposta.Valor(it?.let(::JsonPrimitive))) }
+                } else {
+                    Text(rotulo, style = MaterialTheme.typography.labelLarge)
+                    pergunta.opcoes.orEmpty().forEach { opcao ->
                     Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).selectable(opcao == escolhida, enabled = habilitado, role = Role.RadioButton) { aoMudar(EntradaResposta.Valor(JsonPrimitive(opcao))) },
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                         RadioButton(opcao == escolhida, onClick = null, enabled = habilitado)
                         Text(opcao, style = MaterialTheme.typography.bodyLarge)
                     }
+                }
                 }
             }
             TipoPergunta.MULTIPLA_ESCOLHA -> {
@@ -67,7 +72,7 @@ fun CampoPergunta(pergunta: PerguntaQuestionario, entrada: EntradaResposta, erro
                 val nota = ((entrada as? EntradaResposta.Valor)?.valor as? JsonPrimitive)?.takeIf { !it.isString }?.intOrNull
                 Text(rotulo, style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                    (1..5).forEach { n -> FilterChip(nota == n, { aoMudar(EntradaResposta.Valor(JsonPrimitive(n))) }, label = { Text(n.toString()) }, enabled = habilitado) }
+                    (1..5).forEach { n -> ChipEscolha(nota == n, { aoMudar(EntradaResposta.Valor(JsonPrimitive(n))) }, label = { Text(n.toString()) }, enabled = habilitado) }
                 }
             }
             TipoPergunta.LISTA_POR_REFEICAO -> {

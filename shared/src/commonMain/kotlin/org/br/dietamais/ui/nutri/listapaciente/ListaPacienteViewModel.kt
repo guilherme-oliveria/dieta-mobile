@@ -11,15 +11,17 @@ import org.br.dietamais.dominio.dieta.AjusteLista
 import kotlin.uuid.Uuid
 
 class ListaPacienteViewModel(private val lista: PortaListaPaciente, private val alimentos: PortaAlimentos,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null) : ViewModel() {
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null, pacientes: PortaPacientes? = null) : ViewModel() {
     private val atual = MutableStateFlow(EstadoListaPaciente())
     val estado = atual.asStateFlow()
     private var catalogo = CatalogoAlimentos()
     private var baseEfetiva: List<AlimentoResposta> = emptyList()
     private var ajuste = AjusteLista()
+    private var todas: List<PacienteResposta> = emptyList()
     private var operacao: Job? = null
     init {
         viewModelScope.launch(dispatcher) { alimentos.observar().catch { }.collect { catalogo = it; publicar() } }
+        pacientes?.let { porta -> viewModelScope.launch(dispatcher) { porta.observar().catch { }.collect { todos -> todas = todos; publicar() } } }
         conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
     }
 
@@ -40,6 +42,22 @@ class ListaPacienteViewModel(private val lista: PortaListaPaciente, private val 
     fun mudarBusca(valor: String) { atual.update { it.copy(busca = valor.take(150)) }; publicar() }
     fun remover(id: Uuid) { if (!ocupado()) { ajuste = ajuste.remover(id); publicar() } }
     fun adicionar(id: Uuid) { if (!ocupado()) { ajuste = ajuste.adicionar(id); publicar() } }
+    /** Copiar a lista de outro paciente (G-19, RN-ALI-06): escolhe a origem, confirma e o servidor troca a lista inteira. */
+    fun escolherOrigem(abrir: Boolean) { if (!ocupado()) atual.update { it.copy(escolhendoOrigem = abrir, copiandoDe = null) } }
+    fun pedirCopia(origemId: Uuid) { if (!ocupado()) atual.update { it.copy(copiandoDe = origemId) } }
+    fun desistirDaCopia() = atual.update { it.copy(copiandoDe = null) }
+    fun confirmarCopia() {
+        val id = atual.value.pacienteId ?: return; val origem = atual.value.copiandoDe ?: return
+        if (ocupado() || atual.value.semConexao) return
+        atual.update { it.copy(copiandoDe = null) }
+        executar {
+            // a versão da lista de destino vem do servidor, não do que a nutri editou e ainda não salvou
+            val servidor = lista.obter(id)
+            val resposta = lista.copiarDe(id, origem, servidor.versao)
+            baseEfetiva = resposta.alimentos; ajuste = AjusteLista()
+            atual.update { it.copy(versao = resposta.versao, aviso = MensagemLista.COPIADA, escolhendoOrigem = false, busca = "", semConexao = false) }; publicar()
+        }
+    }
     fun descartar() { if (!ocupado()) { ajuste = AjusteLista(); publicar() } }
     fun salvar() {
         val id = atual.value.pacienteId ?: return
@@ -61,7 +79,8 @@ class ListaPacienteViewModel(private val lista: PortaListaPaciente, private val 
             .sortedBy { it.nome.lowercase() }
         val ids = efetiva.map { it.id }.toSet()
         val opcoes = catalogo.alimentos.filter { it.ativo && it.id !in ids && it.nome.contains(estado.busca.trim(), ignoreCase = true) }
-        estado.copy(grupos = catalogo.grupos, efetiva = efetiva, opcoes = opcoes, pendente = !ajuste.vazio)
+        estado.copy(grupos = catalogo.grupos, efetiva = efetiva, opcoes = opcoes, pendente = !ajuste.vazio,
+            origens = todas.filter { it.id != estado.pacienteId }.sortedBy { it.nome.lowercase() })
     }
     private fun executar(carregar: Boolean = false, bloco: suspend () -> Unit) {
         atual.update { it.copy(carregando = carregar, enviando = !carregar, erro = null, aviso = null) }
@@ -79,6 +98,7 @@ class ListaPacienteViewModel(private val lista: PortaListaPaciente, private val 
                 "CONFLITO_VERSAO" -> MensagemLista.CONFLITO
                 "ASSINATURA_INATIVA" -> MensagemLista.ASSINATURA_INATIVA
                 "RECURSO_NAO_ENCONTRADO" -> MensagemLista.NAO_ENCONTRADO
+                "ACESSO_NEGADO" -> MensagemLista.VINCULO_ENCERRADO
                 else -> MensagemLista.ERRO
             }
             else -> MensagemLista.ERRO

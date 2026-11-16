@@ -41,9 +41,13 @@ class MontadorDietaViewModel(private val dietas: PortaDietas, private val alimen
         atual.update { it.copy(rascunho = RascunhoDieta(), erro = null, aviso = null, errosCampos = emptyMap()) }; recalcular()
     }
     fun abrir(dieta: DietaResposta) {
+        // Dieta por porções do grupo, à vontade ou texto livre só se edita no planejador por porções (MOB-54); aqui salvar apagaria esses itens.
+        if (dieta.refeicoes.any { r -> r.ehAlternativa || r.itens.any { it.alimentoId == null } }) {
+            atual.update { it.copy(erro = MensagemDieta.EDITAR_NO_PLANEJADOR) }; return
+        }
         val rascunho = RascunhoDieta(dieta.id, dieta.versao, dieta.status, dieta.titulo, dieta.orientacao.orEmpty(),
             dieta.refeicoes.sortedBy { it.ordem }.map { r -> RefeicaoEdicao(nome = r.nome, horario = r.horario.paraTexto(),
-                itens = r.itens.map { ItemEdicao(alimentoId = it.alimentoId, porcoes = it.porcoes.paraTexto()) }) })
+                itens = r.itens.map { ItemEdicao(alimentoId = it.alimentoId!!, porcoes = it.porcoes!!.paraTexto()) }) })
         atual.update { it.copy(rascunho = rascunho, erro = null, aviso = null, errosCampos = emptyMap(), seletorRefeicao = null) }; recalcular()
     }
     fun fechar() { atual.update { it.copy(rascunho = null, seletorRefeicao = null, confirmarPublicar = false, erro = null, errosCampos = emptyMap()) }; if (atual.value.pacienteId != null) recarregar() }
@@ -97,6 +101,22 @@ class MontadorDietaViewModel(private val dietas: PortaDietas, private val alimen
             dietas.publicar(r.dietaId, versao)
             val lista = dietas.listar(pacienteId)
             atual.update { it.copy(dietas = lista, rascunho = null, confirmarPublicar = false, aviso = MensagemDieta.PUBLICADA) }
+        }
+    }
+    /** Publicar direto do cartão da lista: vale também para a dieta por porções, que não tem botão de publicar no editor. */
+    fun pedirPublicacaoDaLista(dieta: DietaResposta) {
+        if (dieta.status != StatusDieta.RASCUNHO || !podeEnviar()) return
+        atual.update { it.copy(publicarDaLista = dieta, erro = null) }
+    }
+    fun cancelarPublicacaoDaLista() { atual.update { it.copy(publicarDaLista = null) } }
+    fun confirmarPublicacaoDaLista() {
+        val dieta = atual.value.publicarDaLista ?: return
+        val pacienteId = atual.value.pacienteId ?: return
+        if (!podeEnviar()) return
+        executar {
+            dietas.publicar(dieta.id, dieta.versao)
+            val lista = dietas.listar(pacienteId)
+            atual.update { it.copy(dietas = lista, publicarDaLista = null, aviso = MensagemDieta.PUBLICADA) }
         }
     }
     fun duplicar(dieta: DietaResposta) {
@@ -169,7 +189,7 @@ class MontadorDietaViewModel(private val dietas: PortaDietas, private val alimen
             }
             else -> MensagemDieta.ERRO
         }
-        atual.update { it.copy(erro = mensagem, confirmarPublicar = false, semConexao = it.semConexao || falha is FalhaComunicacao) }
+        atual.update { it.copy(erro = mensagem, confirmarPublicar = false, publicarDaLista = null, semConexao = it.semConexao || falha is FalhaComunicacao) }
     }
 
     companion object {

@@ -23,6 +23,8 @@ Os arquivos `visao-geral`, `regras-de-negocio`, `integracao` e `funcionalidades-
 
 Telas e componentes seguem `docs/design/`: tokens e componentes em `docs/design/componentes.md`, mapa tela→pacote em `docs/design/telas.md`, ordem de implementação em `docs/design/plano-de-acao-ui.md`. Antes de criar uma tela, confira o canvas https://claude.ai/artifact/6thej5zGsTo81ZosiigGxC; sem acesso ao claude.ai (Codex e outros), leia a cópia dos artboards em `docs/design/artboards/`.
 
+**Regra do design:** tela nova só entra com artboard aprovado no canvas (antes ou junto). Siga `docs/design/padrao-ui.md` (padrão visual e de usabilidade) e `docs/design/graficos.md`; no PR cite o artboard e liste as divergências. Se a tela não tem artboard (veja `telas.md`), peça ao agente de Design e Usabilidade pelo coordenador e siga a descrição e os componentes enquanto isso. Divergências conhecidas do app: `docs/design/divergencias.md`.
+
 Cores do tema já estão em `ui/theme` (verde `#2E7D4F`, fundo `#F5F6F1`, laranja `#C2551F` só para alertas; fonte Plus Jakarta Sans).
 
 ## Stack
@@ -96,6 +98,20 @@ Quem escreve o código nunca aprova o próprio trabalho. O fluxo de todo PR de t
    - **Corrigir:** review "Request changes" ou comentário que começa com `QA: CORRIGIR`, com a lista do que falta.
 3. **Agente de código**, ao receber `QA: CORRIGIR`: corrige na **mesma branch**, faz push, responde cada apontamento dizendo o que mudou e comenta `QA: PRONTO PARA REVISAR`. Discordou de um apontamento? Responde explicando, sem ignorar.
 4. **Próxima tarefa só depois do veredito.** Antes de começar qualquer tarefa nova, o agente de código confere os PRs que abriu: com `QA: CORRIGIR` pendente, corrige primeiro; sem veredito ainda, para e avisa "aguardando QA" (pode adiantar só tarefas que não dependem daquele PR, saindo da branch dele).
+
+## Orquestrador IA (contexto compartilhado entre os repositórios)
+
+O painel local do Orquestrador IA reúne o `dieta-backend` e o `dieta-mobile` no projeto **`dieta-mais`**. Ele acompanha sozinho os PRs abertos para a `develop` (etapa, CI e vereditos do QA), então o fluxo de PR acima não muda.
+
+Se a sessão tiver o MCP `orquestradoria` (sessões locais na máquina do Guilherme), use-o com `project: "dieta-mais"` e `repo: "guilherme-oliveria/dieta-mobile"`:
+
+- Antes de começar uma tarefa: `listar_contexto` deste repositório, para ver decisões e contratos registrados pelo outro lado.
+- Ao tomar uma decisão que o outro repositório precisa respeitar: `registrar_decisao`.
+- Ao criar ou mudar um contrato (endpoint, DTO, código de erro, evento): `registrar_contrato`, com os dois repositórios em `repos`. Para atualizar um registro existente, passe o ID dele em `supersedes`.
+- Risco ou pendência que afeta o outro repositório: `registrar_nota`.
+- `instrucoes_do_papel` devolve as instruções completas do seu papel (PO, Dev ou QA).
+
+Sem o MCP (sessão na nuvem), siga normalmente: os documentos de `docs/arquitetura/` continuam sendo a referência e nada aqui bloqueia o trabalho.
 
 ## Definição de pronto
 

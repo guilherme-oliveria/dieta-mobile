@@ -34,7 +34,7 @@ fun FormularioConsultaTela(estado: EstadoAgenda, acoes: AcoesFormularioConsulta)
     val form = estado.formulario ?: return
     val habilitado = !estado.enviando
     val erros = estado.errosFormulario
-    Dialog(onDismissRequest = acoes.aoFechar, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    TelaSobreposta(aoFechar = acoes.aoFechar) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = Dimens.larguraLeitura).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta),
@@ -60,7 +60,7 @@ fun FormularioConsultaTela(estado: EstadoAgenda, acoes: AcoesFormularioConsulta)
                     CampoNumero(stringResource(Res.string.agenda_form_duracao), form.duracao, acoes.aoDuracao, erro = erros.firstOrNull { it == ErroConsulta.DURACAO }?.let { textoErroConsulta(it) }, habilitado = habilitado)
                     Text(stringResource(Res.string.agenda_form_tipo), style = MaterialTheme.typography.labelLarge)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                        tiposEscolhiveis.forEach { tipo -> FilterChip(form.tipo == tipo, { acoes.aoTipo(tipo) }, label = { Text(rotuloTipoConsulta(tipo)) }, enabled = habilitado) }
+                        tiposEscolhiveis.forEach { tipo -> ChipEscolha(form.tipo == tipo, { acoes.aoTipo(tipo) }, label = { Text(rotuloTipoConsulta(tipo)) }, enabled = habilitado) }
                     }
                     CampoTexto(stringResource(Res.string.agenda_form_lugar), form.lugar, acoes.aoLugar, habilitado = habilitado)
                     if (estado.conflitosAvisados > 0) Text(stringResource(Res.string.agenda_conflito_aviso, estado.conflitosAvisados), color = MaterialTheme.colorScheme.onErrorContainer,
@@ -89,10 +89,14 @@ fun ConfirmarCancelamentoDialog(estado: EstadoAgenda, aoConfirmar: () -> Unit, a
 }
 
 @Composable
-fun AgendaRota(viewModel: AgendaViewModel) {
+fun AgendaRota(viewModel: AgendaViewModel, financeiro: FinanceiroViewModel = org.koin.compose.viewmodel.koinViewModel<FinanceiroViewModel>()) {
     val estado by viewModel.estado.collectAsState()
-    LaunchedEffect(Unit) { viewModel.abrir() }
-    AgendaTela(estado, AcoesAgenda(viewModel::mudarModo, viewModel::anterior, viewModel::proximo, viewModel::hoje, { viewModel.nova() }, viewModel::remarcar, viewModel::pedirCancelamento, viewModel::recarregar))
+    val estadoFinanceiro by financeiro.estado.collectAsState()
+    LaunchedEffect(Unit) { viewModel.abrir(); financeiro.carregarResumo() }
+    val abrirFinanceiro: (Uuid) -> Unit = { id -> estado.consultas.firstOrNull { it.id == id }?.let { financeiro.abrir(it, estado.nomeDo(it.pacienteId)) } }
+    AgendaTela(estado, AcoesAgenda(viewModel::mudarModo, viewModel::anterior, viewModel::proximo, viewModel::hoje, { viewModel.nova() }, viewModel::remarcar, viewModel::pedirCancelamento, viewModel::recarregar, abrirFinanceiro),
+        rodape = { ResumoFinanceiroCard(estadoFinanceiro) })
+    FinanceiroTela(estadoFinanceiro, AcoesFinanceiro(financeiro::mudarComparecimento, financeiro::mudarValor, financeiro::mudarForma, financeiro::mudarPago, financeiro::salvar, financeiro::fechar))
     FormularioConsultaTela(estado, AcoesFormularioConsulta(viewModel::mudarPaciente, viewModel::mudarData, viewModel::mudarHora, viewModel::mudarDuracao, viewModel::mudarTipo,
         viewModel::mudarLugar, viewModel::salvar, viewModel::fechar))
     ConfirmarCancelamentoDialog(estado, viewModel::confirmarCancelamento, viewModel::desistirDoCancelamento)

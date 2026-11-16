@@ -1,0 +1,18 @@
+{
+  "pergunta": {
+    "id": "019a4540-1000-7000-8000-000000000001",
+    "texto": "Sal consumido em casa no mês (g)",
+    "tipo": "NUMERO",
+    "obrigatoria": false,
+    "codigo": "SAL_GRAMAS_MES"
+  },
+  "derivados": {
+    "pressaoArterial": "HIPERTENSAO_SISTOLICA_ISOLADA",
+    "alcool": { "mlPorSemana": 3195.00, "gramasEtanolPorSemana": 127.80, "kcalPorSemana": 894.60 },
+    "salGramasPorPessoaDia": 7,
+    "oleoMlPorPessoaDia": 16,
+    "oleoKcalPorPessoaDia": 144,
+    "atividadeDuracaoMinutos": 45,
+    "atividadesDuracaoMinutos": { "SEGUNDA": 45 }
+  }
+}

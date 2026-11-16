@@ -113,9 +113,45 @@ class AnamnesePacienteViewModelTest {
         assertEquals(MensagemAnamnese.FECHADO, vm.estado.value.mensagem)
     }
 
-    @Test fun redeCaidaNaHoraDeConcluirMarcaSemConexao() = runTest {
+    @Test fun falhaTransitoriaPermiteTentarNovamenteSeObservadorContinuaOnline() = runTest {
         val q = questionarioFalso(paciente, blocos, respostas = mapOf(fuma.chave to texto("Não"))); val p = PortaAnamneseFalsa(questionarios = listOf(q)); val vm = aberto(p, q)
         p.falha = FalhaComunicacao(); vm.concluir(); advanceUntilIdle()
-        assertTrue(vm.estado.value.semConexao); assertEquals(MensagemAnamnese.SEM_CONEXAO, vm.estado.value.mensagem)
+        assertFalse(vm.estado.value.semConexao); assertEquals(MensagemAnamnese.SEM_CONEXAO, vm.estado.value.mensagem)
+        p.falha = null; vm.concluir(); advanceUntilIdle()
+        assertEquals(1, p.concluidos)
+    }
+
+    @Test fun digitacaoValidaSalvaSemMudarDePassoEInvalidaEsperaCorrecao() = runTest {
+        val q = questionarioFalso(paciente, blocos); val p = PortaAnamneseFalsa(questionarios = listOf(q)); val vm = aberto(p, q, online = false)
+        vm.mudar(peso.chave, EntradaResposta.Texto("70,5")); advanceUntilIdle()
+        assertEquals(JsonPrimitive(70.5), p.questionarios.value.single().respostas[peso.chave])
+        assertEquals(0, vm.estado.value.passoAtual)
+        vm.mudar(peso.chave, EntradaResposta.Texto("inválido")); advanceUntilIdle()
+        assertEquals(JsonPrimitive(70.5), p.questionarios.value.single().respostas[peso.chave])
+    }
+
+    @Test fun falhaLocalMantemEntradasMensagemEPassoParaTentarNovamente() = runTest {
+        val q = questionarioFalso(paciente, blocos, respostas = mapOf(fuma.chave to texto("Não")))
+        val p = PortaAnamneseFalsa(questionarios = listOf(q)); val vm = aberto(p, q)
+        p.falhaGravacao = IllegalStateException("Falha de teste")
+        vm.mudar(peso.chave, EntradaResposta.Texto("70")); vm.proximo(); advanceUntilIdle()
+        assertEquals(0, vm.estado.value.passoAtual); assertEquals(MensagemAnamnese.ERRO, vm.estado.value.mensagem)
+        vm.fechar(); assertNotNull(vm.estado.value.aberto)
+        p.falhaGravacao = null; vm.proximo(); advanceUntilIdle()
+        assertEquals(1, vm.estado.value.passoAtual); assertEquals(JsonPrimitive(70.0), p.questionarios.value.single().respostas[peso.chave])
+    }
+
+    @Test fun atualizarResultadosGuardaAntesDeSincronizarEReconsultaSemConcluir() = runTest {
+        val q = questionarioFalso(paciente, blocos); val p = PortaAnamneseFalsa(questionarios = listOf(q)); var enviou = 0
+        val vm = aberto(p, q, sincronizar = { assertEquals(JsonPrimitive(70.0), p.questionarios.value.single().respostas[peso.chave]); enviou++ })
+        vm.mudar(peso.chave, EntradaResposta.Texto("70")); vm.atualizarResultados(); advanceUntilIdle()
+        assertEquals(1, enviou); assertEquals(1, p.consultasRespostas); assertEquals(0, p.concluidos)
+        assertNotNull(vm.estado.value.aberto); assertFalse(vm.estado.value.atualizandoResultados)
+    }
+
+    @Test fun atualizarResultadosOfflineNaoEnviaENaoPerdeRespostas() = runTest {
+        val q = questionarioFalso(paciente, blocos); val p = PortaAnamneseFalsa(questionarios = listOf(q)); val vm = aberto(p, q, online = false)
+        vm.mudar(peso.chave, EntradaResposta.Texto("70")); advanceUntilIdle(); vm.atualizarResultados(); advanceUntilIdle()
+        assertEquals(0, p.consultasRespostas); assertEquals(JsonPrimitive(70.0), p.questionarios.value.single().respostas[peso.chave])
     }
 }

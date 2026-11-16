@@ -1,0 +1,125 @@
+{
+ "versao": "1.0.0",
+ "descricao": "Vetores da dieta por porções (BE-C8, BE-49, MOB-54). Totais = soma de porções × perfil da porção do grupo (`GET /referencias/porcoes`). Mesmo arquivo nos dois repositórios (RN-CAL-06). Esperados por script independente a partir das linhas Média da aba Alimentos.",
+ "tolerancia": {
+  "valor": 0.01
+ },
+ "arredondamento": "2 casas em HALF_UP no total; soma dos perfis sem arredondar.",
+ "casos": [
+  {
+   "refeicao": "Desjejum",
+   "itens": [
+    {
+     "grupo": 1,
+     "opcao": 1,
+     "porcoes": "2"
+    },
+    {
+     "grupo": 6,
+     "opcao": 2,
+     "porcoes": "1"
+    },
+    {
+     "grupo": 7,
+     "opcao": 1,
+     "porcoes": "1"
+    }
+   ],
+   "totais": {
+    "energia": "279.63",
+    "gli": "47.34",
+    "pro": "13.63",
+    "lip": "6.55",
+    "na": "249.77",
+    "ca": "207.86",
+    "fe": "2.21"
+   }
+  },
+  {
+   "refeicao": "Almoço",
+   "itens": [
+    {
+     "grupo": 4,
+     "opcao": 3,
+     "porcoes": "2"
+    },
+    {
+     "grupo": 5,
+     "opcao": 3,
+     "porcoes": "2"
+    },
+    {
+     "grupo": 3,
+     "opcao": 2,
+     "porcoes": "1"
+    },
+    {
+     "grupo": 8,
+     "opcao": 2,
+     "porcoes": "1"
+    }
+   ],
+   "totais": {
+    "energia": "539.2",
+    "gli": "60.87",
+    "pro": "35.86",
+    "lip": "16.71",
+    "na": "831.8",
+    "ca": "191.1",
+    "fe": "5.56"
+   }
+  },
+  {
+   "refeicao": "Lanche",
+   "itens": [
+    {
+     "grupo": 7,
+     "opcao": 1,
+     "porcoes": "1"
+    },
+    {
+     "grupo": 9,
+     "opcao": 1,
+     "porcoes": "1"
+    }
+   ],
+   "totais": {
+    "energia": "98.72",
+    "gli": "18.29",
+    "pro": "2.08",
+    "lip": "2.66",
+    "na": "28.57",
+    "ca": "30.75",
+    "fe": "0.71"
+   }
+  },
+  {
+   "refeicao": "Jantar",
+   "itens": [
+    {
+     "grupo": 12,
+     "opcao": 1,
+     "porcoes": "1"
+    }
+   ],
+   "totais": {
+    "energia": "251.88",
+    "gli": "35.06",
+    "pro": "11.78",
+    "lip": "7.15",
+    "na": "3648.19",
+    "ca": "85.99",
+    "fe": "2.88"
+   }
+  }
+ ],
+ "dia": {
+  "energia": "1169.44",
+  "gli": "161.57",
+  "pro": "63.34",
+  "lip": "33.08",
+  "na": "4758.33",
+  "ca": "515.7",
+  "fe": "11.37"
+ }
+}

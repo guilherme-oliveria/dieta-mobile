@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.PathParser
 import org.br.dietamais.ui.theme.Dimens
 
 object IconesDieta {
+    val MaisAcoes by lazy { icone("Mais ações", "M13 12a1 1 0 1 1-2 0a1 1 0 1 1 2 0", "M13 5a1 1 0 1 1-2 0a1 1 0 1 1 2 0", "M13 19a1 1 0 1 1-2 0a1 1 0 1 1 2 0") }
     val Olho by lazy { icone("Olho", "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z", "M15 12a3 3 0 1 1-6 0a3 3 0 1 1 6 0") }
     val OlhoFechado by lazy { icone("Olho fechado", "M2 2l20 20M9 5.4A11 11 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.7M6 6.3A18 18 0 0 0 2 12s3.5 7 10 7a11 11 0 0 0 5-1.2") }
     val Folha by lazy { icone("Folha", "M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z", "M2 21c0-3 1.9-5.4 5.1-6") }
@@ -24,7 +25,10 @@ object IconesDieta {
     val Calendario by lazy { icone("Calendário", "M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM16 2v4M8 2v4M3 10h18") }
     val Lista by lazy { icone("Lista", "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01") }
     val Mais by lazy { icone("Mais", "M12 5v14M5 12h14") }
+    val Check by lazy { icone("Selecionado", "M20 6 9 17l-5-5") }
     val Voltar by lazy { icone("Voltar", "M15 18l-6-6 6-6", espelhar = true) }
+    val SetaBaixo by lazy { icone("Abrir", "M6 9l6 6 6-6") }
+    val SetaCima by lazy { icone("Fechar", "M18 15l-6-6-6 6") }
     val Fechar by lazy { icone("Fechar", "M18 6 6 18M6 6l12 12") }
     val Busca by lazy { icone("Busca", "M18 11a7 7 0 1 1-14 0a7 7 0 1 1 14 0M20 20l-3.5-3.5") }
     val Alerta by lazy { icone("Alerta", "M10.3 3.8 1.8 18.5A1.7 1.7 0 0 0 3.3 21h17.4a1.7 1.7 0 0 0 1.5-2.5L13.7 3.8a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01") }

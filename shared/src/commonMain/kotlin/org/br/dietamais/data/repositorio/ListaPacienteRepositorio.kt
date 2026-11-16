@@ -10,6 +10,8 @@ import kotlin.uuid.Uuid
 interface PortaListaPaciente {
     suspend fun obter(pacienteId: Uuid): ListaSubstituicaoResposta
     suspend fun salvar(pacienteId: Uuid, versao: Long, requisicao: AtualizarListaSubstituicaoRequisicao): ListaSubstituicaoResposta
+    /** G-19, RN-ALI-06: a lista efetiva de outro paciente da mesma nutri vira a deste; `versao` é a da lista de destino. */
+    suspend fun copiarDe(pacienteId: Uuid, origemId: Uuid, versao: Long): ListaSubstituicaoResposta
 }
 
 class ListaPacienteRepositorio(private val api: ApiDieta, private val conferirArmazem: (OperacaoSessao) -> Unit) : PortaListaPaciente {
@@ -27,6 +29,13 @@ class ListaPacienteRepositorio(private val api: ApiDieta, private val conferirAr
     override suspend fun salvar(pacienteId: Uuid, versao: Long, requisicao: AtualizarListaSubstituicaoRequisicao): ListaSubstituicaoResposta {
         val contexto = contexto()
         val resposta = api.substituir<ListaSubstituicaoResposta>("pacientes/$pacienteId/lista-substituicao", JsonContrato.encodeToJsonElement(requisicao), versao)
+        conferir(contexto)
+        if (resposta.pacienteId != pacienteId) throw RespostaInvalida()
+        return resposta
+    }
+    override suspend fun copiarDe(pacienteId: Uuid, origemId: Uuid, versao: Long): ListaSubstituicaoResposta {
+        val contexto = contexto()
+        val resposta = api.enviarComVersao<ListaSubstituicaoResposta>("pacientes/$pacienteId/lista-substituicao/copiar-de/$origemId", versao)
         conferir(contexto)
         if (resposta.pacienteId != pacienteId) throw RespostaInvalida()
         return resposta

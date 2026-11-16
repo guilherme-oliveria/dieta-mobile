@@ -5,11 +5,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import org.br.dietamais.data.remoto.dto.ModeloQuestionarioResposta
@@ -18,6 +25,7 @@ import org.br.dietamais.data.remoto.dto.StatusQuestionario
 import org.br.dietamais.dominio.anamnese.*
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
+import org.br.dietamais.ui.comum.anamnese.ResultadosAnamnese
 import org.br.dietamais.ui.nutri.avaliacao.textoData
 import org.br.dietamais.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
@@ -78,20 +86,45 @@ private fun CartaoQuestionario(q: QuestionarioResposta, aoLer: () -> Unit) {
 
 /** Respostas do paciente em leitura; perguntas condicionais que não apareceram para ele ficam de fora. */
 @Composable
-fun RespostasAnamneseTela(questionario: QuestionarioResposta, aoVoltar: () -> Unit) {
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+fun RespostasAnamneseTela(questionario: QuestionarioResposta, aoVoltar: () -> Unit, classe: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass) {
+    val ampla = classe.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && LocalDensity.current.fontScale <= 1.3f
+    val assuntos = questionario.blocos.flatMap { it.perguntas }.mapNotNull { assuntoAnamnese(it.codigo) }.toSet()
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Dimens.paddingCard)) {
+        ConteudoRespostasAnamnese(questionario, aoVoltar, !ampla, Modifier.weight(1f))
+        if (ampla && assuntos.isNotEmpty()) Column(Modifier.width(Dimens.larguraResultadosAnamnese).verticalScroll(rememberScrollState())) { ResultadosAnamnese(questionario.derivados, assuntos) }
+    }
+}
+
+@Composable
+private fun ConteudoRespostasAnamnese(questionario: QuestionarioResposta, aoVoltar: () -> Unit, mostrarResultados: Boolean, modifier: Modifier) {
+    Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(vertical = Dimens.espacoMedio), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
         BotaoTexto(stringResource(Res.string.anamnese_voltar), aoVoltar)
         Text(questionario.nome, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
         ChipStatus(if (questionario.status == StatusQuestionario.RESPONDIDO) EstiloStatus.FEITA else EstiloStatus.INFO,
             texto = stringResource(if (questionario.status == StatusQuestionario.RESPONDIDO) Res.string.anamnese_status_respondido else Res.string.anamnese_status_pendente))
-        passos(questionario.blocos, questionario.respostas).forEach { passo ->
-            Text(passo.titulo, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-            passo.perguntas.forEach { p ->
-                CardDieta(Modifier.fillMaxWidth()) {
-                    Text(p.texto, style = MaterialTheme.typography.labelLarge)
-                    Text(textoDaResposta(p, questionario.respostas[p.chave]) ?: stringResource(Res.string.anamnese_sem_resposta), style = MaterialTheme.typography.bodyLarge)
-                }
+        if (mostrarResultados) ResultadosAnamnese(questionario.derivados, questionario.blocos.flatMap { it.perguntas }.mapNotNull { assuntoAnamnese(it.codigo) }.toSet())
+        val passosLidos = passos(questionario.blocos, questionario.respostas)
+        passosLidos.forEachIndexed { indice, passo -> SecaoRespostas(passo, questionario.respostas, abertaInicialmente = indice == 0) }
+    }
+}
+
+/** Um tema da anamnese como cartão recolhível, com "n de m respondidas" e o check quando completo (ART-P4-02). */
+@Composable
+private fun SecaoRespostas(passo: PassoAnamnese, respostas: Map<Uuid, kotlinx.serialization.json.JsonElement>, abertaInicialmente: Boolean) {
+    var aberta by remember(passo.titulo) { mutableStateOf(abertaInicialmente) }
+    val progresso = progressoDoPasso(passo, respostas)
+    CardDieta(Modifier.fillMaxWidth().testTag("secao-anamnese")) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMinimo)) {
+                Text(passo.titulo, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                Text(stringResource(Res.string.anamnese_secao_progresso, progresso.respondidas, progresso.total), style = MaterialTheme.typography.bodySmall)
             }
+            if (progresso.completo) ChipStatus(EstiloStatus.FEITA, texto = stringResource(Res.string.anamnese_secao_completa))
+            BotaoTexto(stringResource(if (aberta) Res.string.anamnese_secao_recolher else Res.string.anamnese_secao_expandir), { aberta = !aberta })
+        }
+        if (aberta) passo.perguntas.forEach { p ->
+            Text(p.texto, style = MaterialTheme.typography.labelLarge)
+            Text(textoDaResposta(p, respostas[p.chave]) ?: stringResource(Res.string.anamnese_sem_resposta), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }

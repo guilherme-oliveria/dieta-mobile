@@ -66,6 +66,7 @@ kotlin {
         }
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.js)
+            implementation(npm("@js-joda/timezone", libs.versions.jsJodaTimezone.get()))
         }
         jvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
@@ -74,6 +75,8 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.compose.uiTest)
             implementation(compose.desktop.currentOs)
+            implementation(libs.navigation.event)
+            implementation(libs.navigation.event.compose)
         }
         getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.testExt.junit)
@@ -154,5 +157,13 @@ tasks.named<org.gradle.api.tasks.testing.AbstractTestTask>("iosSimulatorArm64Tes
     testLogging {
         showStandardStreams = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+// Mostra a mensagem e o stack completo das falhas de teste no log do CI (sem isso só aparece "AssertionError at Arquivo.kt:N").
+tasks.withType<org.gradle.api.tasks.testing.AbstractTestTask>().configureEach {
+    testLogging {
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        events("failed")
     }
 }

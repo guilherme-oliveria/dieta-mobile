@@ -21,6 +21,7 @@ import org.br.dietamais.data.remoto.dto.*
 import org.br.dietamais.data.repositorio.PortaAnamnese
 import org.br.dietamais.data.repositorio.PortaAvisos
 import org.br.dietamais.data.repositorio.RespostasPendentes
+import org.br.dietamais.dominio.anamnese.comRespostasLocais
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
@@ -110,13 +111,13 @@ class AnamneseOnline(private val api: ApiDieta, private val escopo: CoroutineSco
         }.let { fluxo -> if (api.sessao.value?.perfil == Perfil.PACIENTE) fluxo.onStart { carregarMeus() } else fluxo }
 
     /** Paciente: um erro de rede aqui só deixa a lista como está; a tela mostra o que já tinha. */
-    private suspend fun carregarMeus() {
+    private suspend fun carregarMeus(tolerarFalha: Boolean = true) {
         val esperado = contexto(Perfil.PACIENTE)
-        val resposta = try { api.obter<QuestionariosResposta>("eu/questionarios") } catch (c: CancellationException) { throw c } catch (_: Exception) { return }
+        val resposta = try { api.obter<QuestionariosResposta>("eu/questionarios") } catch (c: CancellationException) { throw c } catch (falha: Exception) { if (!tolerarFalha) throw falha; return }
         conferir(esperado)
         questionarios.trocar { atual ->
             // o que o paciente digitou e ainda não chegou ao servidor continua valendo na tela
-            resposta.itens.map { novo -> aEnviar[novo.id]?.let { novo.comRespostas(it) } ?: novo }
+            resposta.itens.map { novo -> aEnviar[novo.id]?.let { novo.comRespostasLocais(it) } ?: novo }
         }
     }
 
@@ -146,7 +147,7 @@ class AnamneseOnline(private val api: ApiDieta, private val escopo: CoroutineSco
             lista.map { q ->
                 if (q.id != id) q
                 else if (q.status != StatusQuestionario.PENDENTE) { fechado = true; q }
-                else q.comRespostas(respostas)
+                else q.comRespostasLocais(respostas)
             }
         }
         if (fechado) throw RespostasPendentes()
@@ -160,12 +161,16 @@ class AnamneseOnline(private val api: ApiDieta, private val escopo: CoroutineSco
             val lote = aEnviar[id]?.toMap().orEmpty()
             if (lote.isEmpty()) { aEnviar.remove(id); continue }
             try {
-                if (api.sessao.value?.usuarioId != dono.usuarioId) { aEnviar.clear(); return@withLock }
+                if (api.sessao.value != dono) { aEnviar.clear(); return@withLock }
                 val corpo = JsonContrato.encodeToJsonElement(SalvarRespostasRequisicao(lote))
-                api.decodificar(api.requisitar(HttpMethod.Put, "eu/questionarios/$id/respostas", corpo), QuestionarioResposta.serializer())
+                val recebido = api.decodificar(api.requisitar(HttpMethod.Put, "eu/questionarios/$id/respostas", corpo), QuestionarioResposta.serializer())
+                if (api.sessao.value != dono) { aEnviar.clear(); return@withLock }
+                if (recebido.id != id) throw RespostaInvalida()
                 val atual = aEnviar[id]
                 lote.forEach { (pergunta, valor) -> if (atual != null && atual[pergunta] == valor) atual.remove(pergunta) }
                 if (atual.isNullOrEmpty()) aEnviar.remove(id)
+                val pendentes = aEnviar[id]?.toMap().orEmpty()
+                questionarios.gravado(if (pendentes.isEmpty()) recebido else recebido.comRespostasLocais(pendentes)) { it.id == id }
             } catch (c: CancellationException) { throw c }
             catch (falha: ErroApi) { if (falha.codigo == "QUESTIONARIO_FECHADO") aEnviar.remove(id) }
             catch (_: Exception) { }
@@ -183,10 +188,12 @@ class AnamneseOnline(private val api: ApiDieta, private val escopo: CoroutineSco
         return concluido
     }
 
-    private fun QuestionarioResposta.comRespostas(novas: Map<Uuid, JsonElement?>): QuestionarioResposta {
-        val mescladas = respostas.toMutableMap()
-        novas.forEach { (pergunta, valor) -> if (valor == null || valor is kotlinx.serialization.json.JsonNull) mescladas.remove(pergunta) else mescladas[pergunta] = valor }
-        return copy(respostas = mescladas)
+    override suspend fun atualizarRespostas() {
+        val esperado = contexto(Perfil.PACIENTE)
+        descarregar(esperado.contexto)
+        conferir(esperado)
+        if (aEnviar.isNotEmpty()) throw RespostasPendentes()
+        carregarMeus(tolerarFalha = false)
     }
 
     private fun contexto(perfil: Perfil) = api.operacaoSessao.value?.takeIf { it.contexto.perfil == perfil } ?: throw SessaoAlterada()

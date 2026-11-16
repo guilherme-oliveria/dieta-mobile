@@ -25,7 +25,12 @@ data class AvaliacaoResposta(val id: Uuid, val pacienteId: Uuid, val vinculoId: 
     // Avaliação ampliada (BE-41): todos opcionais; o app antigo e o backend antigo continuam compatíveis.
     val faixaEtaria: FaixaEtariaAvaliacao? = null, val protocolo: ProtocoloAvaliacaoDto? = null,
     val complementares: MedidasComplementaresDto? = null, val resultados: ResultadosAvaliacaoDto? = null,
-    val compartilhamento: CompartilhamentoAvaliacaoDto? = null)
+    val compartilhamento: CompartilhamentoAvaliacaoDto? = null,
+    // Energia e metas (BE-43b): a escolha da nutri e o que o servidor calculou.
+    val energia: EnergiaAvaliacaoDto? = null, val energiaResultado: EnergiaResultadoDto? = null,
+    // Exames (BE-56b): o paciente só os recebe se a nutri compartilhou.
+    val exames: List<ExameResultadoDto>? = null,
+    val infantil: DadosInfantisAvaliacaoDto? = null, val resultadosInfantis: ResultadosInfantisAvaliacaoDto? = null)
 
 @Serializable(with = FaixaEtariaAvaliacaoSerializer::class)
 enum class FaixaEtariaAvaliacao { CRIANCA, ADOLESCENTE, ADULTO, IDOSO, OUTRO }
@@ -63,4 +68,54 @@ data class SalvarAvaliacaoRequisicao(val id: Uuid? = null, val dataHora: Instant
     val justificativa: String? = null,
     // Avaliação ampliada (BE-41): opcionais; sem eles o servidor usa o padrão da nutri e o compartilhamento padrão.
     val protocolo: ProtocoloAvaliacaoDto? = null, val complementares: MedidasComplementaresDto? = null,
-    val compartilhamento: CompartilhamentoAvaliacaoDto? = null)
+    val compartilhamento: CompartilhamentoAvaliacaoDto? = null, val energia: EnergiaAvaliacaoDto? = null,
+    /** Ausente mantém os exames; `[]` limpa (RN-EXA-01). */
+    val exames: List<ExameLancadoDto>? = null,
+    val infantil: DadosInfantisAvaliacaoDto? = null)
+
+/**
+ * Escolhas da nutri para o gasto energético e as metas (BE-43b). Valores como texto (método, protocolos, lactação): valor desconhecido nunca falha.
+ * `rotinaMet` só é guardada para devolver ao servidor na edição; a tela de rotina do MET ainda não existe no app.
+ */
+@Serializable
+data class EnergiaAvaliacaoDto(val metodo: String? = null, val gestante: Boolean? = null, val lactacao: String? = null, val carboidrato: String? = null,
+    val proteina: String? = null, val lipidio: String? = null, val dislipidemico: Boolean? = null, val colesterolTotal: Double? = null,
+    val rotinaMet: kotlinx.serialization.json.JsonElement? = null)
+
+@Serializable
+data class MetaMacroDto(val percentualMinimo: Double? = null, val percentualMaximo: Double? = null, val gramasMinimo: Double? = null, val gramasMaximo: Double? = null)
+
+/** Calculado e gravado pelo servidor (RN-CAL-01); campo ausente = sem dado, com o motivo em `motivosNulos` (RN-CAL-04). */
+@Serializable
+data class EnergiaResultadoDto(val metodo: String? = null, val gebKcal: Double? = null, val getKcal: Double? = null, val vetKcal: Double? = null,
+    val kcalPorKg: Double? = null, val carboidrato: MetaMacroDto? = null, val proteina: MetaMacroDto? = null, val lipidio: MetaMacroDto? = null,
+    val colesterolMaximoMg: Double? = null, val motivosNulos: Map<String, String> = emptyMap())
+
+/** "Meus protocolos" (BE-42): padrões da nutri para as próximas avaliações; valores como texto, valor desconhecido nunca falha. */
+@Serializable
+data class ProtocolosNutriResposta(val dobras: String, val massa: String, val versao: Long, val atualizadoEm: Instant? = null)
+
+@Serializable
+data class SalvarProtocolosNutriRequisicao(val dobras: String, val massa: String)
+
+/** Exame lançado pela nutri (BE-56b, RN-EXA-01): numérico leva `valor`, qualitativo leva `texto`; `condicao` é a fase do catálogo. */
+@Serializable
+data class ExameLancadoDto(val codigo: String, val valor: Double? = null, val texto: String? = null, val condicao: String? = null)
+
+/** Faixa numérica já resolvida para o paciente (BE-56c); limite ausente = aberto. */
+@Serializable
+data class FaixaExameDto(val rotulo: String, val min: Double? = null, val minIncl: Boolean = false, val max: Double? = null, val maxIncl: Boolean = false)
+
+/** Exame gravado com a classificação do servidor: `rotulo` ou, sem ele, `motivo` (RN-CAL-04). */
+@Serializable
+data class ExameResultadoDto(val codigo: String, val secao: String? = null, val nome: String? = null, val unidade: String? = null,
+    val valor: Double? = null, val texto: String? = null, val condicao: String? = null, val rotulo: String? = null, val motivo: String? = null,
+    val faixas: List<FaixaExameDto>? = null)
+
+/** Exame do catálogo da faixa etária (`GET /referencias/exames`, BE-56a). `condicoes` = fases que a nutri escolhe quando a referência depende delas. */
+@Serializable
+data class ExameCatalogoDto(val codigo: String, val secao: String, val nome: String, val unidade: String? = null, val qualitativo: Boolean = false,
+    val condicoes: List<String> = emptyList())
+
+@Serializable
+data class ExamesCatalogoResposta(val faixaEtaria: String, val itens: List<ExameCatalogoDto> = emptyList())

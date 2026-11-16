@@ -37,5 +37,9 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.coroutines.core)
         }
+        wasmJsTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.datetime)
+        }
     }
 }

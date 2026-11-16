@@ -19,13 +19,14 @@ fun PacientesRota(viewModel: PacientesViewModel, classe: WindowSizeClass, vincul
     LaunchedEffect(vinculoId) { viewModel.selecionar(vinculoId?.let(Uuid::parse)) }
     LayoutListaDetalhe(classe, mostrarDetalhe = vinculoId != null,
         lista = { PacientesTela(estado, viewModel::mudarBusca, viewModel::mudarFiltro, viewModel::abrirCriacao,
-            viewModel::atualizar, { aoAbrir(it.id.toString(), it.vinculoId.toString()) }) },
+            viewModel::atualizar, { aoAbrir(it.id.toString(), it.vinculoId.toString()) }, viewModel::mudarFiltroAtencao, viewModel::alternarFixado, viewModel::limparFiltros, viewModel::mudarOrdem,
+            largo = classe.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) },
         detalhe = {
             if (vinculoId != null) PacienteFichaTela(estado, viewModel::mudarAba, aoVoltar, viewModel::gerarConvite, abaConteudo)
             else EstadoVazio(mensagem = stringResource(Res.string.selecione_paciente))
         })
     if (estado.formulario != null) ModalBottomSheet(onDismissRequest = viewModel::fecharCriacao) {
-        CriarPacienteFormulario(estado, viewModel::mudarCampo, viewModel::mudarSexo, viewModel::criar, viewModel::fecharCriacao, viewModel::atualizar)
+        CriarPacienteFormulario(estado, viewModel::mudarCampo, viewModel::mudarSexo, viewModel::criar, viewModel::fecharCriacao, viewModel::atualizar, viewModel::mudarCadastroAmpliado)
     }
     if (estado.convite != null) ModalBottomSheet(onDismissRequest = viewModel::fecharConvite) {
         ConviteConteudo(estado, viewModel::compartilharConvite, viewModel::fecharConvite)

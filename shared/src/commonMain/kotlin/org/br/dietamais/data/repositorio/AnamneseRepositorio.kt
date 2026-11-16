@@ -17,6 +17,7 @@ import org.br.dietamais.data.sync.FilaMutacoes
 import org.br.dietamais.data.sync.NovaMutacao
 import org.br.dietamais.data.sync.OperacaoMutacao
 import org.br.dietamais.data.sync.novoIdLocal
+import org.br.dietamais.dominio.anamnese.comRespostasLocais
 import kotlin.uuid.Uuid
 
 /** Respostas parciais ainda não confirmadas pelo servidor: concluir antes disso perderia o que o paciente digitou. */
@@ -37,9 +38,11 @@ interface PortaAnamnese {
     fun salvarRespostas(id: Uuid, respostas: Map<Uuid, JsonElement?>)
     /** Online (RN-ANA-03): torna as respostas imutáveis. Falha com [RespostasPendentes] se a fila ainda tem respostas deste questionário. */
     suspend fun concluir(id: Uuid): QuestionarioResposta
+    /** Reconsulta as respostas confirmadas, sem substituir edições ainda na fila. */
+    suspend fun atualizarRespostas()
 }
 
-class AnamneseRepositorio(private val api: ApiDieta, private val banco: BancoDieta, private val fila: FilaMutacoes = FilaMutacoes(banco)) : PortaAnamnese {
+class AnamneseRepositorio(private val api: ApiDieta, private val banco: BancoDieta, private val fila: FilaMutacoes = FilaMutacoes(banco), private val aoEnfileirar: () -> Unit = {}) : PortaAnamnese {
     override fun observarModelos(): Flow<List<ModeloQuestionarioResposta>> =
         banco.registroSyncQueries.daSessao("modelos").asFlow().mapToList(Dispatchers.Default).map { linhas ->
             try { linhas.map { JsonContrato.decodeFromString<ModeloQuestionarioResposta>(it) }.sortedWith(compareByDescending<ModeloQuestionarioResposta> { it.padrao }.thenBy { it.criadoEm }) }
@@ -104,13 +107,22 @@ class AnamneseRepositorio(private val api: ApiDieta, private val banco: BancoDie
             if (json != null) {
                 val atual = JsonContrato.decodeFromString<QuestionarioResposta>(json)
                 if (atual.status != StatusQuestionario.PENDENTE) throw RespostasPendentes()
-                val mescladas = atual.respostas.toMutableMap()
-                respostas.forEach { (pergunta, valor) -> if (valor == null || valor is JsonNull) mescladas.remove(pergunta) else mescladas[pergunta] = valor }
                 // a revisão local não muda: a versão nova só chega pelo sync, depois que o servidor aplicar a mutação
                 val revisao = registroSyncQueries.revisao(sessao.usuario_id, sessao.perfil, "questionarios", id.toString()).executeAsOne()
-                registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, "questionarios", id.toString(), revisao, 0, JsonContrato.encodeToString(atual.copy(respostas = mescladas)))
+                registroSyncQueries.salvar(sessao.usuario_id, sessao.perfil, "questionarios", id.toString(), revisao, 0, JsonContrato.encodeToString(atual.comRespostasLocais(respostas)))
             }
         }
+        aoEnfileirar()
+    }
+
+    override suspend fun atualizarRespostas() {
+        val contexto = contextoPaciente()
+        val resposta = api.obter<QuestionariosResposta>("eu/questionarios")
+        conferir(contexto)
+        val sessao = banco.sessaoQueries.atual().executeAsOneOrNull() ?: throw SessaoAlterada()
+        if (sessao.usuario_id != contexto.contexto.usuarioId.toString() || sessao.perfil != Perfil.PACIENTE.name) throw SessaoAlterada()
+        resposta.itens.filter { banco.mutacaoPendenteQueries.abertaDoRegistro(sessao.usuario_id, sessao.perfil, "questionarios", it.id.toString()).executeAsOne() == 0L }
+            .forEach { guardar("questionarios", it.id, it.versao, JsonContrato.encodeToString(it)) }
     }
 
     override suspend fun concluir(id: Uuid): QuestionarioResposta {

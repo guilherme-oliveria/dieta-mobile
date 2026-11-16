@@ -7,7 +7,7 @@
 //  - aria-roles: o <canvas> sai com role="generic".
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { abrir, clicar, entrar, NUTRI_EXEMPLO, tocar } from "./apoio.ts";
+import { abrir, clicar, entrar, NUTRI_EXEMPLO, tocar, buscarPaciente } from "./apoio.ts";
 
 const DO_COMPOSE = new Set(["aria-required-attr", "aria-required-children", "aria-roles"]);
 
@@ -54,6 +54,7 @@ test("nutri: início, pacientes, agenda, alimentos, conta e ficha", async ({ pag
     await conferir(page, aba);
   }
   await tocar(page, "Pacientes");
+  await buscarPaciente(page, "Maria");
   await clicar(page, page.getByRole("button", { name: /Maria Exemplo/ }));
   for (const aba of ["Resumo", "Avaliações", "Evolução", "Dieta", "Lista", "Anamnese"]) {
     await tocar(page, aba);
@@ -65,6 +66,7 @@ test("nutri: montador de dieta", async ({ page }) => {
   await entrar(page, NUTRI_EXEMPLO);
   await expect(page.getByRole("heading", { name: "Início" })).toBeAttached({ timeout: 30_000 });
   await tocar(page, "Pacientes");
+  await buscarPaciente(page, "Maria");
   await clicar(page, page.getByRole("button", { name: /Maria Exemplo/ }));
   await tocar(page, "Dieta");
   await tocar(page, "Nova dieta");

@@ -21,21 +21,33 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     private val relogio: Clock = Clock.System, private val fuso: TimeZone = TimeZone.currentSystemDefault(),
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null,
     private val tique: Flow<Unit> = flow { while (true) { emit(Unit); delay(1.minutes) } },
-    private val aoGravar: () -> Unit = {}) : ViewModel() {
+    private val aoGravar: () -> Unit = {}, private val prazoDesfazerMs: Long = PRAZO_DESFAZER_MS) : ViewModel() {
     private val atual = MutableStateFlow(EstadoDietaPaciente())
     val estado = atual.asStateFlow()
     private var dados = DadosDietaPaciente()
     private var registros = DadosRotina()
     private var diaEscolhido: LocalDate? = null
+    private var observacao: Job? = null
+    private var pendente: CheckinPendente? = null
+    private var prazoDesfazer: Job? = null
+    private val aguaPendente = mutableListOf<Pair<AguaPendente, Job?>>()
 
     init {
-        viewModelScope.launch(dispatcher) {
+        observarDados()
+        viewModelScope.launch(dispatcher) { rotina.falhas.collect { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO) } } }
+        conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
+    }
+
+    private fun observarDados() {
+        observacao?.cancel()
+        observacao = viewModelScope.launch(dispatcher) {
             combine(repositorio.observar().catch { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO, carregado = true) } },
                 rotina.observar().catch { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO, carregado = true) } }, tique) { d, r, _ -> d to r }
                 .collect { (d, r) -> dados = d; registros = r; recalcular() }
         }
-        conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
     }
+
+    fun tentarNovamente() { atual.update { it.copy(erro = null) }; observarDados() }
 
     private fun agoraLocal() = relogio.now().toLocalDateTime(fuso)
 
@@ -45,17 +57,40 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         val dieta = dietaVigente(dados.snapshots, dados.emUso?.dietaId)
         val porNutri = dados.snapshots.sortedByDescending { it.publicadoEm }.distinctBy { it.nutricionista.id }
         // RN-ROT-01: um check-in por refeição/dia, o último vale
-        val doDia = registros.checkins.filter { it.data == dia && it.dietaId == dieta?.dietaId }.groupBy { it.refeicaoId }
+        val gravados = registros.checkins.filter { it.data == dia && it.dietaId == dieta?.dietaId }.groupBy { it.refeicaoId }
             .mapValues { (_, lista) -> lista.maxBy { it.registradoEm }.status }
+        // MOB-UX-04: o check-in que ainda espera o prazo de desfazer já aparece como registrado
+        val p = pendente?.takeIf { it.dia == dia && it.dietaId == dieta?.dietaId }
+        val doDia = if (p == null) gravados else gravados + (p.refeicaoId to p.status)
         val peso = registros.pesos.maxByOrNull { it.registradoEm }?.pesoKg
-        val aguaDoDia = registros.agua.filter { it.registradoEm.toLocalDateTime(fuso).date == dia }.sumOf { it.ml }
+        val aguaGravada = registros.agua.filter { it.registradoEm.toLocalDateTime(fuso).date == dia }.sumOf { it.ml }
+        val aguaDoDia = totalAguaMl(aguaGravada, aguaPendente.map { it.first }.filter { it.registradoEm.toLocalDateTime(fuso).date == dia })
+        val mudou = dieta?.id != e.dieta?.id
+        val grupos = dieta?.let { gruposListaPaciente(it.listaSubstituicao, it.refeicoes) }.orEmpty()
         e.copy(carregado = true, dieta = dieta, refeicoes = dieta?.let { refeicoesOrdenadas(it.refeicoes) }.orEmpty(),
             proxima = if (dia == hoje) dieta?.let { proximaRefeicao(it.refeicoes.filter { r -> r.id !in doDia }, agora.time) } else null,
             alternativas = if (porNutri.size > 1) porNutri else emptyList(), versaoSelecao = dados.emUso?.versao ?: 0,
-            hoje = hoje, dia = dia, dias = dias, checkins = doDia, aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso))
+            hoje = hoje, dia = dia, dias = dias, checkins = doDia, podeDesfazer = pendente != null, podeDesfazerAgua = aguaPendente.isNotEmpty(), aguaMl = aguaDoDia, metaAguaMl = metaAguaMl(peso),
+            gruposLista = grupos, buscaLista = if (mudou) "" else e.buscaLista,
+            grupoListaFiltro = e.grupoListaFiltro.takeIf { !mudou && grupos.any { g -> g.id == it } },
+            grupoListaAberto = if (mudou) grupos.firstOrNull()?.id else e.grupoListaAberto.takeIf { id -> grupos.any { it.id == id } },
+            troca = e.troca.takeUnless { mudou })
     }
 
     fun abrirRefeicao(id: Uuid?) = atual.update { it.copy(refeicaoAberta = id) }
+    fun abrirLista() = atual.update { it.copy(listaAberta = true) }
+    fun fecharLista() = atual.update { it.copy(listaAberta = false) }
+    fun buscarNaLista(busca: String) = atual.update { e ->
+        val termo = busca.take(200)
+        val visiveis = filtrarListaPaciente(e.gruposLista, termo, e.grupoListaFiltro)
+        e.copy(buscaLista = termo, grupoListaAberto = e.grupoListaAberto.takeIf { id -> visiveis.any { it.id == id } } ?: visiveis.firstOrNull()?.id)
+    }
+    fun filtrarGrupoLista(id: Uuid?) = atual.update { e ->
+        if (id != null && e.gruposLista.none { it.id == id }) e else e.copy(grupoListaFiltro = id, grupoListaAberto = id ?: e.grupoListaAberto)
+    }
+    fun expandirGrupoLista(id: Uuid) = atual.update { e ->
+        if (e.gruposLista.none { it.id == id }) e else e.copy(grupoListaAberto = if (e.grupoListaAberto == id) null else id)
+    }
 
     fun mudarDia(dia: LocalDate) { diaEscolhido = dia; recalcular() }
 
@@ -63,19 +98,66 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
     fun marcar(refeicaoId: Uuid, status: StatusCheckin) {
         val e = atual.value; val dieta = e.dieta ?: return; val dia = e.dia ?: return
         if (status == StatusCheckin.TROCADO || status == StatusCheckin.OUTRO || dieta.refeicoes.none { it.id == refeicaoId }) return
-        gravar { rotina.registrarCheckin(dieta.dietaId, refeicaoId, dia, status, emptyList(), relogio.now()) }
+        // grava o anterior se houver; o novo espera o prazo, porque o contrato só inclui check-ins (RN-ROT-02) e não dá para remover um já enviado
+        confirmarPendente()
+        pendente = CheckinPendente(dieta.dietaId, refeicaoId, dia, status, relogio.now())
+        recalcular()
+        prazoDesfazer = viewModelScope.launch(dispatcher) { delay(prazoDesfazerMs); confirmarPendente(); recalcular() }
     }
 
+    /** MOB-UX-04: descarta o check-in que ainda não foi gravado; a refeição volta ao estado anterior. */
+    fun desfazerCheckin() {
+        if (pendente == null) return
+        prazoDesfazer?.cancel(); prazoDesfazer = null; pendente = null
+        recalcular()
+    }
+
+    private fun confirmarPendente() {
+        val p = pendente ?: return
+        prazoDesfazer?.cancel(); prazoDesfazer = null; pendente = null
+        gravar { rotina.registrarCheckin(p.dietaId, p.refeicaoId, p.dia, p.status, emptyList(), p.registradoEm) }
+    }
+
+    override fun onCleared() { confirmarPendente(); aguaPendente.toList().forEach { confirmarAgua(it.first) }; super.onCleared() }
+
+    /** MOB-UX-05: o lançamento só vai à fila depois do prazo, porque o contrato só inclui água (RN-ROT-03); até lá dá para desfazer. */
     fun beberAgua(ml: Int) {
         if (ml !in 1..5000) return
-        gravar { rotina.registrarAgua(ml, relogio.now()) }
+        val lancamento = AguaPendente(ml, relogio.now())
+        val entrada = lancamento to null as Job?
+        aguaPendente += entrada
+        recalcular()
+        val job = viewModelScope.launch(dispatcher) { delay(prazoDesfazerMs); confirmarAgua(lancamento); recalcular() }
+        val i = aguaPendente.indexOfFirst { it.first === lancamento }
+        if (i >= 0) aguaPendente[i] = lancamento to job
+    }
+
+    /** Descarta o último lançamento de água ainda não enviado. */
+    fun desfazerAgua() {
+        val ultimo = aguaPendente.removeLastOrNull() ?: return
+        ultimo.second?.cancel()
+        recalcular()
+    }
+
+    private fun confirmarAgua(l: AguaPendente) {
+        val i = aguaPendente.indexOfFirst { it.first === l }
+        if (i < 0) return
+        aguaPendente.removeAt(i)
+        gravar { rotina.registrarAgua(l.ml, l.registradoEm) }
     }
 
     // ---- troca de alimento (MOB-15)
-    fun abrirTroca(refeicaoId: Uuid) = atual.update { it.copy(troca = EstadoTroca(refeicaoId)) }
+    fun abrirTroca(refeicaoId: Uuid) = abrirTroca(refeicaoId, null)
+    fun abrirTroca(refeicaoId: Uuid, itemId: Uuid?) = atual.update { e ->
+        val dieta = e.dieta ?: return@update e
+        val refeicao = dieta.refeicoes.firstOrNull { it.id == refeicaoId } ?: return@update e
+        if (itemId != null && refeicao.itens.none { it.id == itemId && substitutosDoItem(it, dieta.listaSubstituicao).isNotEmpty() }) e
+        else e.copy(troca = EstadoTroca(refeicaoId, itemId = itemId))
+    }
     fun cancelarTroca() = atual.update { it.copy(troca = null) }
     fun escolherSubstituto(itemId: Uuid, alimentoId: Uuid?) = atual.update { e ->
         val t = e.troca ?: return@update e
+        if (t.itemId != null && t.itemId != itemId) return@update e
         e.copy(troca = t.copy(escolhas = if (alimentoId == null) t.escolhas - itemId else t.escolhas + (itemId to alimentoId)))
     }
     fun confirmarTroca() {
@@ -87,15 +169,16 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
             if (substitutosDoItem(item, dieta.listaSubstituicao).none { it.alimento.id == alimentoId }) null else TrocaCheckin(itemId, alimentoId)
         }
         if (trocas.isEmpty()) return
-        gravar { rotina.registrarCheckin(dieta.dietaId, t.refeicaoId, dia, StatusCheckin.TROCADO, trocas, relogio.now()) }
-        atual.update { it.copy(troca = null) }
+        if (gravar { rotina.registrarCheckin(dieta.dietaId, t.refeicaoId, dia, StatusCheckin.TROCADO, trocas, relogio.now()) }) {
+            atual.update { it.copy(troca = null) }
+        }
     }
 
-    private fun gravar(bloco: () -> Unit) {
-        try { bloco(); atual.update { it.copy(erro = null) }; aoGravar() }
+    private fun gravar(bloco: () -> Unit): Boolean {
+        return try { bloco(); atual.update { it.copy(erro = null) }; aoGravar(); true }
         catch (c: CancellationException) { throw c }
-        catch (_: SessaoAlterada) { }
-        catch (_: Exception) { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO) } }
+        catch (_: SessaoAlterada) { false }
+        catch (_: Exception) { atual.update { it.copy(erro = MensagemDietaPaciente.ERRO) }; false }
     }
 
     fun escolher(dietaId: Uuid) {
@@ -117,3 +200,8 @@ class DietaPacienteViewModel(private val repositorio: PortaDietaPaciente, privat
         }
     }
 }
+
+private class CheckinPendente(val dietaId: Uuid, val refeicaoId: Uuid, val dia: LocalDate, val status: StatusCheckin, val registradoEm: kotlin.time.Instant)
+
+/** Tempo que o aviso "Refeição registrada · Desfazer" fica na tela (MOB-UX-04). */
+const val PRAZO_DESFAZER_MS = 5_000L

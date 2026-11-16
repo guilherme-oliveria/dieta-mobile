@@ -57,7 +57,7 @@ private fun Lista(estado: EstadoPendencias, acoes: AcoesPendencias, modifier: Mo
         Text(stringResource(Res.string.pendencias_explicacao), style = MaterialTheme.typography.bodyMedium)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             items(estado.pendencias, key = { it.idMutacao.toString() }) { p ->
-                CardDieta(Modifier.fillMaxWidth().clickable { acoes.aoSelecionar(p.idMutacao) }) {
+                CardDieta(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).clickable(role = androidx.compose.ui.semantics.Role.Button) { acoes.aoSelecionar(p.idMutacao) }) {
                     Text(rotulo(p), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                     Text(stringResource(textoEstado(p.estado)), style = MaterialTheme.typography.bodySmall,
                         color = if (p.estado == EstadoPendencia.AGUARDANDO) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error)

@@ -73,11 +73,12 @@ private fun EditorPergunta(editor: EditorModelo, pergunta: PerguntaEditavel, err
             erro = erro?.takeIf { it == ErroModelo.PERGUNTA_SEM_TEXTO }?.let { textoErroModelo(it) }, habilitado = habilitado, singleLine = false)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
             tiposEditaveis.forEach { tipo ->
-                FilterChip(pergunta.tipo == tipo, { acoes.aoMudarPergunta(id) { it.copy(tipo = tipo) } }, label = { Text(rotuloTipo(tipo)) }, enabled = habilitado)
+                ChipEscolha(pergunta.tipo == tipo, { acoes.aoMudarPergunta(id) { it.copy(tipo = tipo) } }, label = { Text(rotuloTipo(tipo)) }, enabled = habilitado && pergunta.codigo == null)
             }
         }
         if (tipoTemOpcoes(pergunta.tipo)) CampoTexto(stringResource(Res.string.anamnese_pergunta_opcoes), pergunta.opcoes, { novo -> acoes.aoMudarPergunta(id) { it.copy(opcoes = novo.take(2000)) } },
-            erro = erro?.takeIf { it == ErroModelo.OPCOES_INSUFICIENTES || it == ErroModelo.OPCOES_REPETIDAS }?.let { textoErroModelo(it) }, habilitado = habilitado, singleLine = false)
+            erro = erro?.takeIf { it == ErroModelo.OPCOES_INSUFICIENTES || it == ErroModelo.OPCOES_REPETIDAS }?.let { textoErroModelo(it) }, habilitado = habilitado && pergunta.codigo == null, singleLine = false)
+        if (pergunta.codigo != null) Text(stringResource(Res.string.ana_estrutura_tipo_fixo), style = MaterialTheme.typography.bodySmall)
         LinhaSwitch(stringResource(Res.string.anamnese_pergunta_obrigatoria), pergunta.obrigatoria, habilitado) { novo -> acoes.aoMudarPergunta(id) { it.copy(obrigatoria = novo) } }
         LinhaSwitch(stringResource(Res.string.anamnese_condicao), pergunta.condicaoPergunta != null, habilitado && anteriores.isNotEmpty()) { ligado ->
             if (ligado) acoes.aoLigarCondicao(id, anteriores.first().id) else acoes.aoDesligarCondicao(id)
@@ -93,14 +94,14 @@ private fun EditorPergunta(editor: EditorModelo, pergunta: PerguntaEditavel, err
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                 operadoresPara(referencia).forEach { op ->
-                    FilterChip(pergunta.condicaoOperador == op, { acoes.aoMudarPergunta(id) { it.copy(condicaoOperador = op) } }, label = { Text(rotuloOperador(op)) }, enabled = habilitado)
+                    ChipEscolha(pergunta.condicaoOperador == op, { acoes.aoMudarPergunta(id) { it.copy(condicaoOperador = op) } }, label = { Text(rotuloOperador(op)) }, enabled = habilitado)
                 }
             }
             val opcoesReferencia = opcoesDe(referencia)
             if (opcoesReferencia.isEmpty()) CampoTexto(stringResource(Res.string.anamnese_condicao_valor), pergunta.condicaoValor, { novo -> acoes.aoMudarPergunta(id) { it.copy(condicaoValor = novo.take(200)) } },
                 habilitado = habilitado)
             else FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-                opcoesReferencia.forEach { opcao -> FilterChip(pergunta.condicaoValor == opcao, { acoes.aoMudarPergunta(id) { it.copy(condicaoValor = opcao) } }, label = { Text(opcao) }, enabled = habilitado) }
+                opcoesReferencia.forEach { opcao -> ChipEscolha(pergunta.condicaoValor == opcao, { acoes.aoMudarPergunta(id) { it.copy(condicaoValor = opcao) } }, label = { Text(opcao) }, enabled = habilitado) }
             }
             erro?.takeIf { it == ErroModelo.CONDICAO_INCOMPLETA || it == ErroModelo.CONDICAO_INVALIDA }?.let {
                 Text(textoErroModelo(it), color = MaterialTheme.colorScheme.onErrorContainer, style = MaterialTheme.typography.bodySmall)

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.serialization.json.JsonPrimitive
 import org.br.dietamais.data.remoto.ApiDieta
 import org.br.dietamais.data.remoto.ArmazemSessaoMemoria
@@ -110,6 +111,77 @@ class AvisosAnamneseOnlineTest {
             tela.first { it.isNotEmpty() }
             porta.salvarRespostas(Uuid.parse(questionarioId), mapOf(Uuid.parse(pergunta) to JsonPrimitive("Sim")))
             assertFailsWith<RespostasPendentes> { porta.concluir(Uuid.parse(questionarioId)) }
+        }
+    }
+
+    @Test fun incorporaDerivadosDoPutSemExibirResultadoAntigoSobreEdicaoEmVoo() = runTest {
+        val primeira = CompletableDeferred<Unit>(); val segunda = CompletableDeferred<Unit>()
+        val primeiraIniciada = CompletableDeferred<Unit>(); val segundaIniciada = CompletableDeferred<Unit>()
+        var chamadas = 0
+        fun resposta(valor: Int, sal: Int) = questionario(respostas = """{"$pergunta":$valor}""").dropLast(1) + ""","derivados":{"salGramasPorPessoaDia":$sal}}"""
+        val engine = MockEngine { req ->
+            when (req.method) {
+                HttpMethod.Get -> respond("""{"itens":[${resposta(3, 7)}]}""", HttpStatusCode.OK, json)
+                HttpMethod.Put -> {
+                    chamadas++
+                    if (chamadas == 1) { primeiraIniciada.complete(Unit); primeira.await(); respond(resposta(4, 8), HttpStatusCode.OK, json) }
+                    else { segundaIniciada.complete(Unit); segunda.await(); respond(resposta(5, 10), HttpStatusCode.OK, json) }
+                }
+                else -> error("Rota inesperada")
+            }
+        }
+        api(engine).use { api ->
+            api.restaurarSessao()
+            val porta = AnamneseOnline(api, backgroundScope)
+            val tela = MutableStateFlow(emptyList<QuestionarioResposta>())
+            backgroundScope.launch { porta.observarQuestionarios(null).collect { tela.value = it } }
+            assertEquals(7, tela.first { it.isNotEmpty() }.single().derivados?.salGramasPorPessoaDia)
+            porta.salvarRespostas(Uuid.parse(questionarioId), mapOf(Uuid.parse(pergunta) to JsonPrimitive(4)))
+            primeiraIniciada.await()
+            runCurrent()
+            assertNull(tela.value.single().derivados)
+            porta.salvarRespostas(Uuid.parse(questionarioId), mapOf(Uuid.parse(pergunta) to JsonPrimitive(5)))
+            primeira.complete(Unit); segundaIniciada.await(); runCurrent()
+            assertEquals(JsonPrimitive(5), tela.value.single().respostas[Uuid.parse(pergunta)])
+            assertNull(tela.value.single().derivados)
+            segunda.complete(Unit)
+            assertEquals(10, tela.first { it.single().derivados?.salGramasPorPessoaDia == 10 }.single().derivados?.salGramasPorPessoaDia)
+            assertEquals(2, chamadas)
+        }
+    }
+
+    @Test fun atualizarResultadosReenviaAposFalhaSemConcluirQuestionario() = runTest {
+        val primeiraFalha = CompletableDeferred<Unit>()
+        var puts = 0
+        var servidor = questionario()
+        val engine = MockEngine { req ->
+            when (req.method) {
+                HttpMethod.Get -> respond("""{"itens":[$servidor]}""", HttpStatusCode.OK, json)
+                HttpMethod.Put -> {
+                    puts++
+                    if (puts == 1) {
+                        primeiraFalha.complete(Unit)
+                        respond("""{"status":500,"codigo":"ERRO_INTERNO","campos":[]}""", HttpStatusCode.InternalServerError, problema)
+                    }
+                    else {
+                        servidor = questionario(respostas = """{"$pergunta":4}""").dropLast(1) + ""","derivados":{"salGramasPorPessoaDia":8}}"""
+                        respond(servidor, HttpStatusCode.OK, json)
+                    }
+                }
+                else -> error("Não deve concluir ao atualizar resultados")
+            }
+        }
+        api(engine).use { api ->
+            api.restaurarSessao()
+            val porta = AnamneseOnline(api, backgroundScope); val tela = MutableStateFlow(emptyList<QuestionarioResposta>())
+            backgroundScope.launch { porta.observarQuestionarios(null).collect { tela.value = it } }
+            tela.first { it.isNotEmpty() }
+            porta.salvarRespostas(Uuid.parse(questionarioId), mapOf(Uuid.parse(pergunta) to JsonPrimitive(4)))
+            primeiraFalha.await()
+            assertNull(tela.first { it.single().respostas[Uuid.parse(pergunta)] == JsonPrimitive(4) }.single().derivados)
+            porta.atualizarRespostas()
+            assertEquals(8, tela.first { it.single().derivados != null }.single().derivados?.salGramasPorPessoaDia)
+            assertEquals(2, puts)
         }
     }
 }

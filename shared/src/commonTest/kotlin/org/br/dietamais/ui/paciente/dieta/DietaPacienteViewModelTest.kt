@@ -2,6 +2,10 @@ package org.br.dietamais.ui.paciente.dieta
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.viewmodel.initializer
 import kotlinx.coroutines.test.*
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -38,10 +42,14 @@ class DietaPacienteViewModelTest {
     }
 
     private class Rotina : PortaRotina {
+        var falha = false
+        val recusas = MutableSharedFlow<Unit>(extraBufferCapacity = 4)
+        override val falhas: Flow<Unit> = recusas
         val dados = MutableStateFlow(DadosRotina())
         val checkins = mutableListOf<CheckinResposta>()
         override fun observar() = dados
         override fun registrarCheckin(dietaId: Uuid, refeicaoId: Uuid, data: LocalDate, status: StatusCheckin, trocas: List<TrocaCheckin>, agora: Instant) {
+            if (falha) throw IllegalStateException("falha simulada")
             val c = CheckinResposta(Uuid.random(), Uuid.random(), dietaId, refeicaoId, data, status, trocas, agora)
             checkins += c; dados.value = dados.value.copy(checkins = dados.value.checkins + c)
         }
@@ -55,6 +63,48 @@ class DietaPacienteViewModelTest {
     @Test fun semDietaMostraEstadoVazio() = runTest {
         val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente()))); advanceUntilIdle()
         assertTrue(vm.estado.value.carregado); assertNull(vm.estado.value.dieta)
+    }
+
+    @Test fun listaFuncionaOfflineEReiniciaFiltrosQuandoOSnapshotMuda() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z")
+        val porta = Porta(MutableStateFlow(DadosDietaPaciente(listOf(s))))
+        val vm = vm(porta, conectividade = flowOf(false)); advanceUntilIdle()
+        vm.abrirLista(); vm.buscarNaLista("macarrao"); vm.filtrarGrupoLista(grupo)
+        vm.expandirGrupoLista(grupo); assertNull(vm.estado.value.grupoListaAberto); vm.expandirGrupoLista(grupo)
+        assertTrue(vm.estado.value.listaAberta)
+        assertEquals(listOf(macarrao), vm.estado.value.gruposListaVisiveis.single().alimentos)
+        assertEquals(grupo, vm.estado.value.grupoListaAberto)
+        assertEquals(0, porta.chamadas)
+        porta.dados.value = DadosDietaPaciente(listOf(s.copy(id = Uuid.random(), listaSubstituicao = s.listaSubstituicao.copy(alimentos = emptyList()))))
+        advanceUntilIdle()
+        assertEquals("", vm.estado.value.buscaLista)
+        assertNull(vm.estado.value.grupoListaFiltro)
+        assertNull(vm.estado.value.grupoListaAberto)
+        assertTrue(vm.estado.value.gruposListaVisiveis.isEmpty())
+        vm.fecharLista(); assertFalse(vm.estado.value.listaAberta)
+    }
+
+    @Test fun botaoDoItemAbreSomenteATrocaDaqueleItem() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z")
+        val rotina = Rotina(); val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina)
+        advanceUntilIdle()
+        val r = s.refeicoes.first(); val item = r.itens.single()
+        vm.abrirTroca(r.id, Uuid.random()); assertNull(vm.estado.value.troca)
+        vm.abrirTroca(r.id, item.id); assertEquals(item.id, vm.estado.value.troca?.itemId)
+        vm.escolherSubstituto(item.id, macarrao.id); vm.confirmarTroca(); advanceUntilIdle()
+        assertEquals(listOf(TrocaCheckin(item.id, macarrao.id)), rotina.checkins.single().trocas)
+    }
+
+    @Test fun falhaAoConfirmarTrocaMantemEscolhasParaTentarNovamente() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina().apply { falha = true }
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val r = s.refeicoes.first(); val item = r.itens.single()
+        vm.abrirRefeicao(r.id); vm.abrirTroca(r.id, item.id); vm.escolherSubstituto(item.id, macarrao.id); vm.confirmarTroca()
+        assertEquals(MensagemDietaPaciente.ERRO, vm.estado.value.erro)
+        assertEquals(macarrao.id, vm.estado.value.troca?.escolhas?.get(item.id)); assertTrue(rotina.checkins.isEmpty())
+        rotina.falha = false; vm.confirmarTroca(); advanceUntilIdle()
+        assertNull(vm.estado.value.erro); assertNull(vm.estado.value.troca)
+        assertEquals(StatusCheckin.TROCADO, vm.estado.value.checkins[r.id])
     }
 
     @Test fun destacaAProximaERespeitaAEscolha() = runTest {
@@ -89,6 +139,97 @@ class DietaPacienteViewModelTest {
         assertEquals(StatusCheckin.FEITO, vm.estado.value.checkins[almoco.id]); assertNull(vm.estado.value.proxima); assertEquals(1, gravacoes)
         assertEquals(LocalDate(2026, 10, 28), rotina.checkins.single().data)
         vm.marcar(almoco.id, StatusCheckin.TROCADO); assertEquals(1, rotina.checkins.size) // TROCADO só pelo fluxo de troca
+    }
+
+    @Test fun desfazerDentroDoPrazoNaoGravaOCheckin() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.PULADO); runCurrent()
+        assertEquals(StatusCheckin.PULADO, vm.estado.value.checkins[cafe.id]); assertTrue(vm.estado.value.podeDesfazer)
+        assertTrue(rotina.checkins.isEmpty())
+        vm.desfazerCheckin(); advanceUntilIdle()
+        assertNull(vm.estado.value.checkins[cafe.id]); assertFalse(vm.estado.value.podeDesfazer)
+        assertEquals(cafe.id, vm.estado.value.proxima?.id); assertTrue(rotina.checkins.isEmpty())
+    }
+
+    @Test fun semDesfazerOCheckinEGravadoAposOPrazo() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.FEITO); advanceTimeBy(PRAZO_DESFAZER_MS - 1); runCurrent()
+        assertTrue(rotina.checkins.isEmpty()); assertTrue(vm.estado.value.podeDesfazer)
+        advanceTimeBy(2); runCurrent()
+        assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status); assertFalse(vm.estado.value.podeDesfazer)
+    }
+
+    @Test fun novoRegistroGravaOAnteriorEDesfazerSoAfetaOUltimo() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val a = s.refeicoes[0]; val b = s.refeicoes[1]
+        vm.marcar(a.id, StatusCheckin.FEITO); runCurrent()
+        vm.marcar(b.id, StatusCheckin.PULADO); runCurrent()
+        assertEquals(a.id, rotina.checkins.single().refeicaoId)
+        vm.desfazerCheckin(); advanceUntilIdle()
+        assertEquals(1, rotina.checkins.size); assertNull(vm.estado.value.checkins[b.id]); assertEquals(StatusCheckin.FEITO, vm.estado.value.checkins[a.id])
+    }
+
+    @Test fun falhaAoGravarDepoisDoPrazoTiraOAvisoVoltaARefeicaoEMostraOErro() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina().apply { falha = true }
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.FEITO); runCurrent()
+        assertTrue(vm.estado.value.podeDesfazer); assertNull(vm.estado.value.erro)
+        advanceTimeBy(PRAZO_DESFAZER_MS + 1); runCurrent()
+        assertFalse(vm.estado.value.podeDesfazer); assertNull(vm.estado.value.checkins[cafe.id])
+        assertEquals(cafe.id, vm.estado.value.proxima?.id); assertEquals(MensagemDietaPaciente.ERRO, vm.estado.value.erro)
+        rotina.falha = false; vm.marcar(cafe.id, StatusCheckin.FEITO); advanceUntilIdle()
+        assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status); assertNull(vm.estado.value.erro)
+    }
+
+    @Test fun fecharATelaGravaOCheckinPendente() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        val cafe = vm.estado.value.proxima!!
+        vm.marcar(cafe.id, StatusCheckin.FEITO); runCurrent()
+        assertTrue(rotina.checkins.isEmpty())
+        val loja = ViewModelStore()
+        ViewModelProvider.create(loja, viewModelFactory { initializer { vm } })[DietaPacienteViewModel::class]
+        loja.clear() // o mesmo caminho de quando a aba/tela sai: onCleared com o viewModelScope já cancelado
+        assertEquals(StatusCheckin.FEITO, rotina.checkins.single().status)
+    }
+
+    @Test fun desfazerAguaTiraSoOUltimoLancamentoAindaNaoEnviado() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        assertFalse(vm.estado.value.podeDesfazerAgua)
+        vm.beberAgua(200); vm.beberAgua(250); runCurrent()
+        assertEquals(450, vm.estado.value.aguaMl); assertTrue(vm.estado.value.podeDesfazerAgua)
+        vm.desfazerAgua(); runCurrent()
+        assertEquals(200, vm.estado.value.aguaMl); assertTrue(vm.estado.value.podeDesfazerAgua)
+        advanceUntilIdle()
+        assertEquals(200, vm.estado.value.aguaMl); assertFalse(vm.estado.value.podeDesfazerAgua)
+        assertEquals(listOf(200), rotina.dados.value.agua.map { it.ml })
+        vm.desfazerAgua(); advanceUntilIdle() // nada pendente: não faz nada
+        assertEquals(200, vm.estado.value.aguaMl)
+    }
+
+    @Test fun fecharATelaGravaAAguaPendente() = runTest {
+        val s = snap("Ana", "2026-01-01T10:00:00Z"); val rotina = Rotina()
+        val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(s)))), rotina); advanceUntilIdle()
+        vm.beberAgua(300); runCurrent()
+        assertTrue(rotina.dados.value.agua.isEmpty())
+        val loja = ViewModelStore()
+        ViewModelProvider.create(loja, viewModelFactory { initializer { vm } })[DietaPacienteViewModel::class]
+        loja.clear()
+        assertEquals(listOf(300), rotina.dados.value.agua.map { it.ml })
+    }
+
+    @Test fun recusaDoServidorMostraErroNoHoje() = runTest {
+        val rotina = Rotina(); val vm = vm(Porta(MutableStateFlow(DadosDietaPaciente(listOf(snap("Ana", "2026-01-01T10:00:00Z"))))), rotina); advanceUntilIdle()
+        assertNull(vm.estado.value.erro)
+        rotina.recusas.tryEmit(Unit); advanceUntilIdle()
+        assertEquals(MensagemDietaPaciente.ERRO, vm.estado.value.erro)
     }
 
     @Test fun ultimoCheckinDaRefeicaoVale() = runTest {

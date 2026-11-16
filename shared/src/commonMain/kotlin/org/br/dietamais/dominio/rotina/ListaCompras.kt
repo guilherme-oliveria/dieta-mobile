@@ -16,9 +16,12 @@ fun gerarListaCompras(dieta: DietaSnapshotResposta, dias: Int = 7): List<GrupoCo
     require(dias in 1..60)
     data class Acumulado(var nome: String, var grupo: String?, var gramas: Double, var porcoes: Double, var medida: String)
     val soma = LinkedHashMap<Uuid, Acumulado>()
-    dieta.refeicoes.flatMap { it.itens }.forEach { i ->
-        val a = soma.getOrPut(i.alimentoId) { Acumulado(i.nomeAlimento, i.grupoNome, 0.0, 0.0, i.medidaCaseira) }
-        a.gramas += i.gramas; a.porcoes += i.porcoes
+    // Item à vontade e texto livre não têm quantidade (RN-DIE-12) e ficam fora; item por grupo entra pelo grupo. Alternativa não é comprada por padrão (RN-DIE-11).
+    dieta.refeicoes.filterNot { it.ehAlternativa }.flatMap { it.itens }.forEach { i ->
+        val chave = i.alimentoId ?: i.grupoId ?: return@forEach
+        val porcoes = i.porcoes ?: return@forEach
+        val a = soma.getOrPut(chave) { Acumulado(i.nomeAlimento.orEmpty(), i.grupoNome, 0.0, 0.0, i.medidaCaseira.orEmpty()) }
+        a.gramas += i.gramas ?: 0.0; a.porcoes += porcoes
     }
     return soma.map { (id, a) -> a.grupo to ItemCompra(id, a.nome, arredondar(a.gramas * dias), arredondar(a.porcoes * dias), a.medida) }
         .groupBy({ it.first }, { it.second })
@@ -27,6 +30,12 @@ fun gerarListaCompras(dieta: DietaSnapshotResposta, dias: Int = 7): List<GrupoCo
 }
 
 private fun arredondar(v: Double) = round(v * 100 + 1e-6) / 100
+
+/** Itens da lista e quantos deles já foram marcados (marcas de outros alimentos, de uma dieta anterior, não contam). */
+fun contarItensCompra(grupos: List<GrupoCompras>, marcados: Set<Uuid>): Pair<Int, Int> {
+    val ids = grupos.flatMap { g -> g.itens.map { it.alimentoId } }.toSet()
+    return ids.count { it in marcados } to ids.size
+}
 
 /** Peso em texto pt-BR: abaixo de 1 kg em gramas, depois em kg (ex.: "850 g", "1,4 kg"). */
 fun textoPeso(gramas: Double): String {

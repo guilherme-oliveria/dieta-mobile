@@ -10,9 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import org.br.dietamais.dominio.rotina.contarItensCompra
 import org.br.dietamais.dominio.rotina.textoPeso
 import org.br.dietamais.recursos.*
 import org.br.dietamais.ui.comum.*
@@ -34,6 +39,9 @@ fun ComprasTela(estado: EstadoCompras, acoes: AcoesCompras, modifier: Modifier =
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
                     listOf(3, 7, 14).forEach { d -> BotaoTexto(stringResource(Res.string.compras_dias, d.toString()), { acoes.aoMudarDias(d) }, selecionado = d == estado.dias) }
                 }
+                val (feitos, total) = contarItensCompra(estado.grupos, estado.marcados)
+                Text(stringResource(Res.string.compras_progresso, feitos.toString(), total.toString()), style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 estado.grupos.forEach { g ->
                     CardDieta(Modifier.fillMaxWidth()) {
                         Text(g.nome ?: stringResource(Res.string.compras_itens), style = MaterialTheme.typography.titleMedium)
@@ -43,7 +51,9 @@ fun ComprasTela(estado: EstadoCompras, acoes: AcoesCompras, modifier: Modifier =
                             Row(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).toggleable(marcado, role = Role.Checkbox) { acoes.aoMarcar(i.alimentoId, it) },
                                 verticalAlignment = Alignment.CenterVertically) {
                                 Checkbox(checked = marcado, onCheckedChange = null)
-                                Text("${i.nome} · ${textoPeso(i.gramas)}", style = MaterialTheme.typography.bodyLarge)
+                                Text("${i.nome} · ${textoPeso(i.gramas)}", style = MaterialTheme.typography.bodyLarge,
+                                    textDecoration = if (marcado) TextDecoration.LineThrough else null,
+                                    color = if (marcado) MaterialTheme.colorScheme.onSurfaceVariant else Color.Unspecified)
                             }
                         }
                     }

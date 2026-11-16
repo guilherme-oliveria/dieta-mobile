@@ -28,6 +28,20 @@ class ListaPacienteViewModelTest {
                 alimentos = servidor.alimentos.filter { it.id !in requisicao.removidos } + extras.filter { it.id in requisicao.adicionados })
             return servidor
         }
+        val copias = mutableListOf<Triple<Uuid, Uuid, Long>>(); var origemLista: ListaSubstituicaoResposta? = null
+        override suspend fun copiarDe(pacienteId: Uuid, origemId: Uuid, versao: Long): ListaSubstituicaoResposta {
+            falha?.let { throw it }
+            copias += Triple(pacienteId, origemId, versao)
+            servidor = servidor.copy(versao = versao + 1, alimentos = origemLista?.alimentos ?: emptyList(), adicionados = origemLista?.adicionados ?: emptyList(), removidos = origemLista?.removidos ?: emptyList())
+            return servidor
+        }
+    }
+    private class Pacientes(val todos: List<PacienteResposta>) : PortaPacientes {
+        override fun observar() = flowOf(todos)
+        override suspend fun atualizar() {}
+        override suspend fun criar(requisicao: CriarPacienteRequisicao, chave: Uuid) = error("não usado")
+        override suspend fun convidar(id: Uuid, chave: Uuid) = error("não usado")
+        override suspend fun assinatura() = null
     }
     private class Catalogo(val a: List<AlimentoResposta>, val g: GrupoAlimentoResposta) : PortaAlimentos {
         override fun observar() = flowOf(CatalogoAlimentos(listOf(g), a))
@@ -59,5 +73,29 @@ class ListaPacienteViewModelTest {
         assertEquals(MensagemLista.CONFLITO, vm.estado.value.erro)
         lista.falha = null; vm.recarregar(); runCurrent()
         assertNull(vm.estado.value.erro); assertFalse(vm.estado.value.pendente)
+    }
+
+    @Test fun copiaAListaDeOutroPacienteSoDepoisDeConfirmarEUsaAVersaoDoServidor() = runTest {
+        val agora = Instant.parse("2026-10-26T12:00:00Z")
+        val outra = PacienteResposta(Uuid.random(), Uuid.random(), "Bia", status = StatusVinculo.ATIVO, versao = 1, criadoEm = agora, atualizadoEm = agora)
+        val propria = PacienteResposta(paciente, Uuid.random(), "Ana", status = StatusVinculo.ATIVO, versao = 1, criadoEm = agora, atualizadoEm = agora)
+        val l = Lista(ListaSubstituicaoResposta(paciente, 4, listOf(a1), emptyList(), emptyList())); l.origemLista = ListaSubstituicaoResposta(outra.id, 2, listOf(a2), listOf(a2.id), listOf(a1.id))
+        val vm = ListaPacienteViewModel(l, Catalogo(listOf(a1, a2), grupo), StandardTestDispatcher(testScheduler), pacientes = Pacientes(listOf(propria, outra)))
+        vm.abrir(paciente); advanceUntilIdle()
+        assertEquals(listOf(outra.id), vm.estado.value.origens.map { it.id }) // o próprio paciente não é origem
+        vm.remover(a1.id) // edição não salva: a cópia a descarta
+        vm.pedirCopia(outra.id); assertEquals(outra.id, vm.estado.value.copiandoDe); assertTrue(l.copias.isEmpty())
+        vm.desistirDaCopia(); assertNull(vm.estado.value.copiandoDe); assertTrue(l.copias.isEmpty())
+        vm.pedirCopia(outra.id); vm.confirmarCopia(); advanceUntilIdle()
+        assertEquals(listOf(Triple(paciente, outra.id, 4L)), l.copias)
+        val e = vm.estado.value
+        assertEquals(MensagemLista.COPIADA, e.aviso); assertEquals(5, e.versao); assertEquals(listOf(a2.id), e.efetiva.map { it.id }); assertFalse(e.pendente)
+    }
+
+    @Test fun copiaMostraVinculoEncerradoQuandoOServidorNega() = runTest {
+        val l = Lista(ListaSubstituicaoResposta(paciente, 1, emptyList(), emptyList(), emptyList())); l.falha = ErroApi("ACESSO_NEGADO", null, emptyList(), 403, null, null)
+        val vm = ListaPacienteViewModel(l, Catalogo(listOf(a1), grupo), StandardTestDispatcher(testScheduler))
+        vm.abrir(paciente); advanceUntilIdle(); vm.pedirCopia(Uuid.random()); vm.confirmarCopia(); advanceUntilIdle()
+        assertEquals(MensagemLista.VINCULO_ENCERRADO, vm.estado.value.erro)
     }
 }

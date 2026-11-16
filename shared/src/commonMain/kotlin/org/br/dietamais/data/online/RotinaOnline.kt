@@ -34,6 +34,8 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
     private val guardado = MutableStateFlow<Dados?>(null)
     /** Registros enviados e ainda sem resposta: a releitura do período não pode apagá-los. */
     private val pendentes = mutableSetOf<Uuid>()
+    private val falhou = kotlinx.coroutines.flow.MutableSharedFlow<Unit>(extraBufferCapacity = 8)
+    override val falhas: Flow<Unit> = falhou
 
     private val visivel: Flow<DadosRotina> = combine(api.sessao, guardado) { sessao, dados ->
         if (sessao != null && dados?.dono == sessao.usuarioId) dados.rotina else DadosRotina()
@@ -102,7 +104,7 @@ class RotinaOnline(private val api: ApiDieta, private val escopo: CoroutineScope
         escopo.launch {
             try { val confirmar = enviar(); atualizar(dono, confirmar) }
             catch (cancelamento: CancellationException) { atualizar(dono, desfazer); throw cancelamento }
-            catch (_: Exception) { atualizar(dono, desfazer) }
+            catch (_: Exception) { atualizar(dono, desfazer); falhou.tryEmit(Unit) }
             finally { pendentes -= id }
         }
     }

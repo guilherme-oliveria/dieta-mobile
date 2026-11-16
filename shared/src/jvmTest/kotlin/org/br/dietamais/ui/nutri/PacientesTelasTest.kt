@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.material3.Surface
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
@@ -45,6 +46,65 @@ class PacientesTelasTest {
         assertContains(texto!!, convite.codigo)
         assertContains(texto!!, convite.link)
         assertFalse(texto!!.contains(paciente.nome))
+    }
+
+    private fun pacientes(n: Int) = (0 until n).map { i ->
+        paciente.copy(id = Uuid.random(), vinculoId = Uuid.random(), nome = "${'A' + i % 26}${"abcdefghij"[i / 26]} Fictício", status = StatusVinculo.ATIVO)
+    }
+
+    @Test fun celularMostraChipFiltrosEPrimeiroPacienteSemRolar() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        val lista = pacientes(30)
+        setContent { DietaTheme { PacientesTela(EstadoPacientes(lista = lista), {}, {}, {}, {}, {}) } }
+        onNodeWithText("Filtros").assertIsDisplayed()
+        onNodeWithText("Convidados").assertDoesNotExist()
+        onNodeWithText("Aa Fictício", substring = true).assertIsDisplayed()
+    }
+
+    @Test fun chipFiltrosAbreFolhaEMostraContagemDosAtivos() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        var estado by mutableStateOf(EstadoPacientes(lista = pacientes(3)))
+        setContent { DietaTheme { PacientesTela(estado, {}, { estado = estado.copy(filtro = it) }, {}, {}, {}) } }
+        onNodeWithText("Filtros").performClick()
+        onNodeWithText("Convidados").assertIsDisplayed()
+        onNodeWithText("Ativos").performClick()
+        assertEquals(StatusVinculo.ATIVO, estado.filtro)
+        onNodeWithText("Concluir").performClick()
+        onNodeWithText("Filtros (1)").assertIsDisplayed()
+    }
+
+    @Test fun larguraGrandeMantemOsChipsVisiveis() = runSkikoComposeUiTest(size = Size(360f, 800f)) {
+        setContent { DietaTheme { PacientesTela(EstadoPacientes(lista = pacientes(3)), {}, {}, {}, {}, {}, largo = true) } }
+        onNodeWithText("Convidados").assertIsDisplayed()
+        onNodeWithText("Filtros").assertDoesNotExist()
+    }
+
+    @Test fun contagemEVazioEspecificoComLimparFiltros() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        var estado by mutableStateOf(EstadoPacientes(lista = pacientes(3), total = 3))
+        var limpou = 0
+        setContent { DietaTheme { PacientesTela(estado, {}, {}, {}, {}, {}, aoLimparFiltros = { limpou++ }) } }
+        onNodeWithText("3 pacientes").assertIsDisplayed()
+        onNodeWithText("Limpar filtros").assertDoesNotExist()
+        estado = estado.copy(lista = pacientes(1), busca = "Ab")
+        onNodeWithText("1 de 3 pacientes").assertIsDisplayed()
+        onNodeWithText("Limpar filtros").performClick()
+        assertEquals(1, limpou)
+        estado = estado.copy(lista = emptyList(), busca = "zzz")
+        onNodeWithText("Nenhum paciente com “zzz”.").assertIsDisplayed()
+        estado = estado.copy(busca = "", filtro = StatusVinculo.ENCERRADO)
+        onNodeWithText("Nenhum paciente neste filtro.").assertIsDisplayed()
+        estado = EstadoPacientes()
+        onNodeWithText("Nenhum paciente encontrado.").assertIsDisplayed()
+        onNodeWithText("Limpar filtros").assertDoesNotExist()
+    }
+
+    @Test fun ordemPorRetornoSomeComIndiceELetrasEFicaDesabilitadaSemResumos() = runSkikoComposeUiTest(size = Size(390f, 800f)) {
+        var estado by mutableStateOf(EstadoPacientes(lista = pacientes(30), total = 30))
+        setContent { DietaTheme { PacientesTela(estado, {}, {}, {}, {}, {}, aoOrdem = { estado = estado.copy(ordemEscolhida = it) }) } }
+        onNodeWithText("Filtros").performClick()
+        onNodeWithText("Próximo retorno").assertIsNotEnabled()
+        onNodeWithText("Próximo retorno indisponível", substring = true).assertIsDisplayed()
+        estado = estado.copy(resumos = emptyMap())
+        onNodeWithText("Próximo retorno").assertIsEnabled().performSemanticsAction(SemanticsActions.OnClick) // a folha pode ficar parcialmente fora da janela de teste
+        assertEquals(org.br.dietamais.dominio.pacientes.OrdemPacientes.PROXIMO_RETORNO, estado.ordemEfetiva)
     }
 
     @Test fun telasNosTresTamanhosEFonteAmpliada() {

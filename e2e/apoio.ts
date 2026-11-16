@@ -40,8 +40,22 @@ async function trazer(page: Page, loc: Locator) {
   throw new Error(`Não consegui trazer ${loc} para a janela`);
 }
 
+/** Espera o elemento parar de se mexer (mesma caixa em duas leituras seguidas) e devolve o ponto central.
+ *  O Compose reposiciona a tela depois de um toque (ex.: ao sair do Resumo some a faixa de atalhos acima das abas e as abas sobem),
+ *  e clicar na coordenada lida antes disso acerta outro botão (era o "Atualizar" no lugar da aba Evolução). */
+async function pontoEstavel(page: Page, loc: Locator) {
+  let ultimo = await trazer(page, loc);
+  for (let i = 0; i < 20; i++) {
+    await page.waitForTimeout(120);
+    const atual = await trazer(page, loc);
+    if (Math.abs(atual.x - ultimo.x) < 1 && Math.abs(atual.y - ultimo.y) < 1) return atual;
+    ultimo = atual;
+  }
+  throw new Error(`${loc} não parou de mudar de posição`);
+}
+
 export async function clicar(page: Page, loc: Locator) {
-  const { x, y } = await trazer(page, loc);
+  const { x, y } = await pontoEstavel(page, loc);
   await page.mouse.click(x, y);
   await page.waitForTimeout(150);
 }
@@ -52,6 +66,15 @@ export const campo = (page: Page, nome: string | RegExp) => page.getByRole("text
 export async function digitar(page: Page, nome: string | RegExp, texto: string) {
   await clicar(page, campo(page, nome));
   await page.keyboard.type(texto, { delay: 5 });
+}
+
+/** Filtra a lista de pacientes pelo nome (substitui o que já estava no campo), para o cartão procurado ficar sozinho e o toque por coordenada não errar. */
+export async function buscarPaciente(page: Page, texto: string) {
+  await clicar(page, campo(page, /Buscar por nome/));
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type(texto, { delay: 5 });
+  // O filtro e o novo layout da lista levam um instante; clicar antes toca onde o cartão estava.
+  await page.waitForTimeout(800);
 }
 
 export async function tocar(page: Page, nome: string | RegExp) {

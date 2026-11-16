@@ -58,7 +58,7 @@ fun PainelTela(estado: EstadoPainel, acoes: AcoesPainel, fuso: TimeZone = TimeZo
 
 @Composable
 private fun LinhaConsulta(c: ConsultaResposta, nome: String?, fuso: TimeZone, aoTocar: () -> Unit) {
-    Column(Modifier.fillMaxWidth().clickable(onClick = aoTocar).padding(vertical = Dimens.espacoPequeno)) {
+    Column(Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = aoTocar).padding(vertical = Dimens.espacoPequeno)) {
         Text("${formatarHora(c.inicio, fuso)} – ${formatarHora(c.fim, fuso)}", style = MaterialTheme.typography.bodyLarge)
         Text("${nome ?: stringResource(Res.string.painel_paciente)} · ${rotuloTipoConsulta(c.tipo)}", style = MaterialTheme.typography.bodyMedium)
     }
@@ -70,7 +70,7 @@ private fun SecaoPacientes(titulo: String, vazio: String, itens: List<ItemPainel
         Text(titulo, style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         if (itens.isEmpty()) Text(vazio, style = MaterialTheme.typography.bodyMedium)
         itens.forEach { Text(it.nome ?: stringResource(Res.string.painel_paciente), style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.fillMaxWidth().clickable { aoAbrir(it.fichaId) }.padding(vertical = Dimens.espacoPequeno).semantics { role = Role.Button }) }
+            modifier = Modifier.fillMaxWidth().heightIn(min = Dimens.alvoToque).clickable { aoAbrir(it.fichaId) }.padding(vertical = Dimens.espacoPequeno).semantics { role = Role.Button }) }
     }
 }
 

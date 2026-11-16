@@ -28,7 +28,7 @@ fun converter(pergunta: PerguntaQuestionario, entrada: EntradaResposta): Respost
         when {
             texto.isEmpty() -> RespostaConvertida(null, true)
             pergunta.tipo == TipoPergunta.TEXTO -> jsonTexto(texto).let { RespostaConvertida(it, respostaValida(pergunta, it)) }
-            pergunta.tipo == TipoPergunta.NUMERO -> jsonNumero(texto).let { RespostaConvertida(it, it != null) }
+            pergunta.tipo == TipoPergunta.NUMERO -> jsonNumero(texto).let { RespostaConvertida(it, it != null && respostaValida(pergunta, it)) }
             pergunta.tipo == TipoPergunta.HORARIO -> JsonPrimitive(texto).let { RespostaConvertida(it, respostaValida(pergunta, it)) }
             else -> RespostaConvertida(null, false)
         }

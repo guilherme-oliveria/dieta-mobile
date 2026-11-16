@@ -15,13 +15,14 @@ import kotlin.uuid.Uuid
 
 data class EstadoAnamnesePaciente(val questionarios: List<QuestionarioResposta> = emptyList(), val abertoId: Uuid? = null, val passo: Int = 0,
     val entradas: Map<Uuid, EntradaResposta> = emptyMap(), val erros: Map<Uuid, ErroResposta> = emptyMap(), val concluindo: Boolean = false,
-    val semConexao: Boolean = false, val mensagem: MensagemAnamnese? = null) {
+    val semConexao: Boolean = false, val mensagem: MensagemAnamnese? = null, val atualizandoResultados: Boolean = false) {
     val pendentes: List<QuestionarioResposta> get() = questionarios.filter { it.status == StatusQuestionario.PENDENTE }
     val aberto: QuestionarioResposta? get() = questionarios.firstOrNull { it.id == abertoId }
     val perguntas: List<PerguntaQuestionario> get() = aberto?.blocos?.flatMap { it.perguntas }.orEmpty()
     val respostas: Map<Uuid, JsonElement> get() = aberto?.let { respostasEfetivas(it.respostas, entradas, perguntas) }.orEmpty()
     val passos: List<PassoAnamnese> get() = aberto?.let { passos(it.blocos, respostas) }.orEmpty()
     val passoAtual: Int get() = passo.coerceIn(0, (passos.size - 1).coerceAtLeast(0))
+    val derivados: AnamneseDerivada? get() = aberto?.let { derivadosAtuais(it, entradas) }
 }
 
 /** Assistente de resposta (MOB-25): salva parcial offline a cada passo; só concluir exige rede (RN-ANA-03). */
@@ -29,6 +30,7 @@ class AnamnesePacienteViewModel(private val anamnese: PortaAnamnese, private val
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate, conectividade: Flow<Boolean>? = null) : ViewModel() {
     private val atual = MutableStateFlow(EstadoAnamnesePaciente())
     val estado = atual.asStateFlow()
+    private var salvamento: Job? = null
 
     init {
         conectividade?.let { fluxo -> viewModelScope.launch(dispatcher) { fluxo.collect { online -> atual.update { it.copy(semConexao = !online) } } } }
@@ -39,6 +41,7 @@ class AnamnesePacienteViewModel(private val anamnese: PortaAnamnese, private val
     }
 
     fun abrir(id: Uuid) {
+        salvamento?.cancel()
         val q = atual.value.questionarios.firstOrNull { it.id == id } ?: return
         if (q.status != StatusQuestionario.PENDENTE) return
         atual.update { it.copy(abertoId = id, passo = 0, entradas = emptyMap(), erros = emptyMap(), mensagem = null) }
@@ -47,37 +50,58 @@ class AnamnesePacienteViewModel(private val anamnese: PortaAnamnese, private val
     /** Sair do assistente guarda o que já está válido; o que ficou inválido se perde. */
     fun fechar() {
         if (atual.value.concluindo) return
-        gravarEntradas()
+        salvamento?.cancel()
+        if (gravarEntradas() == null) return
         atual.update { it.copy(abertoId = null, entradas = emptyMap(), erros = emptyMap(), passo = 0) }
     }
 
     fun limparMensagem() = atual.update { it.copy(mensagem = null) }
+
+    fun atualizarResultados() {
+        val e = atual.value
+        if (e.aberto == null || e.semConexao || e.concluindo || e.atualizandoResultados) return
+        salvamento?.cancel()
+        val erros = gravarEntradas() ?: return
+        if (erros.isNotEmpty()) { atual.update { it.copy(erros = erros, mensagem = mensagemDe(erros)) }; return }
+        atual.update { it.copy(atualizandoResultados = true, mensagem = null) }
+        viewModelScope.launch(dispatcher) {
+            try { sincronizar(); anamnese.atualizarRespostas() }
+            catch (c: CancellationException) { throw c }
+            catch (falha: Exception) { apresentar(falha) }
+            finally { atual.update { it.copy(atualizandoResultados = false) } }
+        }
+    }
 
     fun mudar(pergunta: Uuid, entrada: EntradaResposta) {
         if (atual.value.concluindo) return
         atual.update { it.copy(entradas = it.entradas + (pergunta to entrada), erros = it.erros - pergunta, mensagem = null) }
         // escolhas não passam por digitação: gravam na hora, para não perder se o app fechar
         if (entrada is EntradaResposta.Valor) gravarEntradas()
+        else {
+            salvamento?.cancel()
+            salvamento = viewModelScope.launch(dispatcher) { delay(400); gravarEntradas() }
+        }
     }
 
     fun proximo() {
         val e = atual.value; val passoAtual = e.passoAtual
         val erros = validarPasso(passoAtual)
         if (erros.isNotEmpty()) { atual.update { it.copy(erros = erros, mensagem = mensagemDe(erros)) }; return }
-        gravarEntradas()
+        if (gravarEntradas() == null) return
         atual.update { it.copy(passo = (passoAtual + 1).coerceAtMost((it.passos.size - 1).coerceAtLeast(0)), erros = emptyMap(), mensagem = null) }
     }
 
     fun voltar() {
         val atualPasso = atual.value.passoAtual
-        gravarEntradas()
+        if (gravarEntradas() == null) return
         atual.update { it.copy(passo = (atualPasso - 1).coerceAtLeast(0), erros = emptyMap(), mensagem = null) }
     }
 
     fun concluir() {
         val e = atual.value; val q = e.aberto ?: return
         if (e.concluindo || e.semConexao) return
-        val invalidas = gravarEntradas()
+        salvamento?.cancel()
+        val invalidas = gravarEntradas() ?: return
         val ausentes = faltando(q.blocos, atual.value.respostas).associateWith { ErroResposta.OBRIGATORIA }
         val erros = invalidas + ausentes
         if (erros.isNotEmpty()) {
@@ -99,15 +123,15 @@ class AnamnesePacienteViewModel(private val anamnese: PortaAnamnese, private val
     }
 
     /** Grava as digitações válidas na fila offline (só o que mudou); devolve as inválidas. As entradas ficam em memória como camada por cima do banco, que só reflete a gravação depois. */
-    private fun gravarEntradas(): Map<Uuid, ErroResposta> {
+    private fun gravarEntradas(): Map<Uuid, ErroResposta>? {
         val e = atual.value; val q = e.aberto ?: return emptyMap()
         val consolidado = consolidar(e.perguntas, e.entradas)
-        val mudou = consolidado.gravar.filter { (pergunta, valor) -> q.respostas[pergunta] != valor }
+        val mudou = consolidado.gravar.filter { (pergunta, valor) -> !mesmoValorResposta(q.respostas[pergunta], valor) }
         if (mudou.isNotEmpty()) {
             try { anamnese.salvarRespostas(q.id, mudou) }
-            catch (_: RespostasPendentes) { atual.update { it.copy(mensagem = MensagemAnamnese.FECHADO, abertoId = null) }; return emptyMap() }
+            catch (_: RespostasPendentes) { atual.update { it.copy(mensagem = MensagemAnamnese.FECHADO, abertoId = null) }; return null }
             catch (c: CancellationException) { throw c }
-            catch (_: Exception) { atual.update { it.copy(mensagem = MensagemAnamnese.ERRO) }; return consolidado.erros }
+            catch (_: Exception) { atual.update { it.copy(mensagem = MensagemAnamnese.ERRO) }; return null }
         }
         return consolidado.erros
     }
@@ -138,6 +162,7 @@ class AnamnesePacienteViewModel(private val anamnese: PortaAnamnese, private val
             }
             else -> MensagemAnamnese.ERRO
         }
-        atual.update { it.copy(mensagem = mensagem, semConexao = it.semConexao || falha is FalhaComunicacao || falha is RespostasPendentes) }
+        // A conectividade observada decide se a ação fica desabilitada. Uma falha transitória ou fila pendente permite nova tentativa.
+        atual.update { it.copy(mensagem = mensagem) }
     }
 }

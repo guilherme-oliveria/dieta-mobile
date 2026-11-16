@@ -26,11 +26,12 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
     private val enviador = EnviadorFila(FonteEnvioHttp(api), banco, contextoAtual)
     private val coordenador = CoordenadorLeitura(escopo, contexto, conectividade.estado, { sincronizarFila() }, intervaloSync)
     private var falhasEnvio = 0
+    private val sincronizacaoEscritas = Mutex()
     private val registradorPush = RegistradorPush(DispositivosPushHttp(api, plataformaApi()), escopo, contexto, ReceptorPush.token,
         conectividade.estado.map { it != EstadoConexao.INDISPONIVEL }, ativo = plataformaApi() != Plataforma.DESKTOP)
 
     /** Envia a fila e depois puxa as mudanças. Se o envio falhar, tenta de novo com backoff (30 s, 60 s, ... até 15 min). */
-    private suspend fun sincronizarFila() {
+    private suspend fun sincronizarFila(): ResultadoLeituraSync = sincronizacaoEscritas.withLock {
         val envio = enviador.enviar()
         if (envio == ResultadoEnvio.SEM_REDE || envio == ResultadoEnvio.FALHOU) {
             falhasEnvio++
@@ -38,6 +39,13 @@ class AmbienteDieta(val config: Config, val bancoLocal: BancoLocal, val api: Api
             escopo.launch { delay(espera * 1000); coordenador.solicitar() }
         } else falhasEnvio = 0
         sincronizador.puxar()
+    }
+
+    /** Confirma a fila antes de atualizar resultados ou concluir a anamnese. */
+    suspend fun sincronizarEscritasAgora(): ResultadoLeituraSync {
+        if (fechado.value) return ResultadoLeituraSync.SEM_SESSAO
+        api.restaurarSessao()
+        return sincronizarFila()
     }
 
     init {

@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 
 enum class MensagemDieta {
     TITULO_OBRIGATORIO, NOME_REFEICAO_OBRIGATORIO, HORARIO_INVALIDO, PORCOES_INVALIDAS, LIMITE_EXCEDIDO, SEM_CONEXAO, CONFLITO, ASSINATURA_INATIVA,
-    NAO_ENCONTRADA, DIETA_VAZIA, NAO_EDITAVEL, ALIMENTO_INATIVO, TAXA_EXCEDIDA, ERRO, SALVA, PUBLICADA, DUPLICADA,
+    NAO_ENCONTRADA, DIETA_VAZIA, NAO_EDITAVEL, ALIMENTO_INATIVO, TAXA_EXCEDIDA, ERRO, SALVA, PUBLICADA, DUPLICADA, EDITAR_NO_PLANEJADOR,
 }
 
 data class ItemEdicao(val chave: Uuid = novoIdLocal(), val alimentoId: Uuid, val porcoes: String = "1")
@@ -26,5 +26,5 @@ data class EstadoDieta(
     val seletorRefeicao: Uuid? = null, val busca: String = "", val grupoFiltro: Uuid? = null,
     val totais: TotaisCent = TotaisCent(), val totaisRefeicao: Map<Uuid, TotaisCent> = emptyMap(),
     val errosCampos: Map<String, MensagemDieta> = emptyMap(), val carregando: Boolean = false, val enviando: Boolean = false,
-    val semConexao: Boolean = false, val confirmarPublicar: Boolean = false, val erro: MensagemDieta? = null, val aviso: MensagemDieta? = null,
+    val semConexao: Boolean = false, val confirmarPublicar: Boolean = false, val publicarDaLista: DietaResposta? = null, val erro: MensagemDieta? = null, val aviso: MensagemDieta? = null,
 ) { override fun toString() = "EstadoDieta[conteúdo clínico protegido]" }

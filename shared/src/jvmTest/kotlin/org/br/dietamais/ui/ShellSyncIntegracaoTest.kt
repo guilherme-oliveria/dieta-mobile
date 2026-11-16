@@ -1,5 +1,6 @@
 package org.br.dietamais.ui
 
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
@@ -34,6 +35,7 @@ class ShellSyncIntegracaoTest {
             val arquivo = when (req.url.encodedPath) {
                 "/api/v1/eu" -> "consultarEu/resposta.json"
                 "/api/v1/grupos-alimentos" -> "fase-2/listarGruposAlimentos/resposta.json"
+                "/api/v1/pacientes" -> return@MockEngine respond("""{"itens":[],"pagina":0,"tamanho":100,"total":0}""", HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json")) // resumo da lista (BE-66)
                 "/api/v1/consultas" -> return@MockEngine respond("""{"itens":[]}""", HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json")) // Início da nutri
                 "/api/v1/alimentos" -> if (req.url.parameters["ativo"] == "true") "fase-2/listarAlimentos/resposta.json"
                     else return@MockEngine respond(JsonContrato.encodeToString(PaginaAlimentosResposta(emptyList(), 0, 20, 0)), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
@@ -59,7 +61,8 @@ class ShellSyncIntegracaoTest {
             val nome = onNodeWithText("Paciente de Exemplo", useUnmergedTree = true).performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
             val navegacao = onNodeWithContentDescription("Navegação principal").fetchSemanticsNode().boundsInRoot
             assertTrue(nome.bottom <= navegacao.top, "O cabeçalho global não deve encobrir a lista acima da navegação inferior")
-            onNodeWithText("Atualizar dados").performScrollTo().assertIsDisplayed()
+            // "Atualizar dados" fica dentro de Avisos, não no topo (o conteúdo de Avisos é testado em AvisosTelasTest)
+            onNodeWithText("Atualizar dados").assertDoesNotExist()
             val arquivo = File("build/reports/sincronizacao/shell-390-fonte-2.0.png")
             arquivo.parentFile.mkdirs(); ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", arquivo)
             onNodeWithText("Alimentos").performClick()

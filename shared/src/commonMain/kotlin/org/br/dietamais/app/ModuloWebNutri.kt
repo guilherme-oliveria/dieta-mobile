@@ -51,17 +51,35 @@ fun moduloWebNutri(ambiente: AmbienteWeb, compartilhamento: Compartilhamento) = 
     single<PortaPrivacidade> { PrivacidadeRepositorio(get<ApiDieta>()) }
     single<PortaAssinatura> { AssinaturaRepositorio(get<ApiDieta>()) }
     viewModel { PerfilNutriViewModel(get(), conectividade = online) }
+    single<org.br.dietamais.data.repositorio.PortaProtocolosNutri> { org.br.dietamais.data.repositorio.ProtocolosNutriRepositorio(get<ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.protocolos.ProtocolosNutriViewModel(get(), conectividade = online) }
     viewModel { p -> PrivacidadeViewModel(get(), conectividade = online, exportacaoDisponivel = p.get()) }
     viewModel { AssinaturaViewModel(get(), conectividade = online) }
     single<PortaConsultas> { ConsultasOnline(get()) }
     single<PortaAvaliacoes> { AvaliacoesOnline(get()) }
     single<PortaListaPaciente> { ListaPacienteRepositorio(get<ApiDieta>()) { } }
     viewModel { AgendaViewModel(get(), get(), conectividade = online) }
-    viewModel { AvaliacoesViewModel(get(), conectividade = online) }
+    single<org.br.dietamais.data.repositorio.PortaFinanceiro> { org.br.dietamais.data.repositorio.FinanceiroRepositorio(get<ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.agenda.FinanceiroViewModel(get(), conectividade = online) }
+    viewModel { AvaliacoesViewModel(get(), conectividade = online, protocolosPadrao = getOrNull<org.br.dietamais.data.repositorio.PortaProtocolosNutri>()?.let { org.br.dietamais.ui.nutri.protocolos.protocolosPadraoDe(it) }) }
     viewModel { AlimentosViewModel(get(), sessao = get<ApiDieta>().operacaoSessao, conectividade = online) }
-    viewModel { ListaPacienteViewModel(get(), get(), conectividade = online) }
-    viewModel { PacientesViewModel(get(), get(), conectividade = online) }
+    viewModel { ListaPacienteViewModel(get(), get(), pacientes = getOrNull(), conectividade = online) }
+    viewModel { PacientesViewModel(get(), get(), conectividade = online, fixados = org.br.dietamais.data.repositorio.FixadosEmMemoria(),
+        ordem = org.br.dietamais.data.repositorio.OrdemPacientesEmMemoria()) }
     viewModel { MontadorDietaViewModel(get(), get(), conectividade = online) }
+    single<org.br.dietamais.data.repositorio.PortaExames> { org.br.dietamais.data.repositorio.ExamesRepositorio(get<ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.avaliacao.ExamesNutriViewModel(get(), get(), conectividade = online) }
+    single<org.br.dietamais.data.repositorio.PortaPorcoes> { org.br.dietamais.data.repositorio.PorcoesRepositorio(get<ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get(), get(), conectividade = online, produtos = get()) }
+    single<org.br.dietamais.data.repositorio.PortaModelosDieta> { org.br.dietamais.data.repositorio.ModelosDietaRepositorio(get<ApiDieta>(), conferirArmazem = { }) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.ModelosDietaViewModel(get(), conectividade = online) }
+    viewModel { org.br.dietamais.ui.nutri.dieta.AplicarModeloViewModel(get(), get()) }
+    // MOB-56b: editor de modelo = o planejador gravando em modelos-dieta
+    single { org.br.dietamais.ui.nutri.dieta.DietasDeModelo(get()) }
+    viewModel(org.koin.core.qualifier.named("modelo")) { org.br.dietamais.ui.nutri.dieta.PlanejadorPorcoesViewModel(get<org.br.dietamais.ui.nutri.dieta.DietasDeModelo>(), get(), conectividade = online, produtos = get()) }
+    // MOB-70: produtos e suplementos da nutri (online)
+    single<org.br.dietamais.data.repositorio.PortaProdutos> { org.br.dietamais.data.repositorio.ProdutosRepositorio(get<ApiDieta>()) }
+    viewModel { org.br.dietamais.ui.nutri.produtos.ProdutosViewModel(get(), conectividade = online) }
     viewModel { PainelViewModel(get(), get(), get(), get()) }
     viewModel { AnamneseNutriViewModel(get(), conectividade = online) }
 }

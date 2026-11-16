@@ -2,6 +2,7 @@ package org.br.dietamais.dominio.avaliacao
 
 import org.br.dietamais.data.remoto.dto.AvaliacaoResposta
 import org.br.dietamais.data.remoto.dto.PesoResposta
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -51,3 +52,23 @@ fun recortar(pontos: List<PontoSerie>, intervalo: IntervaloEvolucao, agora: Inst
 /** Variação entre o primeiro e o último ponto; nula com menos de 2 pontos. */
 fun variacaoTotal(pontos: List<PontoSerie>): Double? =
     if (pontos.size < 2) null else kotlin.math.round((pontos.last().valor - pontos.first().valor) * 100) / 100
+
+/** Uma barra da evolução entre avaliações (MOB-66): rótulo "mês/ano" curto e o valor da série naquele dia. */
+data class BarraSerie(val rotulo: String, val valor: Double)
+
+/**
+ * Barras da série já recortada pelo período: até [maximo] medidas, da mais antiga para a mais nova, com o rótulo "dd/MM" no fuso dado (ART-P4-05).
+ * Com mais pontos que o máximo, escolhe medidas espaçadas por igual (sempre a primeira e a última), para o período escolhido aparecer inteiro nas barras.
+ */
+fun barrasDaSerie(pontos: List<PontoSerie>, fuso: kotlinx.datetime.TimeZone, maximo: Int = 12): List<BarraSerie> {
+    val ordenados = pontos.sortedBy { it.instante }
+    val escolhidos = if (ordenados.size <= maximo || maximo < 2) ordenados.takeLast(maximo.coerceAtLeast(1))
+    else (0 until maximo).map { ordenados[(it * (ordenados.size - 1) + (maximo - 1) / 2) / (maximo - 1)] }
+    return escolhidos.map { p ->
+        val data = p.instante.toLocalDateTime(fuso).date
+        BarraSerie("${data.day.toString().padStart(2, '0')}/${(data.month.ordinal + 1).toString().padStart(2, '0')}", p.valor)
+    }
+}
+
+/** Quantas barras cabem na largura útil (em dp): valor e rótulo "dd/MM" pedem cerca de 44 dp por barra; entre 4 e 12. */
+fun maximoBarrasPorLargura(larguraDp: Float): Int = (larguraDp / 44f).toInt().coerceIn(4, 12)

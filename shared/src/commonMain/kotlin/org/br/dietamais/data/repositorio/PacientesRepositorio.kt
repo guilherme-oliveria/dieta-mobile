@@ -24,12 +24,32 @@ interface PortaPacientes {
     suspend fun criar(requisicao: CriarPacienteRequisicao, chave: Uuid): PacienteResposta
     suspend fun convidar(id: Uuid, chave: Uuid): ConviteCriadoResposta
     suspend fun assinatura(): AssinaturaResumoResposta?
+    /** BE-66: próxima consulta e última avaliação por vínculo; só online. Nulo quando não deu para ler (a lista segue sem os filtros de atenção). */
+    suspend fun resumos(): Map<Uuid, org.br.dietamais.dominio.pacientes.ResumoPaciente>? = null
+}
+
+/** Lê `GET /pacientes` (100 por página) e guarda só o resumo de cada vínculo. */
+suspend fun carregarResumosPacientes(api: ApiDieta): Map<Uuid, org.br.dietamais.dominio.pacientes.ResumoPaciente>? {
+    val esperado = api.operacaoSessao.value?.takeIf { it.contexto.perfil == Perfil.NUTRICIONISTA } ?: return null
+    return try {
+        val r = mutableMapOf<Uuid, org.br.dietamais.dominio.pacientes.ResumoPaciente>()
+        var pagina = 0
+        do {
+            val resposta = api.obter<PaginaPacientesResposta>("pacientes", mapOf("pagina" to pagina.toString(), "tamanho" to "100", "ordem" to "nome,asc"))
+            if (api.operacaoSessao.value != esperado || resposta.pagina != pagina || (resposta.itens.isEmpty() && r.size < resposta.total)) return null
+            resposta.itens.forEach { r[it.vinculoId] = org.br.dietamais.dominio.pacientes.ResumoPaciente(it.proximaConsulta, it.ultimaAvaliacao?.dataHora, it.ultimaAvaliacao) }
+            pagina++
+        } while (r.size < resposta.total && pagina < 20)
+        r
+    } catch (cancelamento: kotlinx.coroutines.CancellationException) { throw cancelamento }
+    catch (_: Exception) { null }
 }
 
 class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDieta,
     private val sincronizador: Sincronizador = criarSincronizador(api, banco), private val aoAlterar: () -> Unit = {},
     private val escrita: EscritaOffline = EscritaOffline(banco, aoEnfileirar = aoAlterar), private val agora: () -> kotlin.time.Instant = { kotlin.time.Clock.System.now() }) : PortaPacientes {
     private val operacoes = Mutex()
+    override suspend fun resumos() = carregarResumosPacientes(api)
     override suspend fun assinatura(): AssinaturaResumoResposta? {
         val contexto = contexto()
         val eu = api.obter<EuResposta>("eu")
@@ -69,7 +89,7 @@ class PacientesRepositorio(private val api: ApiDieta, private val banco: BancoDi
         contexto()
         val agoraLocal = agora()
         val otimista = PacienteResposta(requisicao.id, requisicao.id, requisicao.nome, requisicao.email, requisicao.dataNascimento, requisicao.sexo, requisicao.telefone,
-            requisicao.estaturaReferencia, requisicao.objetivo, requisicao.observacoes, StatusVinculo.CONVIDADO, 0, agoraLocal, agoraLocal)
+            requisicao.estaturaReferencia, requisicao.objetivo, requisicao.observacoes, StatusVinculo.CONVIDADO, 0, agoraLocal, agoraLocal, cadastroAmpliado = requisicao.cadastroAmpliado)
         escrita.criar("pacientes", requisicao.id, JsonContrato.encodeToJsonElement(requisicao).jsonObject, JsonContrato.encodeToString(otimista))
         otimista
     }

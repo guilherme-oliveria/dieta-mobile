@@ -25,6 +25,12 @@ class ListaComprasTest {
         assertEquals(350.0, l[1].itens.single().gramas); assertEquals(490.0, l[2].itens.single().gramas)
     }
 
+    @Test fun contaMarcadosSoEntreOsItensDaLista() {
+        val l = gerarListaCompras(dieta(refeicao(item(arroz, "Arroz", 100.0, 4.0, "Arroz"), item(ovo, "Ovo", 50.0, 1.0, null))), 7)
+        assertEquals(1 to 2, contarItensCompra(l, setOf(arroz, Uuid.random())))
+        assertEquals(0 to 2, contarItensCompra(l, emptySet()))
+    }
+
     @Test fun formataPesoEmPtBrETextoParaCompartilhar() {
         assertEquals("850 g", textoPeso(850.0)); assertEquals("1,75 kg", textoPeso(1750.0)); assertEquals("1 kg", textoPeso(1000.0)); assertEquals("12,5 g", textoPeso(12.5))
         val d = dieta(refeicao(item(arroz, "Arroz", 100.0, 4.0, "Arroz")))

@@ -38,10 +38,21 @@ fun MontarDietaTela(estado: EstadoDieta, acoes: AcoesMontador, classe: WindowSiz
     Surface(Modifier.fillMaxSize().testTag("montar-dieta"), color = MaterialTheme.colorScheme.background) {
         if (expandido) Row(Modifier.fillMaxSize().padding(Dimens.margemCompacta), horizontalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
             Column(Modifier.weight(2f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Corpo(estado, rascunho, acoes) }
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Resumo(estado, rascunho, acoes) }
+            Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) { Resumo(estado, rascunho, acoes, comBotoes = true) }
         }
-        else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
-            Resumo(estado, rascunho, acoes); Corpo(estado, rascunho, acoes)
+        else Column(Modifier.fillMaxSize()) {
+            // MOB-UX-09: no celular o total fica fixo no topo e Salvar/Publicar no pé; no tablet o cartão de totais segue na coluna lateral.
+            FaixaTotais(estado.totais.kcalReais, estado.totais.carboidratosReais, estado.totais.proteinasReais, estado.totais.gordurasReais)
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(Dimens.margemCompacta), verticalArrangement = Arrangement.spacedBy(Dimens.espacoMedio)) {
+                Resumo(estado, rascunho, acoes, comBotoes = false); Corpo(estado, rascunho, acoes)
+            }
+            val habilitado = !estado.semConexao && !estado.enviando && !estado.carregando
+            RodapeAcoes {
+                if (rascunho.editavel) {
+                    BotaoContornado(stringResource(Res.string.dieta_publicar), acoes.aoPublicar, Modifier.weight(1f), habilitado = habilitado && rascunho.versao != null && !rascunho.alterado)
+                    BotaoPrincipal(stringResource(Res.string.dieta_salvar), acoes.aoSalvar, Modifier.weight(1f), habilitado = habilitado && rascunho.alterado, carregando = estado.enviando)
+                } else BotaoContornado(stringResource(Res.string.dieta_duplicar), acoes.aoDuplicar, Modifier.weight(1f), habilitado = habilitado)
+            }
         }
     }
     if (estado.confirmarPublicar) AlertDialog(onDismissRequest = acoes.aoCancelarPublicacao,
@@ -52,7 +63,7 @@ fun MontarDietaTela(estado: EstadoDieta, acoes: AcoesMontador, classe: WindowSiz
 }
 
 @Composable
-private fun ColumnScope.Resumo(estado: EstadoDieta, r: RascunhoDieta, a: AcoesMontador) {
+private fun ColumnScope.Resumo(estado: EstadoDieta, r: RascunhoDieta, a: AcoesMontador, comBotoes: Boolean) {
     BotaoTexto(stringResource(Res.string.pacientes_voltar), a.aoVoltar)
     Text(stringResource(if (r.editavel) Res.string.dieta_montar else Res.string.dieta_ver), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
     Text(stringResource(textoStatus(r.status)), style = MaterialTheme.typography.labelLarge)
@@ -66,10 +77,12 @@ private fun ColumnScope.Resumo(estado: EstadoDieta, r: RascunhoDieta, a: AcoesMo
     }
     val habilitado = !estado.semConexao && !estado.enviando && !estado.carregando
     if (r.editavel) {
-        BotaoPrincipal(stringResource(Res.string.dieta_salvar), a.aoSalvar, Modifier.fillMaxWidth(), habilitado = habilitado && r.alterado, carregando = estado.enviando)
-        BotaoContornado(stringResource(Res.string.dieta_publicar), a.aoPublicar, Modifier.fillMaxWidth(), habilitado = habilitado && r.versao != null && !r.alterado)
+        if (comBotoes) {
+            BotaoPrincipal(stringResource(Res.string.dieta_salvar), a.aoSalvar, Modifier.fillMaxWidth(), habilitado = habilitado && r.alterado, carregando = estado.enviando)
+            BotaoContornado(stringResource(Res.string.dieta_publicar), a.aoPublicar, Modifier.fillMaxWidth(), habilitado = habilitado && r.versao != null && !r.alterado)
+        }
         if (r.versao == null || r.alterado) Text(stringResource(Res.string.dieta_salvar_antes), style = MaterialTheme.typography.bodySmall)
-    } else BotaoContornado(stringResource(Res.string.dieta_duplicar), a.aoDuplicar, Modifier.fillMaxWidth(), habilitado = habilitado)
+    } else if (comBotoes) BotaoContornado(stringResource(Res.string.dieta_duplicar), a.aoDuplicar, Modifier.fillMaxWidth(), habilitado = habilitado)
 }
 
 @Composable
@@ -111,8 +124,8 @@ private fun SeletorAlimento(estado: EstadoDieta, refeicao: Uuid, a: AcoesMontado
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
         CampoTexto(stringResource(Res.string.alimentos_busca), estado.busca, a.aoBusca, Modifier.fillMaxWidth())
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.espacoPequeno)) {
-            FilterChip(estado.grupoFiltro == null, { a.aoGrupoFiltro(null) }, label = { Text(stringResource(Res.string.alimentos_todos_grupos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
-            estado.grupos.forEach { g -> FilterChip(estado.grupoFiltro == g.id, { a.aoGrupoFiltro(g.id) }, label = { Text(g.nome) }, modifier = Modifier.heightIn(min = Dimens.alvoToque)) }
+            ChipEscolha(estado.grupoFiltro == null, { a.aoGrupoFiltro(null) }, label = { Text(stringResource(Res.string.alimentos_todos_grupos)) }, modifier = Modifier.heightIn(min = Dimens.alvoToque))
+            estado.grupos.forEach { g -> ChipEscolha(estado.grupoFiltro == g.id, { a.aoGrupoFiltro(g.id) }, label = { Text(g.nome) }, modifier = Modifier.heightIn(min = Dimens.alvoToque)) }
         }
         val opcoes = estado.alimentos.filter { it.ativo && (estado.grupoFiltro == null || it.grupoId == estado.grupoFiltro) && it.nome.contains(estado.busca.trim(), ignoreCase = true) }
         if (opcoes.isEmpty()) Text(stringResource(Res.string.alimentos_vazio), style = MaterialTheme.typography.bodySmall)
@@ -155,4 +168,5 @@ fun textoMensagemDieta(mensagem: MensagemDieta): String = stringResource(when (m
     MensagemDieta.SALVA -> Res.string.dieta_salva
     MensagemDieta.PUBLICADA -> Res.string.dieta_publicada
     MensagemDieta.DUPLICADA -> Res.string.dieta_duplicada
+    MensagemDieta.EDITAR_NO_PLANEJADOR -> Res.string.dieta_editar_no_planejador
 })

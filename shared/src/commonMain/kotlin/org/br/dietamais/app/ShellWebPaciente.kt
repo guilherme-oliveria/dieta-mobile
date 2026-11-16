@@ -34,7 +34,6 @@ import org.br.dietamais.ui.paciente.anamnese.AnamnesePacienteViewModel
 import org.br.dietamais.ui.paciente.compras.AcoesCompras
 import org.br.dietamais.ui.paciente.compras.ComprasTela
 import org.br.dietamais.ui.paciente.compras.ComprasViewModel
-import org.br.dietamais.ui.paciente.dieta.DietaPacienteTela
 import org.br.dietamais.ui.paciente.dieta.DietaPacienteViewModel
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoPacienteRota
 import org.br.dietamais.ui.paciente.evolucao.EvolucaoViewModel
@@ -78,14 +77,15 @@ fun ShellWebPaciente(nome: String, aoSair: () -> Unit, aoPrepararNavegacao: (and
                 Column(Modifier.fillMaxSize()) {
                     AnamnesePacienteRota(koinViewModel<AnamnesePacienteViewModel>(viewModelStoreOwner = dono))
                     ProximaConsultaRota(koinViewModel<ConsultasPacienteViewModel>(viewModelStoreOwner = dono))
-                    HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua), Modifier.weight(1f))
+                    HojeTela(estado, AcoesHoje(vm::mudarDia, vm::marcar, vm::abrirTroca, vm::beberAgua, vm::desfazerCheckin, vm::desfazerAgua), Modifier.weight(1f))
                 }
                 TrocaTela(estado, vm::escolherSubstituto, vm::confirmarTroca, vm::cancelarTroca)
             },
             conteudoDieta = {
                 val pdf = koinInject<PortaPdf>()
-                DietaPacienteTela(estado, vm::abrirRefeicao, vm::escolher, pdf = { e -> e.dieta?.let { d ->
-                    BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(RecursoPdf.DIETA, d.dietaId) }) } })
+                org.br.dietamais.ui.paciente.dieta.DietaPacienteRota(vm, pdf = { e -> e.dieta?.let { d ->
+                    BotaoPdf(stringResource(Res.string.pdf_dieta), !e.semConexao, { pdf.link(RecursoPdf.DIETA, d.dietaId) })
+                org.br.dietamais.ui.comum.BotoesPdfLista(pdf, d.dietaId, !e.semConexao) } })
             },
             conteudoEvolucao = { EvolucaoPacienteRota(koinViewModel<EvolucaoViewModel>(viewModelStoreOwner = dono), koinViewModel<AvaliacoesViewModel>(viewModelStoreOwner = dono)) },
             conteudoCompras = {

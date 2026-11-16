@@ -22,3 +22,17 @@ val AlertaTexto = Color(0xFF9A3F14)
 val AlertaClaro = Color(0xFFFBEDE3)
 val InfoDieta = Color(0xFF2F6FA8)
 val InfoClaro = Color(0xFFEAF1F8)
+
+// Séries de gráfico (docs/design/padrao-ui.md, seção 3): todas com 3:1 ou mais sobre branco e sobre o fundo. Ordem fixa.
+val SerieVerde = VerdeDieta
+val SerieAzul = InfoDieta
+val SerieAmbar = Color(0xFFB07A00)
+val SerieRoxo = Color(0xFF7B5BA6)
+val SerieTurquesa = Color(0xFF2A7F7D)
+val SerieCinza = Color(0xFF66736A)
+
+// Faixas de régua (abaixo, normal, sobrepeso, obesidade): cores só de gráfico; cada faixa tem rótulo escrito.
+val FaixaAbaixo = Color(0xFF9DB7D1)
+val FaixaNormal = Color(0xFF7DB896)
+val FaixaSobrepeso = Color(0xFFE0B15C)
+val FaixaObesidade = Color(0xFFD98A5B)
